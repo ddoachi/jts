@@ -1,0 +1,71 @@
+{
+  "total_apis": 336,
+  "categories": {
+    "authentication": 5,
+    "domestic_stock_trading": 26,
+    "domestic_stock_market_data": 49,
+    "real_time_websocket": 22,
+    "futures_options": 24,
+    "international": 65
+  },
+  "endpoints": {
+    "production": {
+      "rest": "https://openapi.koreainvestment.com:9443",
+      "websocket": "ws://ops.koreainvestment.com:21000"
+    },
+    "sandbox": {
+      "rest": "https://openapivts.koreainvestment.com:29443",
+      "websocket": "ws://ops.koreainvestment.com:31000"
+    }
+  },
+  "rate_limits": {
+    "rest_per_second": 20,
+    "rest_per_minute": 1000,
+    "websocket_connections": 5,
+    "websocket_subscriptions_per_connection": 40
+  },
+  "key_apis": [
+    {
+      "name": "주식주문(현금)",
+      "tr_id_prod": "(매도) TTTC0011U (매수) TTTC0012U",
+      "tr_id_sandbox": "(매도) VTTC0011U (매수) VTTC0012U",
+      "method": "POST",
+      "url": "/uapi/domestic-stock/v1/trading/order-cash"
+    },
+    {
+      "name": "주식주문(정정취소)",
+      "tr_id_prod": "TTTC0013U",
+      "tr_id_sandbox": "VTTC0013U",
+      "method": "POST",
+      "url": "/uapi/domestic-stock/v1/trading/order-rvsecncl"
+    },
+    {
+      "name": "주식잔고조회",
+      "tr_id_prod": "TTTC8434R",
+      "tr_id_sandbox": "VTTC8434R",
+      "method": "GET",
+      "url": "/uapi/domestic-stock/v1/trading/inquire-balance"
+    },
+    {
+      "name": "주식현재가 시세",
+      "tr_id_prod": "FHKST01010100",
+      "tr_id_sandbox": "FHKST01010100",
+      "method": "GET",
+      "url": "/uapi/domestic-stock/v1/quotations/inquire-price"
+    },
+    {
+      "name": "매수가능조회",
+      "tr_id_prod": "TTTC8908R",
+      "tr_id_sandbox": "VTTC8908R",
+      "method": "GET",
+      "url": "/uapi/domestic-stock/v1/trading/inquire-psbl-order"
+    },
+    {
+      "name": "주식일별주문체결조회",
+      "tr_id_prod": "(3개월이내) TTTC0081R (3개월이전) CTSC9215R",
+      "tr_id_sandbox": "(3개월이내) VTTC0081R (3개월이전) VTSC9215R",
+      "method": "GET",
+      "url": "/uapi/domestic-stock/v1/trading/inquire-daily-ccld"
+    }
+  ]
+}

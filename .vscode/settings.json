@@ -1,0 +1,33 @@
+{
+  "workbench.colorTheme": "Visual Studio Dark",
+  "editor.tabSize": 2,
+  "editor.fontFamily": "'CascaydiaCove Nerd Font Mono', Cascadia Code Nerd Font, Cascadia Code, D2Coding, Consolas, Fira Code, monospace",
+  "terminal.integrated.fontFamily": "Hack Nerd Font Mono, Cascadia Code, monospace",
+  "editor.fontLigatures": true,
+  "editor.minimap.enabled": false,
+  "files.exclude": {},
+  "vim.useSystemClipboard": true,
+  "terminal.integrated.copyOnSelection": true,
+  "terminal.integrated.defaultProfile.linux": "zsh",
+
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true, // 저장 시 자동 포맷
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "prettier.ignorePath": ".prettierignore",
+  "claudeWorkflow.specs.documentsPath": ".claude-workflow/specs",
+  "claudeWorkflow.specs.showHiddenFiles": false,
+  "claudeWorkflow.specs.autoRefresh": true,
+  "claudeWorkflow.specs.enableGitIntegration": true,
+  "claudeWorkflow.dependency.graphStyle": "obsidian",
+  "claudeWorkflow.dependency.nodeSize": 20,
+  "claudeWorkflow.dependency.edgeThickness": 2,
+  "claudeWorkflow.dependency.animationSpeed": 1000
+}
