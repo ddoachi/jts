@@ -41,5 +41,18 @@
     "tags": [
       "auto-detected"
     ]
+  },
+  "wt-1756041431328-2dlzsmpc5": {
+    "id": "wt-1756041431328-2dlzsmpc5",
+    "name": "jts",
+    "path": "/home/joohan/dev/project-jts/jts",
+    "branch": "main",
+    "baseBranch": "main",
+    "createdAt": "2025-08-24T13:17:11.339Z",
+    "status": "active",
+    "description": "Manually created worktree (auto-detected)",
+    "tags": [
+      "auto-detected"
+    ]
   }
 }
