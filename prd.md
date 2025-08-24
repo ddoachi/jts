@@ -126,254 +126,307 @@ Requests are prioritized based on business criticality:
 - **Real-time**: Market data and price updates
 - **Background**: Historical data and account information
 
-## Phase 1: Foundation & Unified Broker Architecture (Weeks 1-6)
+## MVP Implementation Strategy
 
-### 1.0 Project Foundation (Week 1)
+### Critical Path for Feasibility Validation
 
-**Objective**: Establish monorepo structure with unified broker interface for parallel development
+The MVP focuses on proving core functionality with minimal complexity:
 
-**Key Deliverables**:
-- Monorepo workspace configuration
-- Unified broker interface definition
-- Service scaffolding and shared libraries
-- Development environment setup
+**Essential Components**:
+1. **Single broker connection** (KIS recommended for REST API simplicity)
+2. **Real-time market data pipeline**
+3. **Basic strategy execution with DSL**
+4. **Order management system**
+5. **Minimal monitoring dashboard**
+
+**Target Timeline**: 2-3 weeks for basic trading capability
+
+### Parallel Development Tracks
+
+**Track 1 - Data Infrastructure**:
+- Market Data Collector
+- PostgreSQL setup
+- Redis caching layer
+- Basic Kafka streaming
+
+**Track 2 - Broker Integration**:
+- KIS Service (primary)
+- Creon Service (secondary)
+- Order execution APIs
+- Account management
+
+**Track 3 - Business Logic**:
+- Strategy Engine with mock data
+- DSL interpreter
+- Risk management rules
+- Backtesting framework
+
+## Phase 1: MVP - Minimal Trading Pipeline (Weeks 1-3)
+
+### Week 1: Foundation & Single Broker
+
+**Objective**: Establish end-to-end trading capability with one broker
+
+**Deliverables**:
+- **Infrastructure Setup**:
+  - Monorepo with Nx workspace
+  - PostgreSQL for orders and positions
+  - Redis for real-time caching
+  - Basic Docker compose setup
+  
+- **KIS Broker Service**:
+  - REST API integration
+  - Authentication and session management
+  - Account balance queries
+  - Simple order execution (buy/sell)
+  
+- **Core Data Models**:
+  - Unified order structure
+  - Position tracking schema
+  - Account model
 
 **Success Criteria**:
-- All services compile and communicate
-- Development workflow established
-- CI/CD pipeline configured
-- Documentation structure in place
+- Successfully connect to KIS API
+- Execute a test trade
+- Store order in database
+- Cache price data in Redis
 
-### 1.1 Parallel Broker Implementation (Weeks 1-2)
+### Week 2: Real-time Data Flow
 
-**Objective**: Develop multiple broker integrations simultaneously
+**Objective**: Build live market data pipeline with signal generation
 
-**Creon Service**:
-- Windows-based integration for Korean equities
-- COM object wrapper with rate limiting
-- Real-time and historical data access
-- Order execution capabilities
+**Deliverables**:
+- **Market Data Collector**:
+  - Real-time price streaming from KIS
+  - WebSocket connection management
+  - Data normalization layer
+  - Redis pub/sub for distribution
+  
+- **Simple Strategy Engine**:
+  - Basic buy/sell signal generation
+  - Moving average crossover strategy
+  - RSI-based signals
+  - Mock DSL interpreter
+  
+- **Order Execution Service**:
+  - Signal to order conversion
+  - Position size calculation
+  - Order state management
+  - Execution confirmation handling
 
-**KIS Service**:
-- Cross-platform REST API integration
-- Multi-account support for scaling
-- WebSocket real-time streaming
-- Batch operations for efficiency
+**Success Criteria**:
+- Stream live prices for 10+ symbols
+- Generate trading signals in real-time
+- Execute orders based on signals
+- Track order lifecycle
 
-**Integration Standards**:
-- Common data models across brokers
-- Unified error handling
-- Standardized API endpoints
-- Consistent authentication patterns
+### Week 3: Basic Dashboard & DSL
 
-### 1.2 Multi-Account Architecture (Week 2)
+**Objective**: Create minimal UI for monitoring and strategy definition
 
-**Objective**: Build scalable account management system
+**Deliverables**:
+- **Trading Dashboard (PWA)**:
+  - Live price display
+  - Account balance and positions
+  - Active orders list
+  - P&L tracking
+  - Simple charts with entry/exit points
+  
+- **DSL Formula Builder**:
+  - Basic formula creation UI
+  - Support for price conditions
+  - Simple indicator combinations
+  - Save/load formulas
+  
+- **Backtesting Proof-of-Concept**:
+  - Run DSL against historical data
+  - Display backtest results
+  - Basic performance metrics
 
-**Core Features**:
-- Dynamic account pool management
-- Intelligent symbol distribution
-- Load-balanced order execution
-- Automatic failover mechanisms
-- Parallel data collection capabilities
+**Success Criteria**:
+- View live trading activity
+- Create and save a DSL formula
+- Backtest a strategy
+- Monitor account performance
 
-**Benefits**:
-- Linear scaling with account additions
-- Increased market coverage
-- Improved execution redundancy
-- Enhanced system resilience
+## Phase 2: Core Features Enhancement (Weeks 4-5)
 
-### 1.3 Unified Market Data Collector (Week 3)
+### Week 4: Advanced DSL & Backtesting
 
-**Objective**: Create comprehensive market data aggregation system
+**Objective**: Build comprehensive strategy definition and validation system
 
-**Key Components**:
-- Multi-source data collection
-- Real-time normalization pipeline
-- Time-series storage optimization
-- High-performance caching layer
+**Deliverables**:
+- **Full DSL Implementation**:
+  - Complete formula parser and interpreter
+  - Support for all indicator types:
+    - Technical indicators (RSI, MACD, Bollinger Bands)
+    - Moving averages (SMA, EMA, WMA)
+    - Volume analysis
+    - Price patterns
+  - Conditional logic (AND, OR, NOT)
+  - Variable parameters and optimization
+  
+- **Production Backtesting Engine**:
+  - Historical data fetching from multiple sources
+  - Accurate simulation with:
+    - Slippage modeling
+    - Commission calculations
+    - Market impact estimates
+  - Performance metrics:
+    - Sharpe ratio
+    - Maximum drawdown
+    - Win rate and profit factor
+  - Parameter optimization framework
+  
+- **Strategy Management**:
+  - Save and version strategies
+  - Share strategies between accounts
+  - Strategy performance tracking
+  - A/B testing framework
 
-**Capabilities**:
-- Parallel processing from all brokers
-- Sub-second surge detection
-- Historical data management
-- Data quality assurance
+**Success Criteria**:
+- Backtest 1 year of data in <10 seconds
+- Support 20+ technical indicators
+- Optimize strategy parameters
+- Generate detailed performance reports
 
-### 1.4 Smart Order Execution (Week 4)
+### Week 5: Multi-Broker & Scaling
 
-**Objective**: Build intelligent order routing system
+**Objective**: Add second broker and implement intelligent routing
 
-**Core Features**:
-- Best execution venue selection
-- Multi-account order distribution
-- Real-time status tracking
-- Cross-account position management
-- Automated reconciliation
+**Deliverables**:
+- **Creon Broker Integration**:
+  - Windows service setup
+  - COM object wrapper
+  - Rate limit management
+  - Real-time data streaming
+  
+- **Multi-Account Management**:
+  - Account pool coordination
+  - Symbol distribution across accounts
+  - Balance aggregation
+  - Unified position tracking
+  
+- **Smart Order Routing**:
+  - Best execution logic
+  - Broker selection algorithm
+  - Rate limit optimization
+  - Failover mechanisms
+  
+- **Enhanced Dashboard Features**:
+  - Multi-broker status view
+  - Aggregated P&L across accounts
+  - Per-broker performance metrics
+  - Account switching UI
 
-**Routing Intelligence**:
-- Dynamic broker selection
-- Rate limit optimization
-- Balance consideration
-- Historical performance analysis
-- Market condition adaptation
+**Success Criteria**:
+- Manage 5+ accounts simultaneously
+- Route orders to optimal broker
+- Handle broker failures gracefully
+- Track positions across all accounts
 
-### 1.5 Strategy Engine & DSL (Week 5)
+## Phase 3: Production Ready (Weeks 6-8)
 
-**Objective**: Create powerful strategy definition and execution framework
+### Week 6: Risk Management & Monitoring
 
-**Core Components**:
-- Domain-specific language for strategies
-- Real-time signal generation
-- Surge detection algorithms
-- Multi-timeframe analysis
-- Risk management integration
-- Backtesting capabilities
+**Objective**: Implement production-grade risk controls and observability
 
-**Strategy Types**:
-- Technical indicator-based
-- Momentum and surge detection
-- Multi-timeframe correlation
-- Machine learning enhanced
-- Custom algorithm support
+**Deliverables**:
+- **Risk Management System**:
+  - Position size limits per symbol
+  - Maximum daily loss limits
+  - Correlation-based exposure management
+  - Volatility-adjusted position sizing
+  - Emergency stop-all functionality
+  
+- **Real-time Monitoring**:
+  - System health dashboard
+  - API rate limit tracking
+  - Order execution metrics
+  - Latency monitoring
+  - Error rate tracking
+  
+- **Alert System**:
+  - WebSocket-based push notifications
+  - Email/SMS integration
+  - Customizable alert rules
+  - Priority-based routing
+  
+- **Performance Analytics**:
+  - Real-time P&L tracking
+  - Strategy performance comparison
+  - Slippage analysis
+  - Execution quality metrics
 
-**Execution Features**:
-- Sub-second signal processing
-- Parallel strategy evaluation
-- State management
-- Performance tracking
+**Success Criteria**:
+- Risk limits enforced in <100ms
+- 99.9% uptime for monitoring
+- Alert delivery in <1 second
+- Comprehensive audit trail
 
-### 1.6 Monitoring & Integration (Week 6)
+### Week 7: Cryptocurrency Integration
 
-**Objective**: Build comprehensive monitoring and notification system
+**Objective**: Add crypto trading capabilities for portfolio diversification
 
-**Dashboard Features**:
-- Real-time market coverage metrics
-- Multi-broker status monitoring
-- Trading performance analytics
-- Position and P&L tracking
-- Risk metrics visualization
+**Deliverables**:
+- **Binance Integration**:
+  - Spot trading implementation
+  - WebSocket market data
+  - USDT/BTC pairs focus
+  - Rate limit management
+  
+- **Upbit Integration**:
+  - KRW trading pairs
+  - Korean regulatory compliance
+  - Tax reporting hooks
+  - Account verification
+  
+- **Unified Crypto Features**:
+  - Cross-exchange arbitrage detection
+  - Crypto-specific indicators
+  - 24/7 trading management
+  - Portfolio rebalancing
 
-**System Integration**:
-- Unified API gateway
-- Centralized authentication
-- Health monitoring
-- Alert management
-- Push notifications
+**Success Criteria**:
+- Trade execution on both exchanges
+- Real-time crypto price feeds
+- Unified crypto portfolio view
+- Regulatory compliance verified
 
-**Notification Categories**:
-- Trade executions
-- Risk warnings
-- System alerts
-- Performance summaries
+### Week 8: Production Deployment & Optimization
 
-## Phase 2: Advanced Trading Features (Weeks 7-10)
+**Objective**: Deploy to production with enterprise-grade reliability
 
-### 2.1 Trading Dashboard (Weeks 7-8)
+**Deliverables**:
+- **Infrastructure Hardening**:
+  - Kubernetes deployment configs
+  - Auto-scaling policies
+  - Database connection pooling
+  - CDN setup for dashboard
+  
+- **Security Implementation**:
+  - API key encryption
+  - JWT authentication
+  - Rate limiting per user
+  - Audit logging
+  
+- **Performance Optimization**:
+  - Query optimization
+  - Caching strategies
+  - WebSocket connection pooling
+  - Batch processing for historical data
+  
+- **Documentation & Training**:
+  - API documentation
+  - User guide
+  - Deployment runbook
+  - Disaster recovery plan
 
-**Objective**: Develop comprehensive trading interface
-
-**Key Features**:
-- Multi-broker overview
-- Real-time surge monitoring
-- Account management
-- Position aggregation
-- Execution analytics
-- Market visualization
-
-**Technical Foundation**:
-- Progressive Web App architecture
-- Real-time data streaming
-- Offline capabilities
-- Push notification support
-
-### 2.2 Risk Management System (Week 9)
-
-**Objective**: Implement comprehensive risk controls
-
-**Risk Categories**:
-- Account-level limits and controls
-- Cross-account exposure management
-- Position sizing algorithms
-- Correlation risk analysis
-- Dynamic adjustment mechanisms
-
-**Protection Mechanisms**:
-- Maximum exposure limits
-- Loss prevention controls
-- Volatility-based adjustments
-- Portfolio diversification rules
-
-### 2.3 Performance Analytics (Week 10)
-
-**Objective**: Build comprehensive performance tracking
-
-**Analytics Dimensions**:
-- Aggregated performance metrics
-- Strategy effectiveness analysis
-- Surge trading optimization
-- Account utilization metrics
-- Execution quality tracking
-
-**Insights Generated**:
-- Optimal trading parameters
-- Market condition correlation
-- Resource allocation efficiency
-- Strategy refinement recommendations
-
-## Phase 3: Scaling & Optimization (Weeks 11-14)
-
-### 3.1 Account Scaling (Week 11)
-
-**Objective**: Expand market coverage through additional accounts
-
-**Scaling Approach**:
-- Strategic account distribution
-- Market segment specialization
-- Dynamic resource allocation
-- Automated failover systems
-
-**Coverage Strategy**:
-- Large-cap blue chips
-- Technology growth stocks
-- Small-cap momentum plays
-- Sector rotation opportunities
-- Reserve capacity for overflow
-
-### 3.2 Cryptocurrency Integration - Binance (Week 12)
-
-**Objective**: Add global cryptocurrency trading capabilities
-
-**Key Features**:
-- Real-time market data streaming
-- Comprehensive trading API
-- Major trading pair support
-- Advanced order types
-
-### 3.3 Korean Crypto Integration - Upbit (Week 13)
-
-**Objective**: Enable local cryptocurrency trading
-
-**Key Features**:
-- KRW trading pair access
-- Local regulatory compliance
-- Tax reporting capabilities
-- Real-time data streaming
-
-### 3.4 System Optimization (Week 14)
-
-**Objective**: Maximize system performance and reliability
-
-**Optimization Areas**:
-- Latency reduction strategies
-- Execution quality improvements
-- System resilience enhancements
-- Resource utilization efficiency
-
-**Reliability Features**:
-- Automated failover mechanisms
-- Circuit breaker patterns
-- Self-healing capabilities
-- Performance monitoring
+**Success Criteria**:
+- <100ms API response time
+- Handle 1000+ concurrent users
+- Zero-downtime deployment
+- Complete documentation
 
 ## Phase 4: Advanced Capabilities (Weeks 15-18)
 
@@ -467,24 +520,39 @@ The system utilizes distributed computing infrastructure:
 
 ## Success Metrics
 
-### Technical Performance
-- Market coverage: 1,800+ symbols
-- Detection latency: <100ms
-- Execution speed: <500ms
-- System uptime: 99.9%
-- API utilization: 80-90%
+### MVP Success Metrics (Week 3)
+- **Proof of Concept**:
+  - Execute 1+ live trades via KIS API
+  - Stream real-time prices for 10+ symbols
+  - Generate signals from DSL formulas
+  - Display live positions in dashboard
 
-### Trading Performance
-- Surge detection: 20-50 daily opportunities
-- Win rate: 60-70%
-- Risk/Reward: 1:2 or better
-- Daily volume: 10-30 trades
+### Phase 1 Completion (Week 5)
+- **Core Functionality**:
+  - Backtest strategies with 70%+ accuracy
+  - Support 20+ technical indicators
+  - Manage 2+ brokers simultaneously
+  - Handle 100+ symbols in real-time
 
-### System Capabilities
-- Multi-broker support
-- Automatic failover
-- Comprehensive test coverage
-- Security compliance
+### Production Metrics (Week 8)
+- **Technical Performance**:
+  - Market coverage: 500+ symbols initially, scaling to 1,800+
+  - Detection latency: <100ms
+  - Execution speed: <500ms
+  - System uptime: 99.9%
+  - API utilization: 80-90%
+
+- **Trading Performance**:
+  - Daily opportunities: 10-20 initially, scaling to 50+
+  - Win rate: 60-70%
+  - Risk/Reward: 1:2 or better
+  - Daily volume: 10-30 trades
+
+- **System Capabilities**:
+  - Multi-broker support (KIS, Creon, Binance, Upbit)
+  - Automatic failover
+  - 80%+ test coverage
+  - Security compliance
 
 ## Risk Management
 
@@ -528,9 +596,30 @@ The system utilizes distributed computing infrastructure:
 - **Surge Detection**: Momentum-based trading opportunity identification
 - **Smart Order Routing**: Intelligent broker selection for optimal execution
 
-### Project Timeline
-- Phase 1: Foundation (Weeks 1-6)
-- Phase 2: Advanced Features (Weeks 7-10)
-- Phase 3: Scaling (Weeks 11-14)
-- Phase 4: ML Enhancement (Weeks 15-18)
-- Phase 5: Production (Weeks 19-20)
+### Project Timeline - MVP Focused Approach
+
+**Fast Track to Production (8 Weeks)**:
+- **Weeks 1-3**: MVP - Minimal Trading Pipeline
+  - Week 1: Foundation & Single Broker (KIS)
+  - Week 2: Real-time Data Flow & Basic Strategy
+  - Week 3: Dashboard & DSL Builder
+  
+- **Weeks 4-5**: Core Features Enhancement
+  - Week 4: Advanced DSL & Backtesting
+  - Week 5: Multi-Broker & Smart Routing
+  
+- **Weeks 6-8**: Production Ready
+  - Week 6: Risk Management & Monitoring
+  - Week 7: Cryptocurrency Integration
+  - Week 8: Production Deployment
+
+**Extended Roadmap (Post-MVP)**:
+- **Weeks 9-12**: Advanced Features
+  - Machine Learning Integration
+  - Advanced Analytics
+  - Mobile Applications
+  
+- **Weeks 13-16**: Scale & Optimize
+  - Additional broker integrations
+  - High-frequency trading capabilities
+  - International market expansion

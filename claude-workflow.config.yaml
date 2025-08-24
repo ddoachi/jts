@@ -1,0 +1,126 @@
+# 🚀 CLAUDE WORKFLOW CONFIGURATION TEMPLATE
+# This file uses YAML format for maximum readability and native comment support
+# Edit the values below and save as 'claude-workflow.config.yaml'
+# VS Code provides excellent YAML syntax highlighting and validation
+
+version: "1.3.1"  # Configuration version (matches extension version)
+
+# 🤖 AI AUTOMATION CONFIGURATION
+# Controls headless Claude Code integration and AI-powered analysis
+aiAutomation:
+  scriptPaths:
+    analyzeSpec: "./.claude-workflow/scripts/analyze-spec.sh"        # Spec analysis script path
+    codeReview: "./.claude-workflow/scripts/code-review.sh"          # Code review script path  
+    batchAnalyze: "./.claude-workflow/scripts/batch-analyze.sh"      # Batch analysis script path
+    smartMergeCheck: "./.claude-workflow/scripts/smart-merge-check.sh"  # Pre-merge validation script
+    enhancedImplement: "./.claude-workflow/scripts/enhanced-implement-spec.sh"  # Implementation guide script
+  
+  execution:
+    timeout: 300000                 # Script timeout in milliseconds (5 minutes)
+    maxParallelJobs: 3              # Maximum concurrent AI jobs (1-10)
+    enableCancellation: true        # Allow users to cancel running jobs
+    showProgressNotifications: true # Show progress in VS Code notifications
+  
+  output:
+    openResultsInEditor: true       # Auto-open analysis results in editor tabs
+    retainResultFiles: 7            # Days to keep result files (1-30)
+    enableOutputChannel: true       # Show output in VS Code Output channel
+    enableProblemsIntegration: true  # Integrate issues with VS Code Problems panel
+
+# 📋 PRD TO IMPLEMENTATION WORKFLOW CONFIGURATION
+# Controls automated PRD parsing and specification generation
+prdWorkflow:
+  paths:
+    prds: "prd.md"                  # Single PRD file path (recommended: one per project)
+    specs: "./specs"                # Directory for generated specification files
+    context: "./context"            # Directory for context and planning files
+    templates: "./templates/spec-templates"  # Directory containing specification templates
+  
+  specGeneration:
+    # Specification hierarchy levels (epic → feature → task → subtask)
+    hierarchyLevels: ["epic", "feature", "task", "subtask"]
+    maxParallelGeneration: 5        # Max specs to generate simultaneously (1-10)
+    
+    templatePaths:
+      epic: "./templates/spec-templates/epic.md"       # Epic-level specification template
+      feature: "./templates/spec-templates/feature.md" # Feature-level specification template
+      task: "./templates/spec-templates/task.md"       # Task-level specification template
+      subtask: "./templates/spec-templates/subtask.md"  # Subtask-level specification template
+    
+    # Generation strategy options:
+    # "epics-first": Generate epics first, then features, then tasks
+    # "features-first": Start with feature-level specifications
+    # "tasks-first": Focus on task-level implementation specs
+    # "full-hierarchy": Generate complete hierarchy in one pass
+    generateStrategy: "epics-first"
+  
+  worktreeOrchestration:
+    maxParallelWorktrees: 3         # Maximum concurrent worktrees (1-5)
+    dependencyAnalysisEnabled: true # Analyze dependencies before creating worktrees
+    autoCreateOnReady: true          # Auto-create worktrees when specs are ready
+  
+  contextManagement:
+    persistContext: true            # Save execution context between sessions
+    contextFilePattern: "context/{spec-id}.context.md"  # Context file naming pattern
+    includeSpecInContext: true       # Include specification content in context files
+  
+  notifications:
+    telegramEnabled: true           # Enable Telegram notifications (requires telegram.config.json)
+    telegramConfigPath: "./telegram.config.json"  # Path to Telegram bot configuration
+    notifyOnSpecComplete: true      # Send notification when spec generation completes
+    notifyOnImplementationComplete: true  # Send notification when implementation completes
+
+# 🌳 GROVE GIT CONFIGURATION  
+# Git worktree management for parallel development
+groveGit:
+  worktreeDirectory: "../worktrees" # Directory for storing worktrees (relative to workspace)
+  defaultBaseBranch: "main"         # Default base branch for new worktrees (main/master/develop)
+  branchNamingPattern: "feature/{name}"  # Branch naming pattern (use {name} placeholder)
+  autoCleanup: true                 # Automatically cleanup orphaned worktrees
+
+# 📄 SPECIFICATION DOCUMENTS CONFIGURATION
+# Controls the SPECIFICATION DOCUMENTS panel in VS Code sidebar
+specs:
+  documentsPath: "specs"            # Path to specifications directory for document panel
+  showHiddenFiles: false            # Show hidden spec files (starting with dot)
+  autoRefresh: true                 # Auto-refresh spec tree when files change
+  enableGitIntegration: true        # Enable Git integration for commit tracking
+
+# 🎨 USER INTERFACE CONFIGURATION
+# Controls VS Code UI elements and user experience
+ui:
+  showStatusBar: true               # Show network status in VS Code status bar
+  showNotifications: true           # Show toast notifications for workflow events
+  autoResolveConflicts: false       # Automatically open conflict resolver dialog
+  notificationTimeout: 5000         # Notification display duration in milliseconds
+  statusBarPriority: 100            # Status bar item priority (higher number = more left)
+
+# 📊 MONITORING CONFIGURATION
+# Performance metrics and health monitoring settings
+monitoring:
+  enableMetrics: false              # Enable performance metrics collection (recommended for production)
+  metricsInterval: 60000            # Metrics collection interval in milliseconds (1 minute)
+  healthCheckInterval: 30000        # Health check interval in milliseconds (30 seconds)
+  
+  alertThresholds:
+    errorRate: 0.05                 # Error rate threshold as decimal (0.05 = 5%)
+    messageLatency: 5000            # Message latency threshold in milliseconds
+    memoryUsage: 104857600          # Memory usage threshold in bytes (100MB)
+    diskUsage: 80                   # Disk usage threshold in percentage
+    instanceOfflineTime: 300000     # Instance offline time threshold in milliseconds (5 minutes)
+
+# 💡 QUICK START EXAMPLES
+# Common configuration patterns for different project types
+_examples:
+  quickStart: "For quick setup, only modify 'prd.md' path and Telegram settings if needed"
+  teamCollaboration: "Enable Redis messaging by adding redis section (see README.md)"
+  customWorkflows: "Modify generateStrategy and hierarchyLevels for your workflow style"
+  largeProjects: "Increase maxParallelWorktrees and maxParallelJobs for better performance"
+  cicd: "Set enableMetrics: true and adjust alertThresholds for production monitoring"
+
+# 📋 USAGE INSTRUCTIONS:
+# 1. Copy this file to your project root
+# 2. Rename to 'claude-workflow.config.yaml'
+# 3. Edit the values above to match your project needs
+# 4. Run 'Claude Workflow: Validate Config' to check your settings
+# 5. Start using the extension commands!
