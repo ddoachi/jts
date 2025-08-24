@@ -28,7 +28,7 @@ estimated_hours: 20 # Time estimate in hours
 actual_hours: 0 # Time spent so far
 
 # === DEPENDENCIES ===
-dependencies: ['1001'] # Must be done before this (spec IDs)
+dependencies: ['1012'] # Must be done before this (spec IDs) - Database mount integration must be ready
 blocks: ['1007', '2000', '3000'] # This blocks these specs (spec IDs)
 related: ['1003', '1006'] # Related but not blocking (spec IDs)
 

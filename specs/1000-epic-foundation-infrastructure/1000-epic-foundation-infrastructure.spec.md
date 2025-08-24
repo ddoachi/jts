@@ -10,7 +10,7 @@ type: 'epic' # prd | epic | feature | task | subtask | bug | spike
 
 # === HIERARCHY ===
 parent: '' # Parent spec ID (leave empty for top-level)
-children: [] # Child spec IDs (if any)
+children: ["1001", "1002", "1003", "1004", "1005", "1006", "1007", "1008", "1009", "1010"] # Child spec IDs (if any)
 epic: '1000' # Root epic ID for this work
 domain: 'infrastructure' # Business domain
 
@@ -29,7 +29,7 @@ actual_hours: 0 # Time spent so far
 
 # === DEPENDENCIES ===
 dependencies: [] # Must be done before this (spec IDs)
-blocks: ['2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '10000', '11000'] # This blocks these specs
+blocks: ['2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '10000', '11000'] # This blocks these specs (1002, 1004, 1005 now blocked by specific storage tasks)
 related: [] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
@@ -399,6 +399,19 @@ When implementing this epic:
 - Consider using Kubernetes for production deployment (future enhancement)
 - Ensure cross-platform compatibility (Linux primary, Windows for Creon)
 - Set up proper logging and monitoring from the start
+
+### Storage Infrastructure Decomposition
+
+Feature 1001 (Storage Infrastructure) has been decomposed into specialized tasks for better implementation management:
+
+- **Task 1011**: Hot Storage (NVMe) Foundation - Core LVM infrastructure setup
+- **Task 1012**: Database Mount Integration - Service-specific mount points and permissions
+- **Task 1013**: Warm Storage (SATA) Setup - Independent SATA/btrfs implementation  
+- **Task 1014**: Cold Storage (NAS) Integration - NFS optimization and directory structure
+- **Task 1015**: Storage Performance Optimization - I/O schedulers and TRIM configuration
+- **Task 1016**: Tiered Storage Management - Automation and lifecycle management
+
+**Dependency Impact**: Feature 1005 (Database Infrastructure) now depends on Task 1012 (Database Mount Integration) rather than the entire storage coordination feature, enabling more precise dependency management and parallel execution.
 
 ## Status Updates
 
