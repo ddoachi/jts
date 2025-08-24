@@ -29,5 +29,11 @@
   "claudeWorkflow.dependency.graphStyle": "obsidian",
   "claudeWorkflow.dependency.nodeSize": 20,
   "claudeWorkflow.dependency.edgeThickness": 2,
-  "claudeWorkflow.dependency.animationSpeed": 1000
+  "claudeWorkflow.dependency.animationSpeed": 1000,
+  "claudeWorkflow.modelManager.preferences": {
+    "defaultModel": "claude-sonnet-4-20250514",
+    "taskSpecificModels": {},
+    "autoSwitching": false,
+    "persistScope": "workspace"
+  }
 }
