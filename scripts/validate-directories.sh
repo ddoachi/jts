@@ -320,6 +320,14 @@ validate_ownership() {
                         ownership_errors+=("$service")
                     fi
                     ;;
+                "postgresql")
+                    if [[ "$owner" == "postgres" && "$group" == "postgres" ]]; then
+                        log_success "Directory ownership correct: $service (postgres:postgres)"
+                    else
+                        log_failure "Directory ownership incorrect: $service ($owner:$group, expected: postgres:postgres)"
+                        ownership_errors+=("$service")
+                    fi
+                    ;;
                 *)
                     if [[ "$owner" == "$service" && "$group" == "$service" ]]; then
                         log_success "Directory ownership correct: $service ($service:$service)"
