@@ -168,9 +168,19 @@ log "Step 6: Validating installation..."
 
 # Test write access for each service user
 TEMP_FILES=()
+
+# Map users to their corresponding directories
+declare -A USER_DIR_MAP
+USER_DIR_MAP["postgres"]="postgresql"
+USER_DIR_MAP["clickhouse"]="clickhouse"
+USER_DIR_MAP["kafka"]="kafka"
+USER_DIR_MAP["mongodb"]="mongodb"
+USER_DIR_MAP["redis"]="redis"
+
 for user in "${USERS[@]}"; do
     if [[ "$user" != "root" ]]; then
-        TEST_FILE="$BASE_DIR/$user/test_write_$$"
+        service_dir="${USER_DIR_MAP[$user]}"
+        TEST_FILE="$BASE_DIR/$service_dir/test_write_$$"
         if sudo -u "$user" touch "$TEST_FILE" 2>/dev/null; then
             success "Write access validated for user: $user"
             TEMP_FILES+=("$TEST_FILE")
