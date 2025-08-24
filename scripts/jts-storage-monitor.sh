@@ -260,6 +260,32 @@ monitor_storage() {
                     "$status_color" "$status" "$NC"
             done
             echo
+        else
+            # Summary mode - show total hot storage usage
+            local hot_total_bytes=0
+            local services_with_data=0
+            for data in "${service_data[@]}"; do
+                IFS=':' read -r service size_bytes size_human percentage status <<< "$data"
+                if [[ $size_bytes -gt 0 ]]; then
+                    hot_total_bytes=$((hot_total_bytes + size_bytes))
+                    services_with_data=$((services_with_data + 1))
+                fi
+            done
+            
+            local hot_total_human
+            hot_total_human=$(bytes_to_human "$hot_total_bytes")
+            local hot_percentage
+            if [[ $fs_total -gt 0 ]]; then
+                hot_percentage=$(calc_percentage "$hot_total_bytes" "$fs_total")
+            else
+                hot_percentage=0
+            fi
+            
+            echo -e "${BLUE}📁 Hot Storage Summary:${NC}"
+            printf "%-15s %10s\n" "Total Used:" "$hot_total_human"
+            printf "%-15s %10s\n" "Services:" "$services_with_data active"
+            printf "%-15s %7s%%\n" "Usage:" "$hot_percentage"
+            echo
         fi
         
         echo -e "${BLUE}💾 Filesystem Information:${NC}"
