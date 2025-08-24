@@ -68,6 +68,62 @@ Establish the core system infrastructure for the JTS automated trading platform,
 ### System Architecture Design
 Design and document the complete microservices architecture following the layered approach outlined in the PRD. Create clear service boundaries, define communication protocols (HTTP/gRPC/Kafka), and establish data flow patterns.
 
+#### JTS System Architecture
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                    Presentation Layer                            │
+│                 (PWA with Service Workers + Mobile)              │
+└──────────────────────────────────────────────────────────────────┘
+                               │
+┌──────────────────────────────────────────────────────────────────┐
+│                      Gateway Layer                               │
+│              (API Gateway with Auth & Rate Limiting)             │
+└──────────────────────────────────────────────────────────────────┘
+                               │
+┌──────────────────────────────────────────────────────────────────┐
+│                    Business Layer                                │
+├────────────────┬────────────────┬────────────────┬───────────────┤
+│    Strategy    │   Risk         │    Portfolio   │    Order      │
+│    Engine      │   Management   │    Tracker     │    Execution  │
+└────────────────┴────────────────┴────────────────┴───────────────┘
+                               │
+┌──────────────────────────────────────────────────────────────────┐
+│                   Integration Layer                              │
+├───────────────────────────────┬──────────────────────────────────┤
+│     Market Data Collector     │     Notification Service         │
+└───────────────────────────────┴──────────────────────────────────┘
+                               │
+┌──────────────────────────────────────────────────────────────────┐
+│                    Messaging Layer                               │
+├───────────────────────────────┬──────────────────────────────────┤
+│      Kafka (Event Stream)     │     Redis (Cache/Lock/Session)   │
+└───────────────────────────────┴──────────────────────────────────┘
+                               │
+┌──────────────────────────────────────────────────────────────────┐
+│                     Brokers Layer                                │
+├─────────────┬─────────────┬─────────────┬───────────────────────┤
+│Creon Service│ KIS Service │Binance Serv.│    Upbit Service      │
+│ (Windows)   │  (Linux)    │  (Linux)    │     (Linux)           │
+│Rate: 15s/60 │Rate: 1s/20  │Rate: 1m/1200│   Rate: 1s/10         │
+└─────────────┴─────────────┴─────────────┴───────────────────────┘
+                               │
+┌──────────────────────────────────────────────────────────────────┐
+│                      Data Layer                                  │
+├──────────────┬──────────────┬──────────────┬────────────────────┤
+│ PostgreSQL   │ ClickHouse   │   MongoDB    │   File Storage     │
+│(Transactions)│(Time Series) │(Configuration)│  (Logs/Backups)   │
+└──────────────┴──────────────┴──────────────┴────────────────────┘
+```
+
+#### Architecture Principles
+- **Microservices**: Each layer contains independent, scalable services
+- **Clear Separation**: Well-defined boundaries between layers and services
+- **Protocol Optimization**: HTTP/REST for external APIs, gRPC for internal services, Kafka for events
+- **Fault Isolation**: Service failures don't cascade through the system
+- **Independent Scaling**: Each service can be scaled based on demand
+- **Platform Agnostic**: Services communicate through standardized interfaces
+
 ### Key Components
 
 1. **Monorepo Structure**
