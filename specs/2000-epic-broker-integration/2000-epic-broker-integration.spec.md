@@ -78,10 +78,13 @@ Create a broker-agnostic interface that standardizes all broker operations, allo
    - Response transformation layer
 
 2. **KIS Service (Linux/Windows)**
-   - REST API integration
-   - OAuth 2.0 authentication
-   - WebSocket for real-time data
+   - REST API integration (337 APIs available)
+   - OAuth 2.0 authentication with 24-hour token validity
+   - WebSocket for real-time data (40 symbols per connection)
    - Multi-account support
+   - Rate limits: 20 req/sec, 1,000 req/min
+   - Reference: `brokers/kis/KIS_API_SPEC.md` for API details
+   - Full spec: `brokers/kis/reference/KIS_API_20250817_030000.xlsx`
 
 3. **Creon Service (Windows)**
    - FastAPI wrapper for COM objects
@@ -111,9 +114,11 @@ Create a broker-agnostic interface that standardizes all broker operations, allo
 
 2. **Implement KIS Service**
    - Set up NestJS service
-   - Integrate KIS REST APIs
-   - Implement authentication flow
-   - Add WebSocket support
+   - Integrate KIS REST APIs (see `brokers/kis/KIS_API_SPEC.md`)
+   - Implement OAuth2 authentication flow with hashkey generation
+   - Add WebSocket support for real-time data
+   - Handle rate limiting (20/sec, 1,000/min)
+   - Support both production and sandbox environments
 
 3. **Implement Creon Service**
    - Create FastAPI Python service
@@ -139,6 +144,24 @@ Create a broker-agnostic interface that standardizes all broker operations, allo
    - Add execution quality tracking
    - Build fallback strategies
 
+## API Resources
+
+### KIS (Korea Investment Securities)
+- **API Documentation**: `brokers/kis/KIS_API_SPEC.md`
+- **Complete Specification**: `brokers/kis/reference/KIS_API_20250817_030000.xlsx`
+- **Total APIs**: 337 endpoints
+- **Categories**: Stocks, Futures, Options, International Markets, WebSocket
+- **Rate Limits**: 20 req/sec, 1,000 req/min, 50,000 req/hour
+- **Environments**:
+  - Production: `https://openapi.koreainvestment.com:9443`
+  - Sandbox: `https://openapivts.koreainvestment.com:29443`
+  - WebSocket: `ws://ops.koreainvestment.com:21000` (prod) / `:31000` (sandbox)
+
+### Creon
+- **Platform**: Windows-only (COM objects)
+- **Rate Limits**: 15 requests per 60 seconds
+- **Deployment**: Dedicated Windows PC (bare metal)
+
 ## Dependencies
 
 - **1000**: Foundation & Infrastructure Setup - Requires monorepo structure, Redis, and Docker infrastructure
@@ -158,20 +181,28 @@ Create a broker-agnostic interface that standardizes all broker operations, allo
 When implementing this epic:
 1. Start with the IBroker interface in libs/shared/interfaces/
 2. Use NestJS for Linux-based broker services (KIS, Binance, Upbit)
-3. Use FastAPI for Creon service on dedicated Windows PC (bare metal, not containerized)
-4. Configure secure network communication between Creon PC and main system
-5. Implement comprehensive logging for all broker interactions
-6. Create a broker-mock service for testing without real APIs
-7. Use environment variables for all API credentials
-8. Implement circuit breaker pattern for broker connections
-9. Create detailed documentation for each broker's quirks
-10. Set up monitoring dashboards for rate limit usage
-11. Ensure Creon PC has static IP and proper firewall rules for API access
+3. For KIS implementation, refer to:
+   - API documentation: brokers/kis/KIS_API_SPEC.md
+   - Complete Excel spec: brokers/kis/reference/KIS_API_20250817_030000.xlsx
+   - 337 APIs available with detailed request/response formats
+4. Use FastAPI for Creon service on dedicated Windows PC (bare metal, not containerized)
+5. Configure secure network communication between Creon PC and main system
+6. Implement comprehensive logging for all broker interactions
+7. Create a broker-mock service for testing without real APIs
+8. Use environment variables for all API credentials
+9. Implement circuit breaker pattern for broker connections
+10. Create detailed documentation for each broker's quirks
+11. Set up monitoring dashboards for rate limit usage
+12. Ensure Creon PC has static IP and proper firewall rules for API access
+13. For KIS, implement proper OAuth2 flow with hashkey generation for secure orders
 ```
 
 ## Notes
 
-- KIS allows multiple accounts with modern REST API
+- KIS provides 337 APIs covering stocks, futures, options, and international markets
+- KIS documentation available in `brokers/kis/KIS_API_SPEC.md` and Excel spec in `brokers/kis/reference/`
+- KIS rate limits: 20 req/sec, 1,000 req/min, 50,000 req/hour
+- KIS supports both production (`openapi.koreainvestment.com`) and sandbox environments
 - Creon requires dedicated Windows PC - no containers/VMs allowed due to security restrictions
 - Creon FastAPI service runs directly on Windows bare metal and exposes REST API to network
 - Rate limiting is critical - violations can result in API suspension
