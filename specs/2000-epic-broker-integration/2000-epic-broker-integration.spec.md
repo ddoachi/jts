@@ -85,7 +85,7 @@ Create a broker-agnostic interface that standardizes all broker operations, allo
 
 3. **Creon Service (Windows)**
    - FastAPI wrapper for COM objects
-   - Windows-specific Docker container
+   - Dedicated Windows PC (no containers/VMs due to Creon restrictions)
    - Rate limit: 15 requests/60 seconds
    - Session management
 
@@ -118,8 +118,8 @@ Create a broker-agnostic interface that standardizes all broker operations, allo
 3. **Implement Creon Service**
    - Create FastAPI Python service
    - Wrap Creon COM objects
-   - Deploy on Windows container
-   - Expose REST endpoints
+   - Deploy on dedicated Windows PC (bare metal)
+   - Expose REST endpoints for network access
 
 4. **Build Rate Limiting**
    - Implement Redis-based limiter
@@ -158,22 +158,26 @@ Create a broker-agnostic interface that standardizes all broker operations, allo
 When implementing this epic:
 1. Start with the IBroker interface in libs/shared/interfaces/
 2. Use NestJS for Linux-based broker services (KIS, Binance, Upbit)
-3. Use FastAPI for Windows-based Creon service
-4. Implement comprehensive logging for all broker interactions
-5. Create a broker-mock service for testing without real APIs
-6. Use environment variables for all API credentials
-7. Implement circuit breaker pattern for broker connections
-8. Create detailed documentation for each broker's quirks
-9. Set up monitoring dashboards for rate limit usage
+3. Use FastAPI for Creon service on dedicated Windows PC (bare metal, not containerized)
+4. Configure secure network communication between Creon PC and main system
+5. Implement comprehensive logging for all broker interactions
+6. Create a broker-mock service for testing without real APIs
+7. Use environment variables for all API credentials
+8. Implement circuit breaker pattern for broker connections
+9. Create detailed documentation for each broker's quirks
+10. Set up monitoring dashboards for rate limit usage
+11. Ensure Creon PC has static IP and proper firewall rules for API access
 ```
 
 ## Notes
 
 - KIS allows multiple accounts with modern REST API
-- Creon requires Windows but provides deep Korean market access
+- Creon requires dedicated Windows PC - no containers/VMs allowed due to security restrictions
+- Creon FastAPI service runs directly on Windows bare metal and exposes REST API to network
 - Rate limiting is critical - violations can result in API suspension
 - Consider implementing a broker health check system
 - Each broker has unique data formats requiring normalization
+- Network security between Creon Windows PC and main system needs careful configuration
 
 ## Status Updates
 
