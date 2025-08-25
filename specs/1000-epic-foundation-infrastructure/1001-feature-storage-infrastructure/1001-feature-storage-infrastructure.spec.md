@@ -166,6 +166,45 @@ flowchart TB
 - **Task 1016**: Tiered Storage Management - Requires Tasks 1013, 1014
 - **Duration**: 4 hours
 
+### Parallel Execution Strategy
+
+#### Recommended Approach
+Assign different team members or use isolated environments for parallel tasks to maximize efficiency while maintaining safety.
+
+```bash
+# Terminal 1: Warm Storage SATA Setup (Task 1013)
+cd /home/joohan/dev/project-jts/jts
+git checkout -b task/1013-warm-storage-sata
+# Execute Task 1013 implementation
+
+# Terminal 2: Cold Storage NAS Integration (Task 1014)  
+cd /home/joohan/dev/project-jts/jts
+git checkout -b task/1014-cold-storage-nas
+# Execute Task 1014 implementation
+```
+
+#### Safety Measures for Parallel Execution
+- **Task 1013** and **Task 1014** operate on completely different storage devices
+- No shared filesystem operations or conflicting mount points
+- Independent of directory-based infrastructure (no LVM dependencies)
+- Each task can be safely rolled back without affecting the other
+
+#### Cross-Task Integration Management
+
+**Directory Structure Coordination**:
+1. **Task 1011**: Creates base directory structure `/data/jts/hot/`
+2. **Task 1012**: Creates service-specific directory permissions
+3. **Task 1013**: Creates warm storage directories `/data/warm/`
+4. **Task 1014**: Creates NAS directory structure `/mnt/synology/jts/`
+
+**Configuration File Management**:
+```bash
+# Each task creates its own configuration sections
+# Task 1011: Directory structure setup
+# Task 1013: Warm storage mount configuration  
+# Task 1014: NFS mount configuration
+```
+
 ### Implementation Timeline
 
 ```
@@ -1104,45 +1143,116 @@ This feature forms part of the foundation infrastructure and has dependencies on
 
 Should be implemented early in the infrastructure setup process before database services are deployed.
 
-## Testing Plan
+## Implementation Validation and Testing
 
-### Hot Tier (NVMe) Testing
+### Per-Task Validation Procedures
 
-- **LVM Configuration Validation**: Verify all logical volumes are created with correct sizes and properties using `lvdisplay` and `vgdisplay`
-- **Filesystem Integrity**: Test filesystem creation and verify optimal parameters using `tune2fs` for ext4 and `xfs_info` for XFS
-- **Performance Benchmarking**: Run I/O performance tests using `fio` and `dd` to validate NVMe optimization
-- **TRIM Support**: Verify SSD TRIM/discard functionality is working correctly
-- **LVM Snapshots**: Test snapshot creation, mounting, and cleanup processes
+#### Task 1011 Validation (Directory Structure)
+```bash
+# Verify directory structure creation
+ls -la /data/jts/hot/
+tree /data/jts/hot/ || ls -la /data/jts/hot/*/
 
-### Warm Tier (SATA) Testing
+# Test service user permissions
+sudo -u postgres touch /data/jts/hot/postgresql/test_write
+sudo -u clickhouse touch /data/jts/hot/clickhouse/test_write
+sudo -u kafka touch /data/jts/hot/kafka/test_write
+sudo -u mongodb touch /data/jts/hot/mongodb/test_write
+sudo -u redis touch /data/jts/hot/redis/test_write
 
-- **Btrfs Configuration**: Verify compression, autodefrag, and snapshot capabilities
-- **Mount Point Testing**: Confirm SATA filesystem mounts correctly with btrfs options
-- **Compression Efficiency**: Test space savings with different compression levels
+# Verify directory space monitoring
+/usr/local/bin/jts-storage-monitor.sh
+
+# Performance verification
+time dd if=/dev/zero of=/data/jts/hot/postgresql/perf_test bs=1M count=1000
+rm /data/jts/hot/postgresql/perf_test
+```
+
+#### Task 1012 Validation (Database Integration)
+```bash
+# Verify service user directory access
+ls -la /data/jts/hot/{postgresql,clickhouse,kafka,mongodb,redis}/
+df -h / | grep -E "Filesystem|/$"
+
+# Test database service directory permissions
+sudo -u postgres mkdir /data/jts/hot/postgresql/test_db
+sudo -u clickhouse mkdir /data/jts/hot/clickhouse/test_ch
+sudo -u kafka mkdir /data/jts/hot/kafka/test_kafka
+
+# Cleanup test directories
+sudo rm -rf /data/jts/hot/*/test_*
+```
+
+#### Tasks 1013 & 1014 Validation (Warm/Cold Storage)
+```bash
+# SATA storage verification
+df -h /data/warm/
+ls -la /data/warm/{daily-backups,logs,temp-processing}/
+
+# NAS connectivity and performance
+df -h /mnt/synology/jts/
+time dd if=/dev/zero of=/mnt/synology/jts/development/network_test bs=1M count=100
+rm /mnt/synology/jts/development/network_test
+
+# Directory structure verification
+ls -la /mnt/synology/jts/{archives,market-data,backtesting,models,development}/
+```
+
+### Integration Testing Procedures
+
+#### Cross-Task Dependency Validation
+```bash
+# Verify all storage tiers are accessible
+df -h | grep -E "(/$|warm|synology)"
+
+# Test tiered data flow simulation
+echo "test data" > /data/jts/hot/backup/hot_test
+cp /data/jts/hot/backup/hot_test /data/warm/temp-processing/warm_test  
+cp /data/warm/temp-processing/warm_test /mnt/synology/jts/development/cold_test
+
+# Verify file integrity across tiers
+sha256sum /data/jts/hot/backup/hot_test /data/warm/temp-processing/warm_test /mnt/synology/jts/development/cold_test
+
+# Cleanup test files
+rm -f /data/jts/hot/backup/hot_test /data/warm/temp-processing/warm_test /mnt/synology/jts/development/cold_test
+```
+
+#### Performance Integration Testing
+```bash
+# Monitor storage performance across tiers
+iostat -x 1 5 | grep -E "(nvme|sda)" || echo "iostat not available"
+
+# Check available space summary across all tiers
+echo "=== Storage Tier Summary ==="
+echo "Hot Tier Available:  $(df -h / | tail -1 | awk '{print $4}')"
+echo "Warm Tier Available: $(df -h /data/warm 2>/dev/null | tail -1 | awk '{print $4}' || echo 'N/A')"
+echo "Cold Tier Available: $(df -h /mnt/synology 2>/dev/null | tail -1 | awk '{print $4}' || echo 'N/A')"
+```
+
+### Comprehensive Testing Strategy
+
+#### Hot Tier (Directory-Based) Testing
+- **Directory Structure Validation**: Verify all service directories created with correct permissions
+- **Permission Testing**: Validate service user access to respective directories
+- **Performance Benchmarking**: Run I/O performance tests to validate NVMe performance
+- **Space Monitoring**: Test directory-based space tracking and alerting
+
+#### Warm Tier (SATA) Testing  
+- **Mount Point Testing**: Confirm SATA filesystem mounts correctly
+- **Directory Organization**: Verify backup, logs, and temp-processing directories
 - **Backup Performance**: Validate sequential write performance for backup operations
 
-### Cold Tier (NAS) Testing
-
-- **NFS Connectivity**: Test NFS mount with optimized parameters
+#### Cold Tier (NAS) Testing
+- **NFS Connectivity**: Test NFS mount stability and performance
 - **Network Performance**: Benchmark large file transfer speeds to/from NAS
-- **Directory Structure**: Verify proper directory creation and permissions
+- **Directory Structure**: Verify comprehensive directory organization
 - **Concurrent Access**: Test multiple simultaneous NFS operations
-- **Reliability Testing**: Verify graceful handling of network interruptions
 
-### Cross-Tier Integration Testing
-
-- **Data Migration**: Test automated movement between storage tiers
-- **Tiered Backup**: Validate multi-tier backup and recovery procedures
-- **Health Monitoring**: Test comprehensive monitoring across all tiers
-- **Disaster Recovery**: Test recovery procedures for each tier independently
-- **Performance Integration**: Validate that tier interactions don't impact performance
-
-### Automation and Management Testing
-
-- **Script Functionality**: Test all management scripts (setup, health, archival, tiering)
-- **Automated Tasks**: Verify systemd timers for TRIM and tiered storage management
-- **Alert System**: Test usage alerts and critical threshold notifications
-- **Log Rotation**: Verify automated log management across tiers
+#### Cross-Tier Integration Testing
+- **Data Flow Validation**: Test data movement simulation between all tiers
+- **Monitoring Integration**: Validate comprehensive monitoring across all storage tiers
+- **Performance Validation**: Ensure tier interactions maintain optimal performance
+- **Recovery Procedures**: Test rollback and recovery for each tier independently
 
 ## Claude Code Instructions
 
