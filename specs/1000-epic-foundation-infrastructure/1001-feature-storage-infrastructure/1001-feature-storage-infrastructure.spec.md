@@ -24,7 +24,7 @@ reviewer: "" # Who should review (optional)
 created: "2025-08-24" # YYYY-MM-DD
 updated: "2025-08-24" # YYYY-MM-DD
 due_date: "" # YYYY-MM-DD (optional)
-estimated_hours: 2 # Time estimate in hours
+estimated_hours: 1 # Time estimate in hours (coordination only)
 actual_hours: 0 # Time spent so far
 
 # === DEPENDENCIES ===
@@ -93,48 +93,150 @@ This feature serves as the central coordination point for:
 
 ### Task Dependency Management
 
+#### Mobile-Optimized Dependency Flow
+```mermaid
+flowchart TB
+    %% Phase 1: Foundation
+    subgraph P1 ["📋 Phase 1: Foundation (Sequential)"]
+        A["🔥 Task 1011<br/>Hot Storage NVMe<br/>Directory Setup<br/><br/>⏱️ 2h | ⚠️ Low Risk"]
+    end
+    
+    %% Phase 2: Parallel Implementation  
+    subgraph P2 ["📋 Phase 2: Parallel Implementation"]
+        D["🌡️ Task 1013<br/>Warm Storage SATA<br/>Setup<br/><br/>⏱️ 3h | ✅ Low Risk"]
+        E["🧊 Task 1014<br/>Cold Storage NAS<br/>Integration<br/><br/>⏱️ 3h | ✅ Low Risk"]
+    end
+    
+    %% Phase 3: Integration
+    subgraph P3 ["📋 Phase 3: Integration (Sequential)"]
+        B["🔌 Task 1012<br/>Database Mount<br/>Integration<br/><br/>⏱️ 4h | ⚠️ Medium Risk"]
+        C["⚡ Task 1015<br/>Storage Performance<br/>Optimization<br/><br/>⏱️ 2h | ✅ Low Risk"]
+    end
+    
+    %% Phase 4: Management
+    subgraph P4 ["📋 Phase 4: Management (Final)"]
+        F["🔄 Task 1016<br/>Tiered Storage<br/>Management<br/><br/>⏱️ 4h | ⚠️ Medium Risk"]
+    end
+    
+    %% External Dependencies
+    G["💾 Feature 1005<br/>Database Infrastructure<br/>(Unblocked by 1012)"]
+    
+    %% Dependencies
+    A --> B
+    A --> C
+    D --> F
+    E --> F
+    B --> G
+    
+    %% Parallel indicators
+    D -.-> E
+    
+    %% Styling for mobile readability
+    classDef foundation fill:#ffcccc,stroke:#ff0000,stroke-width:2px
+    classDef parallel fill:#ccffcc,stroke:#00aa00,stroke-width:2px
+    classDef integration fill:#ffffcc,stroke:#ffaa00,stroke-width:2px
+    classDef management fill:#e6ccff,stroke:#9900cc,stroke-width:2px
+    classDef external fill:#ccccff,stroke:#0000aa,stroke-width:2px
+    
+    class A foundation
+    class D,E parallel
+    class B,C integration
+    class F management
+    class G external
+```
+
+**Implementation Phases:**
+
 **Phase 1: Foundation (Sequential)**
-- **Task 1011**: Hot Storage (NVMe) Foundation - Must complete first, blocks database integration
+- **Task 1011**: Hot Storage (NVMe) Directory Setup - Must complete first, blocks database integration
+- **Duration**: 2 hours (reduced from 8h with directory approach)
+- **Risk**: Low (reduced from high with LVM elimination)
 
 **Phase 2: Parallel Implementation**
-- **Task 1013**: Warm Storage (SATA) Setup - Independent, can run parallel
-- **Task 1014**: Cold Storage (NAS) Integration - Independent, can run parallel
+- **Task 1013**: Warm Storage (SATA) Setup - Independent, can run parallel with 1014
+- **Task 1014**: Cold Storage (NAS) Integration - Independent, can run parallel with 1013
+- **Duration**: 6 hours total (3h + 3h in parallel = 3h actual time)
 
 **Phase 3: Integration (Sequential)**
 - **Task 1012**: Database Mount Integration - Requires Task 1011
 - **Task 1015**: Storage Performance Optimization - Requires Task 1011
+- **Duration**: 6 hours total (4h + 2h sequential)
 
 **Phase 4: Management (Final)**
 - **Task 1016**: Tiered Storage Management - Requires Tasks 1013, 1014
+- **Duration**: 4 hours
 
-### Implementation Timeline
+### Parallel Execution Strategy
+
+#### Recommended Approach
+Assign different team members or use isolated environments for parallel tasks to maximize efficiency while maintaining safety.
+
+```bash
+# Terminal 1: Warm Storage SATA Setup (Task 1013)
+cd /home/joohan/dev/project-jts/jts
+git checkout -b task/1013-warm-storage-sata
+# Execute Task 1013 implementation
+
+# Terminal 2: Cold Storage NAS Integration (Task 1014)  
+cd /home/joohan/dev/project-jts/jts
+git checkout -b task/1014-cold-storage-nas
+# Execute Task 1014 implementation
+```
+
+#### Safety Measures for Parallel Execution
+- **Task 1013** and **Task 1014** operate on completely different storage devices
+- No shared filesystem operations or conflicting mount points
+- Independent of directory-based infrastructure (no LVM dependencies)
+- Each task can be safely rolled back without affecting the other
+
+#### Cross-Task Integration Management
+
+**Directory Structure Coordination**:
+1. **Task 1011**: Creates base directory structure `/data/jts/hot/`
+2. **Task 1012**: Creates service-specific directory permissions
+3. **Task 1013**: Creates warm storage directories `/data/warm/`
+4. **Task 1014**: Creates NAS directory structure `/mnt/synology/jts/`
+
+**Configuration File Management**:
+```bash
+# Each task creates its own configuration sections
+# Task 1011: Directory structure setup
+# Task 1013: Warm storage mount configuration  
+# Task 1014: NFS mount configuration
+```
+
+### Optimized Implementation Timeline
 
 ```
-Week 1: Foundation
-├── Task 1011 (8h) - Hot Storage NVMe Foundation
-└── Testing and validation
+Week 1: Foundation (Reduced Complexity)
+├── Task 1011 (2h) - Hot Storage Directory Setup
+└── Testing and validation (1h)
 
 Week 2: Parallel Implementation  
 ├── Task 1013 (3h) - Warm Storage SATA ──┐
-├── Task 1014 (3h) - Cold Storage NAS ───┤ (Parallel)
-└── Testing both tasks ──────────────────┘
+├── Task 1014 (3h) - Cold Storage NAS ───┤ (Parallel = 3h total)
+└── Testing both tasks (1h) ─────────────┘
 
-Week 3: Integration
-├── Task 1012 (4h) - Database Mount Integration
+Week 2-3: Integration (Can Start Earlier)
+├── Task 1012 (4h) - Database Directory Integration  
 ├── Task 1015 (2h) - Performance Optimization
-└── Integration testing
+└── Integration testing (1h)
 
-Week 4: Management
+Week 3: Management
 ├── Task 1016 (4h) - Tiered Storage Management
-└── End-to-end testing
+└── End-to-end testing (1h)
 ```
+
+**Total Time Reduction**: From 24+ hours to **15 hours** with directory approach
+**Risk Reduction**: All tasks now Low-Medium risk (eliminated High risk from LVM)
 
 ### Risk Management Strategy
 
-- **High-Risk Operations**: Isolated to Task 1011 (NVMe partitioning)
-- **Independent Testing**: Each task can be tested in isolation
-- **Rollback Procedures**: Task-specific rollback without affecting others
-- **Parallel Safety**: Tasks 1013/1014 have no data loss risk
+- **Low-Risk Operations**: All tasks use directory-based approach (no disk partitioning)
+- **Independent Testing**: Each task can be tested in isolation with simple validation
+- **Simple Rollback**: Directory removal instead of complex LVM rollback procedures  
+- **Parallel Safety**: Tasks 1013/1014 operate on separate devices with zero data loss risk
+- **Rapid Recovery**: Directory-based approach enables quick recreation if needed
 
 ## Technical Approach
 
@@ -182,14 +284,33 @@ Design a comprehensive tiered storage architecture that provides optimal perform
    **Hot Storage - NVMe (4TB):**
 
    ```
-   vg_jts (4TB total)
-   ├── lv_postgres (800GB)      # PostgreSQL hot data with ext4
-   ├── lv_clickhouse (1500GB)  # ClickHouse recent data (30 days) with ext4
-   ├── lv_kafka (600GB)        # Kafka logs with XFS
-   ├── lv_mongodb (200GB)      # MongoDB active collections with ext4
-   ├── lv_redis (50GB)         # Redis persistence with ext4
-   ├── lv_docker (500GB)       # Docker containers and staging with ext4
-   └── lv_local_backup (350GB) # LVM snapshots and quick recovery
+   /data/jts/hot/ (4TB NVMe)
+   ├── postgresql/          # PostgreSQL data (~800GB planned)
+   │   ├── data/           # Database files
+   │   ├── logs/           # Transaction logs
+   │   └── config/         # Configuration files
+   ├── clickhouse/         # ClickHouse data (~1.5TB planned)
+   │   ├── data/           # Database files
+   │   ├── logs/           # Query logs
+   │   └── tmp/            # Temporary files
+   ├── kafka/              # Kafka logs (~600GB planned)
+   │   ├── data/           # Topic partitions
+   │   └── logs/           # Service logs
+   ├── mongodb/            # MongoDB collections (~200GB planned)
+   │   ├── data/           # Database files
+   │   ├── logs/           # Service logs
+   │   └── config/         # Configuration files
+   ├── redis/              # Redis persistence (~50GB planned)
+   │   ├── data/           # RDB/AOF files
+   │   └── logs/           # Service logs
+   ├── docker/             # Docker volumes (~500GB planned)
+   │   ├── volumes/        # Persistent volumes
+   │   ├── containers/     # Container storage
+   │   └── tmp/            # Temporary files
+   └── backup/             # Local backup staging (~350GB planned)
+       ├── daily/          # Daily snapshots
+       ├── snapshots/      # Point-in-time backups
+       └── staging/        # Backup preparation area
    ```
 
    **Warm Storage - SATA (1TB):**
@@ -233,11 +354,11 @@ Design a comprehensive tiered storage architecture that provides optimal perform
 
 ### Child Task Overview
 
-#### Task 1011: Hot Storage (NVMe) Foundation
+#### Task 1011: Hot Storage (NVMe) Directory Setup
 - **Priority**: High (Foundation)
-- **Risk**: High (Disk partitioning)
-- **Duration**: 8 hours
-- **Scope**: LVM setup, logical volumes, filesystem creation
+- **Risk**: Low (Directory creation only)
+- **Duration**: 2 hours (reduced from 8h)
+- **Scope**: Directory structure, permissions, service users
 - **Blocks**: Tasks 1012, 1015
 
 #### Task 1012: Database Mount Integration  
@@ -1045,45 +1166,116 @@ This feature forms part of the foundation infrastructure and has dependencies on
 
 Should be implemented early in the infrastructure setup process before database services are deployed.
 
-## Testing Plan
+## Implementation Validation and Testing
 
-### Hot Tier (NVMe) Testing
+### Per-Task Validation Procedures
 
-- **LVM Configuration Validation**: Verify all logical volumes are created with correct sizes and properties using `lvdisplay` and `vgdisplay`
-- **Filesystem Integrity**: Test filesystem creation and verify optimal parameters using `tune2fs` for ext4 and `xfs_info` for XFS
-- **Performance Benchmarking**: Run I/O performance tests using `fio` and `dd` to validate NVMe optimization
-- **TRIM Support**: Verify SSD TRIM/discard functionality is working correctly
-- **LVM Snapshots**: Test snapshot creation, mounting, and cleanup processes
+#### Task 1011 Validation (Directory Structure)
+```bash
+# Verify directory structure creation
+ls -la /data/jts/hot/
+tree /data/jts/hot/ || ls -la /data/jts/hot/*/
 
-### Warm Tier (SATA) Testing
+# Test service user permissions
+sudo -u postgres touch /data/jts/hot/postgresql/test_write
+sudo -u clickhouse touch /data/jts/hot/clickhouse/test_write
+sudo -u kafka touch /data/jts/hot/kafka/test_write
+sudo -u mongodb touch /data/jts/hot/mongodb/test_write
+sudo -u redis touch /data/jts/hot/redis/test_write
 
-- **Btrfs Configuration**: Verify compression, autodefrag, and snapshot capabilities
-- **Mount Point Testing**: Confirm SATA filesystem mounts correctly with btrfs options
-- **Compression Efficiency**: Test space savings with different compression levels
+# Verify directory space monitoring
+/usr/local/bin/jts-storage-monitor.sh
+
+# Performance verification
+time dd if=/dev/zero of=/data/jts/hot/postgresql/perf_test bs=1M count=1000
+rm /data/jts/hot/postgresql/perf_test
+```
+
+#### Task 1012 Validation (Database Integration)
+```bash
+# Verify service user directory access
+ls -la /data/jts/hot/{postgresql,clickhouse,kafka,mongodb,redis}/
+df -h / | grep -E "Filesystem|/$"
+
+# Test database service directory permissions
+sudo -u postgres mkdir /data/jts/hot/postgresql/test_db
+sudo -u clickhouse mkdir /data/jts/hot/clickhouse/test_ch
+sudo -u kafka mkdir /data/jts/hot/kafka/test_kafka
+
+# Cleanup test directories
+sudo rm -rf /data/jts/hot/*/test_*
+```
+
+#### Tasks 1013 & 1014 Validation (Warm/Cold Storage)
+```bash
+# SATA storage verification
+df -h /data/warm/
+ls -la /data/warm/{daily-backups,logs,temp-processing}/
+
+# NAS connectivity and performance
+df -h /mnt/synology/jts/
+time dd if=/dev/zero of=/mnt/synology/jts/development/network_test bs=1M count=100
+rm /mnt/synology/jts/development/network_test
+
+# Directory structure verification
+ls -la /mnt/synology/jts/{archives,market-data,backtesting,models,development}/
+```
+
+### Integration Testing Procedures
+
+#### Cross-Task Dependency Validation
+```bash
+# Verify all storage tiers are accessible
+df -h | grep -E "(/$|warm|synology)"
+
+# Test tiered data flow simulation
+echo "test data" > /data/jts/hot/backup/hot_test
+cp /data/jts/hot/backup/hot_test /data/warm/temp-processing/warm_test  
+cp /data/warm/temp-processing/warm_test /mnt/synology/jts/development/cold_test
+
+# Verify file integrity across tiers
+sha256sum /data/jts/hot/backup/hot_test /data/warm/temp-processing/warm_test /mnt/synology/jts/development/cold_test
+
+# Cleanup test files
+rm -f /data/jts/hot/backup/hot_test /data/warm/temp-processing/warm_test /mnt/synology/jts/development/cold_test
+```
+
+#### Performance Integration Testing
+```bash
+# Monitor storage performance across tiers
+iostat -x 1 5 | grep -E "(nvme|sda)" || echo "iostat not available"
+
+# Check available space summary across all tiers
+echo "=== Storage Tier Summary ==="
+echo "Hot Tier Available:  $(df -h / | tail -1 | awk '{print $4}')"
+echo "Warm Tier Available: $(df -h /data/warm 2>/dev/null | tail -1 | awk '{print $4}' || echo 'N/A')"
+echo "Cold Tier Available: $(df -h /mnt/synology 2>/dev/null | tail -1 | awk '{print $4}' || echo 'N/A')"
+```
+
+### Comprehensive Testing Strategy
+
+#### Hot Tier (Directory-Based) Testing
+- **Directory Structure Validation**: Verify all service directories created with correct permissions
+- **Permission Testing**: Validate service user access to respective directories
+- **Performance Benchmarking**: Run I/O performance tests to validate NVMe performance
+- **Space Monitoring**: Test directory-based space tracking and alerting
+
+#### Warm Tier (SATA) Testing  
+- **Mount Point Testing**: Confirm SATA filesystem mounts correctly
+- **Directory Organization**: Verify backup, logs, and temp-processing directories
 - **Backup Performance**: Validate sequential write performance for backup operations
 
-### Cold Tier (NAS) Testing
-
-- **NFS Connectivity**: Test NFS mount with optimized parameters
+#### Cold Tier (NAS) Testing
+- **NFS Connectivity**: Test NFS mount stability and performance
 - **Network Performance**: Benchmark large file transfer speeds to/from NAS
-- **Directory Structure**: Verify proper directory creation and permissions
+- **Directory Structure**: Verify comprehensive directory organization
 - **Concurrent Access**: Test multiple simultaneous NFS operations
-- **Reliability Testing**: Verify graceful handling of network interruptions
 
-### Cross-Tier Integration Testing
-
-- **Data Migration**: Test automated movement between storage tiers
-- **Tiered Backup**: Validate multi-tier backup and recovery procedures
-- **Health Monitoring**: Test comprehensive monitoring across all tiers
-- **Disaster Recovery**: Test recovery procedures for each tier independently
-- **Performance Integration**: Validate that tier interactions don't impact performance
-
-### Automation and Management Testing
-
-- **Script Functionality**: Test all management scripts (setup, health, archival, tiering)
-- **Automated Tasks**: Verify systemd timers for TRIM and tiered storage management
-- **Alert System**: Test usage alerts and critical threshold notifications
-- **Log Rotation**: Verify automated log management across tiers
+#### Cross-Tier Integration Testing
+- **Data Flow Validation**: Test data movement simulation between all tiers
+- **Monitoring Integration**: Validate comprehensive monitoring across all storage tiers
+- **Performance Validation**: Ensure tier interactions maintain optimal performance
+- **Recovery Procedures**: Test rollback and recovery for each tier independently
 
 ## Claude Code Instructions
 
