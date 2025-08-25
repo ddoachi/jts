@@ -24,7 +24,7 @@ reviewer: "" # Who should review (optional)
 created: "2025-08-24" # YYYY-MM-DD
 updated: "2025-08-24" # YYYY-MM-DD
 due_date: "" # YYYY-MM-DD (optional)
-estimated_hours: 2 # Time estimate in hours
+estimated_hours: 1 # Time estimate in hours (coordination only)
 actual_hours: 0 # Time spent so far
 
 # === DEPENDENCIES ===
@@ -205,34 +205,38 @@ git checkout -b task/1014-cold-storage-nas
 # Task 1014: NFS mount configuration
 ```
 
-### Implementation Timeline
+### Optimized Implementation Timeline
 
 ```
-Week 1: Foundation
-├── Task 1011 (8h) - Hot Storage NVMe Foundation
-└── Testing and validation
+Week 1: Foundation (Reduced Complexity)
+├── Task 1011 (2h) - Hot Storage Directory Setup
+└── Testing and validation (1h)
 
 Week 2: Parallel Implementation  
 ├── Task 1013 (3h) - Warm Storage SATA ──┐
-├── Task 1014 (3h) - Cold Storage NAS ───┤ (Parallel)
-└── Testing both tasks ──────────────────┘
+├── Task 1014 (3h) - Cold Storage NAS ───┤ (Parallel = 3h total)
+└── Testing both tasks (1h) ─────────────┘
 
-Week 3: Integration
-├── Task 1012 (4h) - Database Mount Integration
+Week 2-3: Integration (Can Start Earlier)
+├── Task 1012 (4h) - Database Directory Integration  
 ├── Task 1015 (2h) - Performance Optimization
-└── Integration testing
+└── Integration testing (1h)
 
-Week 4: Management
+Week 3: Management
 ├── Task 1016 (4h) - Tiered Storage Management
-└── End-to-end testing
+└── End-to-end testing (1h)
 ```
+
+**Total Time Reduction**: From 24+ hours to **15 hours** with directory approach
+**Risk Reduction**: All tasks now Low-Medium risk (eliminated High risk from LVM)
 
 ### Risk Management Strategy
 
-- **High-Risk Operations**: Isolated to Task 1011 (NVMe partitioning)
-- **Independent Testing**: Each task can be tested in isolation
-- **Rollback Procedures**: Task-specific rollback without affecting others
-- **Parallel Safety**: Tasks 1013/1014 have no data loss risk
+- **Low-Risk Operations**: All tasks use directory-based approach (no disk partitioning)
+- **Independent Testing**: Each task can be tested in isolation with simple validation
+- **Simple Rollback**: Directory removal instead of complex LVM rollback procedures  
+- **Parallel Safety**: Tasks 1013/1014 operate on separate devices with zero data loss risk
+- **Rapid Recovery**: Directory-based approach enables quick recreation if needed
 
 ## Technical Approach
 
@@ -280,14 +284,33 @@ Design a comprehensive tiered storage architecture that provides optimal perform
    **Hot Storage - NVMe (4TB):**
 
    ```
-   vg_jts (4TB total)
-   ├── lv_postgres (800GB)      # PostgreSQL hot data with ext4
-   ├── lv_clickhouse (1500GB)  # ClickHouse recent data (30 days) with ext4
-   ├── lv_kafka (600GB)        # Kafka logs with XFS
-   ├── lv_mongodb (200GB)      # MongoDB active collections with ext4
-   ├── lv_redis (50GB)         # Redis persistence with ext4
-   ├── lv_docker (500GB)       # Docker containers and staging with ext4
-   └── lv_local_backup (350GB) # LVM snapshots and quick recovery
+   /data/jts/hot/ (4TB NVMe)
+   ├── postgresql/          # PostgreSQL data (~800GB planned)
+   │   ├── data/           # Database files
+   │   ├── logs/           # Transaction logs
+   │   └── config/         # Configuration files
+   ├── clickhouse/         # ClickHouse data (~1.5TB planned)
+   │   ├── data/           # Database files
+   │   ├── logs/           # Query logs
+   │   └── tmp/            # Temporary files
+   ├── kafka/              # Kafka logs (~600GB planned)
+   │   ├── data/           # Topic partitions
+   │   └── logs/           # Service logs
+   ├── mongodb/            # MongoDB collections (~200GB planned)
+   │   ├── data/           # Database files
+   │   ├── logs/           # Service logs
+   │   └── config/         # Configuration files
+   ├── redis/              # Redis persistence (~50GB planned)
+   │   ├── data/           # RDB/AOF files
+   │   └── logs/           # Service logs
+   ├── docker/             # Docker volumes (~500GB planned)
+   │   ├── volumes/        # Persistent volumes
+   │   ├── containers/     # Container storage
+   │   └── tmp/            # Temporary files
+   └── backup/             # Local backup staging (~350GB planned)
+       ├── daily/          # Daily snapshots
+       ├── snapshots/      # Point-in-time backups
+       └── staging/        # Backup preparation area
    ```
 
    **Warm Storage - SATA (1TB):**
@@ -331,11 +354,11 @@ Design a comprehensive tiered storage architecture that provides optimal perform
 
 ### Child Task Overview
 
-#### Task 1011: Hot Storage (NVMe) Foundation
+#### Task 1011: Hot Storage (NVMe) Directory Setup
 - **Priority**: High (Foundation)
-- **Risk**: High (Disk partitioning)
-- **Duration**: 8 hours
-- **Scope**: LVM setup, logical volumes, filesystem creation
+- **Risk**: Low (Directory creation only)
+- **Duration**: 2 hours (reduced from 8h)
+- **Scope**: Directory structure, permissions, service users
 - **Blocks**: Tasks 1012, 1015
 
 #### Task 1012: Database Mount Integration  
