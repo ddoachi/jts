@@ -158,6 +158,10 @@ configure_mount() {
     
     # Check if entry already exists
     if ! grep -q "$DEVICE" /etc/fstab; then
+        # Ensure fstab ends with a newline before adding new entry
+        if [[ -s /etc/fstab && $(tail -c1 /etc/fstab | wc -l) -eq 0 ]]; then
+            echo "" >> /etc/fstab
+        fi
         echo "$FSTAB_ENTRY" >> /etc/fstab
         log "Added fstab entry: $FSTAB_ENTRY"
     else
