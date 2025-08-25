@@ -10,7 +10,7 @@ type: 'epic' # prd | epic | feature | task | subtask | bug | spike
 
 # === HIERARCHY ===
 parent: '' # Parent spec ID (leave empty for top-level)
-children: [] # Child spec IDs (if any)
+children: ['2100', '2101', '2102', '2103', '2104', '2105', '2106', '2107', '2108', '2109', '2110'] # Child spec IDs
 epic: '2000' # Root epic ID for this work
 domain: 'broker-integration' # Business domain
 
@@ -22,9 +22,9 @@ reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
-updated: '2025-08-24' # YYYY-MM-DD
+updated: '2025-08-26' # YYYY-MM-DD
 due_date: '' # YYYY-MM-DD (optional)
-estimated_hours: 120 # Time estimate in hours
+estimated_hours: 340 # Time estimate in hours (sum of all features)
 actual_hours: 0 # Time spent so far
 
 # === DEPENDENCIES ===
@@ -50,6 +50,115 @@ risk: 'high' # low | medium | high (high due to external API dependencies)
 ## Overview
 
 Implement a unified broker integration layer that provides seamless connectivity to multiple Korean stock brokers (KIS, Creon) and cryptocurrency exchanges (Binance, Upbit). This epic establishes the abstraction layer for broker-agnostic trading operations, intelligent rate limiting, and multi-account management capabilities.
+
+## Feature Breakdown
+
+This epic has been decomposed into 11 features totaling 340 hours of estimated effort:
+
+| ID | Feature | Hours | Priority |
+|----|---------|-------|----------|
+| 2100 | Unified Broker Interface Foundation | 25 | Critical |
+| 2101 | KIS REST API Integration | 40 | High |
+| 2102 | KIS WebSocket Real-time Data | 30 | High |
+| 2103 | Creon Windows COM Integration | 35 | High |
+| 2104 | Distributed Rate Limiting System | 30 | Critical |
+| 2105 | Multi-Account Pool Management | 35 | Medium |
+| 2106 | Smart Order Routing Engine | 35 | Medium |
+| 2107 | Standardized Service Endpoints | 25 | Medium |
+| 2108 | Error Handling & Recovery | 30 | High |
+| 2109 | Broker Testing & Mock Services | 25 | Low |
+| 2110 | Broker Monitoring & Observability | 30 | Medium |
+
+## Mobile-Friendly Dependency Flow
+
+```
+┌─────────────────────┐
+│    Epic 1000        │
+│   Foundation        │
+│  Infrastructure     │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│    Epic 2000        │
+│  BROKER INTEGRATION │ ◄── You are here
+│    (340 hours)      │
+└──────────┬──────────┘
+           │
+    ┌──────┴──────┐
+    ▼             ▼
+┌────────┐  ┌────────┐
+│ Epic   │  │ Epic   │
+│ 3000   │  │ 10000  │
+│ Market │  │ Crypto │
+│ Data   │  │        │
+└───┬────┘  └────────┘
+    │
+    ▼
+┌────────────────────┐
+│    Epic 4000       │
+│ Trading Strategy   │
+│     Engine         │
+└──────────┬─────────┘
+           │
+           ▼
+┌────────────────────┐
+│    Epic 5000       │
+│ Risk Management    │
+│     System         │
+└──────────┬─────────┘
+           │
+           ▼
+┌────────────────────┐
+│    Epic 6000       │
+│ Order Execution    │
+│   & Portfolio      │
+└──────────┬─────────┘
+           │
+           ▼
+┌────────────────────┐
+│    Epic 7000       │
+│   User Interface   │
+│    & Dashboard     │
+└────────────────────┘
+
+Parallel Tracks:
+├── Epic 8000: Monitoring
+├── Epic 9000: Backtesting
+├── Epic 11000: Performance
+└── Epic 12000: DevOps
+```
+
+## Feature Dependencies Within Epic
+
+### Implementation Phases
+
+**Phase 1: Foundation (25 hrs)**
+- 2100: Unified Broker Interface ── Must complete first
+
+**Phase 2: Core Integrations (105 hrs)**
+- 2101: KIS REST API ────────────┐
+- 2103: Creon COM Integration ───┼── Can run in parallel
+- 2104: Rate Limiting System ────┘
+
+**Phase 3: Advanced Features (95 hrs)**
+- 2102: KIS WebSocket ───────────┐
+- 2105: Account Pool Management ─┼── Can run in parallel
+- 2109: Testing & Mocks ─────────┘
+
+**Phase 4: Routing & Standards (60 hrs)**
+- 2106: Smart Order Routing ─────┐
+- 2107: Standard Endpoints ──────┴── Sequential
+
+**Phase 5: Operations (60 hrs)**
+- 2108: Error Handling ──────────┐
+- 2110: Monitoring ──────────────┴── Can run in parallel
+
+### Critical Path
+```
+2100 → 2101 → 2104 → 2105 → 2106 → 2107
+     ↘ 2103 ↗
+```
 
 ## Acceptance Criteria
 
@@ -210,6 +319,46 @@ When implementing this epic:
 - Each broker has unique data formats requiring normalization
 - Network security between Creon Windows PC and main system needs careful configuration
 
+## Epic Position in Overall Project
+
+### Impact Analysis
+This epic is the **second most critical** in the entire JTS project:
+- **Blocks**: 3 major epics (4000: Strategy, 5000: Risk, 6000: Execution)
+- **Blocked by**: 1 epic (1000: Foundation)
+- **Related to**: 1 epic (3000: Market Data)
+- **Criticality**: HIGH - No trading possible without broker connectivity
+
+### Timeline Context
+- **Prerequisites**: Foundation (Epic 1000) must be 100% complete
+- **Can run parallel with**: 
+  - Epic 8000 (Monitoring) 
+  - Epic 10000 (Crypto Integration)
+- **Optimal team size**: 2-3 developers
+- **Estimated duration**: 8-10 weeks with 2 developers
+
+### Risk Factors
+1. **External API Dependencies** (HIGH)
+   - KIS API changes or outages
+   - Creon platform updates
+   - Rate limit violations
+
+2. **Platform Constraints** (MEDIUM)
+   - Creon requires dedicated Windows hardware
+   - Cannot use virtualization for Creon
+
+3. **Integration Complexity** (HIGH)
+   - 337 KIS APIs to integrate
+   - Multiple broker data format normalization
+   - Cross-platform communication (Linux ↔ Windows)
+
+### Success Metrics
+- All 11 features completed and tested
+- <100ms order placement latency
+- 99.9% uptime during market hours
+- Zero rate limit violations in production
+- Successful failover between brokers
+
 ## Status Updates
 
 - **2025-08-24**: Epic created and documented
+- **2025-08-26**: Split into 11 feature specifications with detailed requirements
