@@ -93,19 +93,78 @@ This feature serves as the central coordination point for:
 
 ### Task Dependency Management
 
+#### Mobile-Optimized Dependency Flow
+```mermaid
+flowchart TB
+    %% Phase 1: Foundation
+    subgraph P1 ["📋 Phase 1: Foundation (Sequential)"]
+        A["🔥 Task 1011<br/>Hot Storage NVMe<br/>Directory Setup<br/><br/>⏱️ 2h | ⚠️ Low Risk"]
+    end
+    
+    %% Phase 2: Parallel Implementation  
+    subgraph P2 ["📋 Phase 2: Parallel Implementation"]
+        D["🌡️ Task 1013<br/>Warm Storage SATA<br/>Setup<br/><br/>⏱️ 3h | ✅ Low Risk"]
+        E["🧊 Task 1014<br/>Cold Storage NAS<br/>Integration<br/><br/>⏱️ 3h | ✅ Low Risk"]
+    end
+    
+    %% Phase 3: Integration
+    subgraph P3 ["📋 Phase 3: Integration (Sequential)"]
+        B["🔌 Task 1012<br/>Database Mount<br/>Integration<br/><br/>⏱️ 4h | ⚠️ Medium Risk"]
+        C["⚡ Task 1015<br/>Storage Performance<br/>Optimization<br/><br/>⏱️ 2h | ✅ Low Risk"]
+    end
+    
+    %% Phase 4: Management
+    subgraph P4 ["📋 Phase 4: Management (Final)"]
+        F["🔄 Task 1016<br/>Tiered Storage<br/>Management<br/><br/>⏱️ 4h | ⚠️ Medium Risk"]
+    end
+    
+    %% External Dependencies
+    G["💾 Feature 1005<br/>Database Infrastructure<br/>(Unblocked by 1012)"]
+    
+    %% Dependencies
+    A --> B
+    A --> C
+    D --> F
+    E --> F
+    B --> G
+    
+    %% Parallel indicators
+    D -.-> E
+    
+    %% Styling for mobile readability
+    classDef foundation fill:#ffcccc,stroke:#ff0000,stroke-width:2px
+    classDef parallel fill:#ccffcc,stroke:#00aa00,stroke-width:2px
+    classDef integration fill:#ffffcc,stroke:#ffaa00,stroke-width:2px
+    classDef management fill:#e6ccff,stroke:#9900cc,stroke-width:2px
+    classDef external fill:#ccccff,stroke:#0000aa,stroke-width:2px
+    
+    class A foundation
+    class D,E parallel
+    class B,C integration
+    class F management
+    class G external
+```
+
+**Implementation Phases:**
+
 **Phase 1: Foundation (Sequential)**
-- **Task 1011**: Hot Storage (NVMe) Foundation - Must complete first, blocks database integration
+- **Task 1011**: Hot Storage (NVMe) Directory Setup - Must complete first, blocks database integration
+- **Duration**: 2 hours (reduced from 8h with directory approach)
+- **Risk**: Low (reduced from high with LVM elimination)
 
 **Phase 2: Parallel Implementation**
-- **Task 1013**: Warm Storage (SATA) Setup - Independent, can run parallel
-- **Task 1014**: Cold Storage (NAS) Integration - Independent, can run parallel
+- **Task 1013**: Warm Storage (SATA) Setup - Independent, can run parallel with 1014
+- **Task 1014**: Cold Storage (NAS) Integration - Independent, can run parallel with 1013
+- **Duration**: 6 hours total (3h + 3h in parallel = 3h actual time)
 
 **Phase 3: Integration (Sequential)**
 - **Task 1012**: Database Mount Integration - Requires Task 1011
 - **Task 1015**: Storage Performance Optimization - Requires Task 1011
+- **Duration**: 6 hours total (4h + 2h sequential)
 
 **Phase 4: Management (Final)**
 - **Task 1016**: Tiered Storage Management - Requires Tasks 1013, 1014
+- **Duration**: 4 hours
 
 ### Implementation Timeline
 
