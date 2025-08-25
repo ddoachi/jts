@@ -8,7 +8,7 @@
 # Prerequisites:
 # - 1TB SATA drive at /dev/sda2 (931.5G partition)
 # - Root privileges for filesystem operations
-# - btrfs-progs package installed
+# - Internet connection for package installation (btrfs-progs will be installed automatically)
 #
 
 set -euo pipefail
@@ -49,6 +49,48 @@ check_root() {
         error "This script must be run as root (use sudo)"
         exit 1
     fi
+}
+
+# Check and install prerequisites
+check_prerequisites() {
+    log "Checking prerequisites..."
+    
+    # Check if btrfs tools are installed
+    if ! command -v mkfs.btrfs &> /dev/null; then
+        warn "btrfs-progs not found, installing..."
+        
+        # Update package list
+        log "Updating package list..."
+        apt update || {
+            error "Failed to update package list"
+            exit 1
+        }
+        
+        # Install btrfs-progs
+        log "Installing btrfs-progs..."
+        apt install -y btrfs-progs || {
+            error "Failed to install btrfs-progs"
+            exit 1
+        }
+        
+        success "btrfs-progs installed successfully"
+    else
+        success "btrfs-progs already installed"
+    fi
+    
+    # Verify installation
+    if ! command -v mkfs.btrfs &> /dev/null; then
+        error "btrfs tools still not available after installation"
+        exit 1
+    fi
+    
+    # Check if tree command is available (for directory display)
+    if ! command -v tree &> /dev/null; then
+        log "Installing tree command for directory display..."
+        apt install -y tree || warn "Failed to install tree (non-critical)"
+    fi
+    
+    success "All prerequisites verified"
 }
 
 # Verify SATA drive and partition
@@ -239,6 +281,7 @@ main() {
     log "Starting JTS Warm Storage (SATA) Setup..."
     
     check_root
+    check_prerequisites
     verify_drive
     format_filesystem
     configure_mount
