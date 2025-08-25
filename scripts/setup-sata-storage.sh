@@ -127,11 +127,9 @@ format_filesystem() {
         exit 1
     fi
     
-    # Format with btrfs and compression
-    log "Creating btrfs filesystem with zstd:3 compression..."
-    mkfs.btrfs -f -L "$LABEL" \
-        -O compress-force="$COMPRESSION" \
-        "$DEVICE"
+    # Format with btrfs (compression will be set at mount time)
+    log "Creating btrfs filesystem..."
+    mkfs.btrfs -f -L "$LABEL" "$DEVICE"
     
     # Verify filesystem creation
     log "Verifying filesystem creation..."
