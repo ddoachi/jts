@@ -33,12 +33,12 @@ OUTPUT_FORMAT="human"
 SUMMARY_ONLY=false
 
 # Colors for human-readable output
-RED=$'\e[0;31m'
-GREEN=$'\e[0;32m'
-YELLOW=$'\e[1;33m'
-BLUE=$'\e[0;34m'
-BOLD=$'\e[1m'
-NC=$'\e[0m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+BOLD='\033[1m'
+NC='\033[0m'
 
 # Function to print usage
 usage() {
@@ -181,9 +181,6 @@ monitor_storage() {
         local service_dir="$BASE_DIR/$service"
         local size_bytes
         size_bytes=$(get_dir_size "$service_dir")
-        # Ensure size_bytes is numeric (fix arithmetic error)
-        size_bytes=${size_bytes:-0}
-        [[ "$size_bytes" =~ ^[0-9]+$ ]] || size_bytes=0
         total_used=$((total_used + size_bytes))
         
         local size_human
