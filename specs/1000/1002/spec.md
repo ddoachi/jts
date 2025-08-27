@@ -326,14 +326,31 @@ JWT_REFRESH_EXPIRES_IN=7d
 RATE_LIMIT_WINDOW=60000
 RATE_LIMIT_MAX_REQUESTS=1000
 
+# KIS Rate Limiting Configuration
+KIS_RATE_LIMIT_PER_ACCOUNT_PER_SECOND=20
+KIS_RATE_LIMIT_PER_ACCOUNT_PER_15SEC=60
+KIS_TOTAL_ACCOUNTS=2
+
 # Logging
 LOG_LEVEL=debug
 LOG_FORMAT=combined
 
-# External API Keys (Development/Sandbox)
-CREON_API_KEY=dev_creon_key
-KIS_API_KEY=dev_kis_key
-KIS_SECRET_KEY=dev_kis_secret
+# Creon Configuration (Windows - uses batch script)
+CREON_SCRIPT_PATH=/secure/creon/scripts/creon-launcher.bat
+CREON_CREDENTIALS_PATH=/secure/creon/credentials/account.encrypted
+CREON_LOG_PATH=/secure/creon/logs/
+
+# KIS API Keys (Development/Sandbox) - Account 1
+KIS_ACCOUNT_1_ID=KIS_001
+KIS_ACCOUNT_1_APPKEY=dev_kis_appkey_1
+KIS_ACCOUNT_1_APPSECRET=dev_kis_appsecret_1
+KIS_ACCOUNT_1_NUMBER=12345678-01
+
+# KIS API Keys (Development/Sandbox) - Account 2
+KIS_ACCOUNT_2_ID=KIS_002
+KIS_ACCOUNT_2_APPKEY=dev_kis_appkey_2
+KIS_ACCOUNT_2_APPSECRET=dev_kis_appsecret_2
+KIS_ACCOUNT_2_NUMBER=12345678-02
 BINANCE_API_KEY=dev_binance_key
 BINANCE_SECRET_KEY=dev_binance_secret
 UPBIT_ACCESS_KEY=dev_upbit_access
@@ -376,10 +393,22 @@ RATE_LIMIT_MAX_REQUESTS=100
 LOG_LEVEL=info
 LOG_FORMAT=json
 
-# External API Keys (CHANGE THESE)
-CREON_API_KEY=your_production_creon_key
-KIS_API_KEY=your_production_kis_key
-KIS_SECRET_KEY=your_production_kis_secret
+# Creon Configuration (CHANGE THESE)
+CREON_SCRIPT_PATH=/secure/creon/scripts/creon-launcher.bat
+CREON_CREDENTIALS_PATH=/secure/creon/credentials/account.encrypted
+CREON_LOG_PATH=/secure/creon/logs/
+
+# KIS API Keys (CHANGE THESE) - Account 1
+KIS_ACCOUNT_1_ID=KIS_PROD_001
+KIS_ACCOUNT_1_APPKEY=your_production_kis_appkey_1
+KIS_ACCOUNT_1_APPSECRET=your_production_kis_appsecret_1
+KIS_ACCOUNT_1_NUMBER=your_account_number_1
+
+# KIS API Keys (CHANGE THESE) - Account 2
+KIS_ACCOUNT_2_ID=KIS_PROD_002
+KIS_ACCOUNT_2_APPKEY=your_production_kis_appkey_2
+KIS_ACCOUNT_2_APPSECRET=your_production_kis_appsecret_2
+KIS_ACCOUNT_2_NUMBER=your_account_number_2
 BINANCE_API_KEY=your_production_binance_key
 BINANCE_SECRET_KEY=your_production_binance_secret
 UPBIT_ACCESS_KEY=your_production_upbit_access
@@ -405,6 +434,53 @@ cp .env.development .env.local
 # - HashiCorp Vault
 # - Kubernetes Secrets
 ```
+
+### Secure Creon Authentication
+
+Since Creon uses COM objects on Windows and requires login credentials instead of API keys, we need a secure approach:
+
+**Directory Structure**:
+```bash
+/secure/creon/
+├── credentials/
+│   └── account.encrypted    # Encrypted ID/password (never in plain text)
+├── scripts/
+│   ├── creon-launcher.bat  # Template batch script
+│   └── decrypt-and-run.ps1 # PowerShell wrapper for secure execution
+└── logs/
+    └── auth-audit.log      # Authentication audit trail
+```
+
+**Secure Batch Script Template** (`creon-launcher.bat`):
+```batch
+@echo off
+REM This is a template - actual credentials are injected at runtime
+set CREON_ID=%1
+set CREON_PW=%2
+start /wait creon.exe /ID:%CREON_ID% /PW:%CREON_PW% /AUTOSTART
+```
+
+**PowerShell Security Wrapper** (`decrypt-and-run.ps1`):
+```powershell
+# Decrypt credentials from secure storage
+$encryptedPath = "$env:CREON_CREDENTIALS_PATH"
+$credentials = Decrypt-SecureString -Path $encryptedPath
+
+# Run Creon with decrypted credentials
+$process = Start-Process "creon-launcher.bat" -ArgumentList $credentials.Id, $credentials.Password -Wait
+
+# Log authentication attempt
+Add-Content -Path "$env:CREON_LOG_PATH/auth-audit.log" -Value "$(Get-Date): Creon authentication attempted"
+
+# Clear credentials from memory
+$credentials = $null
+```
+
+**Security Notes**:
+- Never store Creon credentials in plain text
+- Use Windows Credential Manager or encrypted files
+- Audit all authentication attempts
+- Run on isolated Windows machine for additional security
 
 ### Local Development Workflow
 
