@@ -188,6 +188,79 @@ Design and document the complete microservices architecture following the layere
    - Health check endpoints for all services
    - Platform-specific containers (Windows for Creon COM objects)
 
+### Nx Monorepo Workspace Structure
+
+```
+jts/
+├── apps/                           # Applications
+│   ├── presentation/              # UI Layer
+│   │   └── web-app/              # Next.js PWA Frontend
+│   ├── gateway/                  # API Gateway Layer
+│   │   └── api-gateway/          # Express/Kong Gateway
+│   ├── business/                 # Business Logic Layer
+│   │   ├── strategy-engine/     # NestJS Strategy Service
+│   │   ├── risk-management/     # NestJS Risk Service
+│   │   ├── portfolio-tracker/   # NestJS Portfolio Service
+│   │   └── order-execution/     # NestJS Order Service
+│   ├── integration/              # Integration Services
+│   │   ├── market-data-collector/  # NestJS Market Data Service
+│   │   └── notification-service/   # NestJS Notification Service
+│   ├── brokers/                 # Broker Integration Layer
+│   │   ├── creon-service/       # Windows Python FastAPI
+│   │   ├── kis-service/         # Linux NestJS
+│   │   ├── binance-service/     # Linux NestJS
+│   │   └── upbit-service/       # Linux NestJS
+│   └── platform/                # Platform Services
+│       ├── monitoring-service/  # Prometheus/Grafana integration
+│       └── configuration-service/# Centralized config management
+├── libs/                          # Shared Libraries
+│   ├── shared/
+│   │   ├── dto/                 # Data Transfer Objects
+│   │   ├── interfaces/          # TypeScript Interfaces
+│   │   ├── types/               # Type Definitions
+│   │   ├── utils/               # Utility Functions
+│   │   ├── constants/           # Application Constants
+│   │   └── config/              # Configuration Utilities
+│   ├── domain/
+│   │   ├── trading/             # Trading Domain Logic
+│   │   ├── market-data/         # Market Data Domain
+│   │   ├── portfolio/           # Portfolio Domain
+│   │   ├── risk/                # Risk Management Domain
+│   │   └── strategy/            # Strategy Domain
+│   ├── infrastructure/
+│   │   ├── database/            # Database Utilities
+│   │   ├── messaging/           # Kafka/Redis Utilities
+│   │   ├── http/                # HTTP Client Utilities
+│   │   ├── logging/             # Logging Infrastructure
+│   │   └── monitoring/          # Monitoring Utilities
+│   └── brokers/
+│       ├── creon/               # Creon API Integration
+│       ├── kis/                 # KIS API Integration
+│       ├── binance/             # Binance API Integration
+│       └── upbit/               # Upbit API Integration
+├── infrastructure/                # Infrastructure Configuration
+│   ├── docker/                  # Docker Configurations
+│   ├── kubernetes/              # K8s Manifests (future)
+│   ├── databases/               # Database Schemas
+│   ├── kafka/                   # Kafka Configuration
+│   └── monitoring/              # Monitoring Setup
+├── tools/                        # Development Tools
+│   ├── generators/              # Custom Nx Generators
+│   ├── executors/               # Custom Nx Executors
+│   ├── scripts/                 # Build and Deployment Scripts
+│   └── workspace-plugin/        # Custom Workspace Plugin
+├── docs/                         # Documentation
+│   ├── architecture/            # Architecture Documentation
+│   ├── development/             # Development Guides
+│   └── deployment/              # Deployment Documentation
+├── nx.json                       # Nx configuration
+├── package.json                  # Root package.json
+├── tsconfig.base.json            # TypeScript base config
+├── .eslintrc.json                # ESLint configuration
+├── jest.config.ts                # Jest testing configuration
+└── docker-compose.yml            # Docker services
+```
+
 ### Implementation Steps
 
 1. **Storage Infrastructure Setup (Day 1-2)**
