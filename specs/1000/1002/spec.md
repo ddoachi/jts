@@ -55,15 +55,15 @@ Establish a standardized development environment for the JTS automated trading s
 
 ## Acceptance Criteria
 
-- [ ] **Node.js Environment**: Node.js 20+ with npm/yarn package manager
-- [ ] **IDE Configuration**: VS Code and WebStorm configured with project-specific settings
+- [ ] **Node.js Environment**: Node.js 20+ with Yarn package manager
+- [ ] **IDE Configuration**: VS Code configured with project-specific settings and extensions
 - [ ] **Development Tools**: Docker Desktop, Git, and CLI tools installed
 - [ ] **Environment Variables**: Secure secrets management with `.env` templates
 - [ ] **Local Development**: Working docker-compose setup for all services
 - [ ] **Code Quality Tools**: Pre-commit hooks, linting, and formatting configured
 - [ ] **Database Tools**: Database clients and management tools installed
 - [ ] **Documentation**: Complete developer onboarding guide
-- [ ] **Platform Support**: Setup instructions for Linux, macOS, and Windows
+- [ ] **Platform Support**: Setup instructions for Linux and Windows (WSL2)
 - [ ] **Service Discovery**: Local service registry and health monitoring
 
 ## Technical Approach
@@ -86,9 +86,8 @@ Recommended for Performance:
 ```
 
 #### Operating System Support
-- **Linux (Primary)**: Ubuntu 22.04+ or equivalent
-- **macOS**: macOS 12+ with Apple Silicon or Intel
-- **Windows**: Windows 11 with WSL2 for Linux compatibility
+- **Linux (Primary)**: Ubuntu 22.04+ or equivalent for main development
+- **Windows (Secondary)**: Windows 11 with WSL2 for Creon API integration
 
 ### Required Tools and SDKs
 
@@ -96,8 +95,7 @@ Recommended for Performance:
 ```bash
 # Node.js and Package Managers
 Node.js: 20.x LTS
-npm: 10.x
-yarn: 4.x (optional alternative)
+Yarn: 4.x (Berry) - Primary package manager
 
 # Version Control
 Git: 2.40+
@@ -134,6 +132,10 @@ sudo apt update && sudo apt upgrade -y
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
+# Install Yarn 4 (Berry)
+corepack enable
+yarn set version stable
+
 # Install Docker
 sudo apt-get install ca-certificates curl gnupg lsb-release
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -153,30 +155,6 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githu
 sudo apt update && sudo apt install gh
 ```
 
-**macOS Setup**:
-```bash
-#!/bin/bash
-# install-dev-tools-macos.sh
-
-# Install Homebrew if not present
-if ! command -v brew &> /dev/null; then
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
-
-# Install development tools
-brew install node@20 git docker docker-compose
-brew install postgresql@15 mongodb/brew/mongodb-community redis
-brew install gh jq httpie
-
-# Install GUI applications
-brew install --cask docker visual-studio-code webstorm
-brew install --cask pgadmin4 mongodb-compass redis-stack-redisinsight
-
-# Link Node.js 20
-brew unlink node || true
-brew link --force --overwrite node@20
-```
-
 **Windows Setup (PowerShell)**:
 ```powershell
 # install-dev-tools-windows.ps1
@@ -189,6 +167,10 @@ iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocola
 
 # Install development tools
 choco install nodejs-lts git docker-desktop -y
+
+# Install Yarn 4
+corepack enable
+corepack prepare yarn@stable --activate
 choco install postgresql pgadmin4 mongodb mongodb-compass redis-desktop-manager -y
 choco install gh jq httpie postman -y
 
@@ -202,7 +184,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 
 ### IDE Configuration
 
-#### VS Code Setup
+**VS Code Setup** (Primary Development Environment)
 
 **Extensions Configuration** (`.vscode/extensions.json`):
 ```json
@@ -311,25 +293,6 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
     }
   ]
 }
-```
-
-#### WebStorm Configuration
-
-**Project Settings** (`.idea/workspace.xml`):
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="PropertiesComponent">
-    <property name="nodejs_interpreter_path.value" value="node" />
-    <property name="nodejs_package_manager_path.value" value="npm" />
-    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
-    <property name="javascript.nodejs.core.library.configured.version" value="20.5.0" />
-    <property name="javascript.nodejs.core.library.typings.version" value="20.5.0" />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
-  </component>
-</project>
 ```
 
 ### Environment Variables and Secrets Management
