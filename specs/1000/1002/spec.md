@@ -10,7 +10,7 @@ type: 'feature' # prd | epic | feature | task | subtask | bug | spike
 
 # === HIERARCHY ===
 parent: '1000' # Parent spec ID (leave empty for top-level)
-children: [] # Child spec IDs (if any)
+children: ['1021', '1022', '1023', '1024', '1025', '1026'] # Task breakdowns
 epic: '1000' # Root epic ID for this work
 domain: 'infrastructure' # Business domain
 
@@ -55,15 +55,15 @@ Establish a standardized development environment for the JTS automated trading s
 
 ## Acceptance Criteria
 
-- [ ] **Node.js Environment**: Node.js 20+ with npm/yarn package manager
-- [ ] **IDE Configuration**: VS Code and WebStorm configured with project-specific settings
+- [ ] **Node.js Environment**: Node.js 20+ with Yarn package manager
+- [ ] **IDE Configuration**: VS Code configured with project-specific settings and extensions
 - [ ] **Development Tools**: Docker Desktop, Git, and CLI tools installed
 - [ ] **Environment Variables**: Secure secrets management with `.env` templates
 - [ ] **Local Development**: Working docker-compose setup for all services
 - [ ] **Code Quality Tools**: Pre-commit hooks, linting, and formatting configured
 - [ ] **Database Tools**: Database clients and management tools installed
 - [ ] **Documentation**: Complete developer onboarding guide
-- [ ] **Platform Support**: Setup instructions for Linux, macOS, and Windows
+- [ ] **Platform Support**: Setup instructions for Linux and Windows (WSL2)
 - [ ] **Service Discovery**: Local service registry and health monitoring
 
 ## Technical Approach
@@ -86,9 +86,8 @@ Recommended for Performance:
 ```
 
 #### Operating System Support
-- **Linux (Primary)**: Ubuntu 22.04+ or equivalent
-- **macOS**: macOS 12+ with Apple Silicon or Intel
-- **Windows**: Windows 11 with WSL2 for Linux compatibility
+- **Linux (Primary)**: Ubuntu 22.04+ or equivalent for main development
+- **Windows (Secondary)**: Windows 11 with WSL2 for Creon API integration
 
 ### Required Tools and SDKs
 
@@ -96,8 +95,7 @@ Recommended for Performance:
 ```bash
 # Node.js and Package Managers
 Node.js: 20.x LTS
-npm: 10.x
-yarn: 4.x (optional alternative)
+Yarn: 4.x (Berry) - Primary package manager
 
 # Version Control
 Git: 2.40+
@@ -134,6 +132,10 @@ sudo apt update && sudo apt upgrade -y
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
+# Install Yarn 4 (Berry)
+corepack enable
+yarn set version stable
+
 # Install Docker
 sudo apt-get install ca-certificates curl gnupg lsb-release
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
@@ -153,30 +155,6 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githu
 sudo apt update && sudo apt install gh
 ```
 
-**macOS Setup**:
-```bash
-#!/bin/bash
-# install-dev-tools-macos.sh
-
-# Install Homebrew if not present
-if ! command -v brew &> /dev/null; then
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
-
-# Install development tools
-brew install node@20 git docker docker-compose
-brew install postgresql@15 mongodb/brew/mongodb-community redis
-brew install gh jq httpie
-
-# Install GUI applications
-brew install --cask docker visual-studio-code webstorm
-brew install --cask pgadmin4 mongodb-compass redis-stack-redisinsight
-
-# Link Node.js 20
-brew unlink node || true
-brew link --force --overwrite node@20
-```
-
 **Windows Setup (PowerShell)**:
 ```powershell
 # install-dev-tools-windows.ps1
@@ -189,6 +167,10 @@ iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocola
 
 # Install development tools
 choco install nodejs-lts git docker-desktop -y
+
+# Install Yarn 4
+corepack enable
+corepack prepare yarn@stable --activate
 choco install postgresql pgadmin4 mongodb mongodb-compass redis-desktop-manager -y
 choco install gh jq httpie postman -y
 
@@ -202,7 +184,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 
 ### IDE Configuration
 
-#### VS Code Setup
+**VS Code Setup** (Primary Development Environment)
 
 **Extensions Configuration** (`.vscode/extensions.json`):
 ```json
@@ -313,30 +295,17 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 }
 ```
 
-#### WebStorm Configuration
-
-**Project Settings** (`.idea/workspace.xml`):
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="PropertiesComponent">
-    <property name="nodejs_interpreter_path.value" value="node" />
-    <property name="nodejs_package_manager_path.value" value="npm" />
-    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
-    <property name="javascript.nodejs.core.library.configured.version" value="20.5.0" />
-    <property name="javascript.nodejs.core.library.typings.version" value="20.5.0" />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
-  </component>
-</project>
-```
-
 ### Environment Variables and Secrets Management
+
+#### Two-File Strategy
+
+We use a simple two-file approach for environment configuration:
+- `.env.example` - Template with dummy values (committed to repository)
+- `.env.local` - Your actual credentials (gitignored, never committed)
 
 #### Environment File Templates
 
-**Development Environment** (`.env.development`):
+**Example Template** (`.env.example`):
 ```env
 # Application Configuration
 NODE_ENV=development
@@ -363,14 +332,31 @@ JWT_REFRESH_EXPIRES_IN=7d
 RATE_LIMIT_WINDOW=60000
 RATE_LIMIT_MAX_REQUESTS=1000
 
+# KIS Rate Limiting Configuration
+KIS_RATE_LIMIT_PER_ACCOUNT_PER_SECOND=20
+KIS_RATE_LIMIT_PER_ACCOUNT_PER_15SEC=60
+KIS_TOTAL_ACCOUNTS=2
+
 # Logging
 LOG_LEVEL=debug
 LOG_FORMAT=combined
 
-# External API Keys (Development/Sandbox)
-CREON_API_KEY=dev_creon_key
-KIS_API_KEY=dev_kis_key
-KIS_SECRET_KEY=dev_kis_secret
+# Creon Configuration (Windows - uses batch script)
+CREON_SCRIPT_PATH=/secure/creon/scripts/creon-launcher.bat
+CREON_CREDENTIALS_PATH=/secure/creon/credentials/account.encrypted
+CREON_LOG_PATH=/secure/creon/logs/
+
+# KIS API Keys (Development/Sandbox) - Account 1
+KIS_ACCOUNT_1_ID=KIS_001
+KIS_ACCOUNT_1_APPKEY=dev_kis_appkey_1
+KIS_ACCOUNT_1_APPSECRET=dev_kis_appsecret_1
+KIS_ACCOUNT_1_NUMBER=12345678-01
+
+# KIS API Keys (Development/Sandbox) - Account 2
+KIS_ACCOUNT_2_ID=KIS_002
+KIS_ACCOUNT_2_APPKEY=dev_kis_appkey_2
+KIS_ACCOUNT_2_APPSECRET=dev_kis_appsecret_2
+KIS_ACCOUNT_2_NUMBER=12345678-02
 BINANCE_API_KEY=dev_binance_key
 BINANCE_SECRET_KEY=dev_binance_secret
 UPBIT_ACCESS_KEY=dev_upbit_access
@@ -382,28 +368,31 @@ ENABLE_DEBUG_ROUTES=true
 ENABLE_MOCK_DATA=true
 ```
 
-**Production Template** (`.env.production.template`):
+**Local Configuration** (`.env.local` - copy from `.env.example` and customize):
 ```env
+# Copy this from .env.example and add your real credentials
+# This file is gitignored and should never be committed
+
 # Application Configuration
-NODE_ENV=production
+NODE_ENV=development
 PORT=3000
 API_VERSION=v1
 
-# Database URLs (CHANGE THESE)
-DATABASE_URL=postgresql://username:password@host:5432/database
-CLICKHOUSE_URL=http://username:password@host:8123/database
-MONGODB_URL=mongodb://username:password@host:27017/database
-REDIS_URL=redis://host:6379
+# Database URLs (Add your local credentials)
+DATABASE_URL=postgresql://your_user:your_password@localhost:5432/jts_trading_dev
+CLICKHOUSE_URL=http://your_user:your_password@localhost:8123/jts_market_data_dev
+MONGODB_URL=mongodb://your_user:your_password@localhost:27017/jts_config_dev
+REDIS_URL=redis://localhost:6379
 
 # Kafka Configuration
-KAFKA_BROKERS=broker1:9092,broker2:9092,broker3:9092
-KAFKA_CLIENT_ID=jts-production
-KAFKA_GROUP_ID=jts-trading-prod
+KAFKA_BROKERS=localhost:9092
+KAFKA_CLIENT_ID=jts-dev
+KAFKA_GROUP_ID=jts-trading-dev
 
-# JWT Configuration (CHANGE THESE)
-JWT_SECRET=your-256-bit-secret-change-this
-JWT_EXPIRES_IN=1h
-JWT_REFRESH_EXPIRES_IN=24h
+# JWT Configuration (Use your own secret)
+JWT_SECRET=your-dev-jwt-secret-key-here
+JWT_EXPIRES_IN=24h
+JWT_REFRESH_EXPIRES_IN=7d
 
 # Rate Limiting
 RATE_LIMIT_WINDOW=60000
@@ -413,35 +402,103 @@ RATE_LIMIT_MAX_REQUESTS=100
 LOG_LEVEL=info
 LOG_FORMAT=json
 
-# External API Keys (CHANGE THESE)
-CREON_API_KEY=your_production_creon_key
-KIS_API_KEY=your_production_kis_key
-KIS_SECRET_KEY=your_production_kis_secret
+# Creon Configuration (CHANGE THESE)
+CREON_SCRIPT_PATH=/secure/creon/scripts/creon-launcher.bat
+CREON_CREDENTIALS_PATH=/secure/creon/credentials/account.encrypted
+CREON_LOG_PATH=/secure/creon/logs/
+
+# KIS API Keys (CHANGE THESE) - Account 1
+KIS_ACCOUNT_1_ID=KIS_PROD_001
+KIS_ACCOUNT_1_APPKEY=your_production_kis_appkey_1
+KIS_ACCOUNT_1_APPSECRET=your_production_kis_appsecret_1
+KIS_ACCOUNT_1_NUMBER=your_account_number_1
+
+# KIS API Keys (CHANGE THESE) - Account 2
+KIS_ACCOUNT_2_ID=KIS_PROD_002
+KIS_ACCOUNT_2_APPKEY=your_production_kis_appkey_2
+KIS_ACCOUNT_2_APPSECRET=your_production_kis_appsecret_2
+KIS_ACCOUNT_2_NUMBER=your_account_number_2
 BINANCE_API_KEY=your_production_binance_key
 BINANCE_SECRET_KEY=your_production_binance_secret
 UPBIT_ACCESS_KEY=your_production_upbit_access
 UPBIT_SECRET_KEY=your_production_upbit_secret
 
-# Production Features
-ENABLE_SWAGGER=false
-ENABLE_DEBUG_ROUTES=false
-ENABLE_MOCK_DATA=false
+# Development Features
+ENABLE_SWAGGER=true
+ENABLE_DEBUG_ROUTES=true
+ENABLE_MOCK_DATA=true
 ```
 
 #### Secrets Management Strategy
 
 ```bash
-# Local Development Secrets (.env.local - gitignored)
-# Copy from .env.development and customize for your setup
-cp .env.development .env.local
+# Initial Setup - Create your local configuration
+cp .env.example .env.local
 
-# Production Secrets Management
-# Use environment-specific secret managers:
-# - AWS Secrets Manager
-# - Azure Key Vault
-# - HashiCorp Vault
-# - Kubernetes Secrets
+# Edit .env.local with your actual credentials
+# This file is gitignored and never committed
+
+# Configuration Loading Priority:
+# 1. .env.local (if exists) - Your actual credentials
+# 2. .env.example (fallback) - Template with dummy values
+
+# For Production Environments:
+# Use proper secret managers (AWS Secrets Manager, HashiCorp Vault, etc.)
+# Never use .env files in production
 ```
+
+**Why Two Files?**
+- `.env.example` serves as documentation for required variables
+- `.env.local` keeps your real credentials safe from accidental commits
+- Easy onboarding - new developers just copy and customize
+- Clean separation between template and actual configuration
+
+### Secure Creon Authentication
+
+Since Creon uses COM objects on Windows and requires login credentials instead of API keys, we need a secure approach:
+
+**Directory Structure**:
+```bash
+/secure/creon/
+├── credentials/
+│   └── account.encrypted    # Encrypted ID/password (never in plain text)
+├── scripts/
+│   ├── creon-launcher.bat  # Template batch script
+│   └── decrypt-and-run.ps1 # PowerShell wrapper for secure execution
+└── logs/
+    └── auth-audit.log      # Authentication audit trail
+```
+
+**Secure Batch Script Template** (`creon-launcher.bat`):
+```batch
+@echo off
+REM This is a template - actual credentials are injected at runtime
+set CREON_ID=%1
+set CREON_PW=%2
+start /wait creon.exe /ID:%CREON_ID% /PW:%CREON_PW% /AUTOSTART
+```
+
+**PowerShell Security Wrapper** (`decrypt-and-run.ps1`):
+```powershell
+# Decrypt credentials from secure storage
+$encryptedPath = "$env:CREON_CREDENTIALS_PATH"
+$credentials = Decrypt-SecureString -Path $encryptedPath
+
+# Run Creon with decrypted credentials
+$process = Start-Process "creon-launcher.bat" -ArgumentList $credentials.Id, $credentials.Password -Wait
+
+# Log authentication attempt
+Add-Content -Path "$env:CREON_LOG_PATH/auth-audit.log" -Value "$(Get-Date): Creon authentication attempted"
+
+# Clear credentials from memory
+$credentials = $null
+```
+
+**Security Notes**:
+- Never store Creon credentials in plain text
+- Use Windows Credential Manager or encrypted files
+- Audit all authentication attempts
+- Run on isolated Windows machine for additional security
 
 ### Local Development Workflow
 
@@ -577,11 +634,41 @@ volumes:
   mongodb_dev_data:
   redis_dev_data:
   kafka_dev_data:
-  pgladmin_dev_data:
+  pgadmin_dev_data:
+
+  # Multi-Account Monitoring (Optional)
+  account-monitor:
+    image: grafana/grafana:latest
+    container_name: jts-account-monitor-dev
+    restart: unless-stopped
+    ports:
+      - "3100:3000"  # Grafana UI for monitoring accounts
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: dev_password
+      GF_INSTALL_PLUGINS: redis-datasource
+    volumes:
+      - grafana_dev_data:/var/lib/grafana
+    depends_on:
+      - redis
+
+volumes:
+  grafana_dev_data:
 
 networks:
   default:
     name: jts-dev-network
+```
+
+**Redis Database Allocation for Multi-Account**:
+```yaml
+# Redis databases for different purposes
+Redis DB Allocation:
+  0: Session cache
+  1: KIS account 1 rate limits
+  2: KIS account 2 rate limits  
+  3: Surge detection cache
+  4: Order queue
+  5: Account metrics
 ```
 
 #### Development Scripts
@@ -597,16 +684,16 @@ networks:
     "dev:logs": "docker-compose -f docker-compose.dev.yml logs -f",
     "dev:status": "docker-compose -f docker-compose.dev.yml ps",
     
-    "db:migrate": "npm run db:migrate:postgres && npm run db:migrate:clickhouse",
-    "db:migrate:postgres": "npx prisma migrate deploy",
+    "db:migrate": "yarn db:migrate:postgres && yarn db:migrate:clickhouse",
+    "db:migrate:postgres": "yarn prisma migrate deploy",
     "db:migrate:clickhouse": "node scripts/migrate-clickhouse.js",
-    "db:seed": "npm run db:seed:postgres && npm run db:seed:clickhouse",
-    "db:seed:postgres": "npx prisma db seed",
+    "db:seed": "yarn db:seed:postgres && yarn db:seed:clickhouse",
+    "db:seed:postgres": "yarn prisma db seed",
     "db:seed:clickhouse": "node scripts/seed-clickhouse.js",
-    "db:reset": "npm run db:reset:postgres && npm run db:reset:clickhouse",
+    "db:reset": "yarn db:reset:postgres && yarn db:reset:clickhouse",
     
     "services:health": "node scripts/check-services-health.js",
-    "services:start": "concurrently \"npm run start:gateway\" \"npm run start:strategy\" \"npm run start:risk\" \"npm run start:order\" \"npm run start:market-data\"",
+    "services:start": "concurrently \"yarn start:gateway\" \"yarn start:strategy\" \"yarn start:risk\" \"yarn start:order\" \"yarn start:market-data\"",
     "start:gateway": "nx serve api-gateway",
     "start:strategy": "nx serve strategy-engine",
     "start:risk": "nx serve risk-management",
@@ -640,13 +727,13 @@ echo "✅ Prerequisites check passed"
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-npm install
+yarn install
 
 # Copy environment file
 if [ ! -f .env.local ]; then
     echo "🔧 Creating .env.local from template..."
-    cp .env.development .env.local
-    echo "⚠️  Please review and update .env.local with your local settings"
+    cp .env.example .env.local
+    echo "⚠️  Please review and update .env.local with your actual credentials"
 fi
 
 # Start infrastructure services
@@ -655,31 +742,31 @@ docker-compose -f docker-compose.dev.yml up -d
 
 # Wait for services to be healthy
 echo "⏳ Waiting for services to be ready..."
-npm run services:health
+yarn services:health
 
 # Run database migrations
 echo "🗄️  Running database migrations..."
 sleep 10  # Give databases time to fully start
-npm run db:migrate
+yarn db:migrate
 
 # Seed development data
 echo "🌱 Seeding development data..."
-npm run db:seed
+yarn db:seed
 
 echo "✅ Development environment setup complete!"
 echo ""
 echo "🎯 Next steps:"
 echo "  1. Review .env.local settings"
-echo "  2. Start development servers: npm run services:start"
+echo "  2. Start development servers: yarn services:start"
 echo "  3. Open http://localhost:3000 for API Gateway"
 echo "  4. Access Kafka UI at http://localhost:8080"
 echo "  5. Access pgAdmin at http://localhost:5050"
 echo ""
 echo "📚 Useful commands:"
-echo "  npm run dev:status    - Check service status"
-echo "  npm run dev:logs      - View service logs"
-echo "  npm run dev:stop      - Stop all services"
-echo "  npm run dev:clean     - Clean up everything"
+echo "  yarn dev:status    - Check service status"
+echo "  yarn dev:logs      - View service logs"
+echo "  yarn dev:stop      - Stop all services"
+echo "  yarn dev:clean     - Clean up everything"
 ```
 
 ### Code Quality and Pre-commit Setup
@@ -729,42 +816,53 @@ repos:
         require_serial: true
 ```
 
-## Implementation Steps
+## Implementation Tasks
 
-1. **Prerequisites Installation (1 hour)**
-   - Install Node.js 20 LTS
-   - Install Docker Desktop
-   - Install Git and GitHub CLI
-   - Install database client tools
+The feature has been broken down into the following implementation tasks:
 
-2. **IDE Configuration (1 hour)**
-   - Configure VS Code with extensions and settings
-   - Set up WebStorm project configuration
-   - Configure debugging environments
+### 1. [Task 1021: Node.js and Yarn Environment Setup](1021.md)
+**Estimated: 2 hours**
+- Install Node.js 20 LTS and Yarn 4
+- Configure package manager and workspaces
+- Create installation scripts for Linux and Windows
+- Set up monorepo structure
 
-3. **Environment Setup (2 hours)**
-   - Create environment file templates
-   - Set up docker-compose.dev.yml
-   - Configure local service discovery
-   - Create development scripts
+### 2. [Task 1022: VS Code IDE Configuration](1022.md)
+**Estimated: 2 hours**
+- Configure workspace settings for TypeScript/NestJS
+- Set up recommended extensions
+- Create debug configurations for all services
+- Configure task automation
 
-4. **Database Tools Setup (1 hour)**
-   - Install and configure pgAdmin
-   - Install MongoDB Compass
-   - Install Redis Insight
-   - Set up ClickHouse client
+### 3. [Task 1023: Docker and Database Services Setup](1023.md)
+**Estimated: 3 hours**
+- Install Docker and Docker Compose
+- Configure PostgreSQL, ClickHouse, MongoDB, Redis
+- Set up Kafka messaging infrastructure
+- Configure monitoring with Grafana (optional)
 
-5. **Code Quality Setup (1 hour)**
-   - Configure ESLint and Prettier
-   - Set up pre-commit hooks
-   - Configure Jest testing environment
-   - Set up TypeScript type checking
+### 4. [Task 1024: Environment Configuration and Secrets Management](1024.md)
+**Estimated: 2 hours**
+- Implement two-file environment strategy (.env.example + .env.local)
+- Set up secure Creon credential management
+- Configure multi-account KIS settings
+- Create validation and setup scripts
 
-6. **Documentation Creation (2 hours)**
-   - Write developer onboarding guide
-   - Create troubleshooting documentation
-   - Document local workflow processes
-   - Create platform-specific setup guides
+### 5. [Task 1025: Code Quality Tools and Git Hooks](1025.md)
+**Estimated: 2 hours**
+- Configure ESLint and Prettier for TypeScript
+- Set up Husky pre-commit hooks
+- Configure lint-staged and commitlint
+- Implement automated code quality checks
+
+### 6. [Task 1026: Development Scripts and Automation](1026.md)
+**Estimated: 3 hours**
+- Create master setup script for complete environment
+- Implement service health monitoring
+- Automate database migrations and seeding
+- Write comprehensive developer documentation
+
+**Total Estimated Time: 14 hours**
 
 ## Dependencies
 
@@ -785,8 +883,8 @@ The feature will create these key configuration files:
 - `.vscode/settings.json` - VS Code workspace settings
 - `.vscode/extensions.json` - Recommended extensions
 - `.vscode/launch.json` - Debug configurations
-- `.env.development` - Development environment template
-- `.env.local.example` - Local customization template
+- `.env.example` - Environment template with dummy values
+- `.env.local` - Local credentials (gitignored)
 - `docker-compose.dev.yml` - Local development services
 - `.pre-commit-config.yaml` - Code quality hooks
 - `scripts/setup-dev-env.sh` - Automated setup script
@@ -799,6 +897,92 @@ The feature will create these key configuration files:
 - Include comprehensive documentation for troubleshooting
 - Consider using development containers (devcontainers) for future enhancement
 
+## Staging and Production Environment Planning
+
+### Environment Separation Strategy
+
+This spec focuses on the development environment. Staging and production environments will be addressed in separate specifications:
+
+**Spec Organization**:
+```yaml
+Environment Specifications:
+  1002: Development Environment Setup (this spec)
+  1015: Staging Environment Setup (future)
+  1020: Production Environment Deployment (future)
+```
+
+### Staging Environment (Spec 1015 - To Be Created)
+
+**Purpose**: Pre-production testing with real broker APIs
+
+**Key Differences from Development**:
+- Use paper trading accounts for KIS and Creon
+- Test with 2 KIS accounts initially
+- Real-time market data but simulated trading
+- Performance testing with actual data volumes
+- Integration testing with all broker APIs
+
+**Infrastructure**:
+```yaml
+Staging:
+  Platform: Linux server (cloud or on-premise)
+  Accounts: 2 KIS paper accounts
+  Data: Real-time market data
+  Trading: Paper trading only
+  Monitoring: Basic metrics and logging
+```
+
+### Production Environment (Spec 1020 - To Be Created)
+
+**Purpose**: Live trading with real money
+
+**Key Differences from Staging**:
+- 3 KIS accounts for full market coverage (1,800 symbols)
+- Real money trading with strict risk limits
+- High availability and disaster recovery
+- Enhanced security and audit logging
+- Professional monitoring and alerting
+
+**Infrastructure**:
+```yaml
+Production:
+  Platform: Dedicated Linux servers (redundant)
+  Accounts: 3 KIS live accounts
+  Windows VM: Creon API integration
+  Data: Real-time with backup sources
+  Trading: Live with risk management
+  Monitoring: Full observability stack
+  Security: Encrypted secrets, audit logs
+  Backup: Automated backups, failover ready
+```
+
+### Migration Path
+
+```mermaid
+graph LR
+    Dev[Development<br/>1-2 accounts<br/>Mock data] --> 
+    Staging[Staging<br/>2 accounts<br/>Paper trading] --> 
+    Prod[Production<br/>3 accounts<br/>Live trading]
+```
+
+### Account Scaling Strategy
+
+1. **Development** (Current):
+   - Start with 1 KIS account for basic testing
+   - Add 2nd account when implementing multi-account features
+   - Use mock data for surge detection testing
+
+2. **Staging** (Phase 2):
+   - 2 real KIS paper trading accounts
+   - Test account failover and load balancing
+   - Validate rate limiting across accounts
+
+3. **Production** (Phase 3):
+   - Scale to 3 KIS accounts
+   - Full 1,800 symbol coverage
+   - Implement account-level risk limits
+
 ## Status Updates
 
 - **2025-08-24**: Feature specification created
+- **2025-08-27**: Updated for multi-account architecture, removed macOS/WebStorm, added staging/production planning
