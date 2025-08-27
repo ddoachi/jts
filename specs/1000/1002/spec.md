@@ -297,9 +297,15 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 
 ### Environment Variables and Secrets Management
 
+#### Two-File Strategy
+
+We use a simple two-file approach for environment configuration:
+- `.env.example` - Template with dummy values (committed to repository)
+- `.env.local` - Your actual credentials (gitignored, never committed)
+
 #### Environment File Templates
 
-**Development Environment** (`.env.development`):
+**Example Template** (`.env.example`):
 ```env
 # Application Configuration
 NODE_ENV=development
@@ -362,28 +368,31 @@ ENABLE_DEBUG_ROUTES=true
 ENABLE_MOCK_DATA=true
 ```
 
-**Production Template** (`.env.production.template`):
+**Local Configuration** (`.env.local` - copy from `.env.example` and customize):
 ```env
+# Copy this from .env.example and add your real credentials
+# This file is gitignored and should never be committed
+
 # Application Configuration
-NODE_ENV=production
+NODE_ENV=development
 PORT=3000
 API_VERSION=v1
 
-# Database URLs (CHANGE THESE)
-DATABASE_URL=postgresql://username:password@host:5432/database
-CLICKHOUSE_URL=http://username:password@host:8123/database
-MONGODB_URL=mongodb://username:password@host:27017/database
-REDIS_URL=redis://host:6379
+# Database URLs (Add your local credentials)
+DATABASE_URL=postgresql://your_user:your_password@localhost:5432/jts_trading_dev
+CLICKHOUSE_URL=http://your_user:your_password@localhost:8123/jts_market_data_dev
+MONGODB_URL=mongodb://your_user:your_password@localhost:27017/jts_config_dev
+REDIS_URL=redis://localhost:6379
 
 # Kafka Configuration
-KAFKA_BROKERS=broker1:9092,broker2:9092,broker3:9092
-KAFKA_CLIENT_ID=jts-production
-KAFKA_GROUP_ID=jts-trading-prod
+KAFKA_BROKERS=localhost:9092
+KAFKA_CLIENT_ID=jts-dev
+KAFKA_GROUP_ID=jts-trading-dev
 
-# JWT Configuration (CHANGE THESE)
-JWT_SECRET=your-256-bit-secret-change-this
-JWT_EXPIRES_IN=1h
-JWT_REFRESH_EXPIRES_IN=24h
+# JWT Configuration (Use your own secret)
+JWT_SECRET=your-dev-jwt-secret-key-here
+JWT_EXPIRES_IN=24h
+JWT_REFRESH_EXPIRES_IN=7d
 
 # Rate Limiting
 RATE_LIMIT_WINDOW=60000
@@ -414,26 +423,35 @@ BINANCE_SECRET_KEY=your_production_binance_secret
 UPBIT_ACCESS_KEY=your_production_upbit_access
 UPBIT_SECRET_KEY=your_production_upbit_secret
 
-# Production Features
-ENABLE_SWAGGER=false
-ENABLE_DEBUG_ROUTES=false
-ENABLE_MOCK_DATA=false
+# Development Features
+ENABLE_SWAGGER=true
+ENABLE_DEBUG_ROUTES=true
+ENABLE_MOCK_DATA=true
 ```
 
 #### Secrets Management Strategy
 
 ```bash
-# Local Development Secrets (.env.local - gitignored)
-# Copy from .env.development and customize for your setup
-cp .env.development .env.local
+# Initial Setup - Create your local configuration
+cp .env.example .env.local
 
-# Production Secrets Management
-# Use environment-specific secret managers:
-# - AWS Secrets Manager
-# - Azure Key Vault
-# - HashiCorp Vault
-# - Kubernetes Secrets
+# Edit .env.local with your actual credentials
+# This file is gitignored and never committed
+
+# Configuration Loading Priority:
+# 1. .env.local (if exists) - Your actual credentials
+# 2. .env.example (fallback) - Template with dummy values
+
+# For Production Environments:
+# Use proper secret managers (AWS Secrets Manager, HashiCorp Vault, etc.)
+# Never use .env files in production
 ```
+
+**Why Two Files?**
+- `.env.example` serves as documentation for required variables
+- `.env.local` keeps your real credentials safe from accidental commits
+- Easy onboarding - new developers just copy and customize
+- Clean separation between template and actual configuration
 
 ### Secure Creon Authentication
 
@@ -636,16 +654,16 @@ networks:
     "dev:logs": "docker-compose -f docker-compose.dev.yml logs -f",
     "dev:status": "docker-compose -f docker-compose.dev.yml ps",
     
-    "db:migrate": "npm run db:migrate:postgres && npm run db:migrate:clickhouse",
-    "db:migrate:postgres": "npx prisma migrate deploy",
+    "db:migrate": "yarn db:migrate:postgres && yarn db:migrate:clickhouse",
+    "db:migrate:postgres": "yarn prisma migrate deploy",
     "db:migrate:clickhouse": "node scripts/migrate-clickhouse.js",
-    "db:seed": "npm run db:seed:postgres && npm run db:seed:clickhouse",
-    "db:seed:postgres": "npx prisma db seed",
+    "db:seed": "yarn db:seed:postgres && yarn db:seed:clickhouse",
+    "db:seed:postgres": "yarn prisma db seed",
     "db:seed:clickhouse": "node scripts/seed-clickhouse.js",
-    "db:reset": "npm run db:reset:postgres && npm run db:reset:clickhouse",
+    "db:reset": "yarn db:reset:postgres && yarn db:reset:clickhouse",
     
     "services:health": "node scripts/check-services-health.js",
-    "services:start": "concurrently \"npm run start:gateway\" \"npm run start:strategy\" \"npm run start:risk\" \"npm run start:order\" \"npm run start:market-data\"",
+    "services:start": "concurrently \"yarn start:gateway\" \"yarn start:strategy\" \"yarn start:risk\" \"yarn start:order\" \"yarn start:market-data\"",
     "start:gateway": "nx serve api-gateway",
     "start:strategy": "nx serve strategy-engine",
     "start:risk": "nx serve risk-management",
@@ -679,13 +697,13 @@ echo "✅ Prerequisites check passed"
 
 # Install dependencies
 echo "📦 Installing dependencies..."
-npm install
+yarn install
 
 # Copy environment file
 if [ ! -f .env.local ]; then
     echo "🔧 Creating .env.local from template..."
-    cp .env.development .env.local
-    echo "⚠️  Please review and update .env.local with your local settings"
+    cp .env.example .env.local
+    echo "⚠️  Please review and update .env.local with your actual credentials"
 fi
 
 # Start infrastructure services
@@ -694,31 +712,31 @@ docker-compose -f docker-compose.dev.yml up -d
 
 # Wait for services to be healthy
 echo "⏳ Waiting for services to be ready..."
-npm run services:health
+yarn services:health
 
 # Run database migrations
 echo "🗄️  Running database migrations..."
 sleep 10  # Give databases time to fully start
-npm run db:migrate
+yarn db:migrate
 
 # Seed development data
 echo "🌱 Seeding development data..."
-npm run db:seed
+yarn db:seed
 
 echo "✅ Development environment setup complete!"
 echo ""
 echo "🎯 Next steps:"
 echo "  1. Review .env.local settings"
-echo "  2. Start development servers: npm run services:start"
+echo "  2. Start development servers: yarn services:start"
 echo "  3. Open http://localhost:3000 for API Gateway"
 echo "  4. Access Kafka UI at http://localhost:8080"
 echo "  5. Access pgAdmin at http://localhost:5050"
 echo ""
 echo "📚 Useful commands:"
-echo "  npm run dev:status    - Check service status"
-echo "  npm run dev:logs      - View service logs"
-echo "  npm run dev:stop      - Stop all services"
-echo "  npm run dev:clean     - Clean up everything"
+echo "  yarn dev:status    - Check service status"
+echo "  yarn dev:logs      - View service logs"
+echo "  yarn dev:stop      - Stop all services"
+echo "  yarn dev:clean     - Clean up everything"
 ```
 
 ### Code Quality and Pre-commit Setup
