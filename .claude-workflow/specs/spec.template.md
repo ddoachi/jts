@@ -33,14 +33,20 @@ blocks: [] # This blocks these specs (spec IDs)
 related: [] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
-branch: '' # Git branch name (e.g., "feature/oauth-login")
+pull_requests: [] # GitHub PR numbers (e.g., ["#123", "#456"])
+commits: [] # Key implementation commits (e.g., ["abc1234", "def5678"])  
+context_file: "" # Implementation journal (e.g., "context.md")
 worktree: '' # Worktree path (optional, e.g., "../worktrees/oauth")
 files: [] # Key files to modify (e.g., ["src/auth/oauth.ts"])
+deliverables: [] # Generated artifacts (e.g., ["docs/setup.md", "scripts/install.sh"])
 
 # === METADATA ===
 tags: [] # Searchable tags (e.g., ["oauth", "security"])
 effort: 'medium' # small | medium | large | epic
 risk: 'low' # low | medium | high
+acceptance_criteria: 0 # Total acceptance criteria (update when defined)
+acceptance_met: 0 # Completed criteria (update during implementation)
+test_coverage: 0 # Test coverage percentage (update when tested)
 
 # ============================================================================
 ---

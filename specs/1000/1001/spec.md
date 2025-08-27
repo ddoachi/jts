@@ -33,7 +33,9 @@ blocks: ["1002", "1004", "1005"] # This blocks these specs (spec IDs)
 related: ["1006", "1008"] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
-branch: "feature/1001-storage-infrastructure" # Git branch name
+pull_requests: ["#18", "#19"] # GitHub PR numbers
+commits: ["08e4cc5", "e5381ea"] # Key implementation commits
+context_file: "context.md" # Implementation journal
 worktree: "" # Worktree path (optional)
 files: [
     "/etc/fstab",

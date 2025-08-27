@@ -33,7 +33,9 @@ blocks: ['1007', '2000', '3000'] # This blocks these specs (spec IDs)
 related: ['1003', '1006'] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
-branch: 'feature/1005-database-infrastructure' # Git branch name
+pull_requests: [] # GitHub PR numbers
+commits: [] # Key implementation commits
+context_file: "context.md" # Implementation journal
 worktree: '' # Worktree path (optional)
 files: ['infrastructure/databases/', 'docker-compose.databases.yml', 'migrations/', 'scripts/db-setup/', 'libs/shared/database/'] # Key files to modify
 

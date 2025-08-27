@@ -33,7 +33,9 @@ blocks: ['1004', '1005', '1006', '1007'] # This blocks these specs
 related: ['1001'] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
-branch: '' # Git branch name
+pull_requests: [] # GitHub PR numbers
+commits: [] # Key implementation commits
+context_file: "context.md" # Implementation journal
 worktree: '' # Worktree path (optional)
 files: ['nx.json', 'package.json', 'tsconfig.base.json', 'project.json', 'libs/', 'apps/', 'tools/', '.eslintrc.json', 'jest.config.ts'] # Key files to modify
 

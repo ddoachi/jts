@@ -33,7 +33,9 @@ blocks: ['2000', '3000', '4000', '5000', '6000', '7000', '8000', '9000', '10000'
 related: [] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
-branch: '' # Git branch name
+pull_requests: ["#18", "#19"] # GitHub PR numbers for major milestones  
+commits: ["08e4cc5", "e5381ea", "2da9f8d"] # Key milestone commits
+context_file: "context.md" # Epic implementation journal
 worktree: '' # Worktree path (optional)
 files: ['package.json', 'nx.json', 'docker-compose.yml', 'infrastructure/', 'libs/shared/'] # Key files to modify
 
