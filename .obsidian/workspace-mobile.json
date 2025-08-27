@@ -1,0 +1,203 @@
+{
+  "main": {
+    "id": "0a0194ed39d53ffc",
+    "type": "split",
+    "children": [
+      {
+        "id": "2d3dfc283852752d",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c445034b3c272c59",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "53741ccd109d316a",
+    "type": "mobile-drawer",
+    "children": [
+      {
+        "id": "597cab43e13de474",
+        "type": "leaf",
+        "state": {
+          "type": "file-explorer",
+          "state": {
+            "sortOrder": "alphabetical",
+            "autoReveal": false
+          },
+          "icon": "lucide-folder-closed",
+          "title": "Files"
+        }
+      },
+      {
+        "id": "04ab5c8413404fac",
+        "type": "leaf",
+        "state": {
+          "type": "search",
+          "state": {
+            "query": "",
+            "matchingCase": false,
+            "explainSearch": false,
+            "collapseAll": false,
+            "extraContext": false,
+            "sortOrder": "alphabetical"
+          },
+          "icon": "lucide-search",
+          "title": "Search"
+        }
+      },
+      {
+        "id": "b85e1f1356424a1a",
+        "type": "leaf",
+        "state": {
+          "type": "tag",
+          "state": {
+            "sortOrder": "frequency",
+            "useHierarchy": true,
+            "showSearch": false,
+            "searchQuery": ""
+          },
+          "icon": "lucide-tags",
+          "title": "Tags"
+        }
+      },
+      {
+        "id": "d214d92ba9deaff3",
+        "type": "leaf",
+        "state": {
+          "type": "bookmarks",
+          "state": {},
+          "icon": "lucide-bookmark",
+          "title": "Bookmarks"
+        }
+      },
+      {
+        "id": "43f730785d10f5ee",
+        "type": "leaf",
+        "state": {
+          "type": "all-properties",
+          "state": {
+            "sortOrder": "frequency",
+            "showSearch": false,
+            "searchQuery": ""
+          },
+          "icon": "lucide-archive",
+          "title": "All properties"
+        }
+      }
+    ],
+    "currentTab": 0
+  },
+  "right": {
+    "id": "6451d5f4864ff58e",
+    "type": "mobile-drawer",
+    "children": [
+      {
+        "id": "863467bf9f9f4e8d",
+        "type": "leaf",
+        "state": {
+          "type": "backlink",
+          "state": {
+            "collapseAll": false,
+            "extraContext": false,
+            "sortOrder": "alphabetical",
+            "showSearch": false,
+            "searchQuery": "",
+            "backlinkCollapsed": false,
+            "unlinkedCollapsed": true
+          },
+          "icon": "links-coming-in",
+          "title": "Backlinks"
+        }
+      },
+      {
+        "id": "31670411267318ad",
+        "type": "leaf",
+        "state": {
+          "type": "outgoing-link",
+          "state": {
+            "linksCollapsed": false,
+            "unlinkedCollapsed": true
+          },
+          "icon": "links-going-out",
+          "title": "Outgoing links"
+        }
+      },
+      {
+        "id": "9ac5351230bdd489",
+        "type": "leaf",
+        "state": {
+          "type": "outline",
+          "state": {
+            "followCursor": false,
+            "showSearch": false,
+            "searchQuery": ""
+          },
+          "icon": "lucide-list",
+          "title": "Outline"
+        }
+      }
+    ],
+    "currentTab": 0
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "obsidian-git:Open Git source control": false
+    }
+  },
+  "active": "597cab43e13de474",
+  "lastOpenFiles": [
+    "migration-report.md",
+    "scripts/nas-health-check.sh",
+    "context/2025-08-25.cold-storage-nas.context.md",
+    "sysctl-nas-optimization.conf",
+    "fstab.backup.20250826_000534",
+    "fstab-nas-mount.conf",
+    "sysctl.conf.backup.20250826_000534",
+    "plan/2025-08-26.broker-epic-feature-split.context.md",
+    "scripts/sata-health-check.sh",
+    "specs/index.md",
+    "scripts/setup-sata-storage.sh",
+    "specs/4000/epic.md",
+    "specs/4000",
+    "specs/10000/epic.md",
+    "specs/10000",
+    "specs/8000/epic.md",
+    "specs/8000",
+    "specs/5000/epic.md",
+    "specs/workflow/docs/spec-folder-migration.md",
+    "specs/workflow/docs/spec-workflow-example.md",
+    "specs/workflow/docs/spec-workflow-system.md",
+    "specs/workflow/README.md",
+    "specs/2000/2109.md",
+    "specs/2000/2108.md",
+    "specs/2000/2107.md",
+    "specs/2000/2103.md",
+    "specs/2000/2102.md",
+    "specs/2000/epic.md",
+    "specs/2000/2106.md",
+    "specs/2000/2101.md",
+    "specs/2000/2105.md",
+    "specs/2000/2104.md",
+    "specs/2000/2100.md",
+    "specs/2000/2110.md",
+    "specs/9000/epic.md",
+    "specs/6000/epic.md"
+  ]
+}
