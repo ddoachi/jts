@@ -261,9 +261,9 @@ When splitting occurs, the parent's context file is updated:
 **Action**: Split epic into features
 **Method**: Software architect analysis
 **Created Specs**:
-- [[2100|Feature 2100: Unified Broker Interface]]
-- [[2101|Feature 2101: KIS REST API]]
-- [[2102|Feature 2102: KIS WebSocket]]
+- [Feature 2100: Unified Broker Interface](2100.md)
+- [Feature 2101: KIS REST API](2101.md)
+- [Feature 2102: KIS WebSocket](2102.md)
 **Rationale**: Each feature represents 20-40 hours of focused work
 **Commit**: abc123 - Split epic 2000 into 11 features
 ```

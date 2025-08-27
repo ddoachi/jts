@@ -166,7 +166,7 @@ class SpecWorkCommand:
             'type': dtype,
             'name': name,
             'path': deliverable_path,
-            'obsidian_link': f"[[deliverables/{dtype}/{name}|{name}]]"
+            'markdown_link': f"[{name}](deliverables/{dtype}/{name})"
         }
 ```
 
@@ -188,7 +188,7 @@ class ContextFile:
         Initialize new context file
         """
         return {
-            'spec': self.create_obsidian_link(self.spec_path),
+            'spec': self.create_markdown_link(self.spec_path),
             'status': 'planning',
             'created': datetime.now(),
             'sessions': [],
@@ -254,25 +254,25 @@ class ContextFile:
 ```python
 class LinkManager:
     """
-    Manages Obsidian-compatible bidirectional links
+    Manages markdown-compatible bidirectional links
     """
     
     def create_link(self, source_file, target_file, link_text=None):
         """
-        Create Obsidian-compatible link
+        Create markdown-compatible link
         """
         # Calculate relative path from source to target
         rel_path = os.path.relpath(target_file, os.path.dirname(source_file))
         
-        # Remove .md extension for cleaner links
-        if rel_path.endswith('.md'):
-            rel_path = rel_path[:-3]
-        
-        # Format as Obsidian link
+        # Format as markdown link
         if link_text:
-            return f"[[{rel_path}|{link_text}]]"
+            return f"[{link_text}]({rel_path})"
         else:
-            return f"[[{rel_path}]]"
+            # Use filename without extension as link text
+            filename = os.path.basename(rel_path)
+            if filename.endswith('.md'):
+                filename = filename[:-3]
+            return f"[{filename}]({rel_path})"
     
     def update_spec_deliverables(self, spec_file, deliverable):
         """
@@ -311,10 +311,11 @@ class LinkManager:
         comment_style = self.get_comment_style(ext)
         
         # Create traceback header
-        spec_link = self.create_link(deliverable_file, spec_file)
+        spec_link = self.create_link(deliverable_file, spec_file, "Original Spec")
         context_link = self.create_link(
             deliverable_file, 
-            spec_file.replace('.md', '.context.md')
+            spec_file.replace('.md', '.context.md'),
+            "Implementation Context"
         )
         
         header = f"""{comment_style['start']}
@@ -463,10 +464,10 @@ Script created successfully.
    - Track time per session
    - Preserve context between sessions
 
-4. **Mobile-Friendly**
-   - Obsidian-compatible links
-   - Easy navigation on any device
-   - Offline access to documentation
+4. **Universal Compatibility**
+   - Standard markdown links work everywhere
+   - Easy navigation in any markdown viewer
+   - GitHub-compatible formatting
 
 5. **Team Collaboration**
    - Clear handoff between developers
@@ -482,7 +483,7 @@ Create `.claude/spec_work.config.json`:
   "defaultSessionTitle": "Implementation Session",
   "autoCommit": true,
   "deliverableTypes": ["script", "doc", "config", "test"],
-  "linkStyle": "obsidian",
+  "linkStyle": "markdown",
   "contextFileLocation": "adjacent",
   "deliverableLocation": "colocated",
   "trackingLevel": "detailed",
