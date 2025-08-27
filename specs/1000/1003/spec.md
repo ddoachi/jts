@@ -70,6 +70,54 @@ Establish a comprehensive monorepo structure using Nx workspace to manage all JT
 
 ### Nx Workspace Architecture
 
+#### System Architecture Layers
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                    Presentation Layer                            │
+│                 (PWA with Service Workers)                       │
+└──────────────────────────────────────────────────────────────────┘
+                               ↓
+┌──────────────────────────────────────────────────────────────────┐
+│                      Gateway Layer                               │
+│              (API Gateway with Auth & Rate Limiting)             │
+└──────────────────────────────────────────────────────────────────┘
+                               ↓
+┌──────────────────────────────────────────────────────────────────┐
+│                    Business Layer                                │
+├────────────────┬────────────────┬────────────────┬───────────────┤
+│    Strategy    │   Risk         │    Portfolio   │    Order      │
+│    Engine      │   Management   │    Tracker     │    Execution  │
+└────────────────┴────────────────┴────────────────┴───────────────┘
+                               ↓
+┌──────────────────────────────────────────────────────────────────┐
+│                   Integration Layer                              │
+├───────────────────────────────┬──────────────────────────────────┤
+│     Market Data Collector     │     Notification Service         │
+└───────────────────────────────┴──────────────────────────────────┘
+                               ↓
+┌──────────────────────────────────────────────────────────────────┐
+│                    Messaging Layer                               │
+├───────────────────────────────┬──────────────────────────────────┤
+│      Kafka (Event Stream)     │     Redis (Cache/Lock/Session)   │
+└───────────────────────────────┴──────────────────────────────────┘
+                               ↓
+┌──────────────────────────────────────────────────────────────────┐
+│                     Brokers Layer                                │
+├─────────────┬─────────────┬─────────────┬───────────────────────┤
+│Creon Service│ KIS Service │Binance Serv.│    Upbit Service      │
+│ (Windows)   │  (Linux)    │  (Linux)    │     (Linux)           │
+│Rate: 15s/60 │Rate: 1s/20  │Rate: 1m/1200│   Rate: 1s/10         │
+└─────────────┴─────────────┴─────────────┴───────────────────────┘
+                               ↓
+┌──────────────────────────────────────────────────────────────────┐
+│                      Data Layer                                  │
+├──────────────┬──────────────┬──────────────┬────────────────────┤
+│ PostgreSQL   │ ClickHouse   │   MongoDB    │   File Storage     │
+│(Transactions)│(Time Series) │(Configuration)│  (Logs/Backups)   │
+└──────────────┴──────────────┴──────────────┴────────────────────┘
+```
+
 #### Workspace Structure
 ```
 jts/
@@ -1016,6 +1064,16 @@ Key configuration files created by this feature:
 - `tools/generators/` - Custom Nx generators
 - `.github/workflows/ci.yml` - CI/CD pipeline
 
+## Architecture References
+
+For comprehensive system architecture and implementation details, see:
+- `/architecture/INTEGRATED_ARCHITECTURE.md` - Complete integrated system architecture with DDD
+- `/architecture/IMPLEMENTATION_ROADMAP.md` - Phase-based implementation strategy
+- `/plan/jts_improved_architecture.md` - Rate limiter and PWA notification patterns
+- `/plan/implementation-details.md` - Technical implementation specifics
+- `/plan/jts_communication_architecture.md` - Service communication patterns
+- `/plan/architecture-guide.md` - Architecture diagram guidelines
+
 ## Notes
 
 - Focus on developer productivity through proper tooling
@@ -1023,7 +1081,11 @@ Key configuration files created by this feature:
 - Optimize build times with Nx caching and affected builds
 - Ensure scalability for future microservices additions
 - Consider Nx Cloud for distributed builds in larger teams
+- Follow Domain-Driven Design principles for service boundaries
+- Implement rate limiting at the broker service level
+- Use event-driven architecture for scalability
 
 ## Status Updates
 
 - **2025-08-24**: Feature specification created and documented
+- **2025-08-27**: Integrated comprehensive architecture with DDD and layered design
