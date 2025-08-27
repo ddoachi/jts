@@ -842,8 +842,8 @@ The feature will create these key configuration files:
 - `.vscode/settings.json` - VS Code workspace settings
 - `.vscode/extensions.json` - Recommended extensions
 - `.vscode/launch.json` - Debug configurations
-- `.env.development` - Development environment template
-- `.env.local.example` - Local customization template
+- `.env.example` - Environment template with dummy values
+- `.env.local` - Local credentials (gitignored)
 - `docker-compose.dev.yml` - Local development services
 - `.pre-commit-config.yaml` - Code quality hooks
 - `scripts/setup-dev-env.sh` - Automated setup script
@@ -856,6 +856,92 @@ The feature will create these key configuration files:
 - Include comprehensive documentation for troubleshooting
 - Consider using development containers (devcontainers) for future enhancement
 
+## Staging and Production Environment Planning
+
+### Environment Separation Strategy
+
+This spec focuses on the development environment. Staging and production environments will be addressed in separate specifications:
+
+**Spec Organization**:
+```yaml
+Environment Specifications:
+  1002: Development Environment Setup (this spec)
+  1015: Staging Environment Setup (future)
+  1020: Production Environment Deployment (future)
+```
+
+### Staging Environment (Spec 1015 - To Be Created)
+
+**Purpose**: Pre-production testing with real broker APIs
+
+**Key Differences from Development**:
+- Use paper trading accounts for KIS and Creon
+- Test with 2 KIS accounts initially
+- Real-time market data but simulated trading
+- Performance testing with actual data volumes
+- Integration testing with all broker APIs
+
+**Infrastructure**:
+```yaml
+Staging:
+  Platform: Linux server (cloud or on-premise)
+  Accounts: 2 KIS paper accounts
+  Data: Real-time market data
+  Trading: Paper trading only
+  Monitoring: Basic metrics and logging
+```
+
+### Production Environment (Spec 1020 - To Be Created)
+
+**Purpose**: Live trading with real money
+
+**Key Differences from Staging**:
+- 3 KIS accounts for full market coverage (1,800 symbols)
+- Real money trading with strict risk limits
+- High availability and disaster recovery
+- Enhanced security and audit logging
+- Professional monitoring and alerting
+
+**Infrastructure**:
+```yaml
+Production:
+  Platform: Dedicated Linux servers (redundant)
+  Accounts: 3 KIS live accounts
+  Windows VM: Creon API integration
+  Data: Real-time with backup sources
+  Trading: Live with risk management
+  Monitoring: Full observability stack
+  Security: Encrypted secrets, audit logs
+  Backup: Automated backups, failover ready
+```
+
+### Migration Path
+
+```mermaid
+graph LR
+    Dev[Development<br/>1-2 accounts<br/>Mock data] --> 
+    Staging[Staging<br/>2 accounts<br/>Paper trading] --> 
+    Prod[Production<br/>3 accounts<br/>Live trading]
+```
+
+### Account Scaling Strategy
+
+1. **Development** (Current):
+   - Start with 1 KIS account for basic testing
+   - Add 2nd account when implementing multi-account features
+   - Use mock data for surge detection testing
+
+2. **Staging** (Phase 2):
+   - 2 real KIS paper trading accounts
+   - Test account failover and load balancing
+   - Validate rate limiting across accounts
+
+3. **Production** (Phase 3):
+   - Scale to 3 KIS accounts
+   - Full 1,800 symbol coverage
+   - Implement account-level risk limits
+
 ## Status Updates
 
 - **2025-08-24**: Feature specification created
+- **2025-08-27**: Updated for multi-account architecture, removed macOS/WebStorm, added staging/production planning
