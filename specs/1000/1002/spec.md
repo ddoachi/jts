@@ -634,11 +634,41 @@ volumes:
   mongodb_dev_data:
   redis_dev_data:
   kafka_dev_data:
-  pgladmin_dev_data:
+  pgadmin_dev_data:
+
+  # Multi-Account Monitoring (Optional)
+  account-monitor:
+    image: grafana/grafana:latest
+    container_name: jts-account-monitor-dev
+    restart: unless-stopped
+    ports:
+      - "3100:3000"  # Grafana UI for monitoring accounts
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: dev_password
+      GF_INSTALL_PLUGINS: redis-datasource
+    volumes:
+      - grafana_dev_data:/var/lib/grafana
+    depends_on:
+      - redis
+
+volumes:
+  grafana_dev_data:
 
 networks:
   default:
     name: jts-dev-network
+```
+
+**Redis Database Allocation for Multi-Account**:
+```yaml
+# Redis databases for different purposes
+Redis DB Allocation:
+  0: Session cache
+  1: KIS account 1 rate limits
+  2: KIS account 2 rate limits  
+  3: Surge detection cache
+  4: Order queue
+  5: Account metrics
 ```
 
 #### Development Scripts
