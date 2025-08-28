@@ -8,7 +8,7 @@
 
 - **Total Epics**: 12
 - **Total Features**: 21
-- **Total Tasks**: 13 (6 from 1002 split)
+- **Total Tasks**: 24 (6 from 1002 split, 11 from 1004 split)
 - **Active Specs**: 4 (with context tracking)
 - **Completed**: 3 🔥 (1011, 1012, 1013, 1014)
 - **In Progress**: 6 (1021, 1022, 1023, 1024, 1025, 1026)
@@ -47,7 +47,18 @@ Status: 🚀 Active development phase!
   - [1025 - Code Quality Tools and Git Hooks](1000/1002/1025.spec.md)
   - [1026 - Development Scripts and Automation](1000/1002/1026.spec.md)
 - 📂 [1003 - Monorepo Structure and Tooling](1000/1003/1003.spec.md)
-- 🔄 [1004 - CI/CD Pipeline Foundation](1000/1004/1004.spec.md)
+- 🔄 [1004 - CI/CD Pipeline Foundation](1000/1004/1004.spec.md) `📋 Split into tasks`
+  - [1041 - GitHub Actions Workflow Structure](1000/1004/1041.md)
+  - [1042 - Main CI Pipeline Configuration](1000/1004/1042.md)
+  - [1043 - Security Scanning Workflows](1000/1004/1043.md)
+  - [1044 - Deployment Pipeline Workflows](1000/1004/1044.md)
+  - [1045 - Docker Multi-stage Build Config](1000/1004/1045.md)
+  - [1046 - Docker Compose CI Testing](1000/1004/1046.md)
+  - [1047 - Test Automation Configuration](1000/1004/1047.md)
+  - [1048 - Performance Testing Workflow](1000/1004/1048.md)
+  - [1049 - Release Management Setup](1000/1004/1049.md)
+  - [1050 - Branch Protection & Quality Gates](1000/1004/1050.md)
+  - [1051 - CI/CD Monitoring & Notifications](1000/1004/1051.md)
 - 🗄️ [1005 - Database Infrastructure](1000/1005/1005.spec.md)
 - 📬 [1006 - Message Queue Setup](1000/1006/1006.spec.md)
 - 🔗 [1007 - Service Communication Patterns](1000/1007/1007.spec.md)
@@ -122,6 +133,7 @@ Status: 🚀 Active development phase!
 
 ### ✅ Recently Completed
 
+- **2025-08-28**: [CI/CD Pipeline Foundation](1000/1004/1004.spec.md) - Split into 11 detailed task specs (1041-1051)
 - **2025-08-26**: [Cold Storage NAS](1000/1001/1014.context.md) - 28TB NAS integrated
 - **2025-08-26**: [Hot Storage NVMe](1000/1001/1011.context.md) - Directory structure and monitoring
 - **2025-08-25**: [Warm Storage SATA](1000/1001/1013.context.md) - 1TB SATA with btrfs compression
@@ -133,6 +145,7 @@ Status: 🚀 Active development phase!
 ### 📋 Ready for Implementation
 
 - **Development Environment Tasks**: 1021-1026 (6 tasks split from 1002)
+- **CI/CD Pipeline Tasks**: 1041-1051 (11 tasks split from 1004)
 
 ### 🎯 Next Up
 
@@ -150,10 +163,11 @@ Status: 🚀 Active development phase!
 
 <!-- Auto-updated by /spec_work --update-index -->
 
+- `2025-08-28 16:30` - CI/CD Pipeline Foundation (1004) split into 11 task specifications
+- `2025-08-28 16:15` - Spec index updated with 1041-1051 task details
 - `2025-08-26 15:30` - Cold Storage NAS implementation completed
 - `2025-08-26 11:45` - Broker Integration epic split into 11 features
 - `2025-08-25 14:00` - Storage Infrastructure planning initiated
-- `2025-08-24 10:00` - Foundation Infrastructure epic created
 
 ---
 
