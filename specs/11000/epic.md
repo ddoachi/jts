@@ -34,7 +34,6 @@ related: [] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['libs/shared/config/', 'infrastructure/k8s/', 'docker-compose.yml', 'services/*/src/performance/', 'monitoring/'] # Key files to modify
 
 # === METADATA ===

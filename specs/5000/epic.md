@@ -34,7 +34,6 @@ related: ['7000', '8000'] # Related to UI and monitoring
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/core/risk-management/', 'libs/shared/risk-models/', 'libs/shared/position-sizing/'] # Key files to modify
 
 # === METADATA ===

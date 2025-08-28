@@ -34,7 +34,6 @@ related: ['3000', '5000'] # Related to market-data and risk-management epics
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/brokers/binance/', 'apps/brokers/upbit/', 'libs/shared/interfaces/crypto.interface.ts', 'libs/shared/dto/crypto.dto.ts'] # Key files to modify
 
 # === METADATA ===

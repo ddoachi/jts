@@ -34,7 +34,6 @@ related: ['1008', '1009'] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
 branch: 'feature/1010-testing-framework' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['jest.config.js', 'cypress.config.ts', 'apps/*/test/', 'libs/shared/testing/', 'scripts/test-setup.sh', 'scripts/test-data-seed.sh', '.github/workflows/ci-tests.yml'] # Key files to modify
 
 # === METADATA ===

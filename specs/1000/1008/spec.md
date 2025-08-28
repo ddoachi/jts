@@ -34,7 +34,6 @@ related: ['1006', '1007'] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
 branch: 'feature/1008-monitoring-logging' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['infrastructure/monitoring/', 'docker-compose.monitoring.yml', 'libs/shared/logging/', 'libs/shared/metrics/', 'infrastructure/grafana/', 'infrastructure/prometheus/'] # Key files to modify
 
 # === METADATA ===

@@ -34,7 +34,6 @@ related: ['7000', '8000'] # Related to UI and monitoring
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/core/order-execution/', 'apps/core/portfolio-manager/', 'libs/shared/order-types/'] # Key files to modify
 
 # === METADATA ===

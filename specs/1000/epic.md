@@ -36,7 +36,6 @@ related: [] # Related but not blocking (spec IDs)
 pull_requests: ["#18", "#19"] # GitHub PR numbers for major milestones  
 commits: ["08e4cc5", "e5381ea", "2da9f8d"] # Key milestone commits
 context_file: "context.md" # Epic implementation journal
-worktree: '' # Worktree path (optional)
 files: ['package.json', 'nx.json', 'docker-compose.yml', 'infrastructure/', 'libs/shared/'] # Key files to modify
 
 # === METADATA ===

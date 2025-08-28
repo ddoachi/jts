@@ -34,7 +34,6 @@ related: ['7000'] # Related to user interface for strategy management
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/core/strategy-engine/', 'libs/shared/dsl/', 'libs/shared/indicators/'] # Key files to modify
 
 # === METADATA ===

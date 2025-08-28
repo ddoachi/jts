@@ -34,7 +34,6 @@ related: ['7000'] # Related to user interface for backtest visualization
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/analytics/backtesting-engine/', 'libs/shared/backtesting/', 'libs/shared/performance-metrics/'] # Key files to modify
 
 # === METADATA ===
