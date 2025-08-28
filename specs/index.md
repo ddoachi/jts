@@ -28,34 +28,34 @@ Status: 🚀 Active development phase!
 
 ## 📁 Epic Overview
 
-### 🏗️ [1000 - Foundation & Infrastructure Setup](1000/epic)
+### 🏗️ [1000 - Foundation & Infrastructure Setup](1000/1000.spec.md)
 
 > _The bedrock of the entire trading system_
 
-- 📦 [1001 - Storage Infrastructure](1000/1001/spec) `🚧 In Progress`
-  - [1011 - Hot Storage (NVMe)](1000/1001/1011) ✅ `Completed`
-  - [1012 - Database Mount Integration](1000/1001/1012) ✅ `Completed`
-  - [1013 - Warm Storage (SATA)](1000/1001/1013) ✅ `Completed`
-  - [1014 - Cold Storage (NAS)](1000/1001/1014) ✅ `Completed`
-  - [1015 - Storage Performance Optimization](1000/1001/1015)
-  - [1016 - Tiered Storage Management](1000/1001/1016)
-- 💻 [1002 - Development Environment Setup](1000/1002/spec) `📋 Split into tasks`
-  - [1021 - Node.js and Yarn Environment Setup](1000/1002/1021)
-  - [1022 - VS Code IDE Configuration](1000/1002/1022)
-  - [1023 - Docker and Database Services Setup](1000/1002/1023)
-  - [1024 - Environment Configuration and Secrets Management](1000/1002/1024)
-  - [1025 - Code Quality Tools and Git Hooks](1000/1002/1025)
-  - [1026 - Development Scripts and Automation](1000/1002/1026)
-- 📂 [1003 - Monorepo Structure and Tooling](1000/1003/spec)
-- 🔄 [1004 - CI/CD Pipeline Foundation](1000/1004/spec)
-- 🗄️ [1005 - Database Infrastructure](1000/1005/spec)
-- 📬 [1006 - Message Queue Setup](1000/1006/spec)
-- 🔗 [1007 - Service Communication Patterns](1000/1007/spec)
-- 📊 [1008 - Monitoring and Logging Foundation](1000/1008/spec)
-- 🔐 [1009 - Security Foundation](1000/1009/spec)
-- 🧪 [1010 - Testing Framework Setup](1000/1010/spec)
+- 📦 [1001 - Storage Infrastructure](1000/1001/1001.spec.md) `🚧 In Progress`
+  - [1011 - Hot Storage (NVMe)](1000/1001/1011.spec.md) ✅ `Completed`
+  - [1012 - Database Mount Integration](1000/1001/1012.spec.md) ✅ `Completed`
+  - [1013 - Warm Storage (SATA)](1000/1001/1013.spec.md) ✅ `Completed`
+  - [1014 - Cold Storage (NAS)](1000/1001/1014.spec.md) ✅ `Completed`
+  - [1015 - Storage Performance Optimization](1000/1001/1015.spec.md)
+  - [1016 - Tiered Storage Management](1000/1001/1016.spec.md)
+- 💻 [1002 - Development Environment Setup](1000/1002/1002.spec.md) `📋 Split into tasks`
+  - [1021 - Node.js and Yarn Environment Setup](1000/1002/1021.spec.md)
+  - [1022 - VS Code IDE Configuration](1000/1002/1022.spec.md)
+  - [1023 - Docker and Database Services Setup](1000/1002/1023.spec.md)
+  - [1024 - Environment Configuration and Secrets Management](1000/1002/1024.spec.md)
+  - [1025 - Code Quality Tools and Git Hooks](1000/1002/1025.spec.md)
+  - [1026 - Development Scripts and Automation](1000/1002/1026.spec.md)
+- 📂 [1003 - Monorepo Structure and Tooling](1000/1003/1003.spec.md)
+- 🔄 [1004 - CI/CD Pipeline Foundation](1000/1004/1004.spec.md)
+- 🗄️ [1005 - Database Infrastructure](1000/1005/1005.spec.md)
+- 📬 [1006 - Message Queue Setup](1000/1006/1006.spec.md)
+- 🔗 [1007 - Service Communication Patterns](1000/1007/1007.spec.md)
+- 📊 [1008 - Monitoring and Logging Foundation](1000/1008/1008.spec.md)
+- 🔐 [1009 - Security Foundation](1000/1009/1009.spec.md)
+- 🧪 [1010 - Testing Framework Setup](1000/1010/1010.spec.md)
 
-### 🔌 [2000 - Multi-Broker Integration Layer](2000/epic)
+### 🔌 [2000 - Multi-Broker Integration Layer](2000/2000.spec.md)
 
 > _Unified interface for multiple Korean brokers_
 
@@ -71,43 +71,43 @@ Status: 🚀 Active development phase!
 - 🧪 [2109 - Testing Framework and Mocks](2000/2109)
 - 📈 [2110 - Real-time Monitoring](2000/2110)
 
-### 📊 [3000 - Market Data Collection & Processing](3000/epic)
+### 📊 [3000 - Market Data Collection & Processing](3000/3000.spec.md)
 
 > _Real-time and historical market data pipeline_
 
-### 🤖 [4000 - Trading Strategy Engine & DSL](4000/epic)
+### 🤖 [4000 - Trading Strategy Engine & DSL](4000/4000.spec.md)
 
 > _Custom domain-specific language for strategy development_
 
-### ⚠️ [5000 - Risk Management System](5000/epic)
+### ⚠️ [5000 - Risk Management System](5000/5000.spec.md)
 
 > _Position limits, exposure control, and risk metrics_
 
-### 📈 [6000 - Order Execution & Portfolio Management](6000/epic)
+### 📈 [6000 - Order Execution & Portfolio Management](6000/6000.spec.md)
 
 > _Smart order execution and portfolio tracking_
 
-### 🖥️ [7000 - User Interface & Dashboard](7000/epic)
+### 🖥️ [7000 - User Interface & Dashboard](7000/7000.spec.md)
 
 > _Web-based trading dashboard and controls_
 
-### 👁️ [8000 - Monitoring & Observability](8000/epic)
+### 👁️ [8000 - Monitoring & Observability](8000/8000.spec.md)
 
 > _System health, metrics, and alerting_
 
-### 🔄 [9000 - Backtesting Framework](9000/epic)
+### 🔄 [9000 - Backtesting Framework](9000/9000.spec.md)
 
 > _Historical strategy testing and optimization_
 
-### 🪙 [10000 - Cryptocurrency Integration](10000/epic)
+### 🪙 [10000 - Cryptocurrency Integration](10000/10000.spec.md)
 
 > _Support for crypto exchanges and trading_
 
-### ⚡ [11000 - Performance Optimization & Scaling](11000/epic)
+### ⚡ [11000 - Performance Optimization & Scaling](11000/11000.spec.md)
 
 > _System optimization and horizontal scaling_
 
-### 🚀 [12000 - Deployment & DevOps](12000/epic)
+### 🚀 [12000 - Deployment & DevOps](12000/12000.spec.md)
 
 > _Production deployment and operations_
 
@@ -117,8 +117,8 @@ Status: 🚀 Active development phase!
 
 ### 🔥 Currently Active
 
-1. [Storage Infrastructure](1000/1001/context.md) - Setting up tiered storage
-2. [Broker Integration](2000/context.md) - Planning phase
+1. [Storage Infrastructure](1000/1001/1001.context.md) - Setting up tiered storage
+2. [Broker Integration](2000/2000.context.md) - Planning phase
 
 ### ✅ Recently Completed
 
