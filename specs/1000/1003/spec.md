@@ -22,7 +22,7 @@ reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
-updated: '2025-08-24' # YYYY-MM-DD
+updated: '2025-08-28' # YYYY-MM-DD
 due_date: '' # YYYY-MM-DD (optional)
 estimated_hours: 12 # Time estimate in hours
 actual_hours: 0 # Time spent so far
@@ -88,13 +88,15 @@ Establish a comprehensive monorepo structure using Nx workspace to manage all JT
 ├────────────────┬────────────────┬────────────────┬───────────────┤
 │    Strategy    │   Risk         │    Portfolio   │    Order      │
 │    Engine      │   Management   │    Tracker     │    Execution  │
-└────────────────┴────────────────┴────────────────┴───────────────┘
+├────────────────┴────────────────┴────────────────┴───────────────┤
+│        Market Data Collector    │    Notification Service        │
+└──────────────────────────────────────────────────────────────────┘
                                ↓
 ┌──────────────────────────────────────────────────────────────────┐
 │                   Integration Layer                              │
-├───────────────────────────────┬──────────────────────────────────┤
-│     Market Data Collector     │     Notification Service         │
-└───────────────────────────────┴──────────────────────────────────┘
+│            (Broker Libraries & Infrastructure Utilities)         │
+│         libs/brokers/* | libs/infrastructure/*                   │
+└──────────────────────────────────────────────────────────────────┘
                                ↓
 ┌──────────────────────────────────────────────────────────────────┐
 │                    Messaging Layer                               │
@@ -119,9 +121,16 @@ Establish a comprehensive monorepo structure using Nx workspace to manage all JT
 ```
 
 #### Workspace Structure
+
+**Note**: The workspace follows Nx conventions where:
+- `apps/` contains standalone microservices and applications
+- `libs/` contains shared libraries and reusable modules
+- Each service in `apps/` can import libraries from `libs/`
+- No top-level `src/` directory - each app/lib has its own `src/`
+
 ```
 jts/
-├── apps/                           # Applications
+├── apps/                           # Applications (Standalone Microservices)
 │   ├── api-gateway/               # Express.js API Gateway
 │   ├── web-app/                   # Next.js Frontend
 │   ├── strategy-engine/           # NestJS Strategy Service
@@ -130,7 +139,7 @@ jts/
 │   ├── market-data-collector/     # NestJS Market Data Service
 │   ├── notification-service/      # NestJS Notification Service
 │   └── creon-bridge/             # Windows COM Bridge Service
-├── libs/                          # Shared Libraries
+├── libs/                          # Shared Libraries (Reusable Modules)
 │   ├── shared/
 │   │   ├── dto/                  # Data Transfer Objects
 │   │   ├── interfaces/           # TypeScript Interfaces
@@ -1089,3 +1098,4 @@ For comprehensive system architecture and implementation details, see:
 
 - **2025-08-24**: Feature specification created and documented
 - **2025-08-27**: Integrated comprehensive architecture with DDD and layered design
+- **2025-08-28**: Fixed architecture layer diagram - moved Market Data Collector and Notification Service to Business Layer, clarified Integration Layer as libraries only
