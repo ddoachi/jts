@@ -17,8 +17,6 @@ domain: 'infrastructure' # Business domain
 # === WORKFLOW ===
 status: 'draft' # draft | reviewing | approved | in-progress | testing | done
 priority: 'high' # high | medium | low
-assignee: '' # Who's working on this
-reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
@@ -34,7 +32,6 @@ related: ['1006', '1007'] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
 branch: 'feature/1008-monitoring-logging' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['infrastructure/monitoring/', 'docker-compose.monitoring.yml', 'libs/shared/logging/', 'libs/shared/metrics/', 'infrastructure/grafana/', 'infrastructure/prometheus/'] # Key files to modify
 
 # === METADATA ===

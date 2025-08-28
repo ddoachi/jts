@@ -17,8 +17,6 @@ domain: 'monitoring' # Business domain
 # === WORKFLOW ===
 status: 'draft' # draft | reviewing | approved | in-progress | testing | done
 priority: 'high' # high | medium | low
-assignee: '' # Who's working on this
-reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
@@ -34,7 +32,6 @@ related: ['2000', '3000', '4000', '5000', '6000', '7000', '9000', '10000', '1100
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/core/monitoring/', 'libs/shared/metrics/', 'libs/shared/tracing/', 'infrastructure/monitoring/'] # Key files to modify
 
 # === METADATA ===

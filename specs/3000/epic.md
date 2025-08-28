@@ -17,8 +17,6 @@ domain: 'market-data' # Business domain
 # === WORKFLOW ===
 status: 'draft' # draft | reviewing | approved | in-progress | testing | done
 priority: 'high' # high | medium | low
-assignee: '' # Who's working on this
-reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
@@ -34,7 +32,6 @@ related: ['6000'] # Related to order execution
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/integration/market-data-collector/', 'libs/shared/models/market-data.ts'] # Key files to modify
 
 # === METADATA ===

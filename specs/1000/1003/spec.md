@@ -17,8 +17,6 @@ domain: 'infrastructure' # Business domain
 # === WORKFLOW ===
 status: 'draft' # draft | reviewing | approved | in-progress | testing | done
 priority: 'high' # high | medium | low
-assignee: '' # Who's working on this
-reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
@@ -36,7 +34,6 @@ related: ['1001'] # Related but not blocking (spec IDs)
 pull_requests: [] # GitHub PR numbers
 commits: [] # Key implementation commits
 context_file: "context.md" # Implementation journal
-worktree: '' # Worktree path (optional)
 files: ['nx.json', 'package.json', 'tsconfig.base.json', 'project.json', 'libs/', 'apps/', 'tools/', '.eslintrc.json', 'jest.config.ts'] # Key files to modify
 
 # === METADATA ===

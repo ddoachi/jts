@@ -17,8 +17,6 @@ domain: 'devops' # Business domain
 # === WORKFLOW ===
 status: 'draft' # draft | reviewing | approved | in-progress | testing | done
 priority: 'high' # high | medium | low
-assignee: '' # Who's working on this
-reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
@@ -34,7 +32,6 @@ related: [] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['.github/workflows/', 'k8s/', 'docker/', 'infrastructure/', 'docs/deployment/', 'security/', 'monitoring/'] # Key files to modify
 
 # === METADATA ===

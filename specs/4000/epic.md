@@ -17,8 +17,6 @@ domain: 'strategy' # Business domain
 # === WORKFLOW ===
 status: 'draft' # draft | reviewing | approved | in-progress | testing | done
 priority: 'high' # high | medium | low
-assignee: '' # Who's working on this
-reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
@@ -34,7 +32,6 @@ related: ['7000'] # Related to user interface for strategy management
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/core/strategy-engine/', 'libs/shared/dsl/', 'libs/shared/indicators/'] # Key files to modify
 
 # === METADATA ===

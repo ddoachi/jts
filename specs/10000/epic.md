@@ -17,8 +17,6 @@ domain: 'cryptocurrency' # Business domain
 # === WORKFLOW ===
 status: 'draft' # draft | reviewing | approved | in-progress | testing | done
 priority: 'high' # high | medium | low
-assignee: '' # Who's working on this
-reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
@@ -34,7 +32,6 @@ related: ['3000', '5000'] # Related to market-data and risk-management epics
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/brokers/binance/', 'apps/brokers/upbit/', 'libs/shared/interfaces/crypto.interface.ts', 'libs/shared/dto/crypto.dto.ts'] # Key files to modify
 
 # === METADATA ===

@@ -17,8 +17,6 @@ domain: 'infrastructure' # Business domain
 # === WORKFLOW ===
 status: 'draft' # draft | reviewing | approved | in-progress | testing | done
 priority: 'high' # high | medium | low
-assignee: '' # Who's working on this
-reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
@@ -34,7 +32,6 @@ related: ['1002', '1008'] # Related but not blocking (spec IDs) - Development en
 
 # === IMPLEMENTATION ===
 branch: 'feature/1007-service-communication' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/api-gateway/', 'libs/shared/grpc/', 'libs/shared/websocket/', 'proto/', 'apps/*/src/grpc/', 'nginx.conf', 'docker-compose.yml'] # Key files to modify
 
 # === METADATA ===

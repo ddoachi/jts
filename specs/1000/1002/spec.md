@@ -17,8 +17,6 @@ domain: 'infrastructure' # Business domain
 # === WORKFLOW ===
 status: 'draft' # draft | reviewing | approved | in-progress | testing | done
 priority: 'high' # high | medium | low
-assignee: '' # Who's working on this
-reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
@@ -36,7 +34,6 @@ related: ['1001'] # Related but not blocking (spec IDs)
 pull_requests: [] # GitHub PR numbers
 commits: [] # Key implementation commits
 context_file: "context.md" # Implementation journal
-worktree: '' # Worktree path (optional)
 files: ['.vscode/settings.json', '.vscode/extensions.json', 'package.json', '.env.example', 'docker-compose.dev.yml', 'docs/DEVELOPMENT.md'] # Key files to modify
 
 # === METADATA ===

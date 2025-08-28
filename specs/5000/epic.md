@@ -17,8 +17,6 @@ domain: 'risk-management' # Business domain
 # === WORKFLOW ===
 status: 'draft' # draft | reviewing | approved | in-progress | testing | done
 priority: 'high' # high | medium | low
-assignee: '' # Who's working on this
-reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
@@ -34,7 +32,6 @@ related: ['7000', '8000'] # Related to UI and monitoring
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/core/risk-management/', 'libs/shared/risk-models/', 'libs/shared/position-sizing/'] # Key files to modify
 
 # === METADATA ===

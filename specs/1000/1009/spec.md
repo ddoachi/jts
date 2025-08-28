@@ -17,8 +17,6 @@ domain: 'infrastructure' # Business domain
 # === WORKFLOW ===
 status: 'draft' # draft | reviewing | approved | in-progress | testing | done
 priority: 'high' # high | medium | low
-assignee: '' # Who's working on this
-reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
@@ -34,7 +32,6 @@ related: ['1008'] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
 branch: 'feature/1009-security-foundation' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['infrastructure/security/', 'libs/shared/security/', 'libs/shared/auth/', 'apps/api-gateway/src/auth/', 'docker-compose.security.yml', '.env.security'] # Key files to modify
 
 # === METADATA ===

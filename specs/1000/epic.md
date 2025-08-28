@@ -17,8 +17,6 @@ domain: 'infrastructure' # Business domain
 # === WORKFLOW ===
 status: 'draft' # draft | reviewing | approved | in-progress | testing | done
 priority: 'high' # high | medium | low
-assignee: '' # Who's working on this
-reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
 created: '2025-08-24' # YYYY-MM-DD
@@ -36,7 +34,6 @@ related: [] # Related but not blocking (spec IDs)
 pull_requests: ["#18", "#19"] # GitHub PR numbers for major milestones  
 commits: ["08e4cc5", "e5381ea", "2da9f8d"] # Key milestone commits
 context_file: "context.md" # Epic implementation journal
-worktree: '' # Worktree path (optional)
 files: ['package.json', 'nx.json', 'docker-compose.yml', 'infrastructure/', 'libs/shared/'] # Key files to modify
 
 # === METADATA ===
