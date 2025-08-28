@@ -34,7 +34,6 @@ related: ['3000'] # Related to market-data epic
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/brokers/', 'libs/shared/interfaces/broker.interface.ts'] # Key files to modify
 
 # === METADATA ===

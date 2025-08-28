@@ -36,7 +36,6 @@ related: ['1002'] # Related but not blocking (spec IDs)
 pull_requests: [] # GitHub PR numbers
 commits: [] # Key implementation commits
 context_file: "context.md" # Implementation journal
-worktree: '' # Worktree path (optional)
 files: ['.github/workflows/', 'Dockerfile', 'docker-compose.ci.yml', 'package.json', 'nx.json', 'jest.config.ts', '.dockerignore', 'scripts/'] # Key files to modify
 
 # === METADATA ===

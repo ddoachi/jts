@@ -34,7 +34,6 @@ related: [] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['.github/workflows/', 'k8s/', 'docker/', 'infrastructure/', 'docs/deployment/', 'security/', 'monitoring/'] # Key files to modify
 
 # === METADATA ===

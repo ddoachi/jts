@@ -34,7 +34,6 @@ related: ['6000'] # Related to order execution
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/integration/market-data-collector/', 'libs/shared/models/market-data.ts'] # Key files to modify
 
 # === METADATA ===

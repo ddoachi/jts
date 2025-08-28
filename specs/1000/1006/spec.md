@@ -34,7 +34,6 @@ related: ['1005'] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
 branch: 'feature/1006-message-queue-setup' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['infrastructure/kafka/', 'docker-compose.kafka.yml', 'libs/shared/messaging/', 'schemas/protobuf/', 'scripts/kafka-setup/'] # Key files to modify
 
 # === METADATA ===

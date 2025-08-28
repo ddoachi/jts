@@ -36,7 +36,6 @@ related: ['1001'] # Related but not blocking (spec IDs)
 pull_requests: [] # GitHub PR numbers
 commits: [] # Key implementation commits
 context_file: "context.md" # Implementation journal
-worktree: '' # Worktree path (optional)
 files: ['nx.json', 'package.json', 'tsconfig.base.json', 'project.json', 'libs/', 'apps/', 'tools/', '.eslintrc.json', 'jest.config.ts'] # Key files to modify
 
 # === METADATA ===
@@ -65,6 +64,10 @@ Establish a comprehensive monorepo structure using Nx workspace to manage all JT
 - [ ] **Code Generation**: Custom schematics for generating services and libraries
 - [ ] **CI/CD Integration**: GitHub Actions workflows for affected builds and tests
 - [ ] **Development Scripts**: npm scripts for common development tasks
+- [ ] **Frontend Architecture**: PWA-first approach with responsive design for desktop/mobile
+- [ ] **State Management**: Zustand stores for real-time data synchronization
+- [ ] **Component Library**: Reusable UI components with mobile/desktop variants
+- [ ] **Service Worker**: Offline capabilities and background sync for trading operations
 
 ## Technical Approach
 
@@ -662,6 +665,523 @@ export class MathUtils {
 }
 ```
 
+### Frontend Architecture
+
+#### Overview
+
+The JTS frontend follows a PWA-first strategy with progressive enhancement for desktop and mobile platforms. The architecture prioritizes real-time data visualization, responsive design, and offline capabilities critical for trading operations.
+
+#### Platform Strategy
+
+##### PWA Foundation (Primary)
+- **Technology**: Next.js 14 with App Router
+- **Deployment**: Single codebase for web, desktop PWA, and mobile PWA
+- **Offline**: Service Workers for offline trading data access
+- **Installation**: Installable on all platforms via browser
+
+##### Desktop Enhancement (Optional)
+- **Electron Wrapper**: For native OS integration and multi-window support
+- **Features**: System tray, native notifications, global shortcuts
+- **Auto-updates**: Electron-updater for seamless updates
+- **Multi-monitor**: Support for detached trading panels
+
+##### Mobile Native (Future)
+- **React Native**: For performance-critical mobile experience
+- **Code Sharing**: 70% shared code with PWA via monorepo structure
+- **Native Features**: Biometric auth, push notifications
+- **Platforms**: iOS 14+ and Android 8+
+
+#### Frontend Application Structure
+
+```
+apps/web-app/
+├── src/
+│   ├── app/                      # Next.js App Router
+│   │   ├── (auth)/               # Authentication routes
+│   │   │   ├── login/
+│   │   │   └── register/
+│   │   ├── (trading)/            # Trading interface routes
+│   │   │   ├── dashboard/
+│   │   │   ├── orders/
+│   │   │   ├── positions/
+│   │   │   └── charts/
+│   │   ├── (analytics)/          # Analytics routes
+│   │   │   ├── reports/
+│   │   │   ├── performance/
+│   │   │   └── backtesting/
+│   │   └── api/                  # API routes for BFF pattern
+│   ├── features/                 # Feature-based modules
+│   │   ├── trading/
+│   │   │   ├── components/       # Trading UI components
+│   │   │   │   ├── OrderEntry/
+│   │   │   │   ├── OrderBook/
+│   │   │   │   ├── PriceTicket/
+│   │   │   │   └── TradeHistory/
+│   │   │   ├── hooks/            # Custom React hooks
+│   │   │   ├── utils/            # Trading utilities
+│   │   │   └── types/            # TypeScript definitions
+│   │   ├── portfolio/
+│   │   │   ├── components/
+│   │   │   │   ├── PositionList/
+│   │   │   │   ├── BalanceCard/
+│   │   │   │   └── PnLChart/
+│   │   │   └── hooks/
+│   │   ├── market-data/
+│   │   │   ├── components/
+│   │   │   │   ├── PriceChart/
+│   │   │   │   ├── DepthChart/
+│   │   │   │   └── HeatMap/
+│   │   │   └── services/
+│   │   └── strategies/
+│   │       ├── components/
+│   │       │   ├── StrategyBuilder/
+│   │       │   ├── BacktestRunner/
+│   │       │   └── PerformanceMetrics/
+│   │       └── hooks/
+│   ├── shared/
+│   │   ├── components/           # Shared UI components
+│   │   │   ├── layouts/
+│   │   │   │   ├── TradingLayout/
+│   │   │   │   ├── MobileLayout/
+│   │   │   │   └── MultiPanelLayout/
+│   │   │   ├── charts/           # Chart components
+│   │   │   │   ├── CandlestickChart/
+│   │   │   │   ├── LineChart/
+│   │   │   │   └── VolumeChart/
+│   │   │   ├── forms/            # Form components
+│   │   │   │   ├── OrderForm/
+│   │   │   │   ├── FilterForm/
+│   │   │   │   └── SettingsForm/
+│   │   │   └── ui/               # Base UI components
+│   │   │       ├── Button/
+│   │   │       ├── Modal/
+│   │   │       ├── Table/
+│   │   │       └── Toast/
+│   │   ├── hooks/                # Global hooks
+│   │   │   ├── useWebSocket/
+│   │   │   ├── useAuth/
+│   │   │   ├── useTheme/
+│   │   │   └── useBreakpoint/
+│   │   └── utils/                # Shared utilities
+│   │       ├── formatters/
+│   │       ├── validators/
+│   │       └── calculations/
+│   ├── stores/                   # Zustand state management
+│   │   ├── market.store.ts       # Market data state
+│   │   ├── portfolio.store.ts    # Portfolio state
+│   │   ├── orders.store.ts       # Orders state
+│   │   ├── strategy.store.ts     # Strategy state
+│   │   └── ui.store.ts           # UI preferences
+│   ├── services/                 # API and WebSocket services
+│   │   ├── api/
+│   │   │   ├── client.ts         # API client setup
+│   │   │   ├── auth.service.ts
+│   │   │   ├── trading.service.ts
+│   │   │   └── market.service.ts
+│   │   └── websocket/
+│   │       ├── socket.manager.ts
+│   │       ├── market.socket.ts
+│   │       └── order.socket.ts
+│   ├── styles/
+│   │   ├── globals.css           # Global styles
+│   │   ├── themes/               # Theme definitions
+│   │   │   ├── light.css
+│   │   │   └── dark.css
+│   │   └── components/           # Component styles
+│   └── workers/                  # Web Workers
+│       ├── chart.worker.ts       # Chart calculations
+│       ├── data.worker.ts        # Data processing
+│       └── sync.worker.ts        # Background sync
+├── public/
+│   ├── manifest.json             # PWA manifest
+│   ├── service-worker.js         # Service Worker
+│   └── icons/                    # App icons
+└── tests/
+    ├── unit/                     # Unit tests
+    ├── integration/              # Integration tests
+    └── e2e/                      # E2E tests
+```
+
+#### State Management Architecture
+
+##### Store Structure (Zustand)
+```typescript
+// Market Store
+interface MarketStore {
+  // State
+  symbols: Map<string, Symbol>;
+  orderBooks: Map<string, OrderBook>;
+  trades: Map<string, Trade[]>;
+  tickers: Map<string, Ticker>;
+  
+  // Actions
+  subscribeSymbol: (symbol: string) => void;
+  unsubscribeSymbol: (symbol: string) => void;
+  updateOrderBook: (symbol: string, data: OrderBook) => void;
+  addTrade: (symbol: string, trade: Trade) => void;
+}
+
+// Portfolio Store
+interface PortfolioStore {
+  // State
+  positions: Position[];
+  balance: Balance;
+  openOrders: Order[];
+  orderHistory: Order[];
+  pnl: PnLData;
+  
+  // Actions
+  refreshPortfolio: () => Promise<void>;
+  updatePosition: (position: Position) => void;
+  addOrder: (order: Order) => void;
+  cancelOrder: (orderId: string) => Promise<void>;
+}
+
+// Real-time Sync Strategy
+interface RealtimeSyncStrategy {
+  // WebSocket connections
+  marketDataSocket: Socket;
+  orderStatusSocket: Socket;
+  portfolioSocket: Socket;
+  
+  // Reconnection logic
+  reconnectionStrategy: 'exponential-backoff';
+  maxReconnectAttempts: 10;
+  
+  // Offline queue
+  offlineQueue: {
+    storage: 'IndexedDB';
+    maxSize: 1000;
+    syncOnReconnect: true;
+  };
+  
+  // Conflict resolution
+  conflictResolution: 'server-wins' | 'client-wins' | 'merge';
+}
+```
+
+#### Component Architecture
+
+##### Trading Components
+```typescript
+// Order Entry Component
+interface OrderEntryProps {
+  symbol: string;
+  side: 'buy' | 'sell';
+  orderType: 'market' | 'limit' | 'stop';
+  onSubmit: (order: OrderRequest) => Promise<void>;
+}
+
+// Features:
+// - Real-time price updates
+// - Order validation
+// - Risk checks
+// - Keyboard shortcuts (Desktop)
+// - Touch optimization (Mobile)
+
+// Chart Component
+interface ChartComponentProps {
+  symbol: string;
+  interval: '1m' | '5m' | '15m' | '1h' | '1d';
+  indicators: Indicator[];
+  drawings: Drawing[];
+  onIntervalChange: (interval: string) => void;
+}
+
+// Features:
+// - WebGL rendering for performance
+// - Touch gestures for mobile
+// - Drawing tools
+// - Technical indicators
+// - Real-time updates via WebSocket
+```
+
+#### Responsive Design Strategy
+
+##### Breakpoints
+```scss
+// Breakpoint definitions
+$mobile-small: 320px;   // Small phones
+$mobile: 375px;         // Standard phones
+$mobile-large: 414px;   // Large phones
+$tablet: 768px;         // Tablets
+$desktop: 1024px;       // Small desktop
+$desktop-large: 1440px; // Standard desktop
+$desktop-xl: 1920px;    // Large desktop
+$trading-desk: 2560px;  // Multi-monitor setup
+
+// Layout strategies
+@media (max-width: $tablet - 1px) {
+  // Mobile layout: Single column, stacked components
+  // Simplified trading interface
+  // Bottom navigation
+  // Swipeable panels
+}
+
+@media (min-width: $tablet) and (max-width: $desktop - 1px) {
+  // Tablet layout: 2-column grid
+  // Collapsible sidebars
+  // Modal-based forms
+}
+
+@media (min-width: $desktop) {
+  // Desktop layout: Multi-panel dashboard
+  // Persistent sidebars
+  // Drag-and-drop panels
+  // Keyboard navigation
+}
+
+@media (min-width: $trading-desk) {
+  // Professional trading desk
+  // Multi-monitor support
+  // Detachable windows
+  // Advanced charting
+}
+```
+
+##### Mobile-First Components
+```typescript
+// Responsive component example
+const TradingDashboard = () => {
+  const breakpoint = useBreakpoint();
+  const isMobile = breakpoint === 'mobile';
+  const isTablet = breakpoint === 'tablet';
+  const isDesktop = breakpoint === 'desktop';
+  
+  if (isMobile) {
+    return <MobileTradingView />;  // Simplified, touch-optimized
+  }
+  
+  if (isTablet) {
+    return <TabletTradingView />;  // 2-column layout
+  }
+  
+  return <DesktopTradingView />;   // Full dashboard
+};
+```
+
+#### PWA Implementation
+
+##### Service Worker Configuration
+```javascript
+// service-worker.js
+const CACHE_NAME = 'jts-v1';
+const STATIC_ASSETS = [
+  '/',
+  '/manifest.json',
+  '/offline.html',
+  // Critical CSS and JS
+];
+
+const DYNAMIC_CACHE = 'jts-dynamic-v1';
+const MAX_DYNAMIC_AGE = 60 * 60 * 1000; // 1 hour
+
+// Caching strategies
+const CACHE_STRATEGIES = {
+  '/api/market-data': 'network-first',  // Always try live data
+  '/api/portfolio': 'network-first',    // Current positions
+  '/api/historical': 'cache-first',     // Historical data
+  '/static': 'cache-first',             // Static assets
+};
+
+// Background sync for orders
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-orders') {
+    event.waitUntil(syncPendingOrders());
+  }
+});
+
+// Push notifications
+self.addEventListener('push', (event) => {
+  const data = event.data.json();
+  self.registration.showNotification(data.title, {
+    body: data.body,
+    icon: '/icons/icon-192.png',
+    badge: '/icons/badge-72.png',
+    data: data.clickAction,
+  });
+});
+```
+
+##### PWA Manifest
+```json
+{
+  "name": "JTS Trading System",
+  "short_name": "JTS",
+  "description": "Professional Trading Platform",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#1a1a1a",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "business"],
+  "shortcuts": [
+    {
+      "name": "New Order",
+      "url": "/orders/new",
+      "description": "Place a new order"
+    },
+    {
+      "name": "Portfolio",
+      "url": "/portfolio",
+      "description": "View portfolio"
+    }
+  ]
+}
+```
+
+#### Performance Requirements
+
+##### Core Web Vitals Targets
+- **LCP (Largest Contentful Paint)**: < 2.5s
+- **FID (First Input Delay)**: < 100ms
+- **CLS (Cumulative Layout Shift)**: < 0.1
+- **Order Entry Latency**: < 50ms
+- **Chart Update Rate**: 60fps minimum
+
+##### Optimization Strategies
+```typescript
+// Code splitting by route
+const TradingDashboard = lazy(() => import('./features/trading/Dashboard'));
+const Portfolio = lazy(() => import('./features/portfolio/Portfolio'));
+const Analytics = lazy(() => import('./features/analytics/Analytics'));
+
+// Image optimization
+import Image from 'next/image';
+
+// React Query for data caching
+const { data, isLoading } = useQuery({
+  queryKey: ['portfolio'],
+  queryFn: fetchPortfolio,
+  staleTime: 5000,        // Consider stale after 5s
+  cacheTime: 10 * 60000,  // Keep in cache for 10min
+  refetchInterval: 5000,  // Refetch every 5s
+});
+
+// Virtual scrolling for large lists
+import { FixedSizeList } from 'react-window';
+
+// Web Workers for heavy calculations
+const worker = new Worker('/workers/chart.worker.js');
+worker.postMessage({ type: 'CALCULATE_INDICATORS', data: prices });
+```
+
+#### Security Considerations
+
+##### Frontend Security
+```typescript
+// Secure storage
+class SecureStorage {
+  private encryptionKey: CryptoKey;
+  
+  async store(key: string, value: any): Promise<void> {
+    const encrypted = await this.encrypt(JSON.stringify(value));
+    localStorage.setItem(key, encrypted);
+  }
+  
+  async retrieve(key: string): Promise<any> {
+    const encrypted = localStorage.getItem(key);
+    if (!encrypted) return null;
+    const decrypted = await this.decrypt(encrypted);
+    return JSON.parse(decrypted);
+  }
+}
+
+// API Security
+const apiClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
+  headers: {
+    'X-Requested-With': 'XMLHttpRequest',
+  },
+});
+
+// CSRF Protection
+apiClient.interceptors.request.use((config) => {
+  const token = getCsrfToken();
+  if (token) {
+    config.headers['X-CSRF-Token'] = token;
+  }
+  return config;
+});
+
+// Input validation
+const validateOrderInput = (order: OrderRequest): ValidationResult => {
+  const errors: string[] = [];
+  
+  if (order.quantity <= 0) {
+    errors.push('Quantity must be positive');
+  }
+  
+  if (order.type === 'limit' && !order.price) {
+    errors.push('Limit order requires price');
+  }
+  
+  // Additional validation rules
+  return { valid: errors.length === 0, errors };
+};
+```
+
+#### Testing Strategy
+
+##### Testing Pyramid
+```typescript
+// Unit Tests (70%)
+describe('OrderEntry Component', () => {
+  it('should validate order input', () => {
+    const { getByRole, getByText } = render(<OrderEntry />);
+    const submitButton = getByRole('button', { name: 'Submit Order' });
+    
+    fireEvent.click(submitButton);
+    expect(getByText('Quantity is required')).toBeInTheDocument();
+  });
+});
+
+// Integration Tests (20%)
+describe('Trading Flow', () => {
+  it('should place order and update portfolio', async () => {
+    const { result } = renderHook(() => useTradingFlow());
+    
+    await act(async () => {
+      await result.current.placeOrder(mockOrder);
+    });
+    
+    expect(result.current.portfolio.openOrders).toContainEqual(
+      expect.objectContaining({ id: mockOrder.id })
+    );
+  });
+});
+
+// E2E Tests (10%)
+test('Complete trading workflow', async ({ page }) => {
+  await page.goto('/dashboard');
+  await page.click('[data-testid="new-order"]');
+  await page.fill('[name="symbol"]', 'AAPL');
+  await page.fill('[name="quantity"]', '100');
+  await page.click('[type="submit"]');
+  
+  await expect(page.locator('.order-confirmation')).toBeVisible();
+});
+```
+
 ### Build and Testing Configuration
 
 #### Jest Configuration (`jest.config.ts`)
@@ -1099,3 +1619,4 @@ For comprehensive system architecture and implementation details, see:
 - **2025-08-24**: Feature specification created and documented
 - **2025-08-27**: Integrated comprehensive architecture with DDD and layered design
 - **2025-08-28**: Fixed architecture layer diagram - moved Market Data Collector and Notification Service to Business Layer, clarified Integration Layer as libraries only
+- **2025-08-28**: Added comprehensive Frontend Architecture section with PWA-first strategy, detailed component structure, state management, and platform-specific implementations for desktop and mobile

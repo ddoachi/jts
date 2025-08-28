@@ -34,7 +34,6 @@ related: ['8000'] # Related to monitoring for system health displays
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/web/dashboard/', 'apps/mobile/', 'libs/shared/ui-components/'] # Key files to modify
 
 # === METADATA ===

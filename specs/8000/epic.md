@@ -34,7 +34,6 @@ related: ['2000', '3000', '4000', '5000', '6000', '7000', '9000', '10000', '1100
 
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
-worktree: '' # Worktree path (optional)
 files: ['apps/core/monitoring/', 'libs/shared/metrics/', 'libs/shared/tracing/', 'infrastructure/monitoring/'] # Key files to modify
 
 # === METADATA ===
