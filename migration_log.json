@@ -1,0 +1,350 @@
+{
+  "timestamp": "2025-08-29T21:22:13.929227",
+  "backup_dir": "specs_backup_20250829_212213",
+  "spec_mappings": {
+    "E08": "E01",
+    "E09": "E02",
+    "E03": "E03",
+    "E06": "E04",
+    "E10": "E05",
+    "E11": "E06",
+    "E01": "E07",
+    "E04": "E08",
+    "E07": "E09",
+    "E02": "E10",
+    "F07": "F01",
+    "F06": "F02",
+    "F04": "F03",
+    "T09": "T01",
+    "T07": "T02",
+    "T10": "T03",
+    "T11": "T04",
+    "T08": "T05",
+    "F03": "F04",
+    "F05": "F05",
+    "F02": "F06",
+    "F01": "F07",
+    "T02": "T01",
+    "T03": "T02",
+    "T06": "T03",
+    "T04": "T04",
+    "T01": "T05",
+    "T05": "T06",
+    "F08": "F08",
+    "F09": "F09",
+    "F10": "F10",
+    "F11": "F11",
+    "E05": "E11",
+    "E12": "E12"
+  },
+  "unique_ids": {
+    "E08": "1f758114",
+    "E09": "14ddd1cf",
+    "E03": "4f77aff5",
+    "E06": "09529e8c",
+    "E10": "fa9454bd",
+    "E11": "e6a6a630",
+    "E01": "19414fe5",
+    "E04": "2bf8a5f6",
+    "E07": "52a03976",
+    "E02": "0794937b",
+    "E05": "e2e706a8",
+    "E12": "084babdc",
+    "F07": "2f5d9f9a",
+    "F06": "4bf3e62f",
+    "F04": "95cda0f5",
+    "F03": "df8657a5",
+    "F05": "1d93f8d5",
+    "F02": "c82429e8",
+    "F01": "bfe1fcbb",
+    "F08": "28012b12",
+    "F09": "e257ba0d",
+    "F10": "b213ce22",
+    "T02": "a66a0683",
+    "T09": "13fe929b",
+    "T03": "1febff01",
+    "T06": "16a3fb2d",
+    "T04": "55c2ca09",
+    "T01": "69fdffc3",
+    "T07": "c1fa4d7b",
+    "T10": "436b2a48",
+    "T11": "77b1e038",
+    "T08": "fd9c54b7",
+    "T05": "44be7daa",
+    "F11": "643b0662"
+  },
+  "migrations": [
+    {
+      "type": "spec",
+      "old_id": "E08",
+      "new_id": "E01",
+      "unique_id": "1f758114",
+      "old_path": "specs/E08/spec.md",
+      "new_path": "specs/E01/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "E09",
+      "new_id": "E02",
+      "unique_id": "14ddd1cf",
+      "old_path": "specs/E09/spec.md",
+      "new_path": "specs/E02/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "E03",
+      "new_id": "E03",
+      "unique_id": "4f77aff5",
+      "old_path": "specs/E03/spec.md",
+      "new_path": "specs/E03/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "E06",
+      "new_id": "E04",
+      "unique_id": "09529e8c",
+      "old_path": "specs/E06/spec.md",
+      "new_path": "specs/E04/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "E10",
+      "new_id": "E05",
+      "unique_id": "fa9454bd",
+      "old_path": "specs/E10/spec.md",
+      "new_path": "specs/E05/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "E11",
+      "new_id": "E06",
+      "unique_id": "e6a6a630",
+      "old_path": "specs/E11/spec.md",
+      "new_path": "specs/E06/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "E01",
+      "new_id": "E07",
+      "unique_id": "19414fe5",
+      "old_path": "specs/E01/spec.md",
+      "new_path": "specs/E07/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "E04",
+      "new_id": "E08",
+      "unique_id": "2bf8a5f6",
+      "old_path": "specs/E04/spec.md",
+      "new_path": "specs/E08/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "E07",
+      "new_id": "E09",
+      "unique_id": "52a03976",
+      "old_path": "specs/E07/spec.md",
+      "new_path": "specs/E09/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "E02",
+      "new_id": "E10",
+      "unique_id": "0794937b",
+      "old_path": "specs/E02/spec.md",
+      "new_path": "specs/E10/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "E05",
+      "new_id": "E11",
+      "unique_id": "e2e706a8",
+      "old_path": "specs/E05/spec.md",
+      "new_path": "specs/E11/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "E12",
+      "new_id": "E12",
+      "unique_id": "084babdc",
+      "old_path": "specs/E12/spec.md",
+      "new_path": "specs/E12/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "F07",
+      "new_id": "F01",
+      "unique_id": "2f5d9f9a",
+      "old_path": "specs/E02/F07/spec.md",
+      "new_path": "specs/E10/F01/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "F06",
+      "new_id": "F02",
+      "unique_id": "4bf3e62f",
+      "old_path": "specs/E02/F06/spec.md",
+      "new_path": "specs/E10/F02/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "F04",
+      "new_id": "F03",
+      "unique_id": "95cda0f5",
+      "old_path": "specs/E02/F04/spec.md",
+      "new_path": "specs/E10/F03/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "F03",
+      "new_id": "F04",
+      "unique_id": "df8657a5",
+      "old_path": "specs/E02/F03/spec.md",
+      "new_path": "specs/E10/F04/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "F05",
+      "new_id": "F05",
+      "unique_id": "1d93f8d5",
+      "old_path": "specs/E02/F05/spec.md",
+      "new_path": "specs/E10/F05/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "F02",
+      "new_id": "F06",
+      "unique_id": "c82429e8",
+      "old_path": "specs/E02/F02/spec.md",
+      "new_path": "specs/E10/F06/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "F01",
+      "new_id": "F07",
+      "unique_id": "bfe1fcbb",
+      "old_path": "specs/E02/F01/spec.md",
+      "new_path": "specs/E10/F07/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "F08",
+      "new_id": "F08",
+      "unique_id": "28012b12",
+      "old_path": "specs/E02/F08/spec.md",
+      "new_path": "specs/E10/F08/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "F09",
+      "new_id": "F09",
+      "unique_id": "e257ba0d",
+      "old_path": "specs/E02/F09/spec.md",
+      "new_path": "specs/E10/F09/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "F10",
+      "new_id": "F10",
+      "unique_id": "b213ce22",
+      "old_path": "specs/E02/F10/spec.md",
+      "new_path": "specs/E10/F10/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "T02",
+      "new_id": "T01",
+      "unique_id": "a66a0683",
+      "old_path": "specs/E01/F01/T02/spec.md",
+      "new_path": "specs/E10/F07/T01/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "T09",
+      "new_id": "T01",
+      "unique_id": "13fe929b",
+      "old_path": "specs/E01/F04/T09/spec.md",
+      "new_path": "specs/E10/F03/T01/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "T03",
+      "new_id": "T02",
+      "unique_id": "1febff01",
+      "old_path": "specs/E01/F01/T03/spec.md",
+      "new_path": "specs/E10/F07/T02/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "T06",
+      "new_id": "T03",
+      "unique_id": "16a3fb2d",
+      "old_path": "specs/E01/F01/T06/spec.md",
+      "new_path": "specs/E10/F07/T03/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "T04",
+      "new_id": "T04",
+      "unique_id": "55c2ca09",
+      "old_path": "specs/E01/F01/T04/spec.md",
+      "new_path": "specs/E10/F07/T04/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "T01",
+      "new_id": "T05",
+      "unique_id": "69fdffc3",
+      "old_path": "specs/E01/F01/T01/spec.md",
+      "new_path": "specs/E10/F07/T05/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "T07",
+      "new_id": "T02",
+      "unique_id": "c1fa4d7b",
+      "old_path": "specs/E01/F04/T07/spec.md",
+      "new_path": "specs/E10/F03/T02/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "T10",
+      "new_id": "T03",
+      "unique_id": "436b2a48",
+      "old_path": "specs/E01/F04/T10/spec.md",
+      "new_path": "specs/E10/F03/T03/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "T11",
+      "new_id": "T04",
+      "unique_id": "77b1e038",
+      "old_path": "specs/E01/F04/T11/spec.md",
+      "new_path": "specs/E10/F03/T04/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "T08",
+      "new_id": "T05",
+      "unique_id": "fd9c54b7",
+      "old_path": "specs/E01/F04/T08/spec.md",
+      "new_path": "specs/E10/F03/T05/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "T05",
+      "new_id": "T06",
+      "unique_id": "44be7daa",
+      "old_path": "specs/E01/F01/T05/spec.md",
+      "new_path": "specs/E10/F07/T06/spec.md"
+    },
+    {
+      "type": "spec",
+      "old_id": "F11",
+      "new_id": "F11",
+      "unique_id": "643b0662",
+      "old_path": "specs/E02/F11/spec.md",
+      "new_path": "specs/E10/F11/spec.md"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+---
+# ============================================================================
+# SPEC METADATA - This entire frontmatter section contains the spec metadata
+# ============================================================================
+
+# === IDENTIFICATION ===
+id: T03 # Hierarchical position ID
+title: Security Scanning Workflows
+type: task
+
+# === HIERARCHY ===
+parent: F04
+children: []
+epic: E01
+domain: infrastructure
+
+# === WORKFLOW ===
+status: draft
+priority: high
+
+# === TRACKING ===
+created: '2025-08-28'
+updated: '2025-08-28'
+due_date: ''
+estimated_hours: 2
+actual_hours: 0
+
+# === DEPENDENCIES ===
+dependencies:
+- T01
+blocks: []
+related: []
+
+# === IMPLEMENTATION ===
+pull_requests: []
+commits: []
+context_file: 1043.context.md
+files:
+- .github/workflows/security.yml
+- .github/workflows/dependency-check.yml
+
+# === METADATA ===
+tags:
+- security
+- sast
+- dependencies
+- scanning
+effort: small
+risk: medium
+unique_id: b9141aff # Unique identifier (never changes)
+
+---
+
+# Security Scanning Workflows
+
+## Overview
+
+Implement comprehensive security scanning workflows including SAST (Static Application Security Testing), dependency vulnerability scanning, secret detection, and container security scanning for the JTS trading system.
+
+## Acceptance Criteria
+
+- [ ] **SAST Scanning**: CodeQL analysis for TypeScript/JavaScript
+- [ ] **Dependency Scanning**: npm audit and OWASP dependency check
+- [ ] **Secret Detection**: TruffleHog for credential scanning
+- [ ] **Container Scanning**: Trivy for Docker image vulnerabilities
+- [ ] **License Compliance**: Check for incompatible licenses
+- [ ] **Security Reports**: SARIF format integration with GitHub Security
+- [ ] **Scheduled Scans**: Weekly security audits
+- [ ] **PR Blocking**: Critical vulnerabilities block merges
+
+## Key Implementation Details
+
+- CodeQL for static code analysis
+- TruffleHog for secret detection in code history
+- npm audit with automatic fix attempts
+- Trivy scanning for container images
+- Integration with GitHub Security tab
+- Automated security alerts to team
