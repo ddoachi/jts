@@ -2,6 +2,43 @@ import * as fs from "fs";
 import * as handlebars from "handlebars";
 import { SpecMetadata } from "./parse-specs";
 
+// Normalize status values to standard format
+function normalizeStatus(status: string): string {
+  const normalizedMap: Record<string, string> = {
+    'done': 'completed',
+    'finished': 'completed',
+    'in-progress': 'in_progress',
+    'active': 'in_progress',
+    'todo': 'draft',
+    'pending': 'draft',
+  };
+  return normalizedMap[status] || status;
+}
+
+// Calculate parent status based on children
+function calculateParentStatus(children: any): string {
+  if (!children || Object.keys(children).length === 0) {
+    return 'draft'; // No children, keep original status
+  }
+
+  const childStatuses = Object.values(children).map((child: any) => 
+    normalizeStatus(child.status)
+  );
+
+  // If all children are completed, parent is completed
+  if (childStatuses.every(status => status === 'completed')) {
+    return 'completed';
+  }
+
+  // If any child is not draft, parent is in_progress
+  if (childStatuses.some(status => status !== 'draft')) {
+    return 'in_progress';
+  }
+
+  // All children are draft, parent stays draft
+  return 'draft';
+}
+
 // Register Handlebars helpers
 handlebars.registerHelper("percentage", (completed: number, total: number) => {
   return ((completed / total) * 100).toFixed(1);
@@ -14,15 +51,43 @@ handlebars.registerHelper("progressBar", (percentage: number) => {
 });
 
 handlebars.registerHelper("statusIcon", (status: string) => {
+  const normalizedStatus = normalizeStatus(status);
   const icons: Record<string, string> = {
     completed: "✅",
     in_progress: "🚧",
-    "in-progress": "🚧", // Handle both formats
     draft: "📋",
     blocked: "🚫",
   };
-  return icons[status] || "";
+  return icons[normalizedStatus] || "";
 });
+
+// Process hierarchy to normalize statuses and calculate parent statuses
+function processHierarchy(hierarchy: any): any {
+  if (!hierarchy || typeof hierarchy !== 'object') {
+    return hierarchy;
+  }
+
+  const result: any = {};
+  
+  for (const [key, item] of Object.entries(hierarchy)) {
+    const processedItem = { ...(item as any) };
+    
+    // First process children recursively
+    if (processedItem.children && Object.keys(processedItem.children).length > 0) {
+      processedItem.children = processHierarchy(processedItem.children);
+      
+      // Calculate parent status based on processed children
+      processedItem.status = calculateParentStatus(processedItem.children);
+    }
+    
+    // Normalize the item's own status
+    processedItem.status = normalizeStatus(processedItem.status);
+    
+    result[key] = processedItem;
+  }
+  
+  return result;
+}
 
 function sortSpecHierarchy(hierarchy: any): any {
   if (!hierarchy || typeof hierarchy !== 'object') {
@@ -58,6 +123,9 @@ function sortSpecHierarchy(hierarchy: any): any {
 function generateIndex() {
   // Load spec data
   const specData = JSON.parse(fs.readFileSync("specs-data.json", "utf-8"));
+  
+  // Process hierarchy to normalize statuses and calculate parent statuses
+  specData.hierarchy = processHierarchy(specData.hierarchy);
   specData.hierarchy = sortSpecHierarchy(specData.hierarchy);
 
   // Calculate additional stats
