@@ -21,15 +21,15 @@ Completed: 2/34
 
 ## 📁 Specifications
 
-### 📋 [E01 - Foundation &amp; Infrastructure Setup](E01/spec.md)
+### 🚧 [E01 - Foundation &amp; Infrastructure Setup](E01/spec.md)
 
-> Status: `draft` | Priority: `high`
+> Status: `in_progress` | Priority: `high`
 
-- 📋 [F01 - Storage Infrastructure Coordination](/F01/spec.md) `draft`
-  -  [T01 - Hot Storage (NVMe) Directory Setup](//T01/spec.md) `done`
-  -  [T02 - Database Mount Integration](//T02/spec.md) `done`
+- 🚧 [F01 - Storage Infrastructure Coordination](/F01/spec.md) `in_progress`
+  - ✅ [T01 - Hot Storage (NVMe) Directory Setup](//T01/spec.md) `completed`
+  - ✅ [T02 - Database Mount Integration](//T02/spec.md) `completed`
   - 📋 [T03 - Warm Storage (SATA) Setup](//T03/spec.md) `draft`
-  -  [T04 - Cold Storage (NAS) Integration](//T04/spec.md) `done`
+  - ✅ [T04 - Cold Storage (NAS) Integration](//T04/spec.md) `completed`
   - ✅ [T05 - Storage Performance Optimization](//T05/spec.md) `completed`
   - ✅ [T06 - Tiered Storage Management](//T06/spec.md) `completed`
 - 📋 [F02 - Development Environment Setup](/F02/spec.md) `draft`
