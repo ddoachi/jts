@@ -1,150 +1,112 @@
-# CLAUDE.md
+# CLAUDE.md - Optimized for Token Efficiency
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Quick Context
+**Project**: JTS - Automated trading system (NestJS/TypeScript)
+**Architecture**: Microservices, Docker, Nx monorepo
+**DBs**: PostgreSQL, ClickHouse, MongoDB, Redis
+**Queue**: Kafka | **APIs**: REST, gRPC, WebSocket
 
-## Project Overview
+## Critical Rules
+1. **NEVER** create files unless explicitly needed
+2. **ALWAYS** edit existing files over creating new
+3. **NO** documentation files unless requested
+4. **NO** comments in code unless asked
+5. **USE** existing patterns and libraries
 
-JTS (JooHan Trading System) is an automated trading system built with microservices architecture. It's designed to handle real-time market data, execute algorithmic trading strategies, and manage portfolios across multiple Korean exchanges.
-
-**Key Technologies:**
-- Backend: NestJS (TypeScript), FastAPI (Python)
-- Databases: PostgreSQL, ClickHouse, MongoDB, Redis
-- Message Queue: Kafka
-- Containerization: Docker
-- Monorepo: Nx workspace
-- API Protocols: REST, gRPC, WebSocket
-
-**Platform Requirements:**
-- Linux (primary development and production)
-- Windows (required for Creon API integration)
-
-## Development Commands
-
+## Commands Reference
 ```bash
-# Install dependencies
-npm install
-
-# Start development environment
-npm run dev
-
-# Build all services
-npm run build
-
-# Run tests
-npm run test
-
-# Run specific service tests
-npx nx test <service-name>
-
-# Lint code
-npm run lint
-
-# Type checking
-npm run type-check
-
-# Format code
-npm run format
-
-# Generate new service
-npx nx g @nestjs/schematics:app <service-name>
-
-# Run specific service in development
-npx nx serve <service-name>
+npm install          # Install deps
+npm run dev          # Start dev
+npm run test         # Run tests
+npm run lint         # Lint
+npm run type-check   # TypeScript check
+npx nx test <svc>    # Test specific service
+npx nx serve <svc>   # Run specific service
 ```
 
-## Architecture Overview
+## Spec Work Flow
+```bash
+# Capture discussions BEFORE implementation
+/spec_work {id} --discussion "what was discussed"
 
-### Microservices Structure
-The system follows a layered microservices architecture:
+# Track spec changes
+/spec_work {id} --revision "what changed"  
 
-1. **API Gateway Layer**: Entry point for external requests, handles authentication and routing
-2. **Core Services Layer**: Business logic services (trading, portfolio, strategy)
-3. **Data Services Layer**: Market data collection, storage, and real-time processing
-4. **Integration Layer**: Broker API integrations (Creon for Korean markets)
-5. **Infrastructure Layer**: Shared utilities, logging, monitoring
+# Start implementation
+/spec_work {id}
 
-### Service Communication
-- **Synchronous**: HTTP/REST for request-response, gRPC for internal service calls
-- **Asynchronous**: Kafka for event streaming and real-time data distribution
-- **Real-time**: WebSocket connections for live market data
+# Update index after completion
+/spec_work --update-index
+```
 
-### Database Usage Patterns
-- **PostgreSQL**: Core business data (users, strategies, orders, portfolios)
-- **ClickHouse**: Time-series market data and analytics
-- **MongoDB**: Configuration data and strategy parameters
-- **Redis**: Caching, session management, rate limiting
+## Service Structure
+```
+apps/
+  {service}/
+    src/
+      app/          # Main module
+      domain/       # Business logic
+      infra/        # External integrations
+      shared/       # Common utilities
+libs/
+  common/          # Shared types/utils
+```
 
-## Development Guidelines
+## Database Guidelines
+- PostgreSQL: Business data (users, orders)
+- ClickHouse: Time-series market data
+- MongoDB: Config/strategy params
+- Redis: Cache, sessions, rate limiting
 
-### Code Organization
-- Each microservice is self-contained with its own database schema
-- Shared utilities and types are in `libs/` directory
-- Domain-driven design patterns for business logic
-- Clean architecture with dependency injection
+## Testing Standards
+- 95% coverage for trading logic
+- Mock external APIs
+- Use existing test utilities
+- Integration tests for service communication
 
-### API Rate Limiting
-Broker APIs have strict rate limits that must be respected:
-- Implement exponential backoff for failed requests
-- Use Redis for distributed rate limiting across service instances
-- Queue non-urgent requests during market hours
+## Security
+- Env vars for secrets only
+- TLS for all service comms
+- Multi-factor for trading orders
+- Never log sensitive data
 
-### Trading Strategy Development
-- Strategies are defined using a custom DSL in TypeScript
-- All strategies must include backtesting capabilities
-- Risk management rules are enforced at the service level
-- Real-time strategy execution requires proper error handling
-
-### Testing Standards
-- Maintain 95% test coverage for core trading logic
-- Use mock data for broker API integrations during testing
-- Backtesting framework validates strategy performance
-- Integration tests verify service communication
+## Performance
+- Stream market data
+- Cache in Redis
+- Connection pooling
+- Optimize time-series queries
 
 ## Broker Integration
+- Creon (Windows/COM): Korean markets
+- Rate limits: 200/min, 20/sec
+- Implement circuit breaker
+- Retry with exponential backoff
 
-### Creon API (Korean Markets)
-- Runs on Windows service due to COM object requirements
-- Implements retry logic with circuit breaker pattern
-- Rate limiting: 200 requests per minute, 20 requests per second
-- Data normalization layer converts to standard format
+## Git Commits
+```bash
+# Format
+type(scope): description
 
-### Error Handling
-- All broker interactions must have timeout handling
-- Implement graceful degradation when APIs are unavailable
-- Log all API errors for monitoring and debugging
-- Maintain fallback data sources when possible
+# Types
+feat: New feature
+fix: Bug fix
+test: Testing
+docs: Documentation
+refactor: Code restructure
+perf: Performance
+chore: Maintenance
+```
 
-## Security Considerations
+## File Context Rules
+1. Read existing code patterns first
+2. Check package.json for available libs
+3. Follow existing naming conventions
+4. Use TypeScript strict mode
+5. Implement proper error handling
 
-- API keys and secrets stored in environment variables only
-- All inter-service communication uses TLS
-- Database connections use connection pooling with auth
-- Trading orders require multi-factor validation
-
-## Performance Guidelines
-
-### Real-time Data Processing
-- Use streaming data pipelines for market data
-- Implement data compression for high-frequency updates
-- Cache frequently accessed data in Redis
-- Optimize database queries for time-series data
-
-### Monitoring and Observability
-- All services expose health check endpoints
-- Structured logging with correlation IDs
-- Metrics collection for trading performance
-- Alert on critical system failures
-
-## Development Tips
-
-### Local Development
-- Use Docker Compose for service dependencies
-- Configure VS Code with recommended extensions
-- Set up pre-commit hooks for code formatting
-- Use environment-specific configuration files
-
-### Debugging Trading Logic
-- Enable detailed logging for strategy execution
-- Use backtesting mode to verify strategy changes
-- Monitor order execution latency and success rates
-- Validate data quality before strategy execution
+## Token Saving Tips
+- Use `@file` references instead of explaining
+- Batch related operations
+- Skip obvious confirmations
+- Focus on implementation, not explanation
+- Let context files track history
