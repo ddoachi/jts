@@ -42,9 +42,9 @@ jobs:
         run: |
           yarn run parse:specs
           {
-            echo 'specs_data<<EOF'
+            echo 'specs_data<<SPECS_DATA_END'
             cat specs-data.json
-            echo 'EOF'
+            echo 'SPECS_DATA_END'
           } >> $GITHUB_OUTPUT
           
       - name: Generate updated index.md
