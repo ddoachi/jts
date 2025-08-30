@@ -25,6 +25,12 @@ jobs:
           node-version: '20'
           cache: 'yarn'
           
+      - name: Configure yarn for public registry
+        run: |
+          yarn config set registry https://registry.npmjs.org/
+          yarn config delete httpProxy
+          yarn config delete httpsProxy
+          
       - name: Install dependencies
         run: yarn install --frozen-lockfile
         
