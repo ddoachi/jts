@@ -41,11 +41,7 @@ jobs:
         id: parse
         run: |
           yarn run parse:specs
-          {
-            echo 'specs_data<<SPECS_DATA_END'
-            cat specs-data.json
-            echo 'SPECS_DATA_END'
-          } >> $GITHUB_OUTPUT
+          echo "specs_data=$(jq -c . specs-data.json)" >> "$GITHUB_OUTPUT"
           
       - name: Generate updated index.md
         run: |
