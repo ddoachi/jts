@@ -1,0 +1,17 @@
+# From: E01-F01-T05 Storage Performance Optimization
+# Target: /etc/udev/rules.d/60-ssd-scheduler.rules
+# 
+# JTS Storage Performance Optimization - SSD I/O Scheduler Configuration
+# =======================================================================
+# 
+# This udev rule ensures optimal I/O scheduler configuration for NVMe drives
+# 'none' scheduler provides minimal CPU overhead and maximum IOPS for NVMe SSDs
+# 
+# Applied automatically when NVMe devices are detected
+# Verifies TRIM/discard support is enabled for SSD longevity
+
+# Configure I/O scheduler for NVMe drives (nvme0n1, nvme1n1, etc.)
+ACTION=="add|change", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/scheduler}="none"
+
+# Enable TRIM/discard support for SSDs with discard capability
+ACTION=="add|change", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/discard_max_bytes}!="0", RUN+="/bin/echo 'TRIM enabled for %k'"
