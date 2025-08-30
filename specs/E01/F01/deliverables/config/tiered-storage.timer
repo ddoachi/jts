@@ -1,0 +1,12 @@
+# Generated from spec: E01-F01-T06 (Tiered Storage Management)
+# Spec ID: 08fe2621
+
+[Unit]
+Description=Run tiered storage management daily
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target
