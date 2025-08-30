@@ -5,6 +5,7 @@ import matter from 'gray-matter';
 
 interface SpecMetadata {
   id: string;
+  hierarchical_id: string;
   title: string;
   type: 'epic' | 'feature' | 'task' | 'subtask';
   parent?: string;
@@ -39,18 +40,22 @@ async function parseAllSpecs(): Promise<SpecData> {
   const specs: Record<string, SpecMetadata> = {};
   const hierarchy: Record<string, any> = {};
   
-  // Parse each spec file
+  // Parse each spec file and generate hierarchical IDs from directory structure
   for (const file of specFiles) {
     const content = fs.readFileSync(file, 'utf-8');
     const { data } = matter(content);
     
-    // Extract directory structure for type-prefixed naming
+    // Extract directory structure: specs/E01/F01/T01/spec.md -> [E01, F01, T01]
     const dir = path.dirname(file);
-    const parts = dir.split('/');
-    const specId = parts[parts.length - 1]; // E01, F01, T01, etc.
+    const pathParts = dir.split('/').filter(part => part !== 'specs');
+    const dirId = pathParts[pathParts.length - 1]; // E01, F01, T01, etc. (directory name)
     
-    specs[specId] = {
-      id: specId,
+    // Generate hierarchical ID from directory path
+    const hierarchicalId = pathParts.join('-'); // E01, E01-F01, E01-F01-T01, etc.
+    
+    specs[hierarchicalId] = {
+      id: data.id, // Use actual ID from spec file frontmatter
+      hierarchical_id: hierarchicalId,
       title: data.title,
       type: data.type,
       parent: data.parent,
@@ -67,8 +72,8 @@ async function parseAllSpecs(): Promise<SpecData> {
     
     // Build hierarchy with unified children structure
     if (data.type === 'epic') {
-      hierarchy[specId] = {
-        ...specs[specId],
+      hierarchy[dirId] = {
+        ...specs[hierarchicalId],
         children: {}
       };
     } else if (data.type === 'feature' && data.parent) {
@@ -78,16 +83,16 @@ async function parseAllSpecs(): Promise<SpecData> {
           children: {} 
         };
       }
-      hierarchy[data.parent].children[specId] = {
-        ...specs[specId],
+      hierarchy[data.parent].children[dirId] = {
+        ...specs[hierarchicalId],
         children: {}
       };
     } else if (data.type === 'task' && data.parent) {
       // Find parent feature in hierarchy within the same epic
       const taskEpic = data.epic || data.parent.split('/')[0]; // Use explicit epic or derive from parent
       if (hierarchy[taskEpic] && hierarchy[taskEpic].children && hierarchy[taskEpic].children[data.parent]) {
-        hierarchy[taskEpic].children[data.parent].children[specId] = {
-          ...specs[specId],
+        hierarchy[taskEpic].children[data.parent].children[dirId] = {
+          ...specs[hierarchicalId],
           children: {}
         };
       }
@@ -98,8 +103,8 @@ async function parseAllSpecs(): Promise<SpecData> {
         for (const featureId in hierarchy[subtaskEpic].children) {
           const feature = hierarchy[subtaskEpic].children[featureId];
           if (feature.children && feature.children[data.parent]) {
-            feature.children[data.parent].children[specId] = {
-              ...specs[specId],
+            feature.children[data.parent].children[dirId] = {
+              ...specs[hierarchicalId],
               children: {}
             };
             break;
