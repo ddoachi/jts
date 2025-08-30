@@ -1,0 +1,46 @@
+{
+  "name": "specwork-dashboard",
+  "version": "1.0.0",
+  "description": "Specwork dashboard with frontend and backend",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "install:all": "yarn install && yarn workspace frontend install && yarn workspace backend install",
+    "dev": "concurrently \"yarn dev:backend\" \"yarn dev:frontend\"",
+    "dev:backend": "yarn workspace backend start:dev",
+    "dev:frontend": "yarn workspace frontend dev",
+    "build": "yarn build:backend && yarn build:frontend",
+    "build:backend": "yarn workspace backend build",
+    "build:frontend": "yarn workspace frontend build",
+    "start": "concurrently \"yarn start:backend\" \"yarn start:frontend\"",
+    "start:backend": "yarn workspace backend start:prod",
+    "start:frontend": "yarn workspace frontend start",
+    "test": "yarn test:backend && yarn test:frontend",
+    "test:backend": "yarn workspace backend test",
+    "test:frontend": "yarn workspace frontend test",
+    "lint": "yarn lint:backend && yarn lint:frontend",
+    "lint:backend": "yarn workspace backend lint",
+    "lint:frontend": "yarn workspace frontend lint",
+    "parse:specs": "npx ts-node scripts/parse-specs.ts",
+    "sync:database": "npx ts-node scripts/sync-database.ts",
+    "generate:index": "npx ts-node scripts/generate-index.ts",
+    "sync:all": "npm run parse:specs && npm run sync:database && npm run generate:index"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/node": "^24.3.0",
+    "axios": "^1.11.0",
+    "concurrently": "^8.2.2",
+    "glob": "^11.0.3",
+    "gray-matter": "^4.0.3",
+    "handlebars": "^4.7.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "nextjs": "^0.0.3"
+  }
+}
