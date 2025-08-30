@@ -15,7 +15,7 @@ epic: E01
 domain: infrastructure
 
 # === WORKFLOW ===
-status: done
+status: completed
 priority: high
 
 # === TRACKING ===
