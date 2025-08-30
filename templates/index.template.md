@@ -28,13 +28,13 @@ Completed: {{stats.completed.length}}/{{calculated.totalSpecs}}
 
 {{#if children}}
 {{#each children}}
-- {{statusIcon status}} [{{@key}} - {{title}}]({{../key}}/{{@key}}/spec.md) `{{status}}`
+- {{statusIcon status}} [{{@key}} - {{title}}]({{parent}}/{{@key}}/spec.md) `{{status}}`
 {{#if children}}
 {{#each children}}
-  - {{statusIcon status}} [{{@key}} - {{title}}]({{../../key}}/{{../key}}/{{@key}}/spec.md) `{{status}}`
+  - {{statusIcon status}} [{{@key}} - {{title}}]({{../parent}}/{{parent}}/{{@key}}/spec.md) `{{status}}`
 {{#if children}}
 {{#each children}}
-    - {{statusIcon status}} [{{@key}} - {{title}}]({{../../../key}}/{{../../key}}/{{../key}}/{{@key}}/spec.md) `{{status}}`
+    - {{statusIcon status}} [{{@key}} - {{title}}]({{../../parent}}/{{../parent}}/{{parent}}/{{@key}}/spec.md) `{{status}}`
 {{/each}}
 {{/if}}
 {{/each}}
