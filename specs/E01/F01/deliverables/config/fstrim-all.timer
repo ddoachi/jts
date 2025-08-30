@@ -1,0 +1,27 @@
+# From: E01-F01-T05 Storage Performance Optimization
+# Target: /etc/systemd/system/fstrim-all.timer
+#
+# JTS Storage Performance Optimization - TRIM Timer Configuration  
+# ================================================================
+#
+# This systemd timer schedules weekly TRIM operations for SSD longevity
+# Runs every Sunday at 2:00 AM to minimize impact on trading operations
+#
+# Benefits:
+# - Maintains SSD write performance over time
+# - Extends SSD lifespan through proper maintenance
+# - Automated execution reduces operational overhead
+# - Persistent scheduling survives system reboots
+
+[Unit]
+Description=Run fstrim weekly for SSD longevity
+Documentation=man:systemd.timer(5)
+Requires=fstrim-all.service
+
+[Timer]
+OnCalendar=Sun 02:00
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,27 @@
+# From: E01-F01-T05 Storage Performance Optimization  
+# Target: /etc/systemd/system/fstrim-all.service
+#
+# JTS Storage Performance Optimization - TRIM Service Configuration
+# ================================================================
+#
+# This systemd service performs TRIM operations on all NVMe filesystems
+# to maintain SSD performance and longevity over time
+#
+# Targets all critical JTS storage mount points:
+# - PostgreSQL database storage
+# - ClickHouse time-series storage  
+# - Kafka log storage
+# - MongoDB document storage
+# - Redis cache storage
+# - Docker JTS container storage
+# - Local backup storage
+
+[Unit]
+Description=Discard unused filesystem blocks on all NVMe filesystems
+Documentation=man:fstrim(8)
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'for mount in /var/lib/postgresql /var/lib/clickhouse /var/lib/kafka /var/lib/mongodb /var/lib/redis /var/lib/docker-jts /data/local-backup; do if mountpoint -q "$mount"; then echo "Trimming $mount"; /sbin/fstrim -v "$mount"; else echo "Skipping $mount (not mounted)"; fi; done'
+StandardOutput=journal
+StandardError=journal
