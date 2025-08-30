@@ -129,7 +129,7 @@ test_storage_tier() {
     
     local tested_any=false
     for mount in "${mounts[@]}"; do
-        if mountpoint -q "$mount" 2>/dev/null; then
+        if [ -d "$mount" ]; then
             tested_any=true
             echo -e "\n📊 Testing $mount"
             test_sequential_performance "$mount" "$tier_name"
@@ -137,7 +137,7 @@ test_storage_tier() {
                 test_random_iops "$mount" "$tier_name"  
             fi
         else
-            echo -e "${YELLOW}⚠️  $mount not mounted, skipping${NC}"
+            echo -e "${YELLOW}⚠️  $mount directory not found, skipping${NC}"
         fi
     done
     
@@ -155,8 +155,8 @@ echo "Storage devices:"
 lsblk -d -o NAME,SIZE,MODEL | grep -E "(nvme|sda)"
 echo ""
 
-# Test Hot Storage (NVMe) - Critical for trading performance
-hot_mounts=("/var/lib/postgresql" "/var/lib/clickhouse" "/var/lib/kafka" "/var/lib/mongodb" "/var/lib/redis")
+# Test Hot Storage (NVMe) - Critical for trading performance  
+hot_mounts=("/data/jts/hot/postgresql" "/data/jts/hot/clickhouse" "/data/jts/hot/kafka" "/data/jts/hot/mongodb" "/data/jts/hot/redis")
 test_storage_tier "Hot" "🔥" "${hot_mounts[@]}"
 
 # Test Warm Storage (SATA) - For backups and logs
@@ -203,8 +203,19 @@ validate_performance_thresholds() {
     # Function to extract throughput from dd output
     extract_throughput() {
         local dd_output="$1"
-        # dd output format: "1073741824 bytes (1.1 GB, 1.0 GiB) copied, 1.23456 s, 869 MB/s"
-        echo "$dd_output" | grep -o "[0-9.]\+ MB/s" | grep -o "[0-9.]\+" | head -1
+        # Handle both English and Korean dd output formats
+        # English: "1073741824 bytes (1.1 GB, 1.0 GiB) copied, 1.23456 s, 869 MB/s"  
+        # Korean: "268435456 바이트 (268 MB, 256 MiB) 복사함, 0.073157 s, 3.7 GB/s"
+        local throughput=$(echo "$dd_output" | grep -o "[0-9.]\+ [GM]B/s" | head -1 | awk '{print $1}')
+        local unit=$(echo "$dd_output" | grep -o "[0-9.]\+ [GM]B/s" | head -1 | awk '{print $2}')
+        
+        if [ "$unit" = "GB/s" ]; then
+            # Convert GB/s to MB/s
+            echo "$throughput * 1000" | bc -l 2>/dev/null | cut -d. -f1
+        else
+            # Already MB/s
+            echo "$throughput" | cut -d. -f1
+        fi
     }
     
     # Function to validate throughput against threshold
@@ -228,8 +239,8 @@ validate_performance_thresholds() {
     local validation_performed=false
     
     # Validate Hot Storage performance
-    for mount in "/var/lib/postgresql" "/var/lib/clickhouse"; do
-        if mountpoint -q "$mount" 2>/dev/null && [ -w "$mount" ]; then
+    for mount in "/data/jts/hot/postgresql" "/data/jts/hot/clickhouse"; do
+        if [ -d "$mount" ] && [ -w "$mount" ]; then
             validation_performed=true
             echo "🔥 Testing $mount for trading system requirements..."
             
