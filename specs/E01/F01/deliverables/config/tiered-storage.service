@@ -1,0 +1,13 @@
+# Generated from spec: E01-F01-T06 (Tiered Storage Management)
+# Spec ID: 08fe2621
+
+[Unit]
+Description=JTS Tiered Storage Management
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/joohan/dev/project-jts/jts/scripts/tiered-storage.sh all
+User=root
+StandardOutput=journal
+StandardError=journal
