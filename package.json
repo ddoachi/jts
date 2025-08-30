@@ -1,1 +1,22 @@
-{}
+{
+  "name": "joohan-trading-system",
+  "version": "1.0.0",
+  "description": "Joohan Trading System - Automated Trading Platform with Multi-Broker Integration",
+  "private": true,
+  "scripts": {
+    "parse:specs": "yarn exec ts-node scripts/parse-specs.ts",
+    "generate:index": "yarn exec ts-node scripts/generate-index.ts",
+    "sync:database": "yarn exec ts-node scripts/sync-database.ts",
+    "sync:all": "yarn run parse:specs && yarn run generate:index && yarn run sync:database"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/node": "^24.3.0",
+    "axios": "^1.11.0",
+    "glob": "^11.0.3",
+    "gray-matter": "^4.0.3",
+    "handlebars": "^4.7.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}

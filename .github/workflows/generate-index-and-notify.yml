@@ -1,0 +1,64 @@
+name: Generate Index and Notify Dashboard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'specs/**/*.md'
+  workflow_dispatch: # Manual trigger option
+
+jobs:
+  generate-and-notify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Need to push index.md updates
+      
+    steps:
+      - name: Checkout JTS repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+          
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        
+      - name: Parse all spec files
+        id: parse
+        run: |
+          yarn run parse:specs
+          echo "specs_data=$(cat specs-data.json)" >> $GITHUB_OUTPUT
+          
+      - name: Generate updated index.md
+        run: |
+          yarn run generate:index
+          
+      - name: Commit index.md to JTS if changed
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          if git diff --quiet specs/index.md; then
+            echo "No changes to index.md"
+            echo "index_changed=false" >> $GITHUB_OUTPUT
+          else
+            git add specs/index.md
+            git commit -m "Auto-update index.md with latest spec statistics [skip ci]"
+            git push
+            echo "index_changed=true" >> $GITHUB_OUTPUT
+          fi
+        id: commit
+          
+      - name: Notify specwork dashboard
+        if: steps.commit.outputs.index_changed == 'true'
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.DASHBOARD_TRIGGER_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/ddoachi/specwork_dashboard/dispatches \
+            -d '{"event_type":"index_updated","client_payload":{"source":"jts","commit":"${{ github.sha }}","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)"}}'
