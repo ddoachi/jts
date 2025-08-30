@@ -35,6 +35,77 @@ interface SpecData {
   hierarchy: Record<string, any>;
 }
 
+// Normalize status values to standard format
+function normalizeStatus(status: string): string {
+  const normalizedMap: Record<string, string> = {
+    'done': 'completed',
+    'finished': 'completed',
+    'in-progress': 'in_progress',
+    'active': 'in_progress',
+    'todo': 'draft',
+    'pending': 'draft',
+  };
+  return normalizedMap[status] || status;
+}
+
+// Calculate parent status based on children
+function calculateParentStatus(children: any): string {
+  if (!children || Object.keys(children).length === 0) {
+    return 'draft'; // No children, keep original status
+  }
+
+  const childStatuses = Object.values(children).map((child: any) => 
+    normalizeStatus(child.status)
+  );
+
+  // If all children are completed, parent is completed
+  if (childStatuses.every(status => status === 'completed')) {
+    return 'completed';
+  }
+
+  // If any child is not draft, parent is in_progress
+  if (childStatuses.some(status => status !== 'draft')) {
+    return 'in_progress';
+  }
+
+  // All children are draft, parent stays draft
+  return 'draft';
+}
+
+// Process hierarchy to normalize statuses and calculate parent statuses
+function processHierarchy(hierarchy: any, specs: Record<string, SpecMetadata>): any {
+  if (!hierarchy || typeof hierarchy !== 'object') {
+    return hierarchy;
+  }
+
+  const result: any = {};
+  
+  for (const [key, item] of Object.entries(hierarchy)) {
+    const processedItem = { ...(item as any) };
+    
+    // First process children recursively
+    if (processedItem.children && Object.keys(processedItem.children).length > 0) {
+      processedItem.children = processHierarchy(processedItem.children, specs);
+      
+      // Calculate parent status based on processed children
+      const calculatedStatus = calculateParentStatus(processedItem.children);
+      processedItem.status = calculatedStatus;
+      
+      // Update the specs record with the calculated status
+      if (specs[processedItem.hierarchical_id]) {
+        specs[processedItem.hierarchical_id].status = calculatedStatus;
+      }
+    }
+    
+    // Normalize the item's own status
+    processedItem.status = normalizeStatus(processedItem.status);
+    
+    result[key] = processedItem;
+  }
+  
+  return result;
+}
+
 async function parseAllSpecs(): Promise<SpecData> {
   const specFiles = await glob('specs/**/spec.md');
   const specs: Record<string, SpecMetadata> = {};
@@ -43,7 +114,17 @@ async function parseAllSpecs(): Promise<SpecData> {
   // Parse each spec file and generate hierarchical IDs from directory structure
   for (const file of specFiles) {
     const content = fs.readFileSync(file, 'utf-8');
-    const { data } = matter(content);
+    const YAML = require('yaml');
+    
+    const { data } = matter(content, {
+      engines: {
+        yaml: {
+          parse: (str: string) => {
+            return YAML.parse(str, { schema: 'failsafe' });
+          }
+        }
+      }
+    });
     
     // Extract directory structure: specs/E01/F01/T01/spec.md -> [E01, F01, T01]
     const dir = path.dirname(file);
@@ -54,7 +135,7 @@ async function parseAllSpecs(): Promise<SpecData> {
     const hierarchicalId = pathParts.join('-'); // E01, E01-F01, E01-F01-T01, etc.
     
     specs[hierarchicalId] = {
-      id: data.id, // Use actual ID from spec file frontmatter
+      id: String(data.id), // Ensure ID is always a string
       hierarchical_id: hierarchicalId,
       title: data.title,
       type: data.type,
@@ -114,6 +195,9 @@ async function parseAllSpecs(): Promise<SpecData> {
     }
   }
   
+  // Process hierarchy to normalize statuses and calculate parent statuses
+  const processedHierarchy = processHierarchy(hierarchy, specs);
+  
   // Calculate statistics
   const stats = {
     total_epics: Object.values(specs).filter(s => s.type === 'epic').length,
@@ -126,7 +210,7 @@ async function parseAllSpecs(): Promise<SpecData> {
     blocked: Object.keys(specs).filter(id => specs[id].status === 'blocked'),
   };
   
-  const specData: SpecData = { specs, stats, hierarchy };
+  const specData: SpecData = { specs, stats, hierarchy: processedHierarchy };
   
   // Save to JSON file
   fs.writeFileSync('specs-data.json', JSON.stringify(specData, null, 2));
