@@ -83,31 +83,26 @@ async function parseAllSpecs(): Promise<SpecData> {
         children: {}
       };
     } else if (data.type === 'task' && data.parent) {
-      // Find parent feature in hierarchy
-      for (const epicId in hierarchy) {
-        const epic = hierarchy[epicId];
-        if (epic.children && epic.children[data.parent]) {
-          epic.children[data.parent].children[specId] = {
-            ...specs[specId],
-            children: {}
-          };
-          break;
-        }
+      // Find parent feature in hierarchy within the same epic
+      const taskEpic = data.epic || data.parent.split('/')[0]; // Use explicit epic or derive from parent
+      if (hierarchy[taskEpic] && hierarchy[taskEpic].children && hierarchy[taskEpic].children[data.parent]) {
+        hierarchy[taskEpic].children[data.parent].children[specId] = {
+          ...specs[specId],
+          children: {}
+        };
       }
     } else if (data.type === 'subtask' && data.parent) {
-      // Find parent task in hierarchy
-      for (const epicId in hierarchy) {
-        const epic = hierarchy[epicId];
-        if (epic.children) {
-          for (const featureId in epic.children) {
-            const feature = epic.children[featureId];
-            if (feature.children && feature.children[data.parent]) {
-              feature.children[data.parent].children[specId] = {
-                ...specs[specId],
-                children: {}
-              };
-              break;
-            }
+      // Find parent task in hierarchy within the same epic
+      const subtaskEpic = data.epic || data.parent.split('/')[0]; // Use explicit epic or derive from parent
+      if (hierarchy[subtaskEpic] && hierarchy[subtaskEpic].children) {
+        for (const featureId in hierarchy[subtaskEpic].children) {
+          const feature = hierarchy[subtaskEpic].children[featureId];
+          if (feature.children && feature.children[data.parent]) {
+            feature.children[data.parent].children[specId] = {
+              ...specs[specId],
+              children: {}
+            };
+            break;
           }
         }
       }

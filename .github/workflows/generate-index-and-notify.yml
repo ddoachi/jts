@@ -25,20 +25,23 @@ jobs:
           node-version: '20'
           cache: 'yarn'
           
-      - name: Configure yarn for public registry
+      - name: Configure yarn for CI
         run: |
-          yarn config set registry https://registry.npmjs.org/
-          yarn config delete httpProxy
-          yarn config delete httpsProxy
+          # Remove any existing yarn configuration
+          rm -f .yarnrc .yarnrc.yml
+          # Set registry explicitly for CI environment
+          echo 'registry "https://registry.npmjs.org/"' > .yarnrc
+          # Clear yarn cache to avoid local registry artifacts
+          yarn cache clean
           
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
+      - name: Install dependencies (bypass local registry)
+        run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
         
       - name: Parse all spec files
         id: parse
         run: |
           yarn run parse:specs
-          echo "specs_data=$(cat specs-data.json)" >> $GITHUB_OUTPUT
+          echo "specs_data=$(jq -c . specs-data.json)" >> "$GITHUB_OUTPUT"
           
       - name: Generate updated index.md
         run: |
