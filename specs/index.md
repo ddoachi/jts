@@ -21,14 +21,43 @@ Completed: 2/34
 
 ## 📁 Specifications
 
-### 📋 [E01 - Foundation &amp; Infrastructure Setup](E01/spec.md)
+### 🚧 [E01 - Foundation &amp; Infrastructure Setup](E01/spec.md)
 
-> Status: `draft` | Priority: `high`
+> Status: `in_progress` | Priority: `high`
 
-- 📋 [F01 - Storage Infrastructure Coordination](/F01/spec.md) `draft`
+- 🚧 [F01 - Storage Infrastructure Coordination](/F01/spec.md) `in_progress`
+  - ✅ [T01 - Hot Storage (NVMe) Directory Setup](//T01/spec.md) `completed`
+  - ✅ [T02 - Database Mount Integration](//T02/spec.md) `completed`
+  - 📋 [T03 - Warm Storage (SATA) Setup](//T03/spec.md) `draft`
+  - ✅ [T04 - Cold Storage (NAS) Integration](//T04/spec.md) `completed`
+  - ✅ [T05 - Storage Performance Optimization](//T05/spec.md) `completed`
+  - ✅ [T06 - Tiered Storage Management](//T06/spec.md) `completed`
 - 📋 [F02 - Development Environment Setup](/F02/spec.md) `draft`
+  - 📋 [T01 - Node.js and Yarn Environment Setup](//T01/spec.md) `draft`
+  - 📋 [T02 - VS Code IDE Configuration](//T02/spec.md) `draft`
+  - 📋 [T03 - Docker and Database Services Setup](//T03/spec.md) `draft`
+  - 📋 [T04 - Environment Configuration and Secrets Management](//T04/spec.md) `draft`
+  - 📋 [T05 - Code Quality Tools and Git Hooks](//T05/spec.md) `draft`
+  - 📋 [T06 - Development Scripts and Automation](//T06/spec.md) `draft`
 - 📋 [F03 - Monorepo Structure and Tooling](/F03/spec.md) `draft`
+  - 📋 [T01 - Initialize Nx Workspace with Base Configuration](//T01/spec.md) `draft`
+  - 📋 [T02 - Configure Shared Libraries Infrastructure](//T02/spec.md) `draft`
+  - 📋 [T03 - Set Up Build and Testing Infrastructure](//T03/spec.md) `draft`
+  - 📋 [T04 - Implement TypeScript Configuration and Linting](//T04/spec.md) `draft`
+  - 📋 [T05 - Create Development Tooling and Generators](//T05/spec.md) `draft`
+  - 📋 [T06 - Configure CI/CD Pipeline and Automation](//T06/spec.md) `draft`
 - 📋 [F04 - CI/CD Pipeline Foundation](/F04/spec.md) `draft`
+  - 📋 [T01 - GitHub Actions Workflow Structure Setup](//T01/spec.md) `draft`
+  - 📋 [T02 - Main CI Pipeline Configuration](//T02/spec.md) `draft`
+  - 📋 [T03 - Security Scanning Workflows](//T03/spec.md) `draft`
+  - 📋 [T04 - Deployment Pipeline Workflows](//T04/spec.md) `draft`
+  - 📋 [T05 - Docker Multi-stage Build Configuration](//T05/spec.md) `draft`
+  - 📋 [T06 - Docker Compose CI Testing Environment](//T06/spec.md) `draft`
+  - 📋 [T07 - Test Automation and Coverage Configuration](//T07/spec.md) `draft`
+  - 📋 [T08 - Performance Testing Workflow](//T08/spec.md) `draft`
+  - 📋 [T09 - Release Management and Semantic Versioning](//T09/spec.md) `draft`
+  - 📋 [T10 - Branch Protection and Quality Gates](//T10/spec.md) `draft`
+  - 📋 [T11 - CI/CD Monitoring and Notifications](//T11/spec.md) `draft`
 - 📋 [F05 - Database Infrastructure](/F05/spec.md) `draft`
 - 📋 [F06 - Message Queue Setup](/F06/spec.md) `draft`
 - 📋 [F07 - Service Communication Patterns](/F07/spec.md) `draft`
@@ -41,38 +70,9 @@ Completed: 2/34
 > Status: `draft` | Priority: `high`
 
 - 📋 [F01 - Unified Broker Interface Foundation](/F01/spec.md) `draft`
-  -  [T01 - Hot Storage (NVMe) Directory Setup](//T01/spec.md) `done`
-  -  [T02 - Database Mount Integration](//T02/spec.md) `done`
-  - 📋 [T03 - Warm Storage (SATA) Setup](//T03/spec.md) `draft`
-  -  [T04 - Cold Storage (NAS) Integration](//T04/spec.md) `done`
-  - ✅ [T05 - Storage Performance Optimization](//T05/spec.md) `completed`
-  - ✅ [T06 - Tiered Storage Management](//T06/spec.md) `completed`
 - 📋 [F02 - KIS REST API Integration](/F02/spec.md) `draft`
-  - 📋 [T01 - Node.js and Yarn Environment Setup](//T01/spec.md) `draft`
-  - 📋 [T02 - VS Code IDE Configuration](//T02/spec.md) `draft`
-  - 📋 [T03 - Docker and Database Services Setup](//T03/spec.md) `draft`
-  - 📋 [T04 - Environment Configuration and Secrets Management](//T04/spec.md) `draft`
-  - 📋 [T05 - Code Quality Tools and Git Hooks](//T05/spec.md) `draft`
-  - 📋 [T06 - Development Scripts and Automation](//T06/spec.md) `draft`
 - 📋 [F03 - KIS WebSocket Real-time Data Integration](/F03/spec.md) `draft`
-  - 📋 [T01 - Initialize Nx Workspace with Base Configuration](//T01/spec.md) `draft`
-  - 📋 [T02 - Configure Shared Libraries Infrastructure](//T02/spec.md) `draft`
-  - 📋 [T03 - Set Up Build and Testing Infrastructure](//T03/spec.md) `draft`
-  - 📋 [T04 - Implement TypeScript Configuration and Linting](//T04/spec.md) `draft`
-  - 📋 [T05 - Create Development Tooling and Generators](//T05/spec.md) `draft`
-  - 📋 [T06 - Configure CI/CD Pipeline and Automation](//T06/spec.md) `draft`
 - 📋 [F04 - Creon Windows COM Integration Service](/F04/spec.md) `draft`
-  - 📋 [T01 - GitHub Actions Workflow Structure Setup](//T01/spec.md) `draft`
-  - 📋 [T02 - Main CI Pipeline Configuration](//T02/spec.md) `draft`
-  - 📋 [T03 - Security Scanning Workflows](//T03/spec.md) `draft`
-  - 📋 [T04 - Deployment Pipeline Workflows](//T04/spec.md) `draft`
-  - 📋 [T05 - Docker Multi-stage Build Configuration](//T05/spec.md) `draft`
-  - 📋 [T06 - Docker Compose CI Testing Environment](//T06/spec.md) `draft`
-  - 📋 [T07 - Test Automation and Coverage Configuration](//T07/spec.md) `draft`
-  - 📋 [T08 - Performance Testing Workflow](//T08/spec.md) `draft`
-  - 📋 [T09 - Release Management and Semantic Versioning](//T09/spec.md) `draft`
-  - 📋 [T10 - Branch Protection and Quality Gates](//T10/spec.md) `draft`
-  - 📋 [T11 - CI/CD Monitoring and Notifications](//T11/spec.md) `draft`
 - 📋 [F05 - Redis-based Distributed Rate Limiting System](/F05/spec.md) `draft`
 - 📋 [F06 - Multi-Account Pool Management System](/F06/spec.md) `draft`
 - 📋 [F07 - Smart Order Routing and Execution Engine](/F07/spec.md) `draft`
