@@ -15,15 +15,15 @@ epic: E01
 domain: infrastructure
 
 # === WORKFLOW ===
-status: draft
+status: completed
 priority: high
 
 # === TRACKING ===
 created: '2025-08-27'
-updated: '2025-08-27'
+updated: '2025-08-31'
 due_date: ''
 estimated_hours: 2
-actual_hours: 0
+actual_hours: 1
 
 # === DEPENDENCIES ===
 dependencies:
@@ -33,12 +33,19 @@ blocks:
 - T06
 related: []
 pull_requests: []
-commits: []
-context_file: 1024.context.md
+commits: 
+- text: "feat(E01-F02-T04): implement environment configuration and secrets management"
+  hash: "8d06b99"
+  link: "https://github.com/ddoachi/jts/commit/8d06b99"
+context_file: context.md
 files:
 - .env.example
 - .gitignore
 - scripts/setup-env.sh
+- scripts/validate-env.js
+- scripts/creon-launcher.bat
+- scripts/encrypt-credentials.ps1
+- scripts/decrypt-and-run.ps1
 - docs/ENVIRONMENT.md
 
 # === METADATA ===
@@ -60,14 +67,14 @@ Implement the two-file environment strategy (.env.example + .env.local) with sec
 
 ## Acceptance Criteria
 
-- [ ] `.env.example` template with dummy values created
-- [ ] Documentation for `.env.local` setup
-- [ ] Secure Creon credential storage structure
-- [ ] Multi-account KIS configuration (2 accounts)
-- [ ] Git ignore patterns for sensitive files
-- [ ] Environment validation script
-- [ ] Setup script for initial configuration
-- [ ] Clear documentation for all environment variables
+- [x] `.env.example` template with dummy values created
+- [x] Documentation for `.env.local` setup
+- [x] Secure Creon credential storage structure
+- [x] Multi-account KIS configuration (2 accounts)
+- [x] Git ignore patterns for sensitive files
+- [x] Environment validation script
+- [x] Setup script for initial configuration
+- [x] Clear documentation for all environment variables
 
 ## Technical Approach
 
