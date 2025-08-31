@@ -115,7 +115,7 @@ test_connections() {
     
     # Test PostgreSQL
     print_message $YELLOW "Testing PostgreSQL..."
-    if docker compose -f $COMPOSE_FILE -p $PROJECT_NAME exec -T postgres pg_isready -U jts_admin &> /dev/null; then
+    if docker exec jts-postgres-dev pg_isready -U jts_admin &> /dev/null; then
         print_message $GREEN "✓ PostgreSQL is ready"
     else
         print_message $RED "✗ PostgreSQL is not ready"
@@ -123,7 +123,7 @@ test_connections() {
     
     # Test MongoDB
     print_message $YELLOW "Testing MongoDB..."
-    if docker compose -f $COMPOSE_FILE -p $PROJECT_NAME exec -T mongodb mongosh --eval "db.adminCommand('ping')" &> /dev/null; then
+    if docker exec jts-mongodb-dev mongosh --eval "db.adminCommand('ping')" &> /dev/null; then
         print_message $GREEN "✓ MongoDB is ready"
     else
         print_message $RED "✗ MongoDB is not ready"
@@ -131,7 +131,7 @@ test_connections() {
     
     # Test Redis
     print_message $YELLOW "Testing Redis..."
-    if docker compose -f $COMPOSE_FILE -p $PROJECT_NAME exec -T redis redis-cli ping &> /dev/null; then
+    if docker exec jts-redis-dev redis-cli ping &> /dev/null; then
         print_message $GREEN "✓ Redis is ready"
     else
         print_message $RED "✗ Redis is not ready"
@@ -147,7 +147,7 @@ test_connections() {
     
     # Test Kafka
     print_message $YELLOW "Testing Kafka..."
-    if docker compose -f $COMPOSE_FILE -p $PROJECT_NAME exec -T kafka kafka-broker-api-versions --bootstrap-server localhost:9093 &> /dev/null; then
+    if docker exec jts-kafka-dev kafka-broker-api-versions --bootstrap-server localhost:9093 &> /dev/null; then
         print_message $GREEN "✓ Kafka is ready"
     else
         print_message $RED "✗ Kafka is not ready"

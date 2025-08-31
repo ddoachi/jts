@@ -10,7 +10,7 @@ services:
     container_name: jts-postgres-dev
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "5442:5432"
     environment:
       POSTGRES_DB: jts_trading_dev
       POSTGRES_USER: jts_admin
@@ -40,7 +40,8 @@ services:
       CLICKHOUSE_PASSWORD: dev_password
     volumes:
       - clickhouse_dev_data:/var/lib/clickhouse
-      - ./configs/clickhouse-config.xml:/etc/clickhouse-server/config.xml:ro
+      # Custom config disabled for now - using defaults
+      # - ./configs/clickhouse-config.xml:/etc/clickhouse-server/config.xml:ro
     ulimits:
       nofile:
         soft: 262144

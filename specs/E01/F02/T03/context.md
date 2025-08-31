@@ -86,7 +86,7 @@
 2. Run `./scripts/dev-services.sh start` to start all services
 3. Run `./scripts/dev-services.sh test` to verify connections
 4. Services will be available at:
-   - PostgreSQL: localhost:5432
+   - PostgreSQL: localhost:5442 (changed from 5432 to avoid conflicts)
    - ClickHouse: localhost:8123 (HTTP), localhost:9000 (Native)
    - MongoDB: localhost:27017
    - Redis: localhost:6379
