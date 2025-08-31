@@ -9,9 +9,9 @@ title: Unified Broker Interface Foundation
 type: feature
 
 # === HIERARCHY ===
-parent: [E02](../spec.md)
+parent: "[E02](../spec.md)"
 children: []
-epic: [E02](../spec.md)
+epic: "[E02](../spec.md)"
 domain: broker-interface
 
 # === WORKFLOW ===
@@ -27,15 +27,15 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - [E01](../../E01/spec.md)
+  - "[E01](../../E01/spec.md)"
 blocks:
-  - [F02](../F02/spec.md)
-  - [F03](../F03/spec.md)
-  - [F04](../F04/spec.md)
-  - [F06](../F06/spec.md)
-  - [F07](../F07/spec.md)
-  - [F08](../F08/spec.md)
-  - [F10](../F10/spec.md)
+  - "[F02](../F02/spec.md)"
+  - "[F03](../F03/spec.md)"
+  - "[F04](../F04/spec.md)"
+  - "[F06](../F06/spec.md)"
+  - "[F07](../F07/spec.md)"
+  - "[F08](../F08/spec.md)"
+  - "[F10](../F10/spec.md)"
 related: []
 branch: ''
 files:

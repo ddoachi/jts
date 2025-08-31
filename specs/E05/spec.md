@@ -27,15 +27,15 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - [E01](../E01/spec.md)
-  - [E02](../E02/spec.md)
-  - [E03](../E03/spec.md)
-  - [E04](../E04/spec.md)
+  - "[E01](../E01/spec.md)"
+  - "[E02](../E02/spec.md)"
+  - "[E03](../E03/spec.md)"
+  - "[E04](../E04/spec.md)"
 blocks:
-  - [E06](../E06/spec.md)
+  - "[E06](../E06/spec.md)"
 related:
-  - [E07](../E07/spec.md)
-  - [E08](../E08/spec.md)
+  - "[E07](../E07/spec.md)"
+  - "[E08](../E08/spec.md)"
 branch: ''
 files:
   - apps/core/risk-management/

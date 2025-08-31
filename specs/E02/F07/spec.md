@@ -9,9 +9,9 @@ title: Smart Order Routing and Execution Engine
 type: feature
 
 # === HIERARCHY ===
-parent: [E02](../spec.md)
+parent: "[E02](../spec.md)"
 children: []
-epic: [E02](../spec.md)
+epic: "[E02](../spec.md)"
 domain: order-routing
 
 # === WORKFLOW ===
@@ -27,12 +27,12 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - [F06](../F06/spec.md)
+  - "[F06](../F06/spec.md)"
 blocks:
-  - [F08](../F08/spec.md)
+  - "[F08](../F08/spec.md)"
 related:
-  - [F01](../F01/spec.md)
-  - [F05](../F05/spec.md)
+  - "[F01](../F01/spec.md)"
+  - "[F05](../F05/spec.md)"
 branch: ''
 files:
   - libs/shared/services/order-router.service.ts

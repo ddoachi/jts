@@ -9,9 +9,9 @@ title: Real-time Broker Monitoring and Observability
 type: feature
 
 # === HIERARCHY ===
-parent: [E02](../spec.md)
+parent: "[E02](../spec.md)"
 children: []
-epic: [E02](../spec.md)
+epic: "[E02](../spec.md)"
 domain: monitoring-observability
 
 # === WORKFLOW ===
@@ -27,12 +27,12 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - [F09](../F09/spec.md)
+  - "[F09](../F09/spec.md)"
 blocks: []
 related:
-  - [F05](../F05/spec.md)
-  - [F07](../F07/spec.md)
-  - [F08](../F08/spec.md)
+  - "[F05](../F05/spec.md)"
+  - "[F07](../F07/spec.md)"
+  - "[F08](../F08/spec.md)"
 branch: ''
 files:
   - apps/monitoring/

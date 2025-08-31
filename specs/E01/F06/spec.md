@@ -9,7 +9,7 @@ title: Message Queue Setup
 type: feature
 
 # === HIERARCHY ===
-parent: [E01](../spec.md)
+parent: "[E01](../spec.md)"
 children: []
 epic: E01
 domain: infrastructure
@@ -27,13 +27,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - [F01](../F01/spec.md)
+  - "[F01](../F01/spec.md)"
 blocks:
-  - [F07](../F07/spec.md)
-  - [E02](../../E02/spec.md)
-  - [E03](../../E03/spec.md)
+  - "[F07](../F07/spec.md)"
+  - "[E02](../../E02/spec.md)"
+  - "[E03](../../E03/spec.md)"
 related:
-  - [F05](../F05/spec.md)
+  - "[F05](../F05/spec.md)"
 branch: feature/1006-message-queue-setup
 files:
   - infrastructure/kafka/
