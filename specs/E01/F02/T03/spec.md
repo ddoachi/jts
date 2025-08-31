@@ -20,10 +20,10 @@ priority: high
 
 # === TRACKING ===
 created: '2025-08-27'
-updated: '2025-08-27'
-due_date: ''
+updated: '2025-08-31'
+due_date: '2025-08-31'
 estimated_hours: 3
-actual_hours: 0
+actual_hours: 4
 
 # === DEPENDENCIES ===
 dependencies:
@@ -38,9 +38,14 @@ commits: []
 context_file: 1023.context.md
 files:
 - docker-compose.dev.yml
-- scripts/docker-setup.sh
+- .env
+- .env.example
 - configs/redis.conf
-- configs/postgres-init.sql
+- configs/clickhouse-config.xml
+- scripts/init-postgres.sql
+- scripts/init-mongo.js
+- scripts/docker-setup.sh
+- scripts/dev-services.sh
 
 # === METADATA ===
 tags:
@@ -64,16 +69,17 @@ Set up Docker environment with all required database and messaging services for 
 
 ## Acceptance Criteria
 
-- [ ] Docker and Docker Compose installed on Linux and Windows
-- [ ] PostgreSQL configured with development database
-- [ ] ClickHouse set up for time-series data
-- [ ] MongoDB configured for configuration storage
-- [ ] Redis configured with database allocation for multi-accounts
-- [ ] Kafka and Zookeeper operational
-- [ ] Grafana monitoring dashboard (optional)
-- [ ] All services accessible and healthy
-- [ ] Initialization scripts for databases
-- [ ] Volume persistence configured
+- [x] Docker and Docker Compose installed on Linux and Windows
+- [x] PostgreSQL configured with development database
+- [x] ClickHouse set up for time-series data
+- [x] MongoDB configured for configuration storage
+- [x] Redis configured with database allocation for multi-accounts
+- [x] Kafka and Zookeeper operational
+- [x] Grafana monitoring dashboard (optional)
+- [x] All services accessible and healthy
+- [x] Initialization scripts for databases
+- [x] Volume persistence configured
+- [x] Centralized port configuration via `.env` file
 
 ## Technical Approach
 
@@ -270,12 +276,15 @@ CREATE INDEX idx_orders_created ON trading.orders(created_at);
 
 ## Deliverables
 
-- `docker-compose.dev.yml` - Complete Docker configuration
-- `configs/redis.conf` - Redis configuration for multi-account
-- `scripts/init-postgres.sql` - PostgreSQL initialization
-- `scripts/init-mongo.js` - MongoDB initialization
-- `scripts/docker-setup.sh` - Docker installation script
-- `scripts/dev-services.sh` - Service management script
+- `docker-compose.dev.yml` - Complete Docker configuration with environment variables
+- `.env` - Centralized port and credential configuration
+- `.env.example` - Documentation and default configuration template
+- `configs/redis.conf` - Redis configuration for multi-account (5 KIS accounts)
+- `configs/clickhouse-config.xml` - ClickHouse configuration
+- `scripts/init-postgres.sql` - PostgreSQL initialization with trading schemas
+- `scripts/init-mongo.js` - MongoDB initialization with validated collections
+- `scripts/docker-setup.sh` - Cross-platform Docker installation script
+- `scripts/dev-services.sh` - Service management with ports, backup, and test commands
 
 ## Testing Plan
 
