@@ -2,6 +2,11 @@
 #
 # JTS Warm Storage (SATA) Setup Script
 # 
+# Generated from: specs/1000/1001/1013.md
+# Context: specs/1000/1001/1013.context.md
+# Created: 2025-08-25
+# Purpose: Configure 1TB SATA drive as intermediate warm storage
+#
 # This script configures a 1TB SATA drive as intermediate warm storage
 # with btrfs filesystem and zstd:3 compression for optimal space efficiency.
 #

@@ -1,6 +1,6 @@
 #!/bin/bash
-# Generated from spec: E01-F02-T01 (Node.js and Yarn Environment Setup)
-# Spec ID: 0768281a
+# Generated from: specs/E01/F02/spec.md (Development Environment Setup)
+# Original location: specs/E01/F02/deliverables/scripts/install-node-yarn.sh
 
 set -e
 

@@ -1,4 +1,8 @@
 #!/bin/bash
+# Generated from: specs/1000/1001/1014.md
+# Context: specs/1000/1001/1014.context.md
+# Created: 2025-08-26
+# Purpose: Monitor cold storage (NAS) connectivity and performance
 
 echo "🧊 JTS Cold Storage (NAS) Health Check - $(date)"
 echo "============================================="
