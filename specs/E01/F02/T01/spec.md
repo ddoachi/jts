@@ -15,7 +15,7 @@ epic: E01
 domain: infrastructure
 
 # === WORKFLOW ===
-status: draft
+status: completed
 priority: high
 
 # === TRACKING ===
@@ -38,10 +38,12 @@ pull_requests: []
 commits: []
 context_file: 1021.context.md
 files:
-- scripts/install-node-yarn.sh
-- package.json
-- .yarnrc.yml
-- .gitignore
+- specs/E01/F02/deliverables/scripts/install-node-yarn.sh
+- specs/E01/F02/deliverables/scripts/install-node-yarn-linux.sh
+- specs/E01/F02/deliverables/scripts/install-node-yarn-windows.ps1
+- specs/E01/F02/deliverables/config/package.json.template
+- specs/E01/F02/deliverables/config/.yarnrc.yml
+- specs/E01/F02/deliverables/config/gitignore.template
 
 # === METADATA ===
 tags:
@@ -174,11 +176,12 @@ plugins:
 
 ## Deliverables
 
-- `scripts/install-node-yarn.sh` - Unified installation script
-- `scripts/install-node-yarn-linux.sh` - Linux-specific installer
-- `scripts/install-node-yarn-windows.ps1` - Windows PowerShell installer
-- `.yarnrc.yml` - Yarn configuration
-- `package.json` - Root package configuration
+- `specs/E01/F02/deliverables/scripts/install-node-yarn.sh` - Unified installation script
+- `specs/E01/F02/deliverables/scripts/install-node-yarn-linux.sh` - Linux-specific installer
+- `specs/E01/F02/deliverables/scripts/install-node-yarn-windows.ps1` - Windows PowerShell installer
+- `specs/E01/F02/deliverables/config/.yarnrc.yml` - Yarn configuration
+- `specs/E01/F02/deliverables/config/package.json.template` - Root package configuration template
+- `specs/E01/F02/deliverables/config/gitignore.template` - Git ignore patterns for Yarn 4
 - Installation verification checklist
 
 ## Testing Plan
