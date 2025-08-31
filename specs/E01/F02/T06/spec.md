@@ -27,32 +27,31 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
-- T02
-- T03
-- T04
-- T05
+  - T01
+  - T02
+  - T03
+  - T04
+  - T05
 blocks: []
 related: []
 pull_requests: []
 commits: []
 context_file: 1026.context.md
 files:
-- scripts/setup-dev-env.sh
-- scripts/health-check.js
-- package.json
-- docs/DEVELOPMENT.md
+  - scripts/setup-dev-env.sh
+  - scripts/health-check.js
+  - package.json
+  - docs/DEVELOPMENT.md
 
 # === METADATA ===
 tags:
-- automation
-- scripts
-- developer-experience
-- documentation
+  - automation
+  - scripts
+  - developer-experience
+  - documentation
 effort: medium
 risk: low
 ---
-
 
 # Development Scripts and Automation
 
@@ -104,21 +103,21 @@ detect_os() {
 # Check prerequisites
 check_prerequisites() {
     echo -e "\n${YELLOW}📋 Checking prerequisites...${NC}"
-    
+
     # Check Node.js
     if ! command -v node &> /dev/null; then
         echo -e "${RED}❌ Node.js is not installed${NC}"
         echo "Please run: ./scripts/install-node-yarn.sh"
         exit 1
     fi
-    
+
     NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
     if [ "$NODE_VERSION" -lt 20 ]; then
         echo -e "${RED}❌ Node.js 20+ required (found: $(node -v))${NC}"
         exit 1
     fi
     echo -e "${GREEN}✅ Node.js $(node -v)${NC}"
-    
+
     # Check Yarn
     if ! command -v yarn &> /dev/null; then
         echo -e "${RED}❌ Yarn is not installed${NC}"
@@ -126,7 +125,7 @@ check_prerequisites() {
         exit 1
     fi
     echo -e "${GREEN}✅ Yarn $(yarn -v)${NC}"
-    
+
     # Check Docker
     if ! command -v docker &> /dev/null; then
         echo -e "${RED}❌ Docker is not installed${NC}"
@@ -134,7 +133,7 @@ check_prerequisites() {
         exit 1
     fi
     echo -e "${GREEN}✅ Docker $(docker -v)${NC}"
-    
+
     # Check Git
     if ! command -v git &> /dev/null; then
         echo -e "${RED}❌ Git is not installed${NC}"
@@ -153,7 +152,7 @@ install_dependencies() {
 # Setup environment
 setup_environment() {
     echo -e "\n${YELLOW}🔧 Setting up environment...${NC}"
-    
+
     if [ ! -f .env.local ]; then
         cp .env.example .env.local
         echo -e "${GREEN}✅ Created .env.local from template${NC}"
@@ -161,7 +160,7 @@ setup_environment() {
     else
         echo -e "${GREEN}✅ .env.local already exists${NC}"
     fi
-    
+
     # Validate environment
     node scripts/validate-env.js
 }
@@ -170,10 +169,10 @@ setup_environment() {
 start_services() {
     echo -e "\n${YELLOW}🐳 Starting Docker services...${NC}"
     docker-compose -f docker-compose.dev.yml up -d
-    
+
     echo "Waiting for services to be ready..."
     sleep 10
-    
+
     # Check service health
     node scripts/check-services-health.js
     echo -e "${GREEN}✅ All services are running${NC}"
@@ -182,20 +181,20 @@ start_services() {
 # Run database migrations
 run_migrations() {
     echo -e "\n${YELLOW}🗄️ Running database migrations...${NC}"
-    
+
     # PostgreSQL migrations
     yarn db:migrate:postgres || echo -e "${YELLOW}⚠️  PostgreSQL migration skipped${NC}"
-    
+
     # ClickHouse setup
     yarn db:migrate:clickhouse || echo -e "${YELLOW}⚠️  ClickHouse setup skipped${NC}"
-    
+
     echo -e "${GREEN}✅ Database migrations complete${NC}"
 }
 
 # Seed development data
 seed_data() {
     echo -e "\n${YELLOW}🌱 Seeding development data...${NC}"
-    
+
     read -p "Do you want to seed development data? (y/n) " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -209,7 +208,7 @@ seed_data() {
 # Setup VS Code
 setup_vscode() {
     echo -e "\n${YELLOW}📝 Setting up VS Code...${NC}"
-    
+
     if command -v code &> /dev/null; then
         read -p "Install recommended VS Code extensions? (y/n) " -n 1 -r
         echo
@@ -292,22 +291,22 @@ async function checkService(service) {
   try {
     // Check if container is running
     const { stdout } = await execAsync(
-      `docker ps --filter "name=${service.container}" --format "{{.Status}}"`
+      `docker ps --filter "name=${service.container}" --format "{{.Status}}"`,
     );
-    
+
     if (!stdout.includes('Up')) {
       return { ...service, status: 'down', error: 'Container not running' };
     }
-    
+
     // Check port accessibility
-    const portCheck = await execAsync(
-      `nc -zv localhost ${service.port} 2>&1`
-    ).catch(() => ({ stdout: '' }));
-    
+    const portCheck = await execAsync(`nc -zv localhost ${service.port} 2>&1`).catch(() => ({
+      stdout: '',
+    }));
+
     if (portCheck.stdout.includes('succeeded') || portCheck.stdout.includes('open')) {
       return { ...service, status: 'healthy' };
     }
-    
+
     return { ...service, status: 'unhealthy', error: 'Port not accessible' };
   } catch (error) {
     return { ...service, status: 'error', error: error.message };
@@ -316,25 +315,25 @@ async function checkService(service) {
 
 async function checkAllServices() {
   console.log('🏥 Checking service health...\n');
-  
+
   const results = await Promise.all(services.map(checkService));
-  
-  results.forEach(result => {
+
+  results.forEach((result) => {
     const icon = result.status === 'healthy' ? '✅' : '❌';
     console.log(`${icon} ${result.name}: ${result.status}`);
     if (result.error) {
       console.log(`   Error: ${result.error}`);
     }
   });
-  
-  const allHealthy = results.every(r => r.status === 'healthy');
-  
+
+  const allHealthy = results.every((r) => r.status === 'healthy');
+
   if (!allHealthy) {
     console.log('\n⚠️  Some services are not healthy');
     console.log('Run: yarn dev:logs to check container logs');
     process.exit(1);
   }
-  
+
   console.log('\n✅ All services are healthy!');
 }
 
@@ -355,7 +354,7 @@ checkAllServices().catch(console.error);
     "dev:logs": "docker-compose -f docker-compose.dev.yml logs -f",
     "dev:status": "docker-compose -f docker-compose.dev.yml ps",
     "dev:health": "node scripts/check-services-health.js",
-    
+
     "db:migrate": "yarn db:migrate:postgres && yarn db:migrate:clickhouse",
     "db:migrate:postgres": "yarn prisma migrate deploy",
     "db:migrate:clickhouse": "node scripts/migrate-clickhouse.js",
@@ -363,21 +362,21 @@ checkAllServices().catch(console.error);
     "db:seed:postgres": "yarn prisma db seed",
     "db:seed:clickhouse": "node scripts/seed-clickhouse.js",
     "db:reset": "yarn dev:clean && yarn dev:start && sleep 10 && yarn db:migrate && yarn db:seed",
-    
+
     "services:start": "concurrently \"yarn start:gateway\" \"yarn start:strategy\" \"yarn start:risk\"",
     "start:gateway": "nx serve api-gateway",
     "start:strategy": "nx serve strategy-engine",
     "start:risk": "nx serve risk-management",
     "start:order": "nx serve order-execution",
     "start:market-data": "nx serve market-data-collector",
-    
+
     "test": "nx run-many --target=test --all",
     "test:affected": "nx affected --target=test",
     "test:watch": "nx run-many --target=test --all --watch",
-    
+
     "build": "nx run-many --target=build --all",
     "build:affected": "nx affected --target=build",
-    
+
     "lint": "nx run-many --target=lint --all --fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "type-check": "tsc --noEmit"

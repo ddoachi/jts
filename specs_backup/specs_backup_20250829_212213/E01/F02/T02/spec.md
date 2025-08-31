@@ -27,10 +27,10 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
+  - T01
 blocks:
-- T05
-- T06
+  - T05
+  - T06
 related: []
 
 # === IMPLEMENTATION ===
@@ -38,21 +38,20 @@ pull_requests: []
 commits: []
 context_file: 1022.context.md
 files:
-- .vscode/settings.json
-- .vscode/extensions.json
-- .vscode/launch.json
-- .vscode/tasks.json
+  - .vscode/settings.json
+  - .vscode/extensions.json
+  - .vscode/launch.json
+  - .vscode/tasks.json
 
 # === METADATA ===
 tags:
-- vscode
-- ide
-- debugging
-- extensions
+  - vscode
+  - ide
+  - debugging
+  - extensions
 effort: small
 risk: low
 unique_id: 93d65641 # Unique identifier (never changes)
-
 ---
 
 # VS Code IDE Configuration
@@ -99,12 +98,7 @@ Configure Visual Studio Code as the primary development environment with project
     "**/.yarn": true,
     "**/coverage": true
   },
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "tailwindCSS.includeLanguages": {
     "typescript": "html",
     "typescriptreact": "html"

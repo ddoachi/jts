@@ -27,38 +27,37 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T02
+  - T02
 blocks:
-- F07
-- E02
-- E03
+  - F07
+  - E02
+  - E03
 related:
-- F03
-- F06
+  - F03
+  - F06
 pull_requests: []
 commits: []
 context_file: context.md
 files:
-- infrastructure/databases/
-- docker-compose.databases.yml
-- migrations/
-- scripts/db-setup/
-- libs/shared/database/
+  - infrastructure/databases/
+  - docker-compose.databases.yml
+  - migrations/
+  - scripts/db-setup/
+  - libs/shared/database/
 
 # === METADATA ===
 tags:
-- database
-- postgresql
-- clickhouse
-- mongodb
-- redis
-- migrations
-- schemas
-- optimization
+  - database
+  - postgresql
+  - clickhouse
+  - mongodb
+  - redis
+  - migrations
+  - schemas
+  - optimization
 effort: large
 risk: medium
 ---
-
 
 # Database Infrastructure
 
@@ -86,17 +85,20 @@ Establish a comprehensive, multi-database infrastructure architecture for the JT
 Implement a specialized database architecture where each system is purpose-built for specific data patterns and access requirements in algorithmic trading:
 
 **Database Allocation by Function:**
+
 - **PostgreSQL**: ACID-compliant transactions, user management, order lifecycle, portfolio positions
-- **ClickHouse**: High-frequency market data, analytics aggregations, backtesting datasets  
+- **ClickHouse**: High-frequency market data, analytics aggregations, backtesting datasets
 - **MongoDB**: Dynamic strategy configurations, API credentials, system preferences
 - **Redis**: Real-time caching, session state, distributed locks, pub/sub messaging
 
 ### Key Components
 
 #### 1. PostgreSQL - Transactional Core
+
 **Purpose**: ACID-compliant transactional data requiring strong consistency
 **Storage Allocation**: 800GB dedicated LVM volume with ext4 filesystem
 **Key Features**:
+
 - User authentication and authorization
 - Trading strategy definitions and configurations
 - Order execution history with full audit trail
@@ -105,10 +107,11 @@ Implement a specialized database architecture where each system is purpose-built
 - System audit logs and regulatory reporting
 
 **Optimization Strategy**:
+
 ```sql
 -- Performance tuning for SSD storage
 shared_buffers = 8GB                    -- 25% of available RAM
-effective_cache_size = 24GB             -- 75% of available RAM  
+effective_cache_size = 24GB             -- 75% of available RAM
 maintenance_work_mem = 2GB              -- For large operations
 work_mem = 256MB                        -- Per-query memory
 wal_buffers = 16MB                      -- WAL buffer size
@@ -118,9 +121,11 @@ effective_io_concurrency = 200          -- Concurrent I/O operations
 ```
 
 #### 2. ClickHouse - Time-Series Analytics Engine
+
 **Purpose**: High-performance analytics for time-series market data
 **Storage Allocation**: 2TB dedicated LVM volume with ext4 filesystem
 **Key Features**:
+
 - Real-time market data ingestion (prices, volume, order book)
 - Historical market data for backtesting and analysis
 - Trading performance metrics and analytics
@@ -128,6 +133,7 @@ effective_io_concurrency = 200          -- Concurrent I/O operations
 - High-frequency event logging and audit trails
 
 **Optimization Strategy**:
+
 ```xml
 <!-- ClickHouse configuration optimizations -->
 <max_memory_usage>16000000000</max_memory_usage>  <!-- 16GB -->
@@ -139,9 +145,11 @@ effective_io_concurrency = 200          -- Concurrent I/O operations
 ```
 
 #### 3. MongoDB - Configuration Management
+
 **Purpose**: Flexible schema for configurations and evolving data structures
 **Storage Allocation**: 200GB dedicated LVM volume with ext4 filesystem
 **Key Features**:
+
 - Dynamic trading strategy parameters
 - API keys and broker-specific configurations
 - User preferences and dashboard customizations
@@ -149,6 +157,7 @@ effective_io_concurrency = 200          -- Concurrent I/O operations
 - Temporary calculation states and intermediate results
 
 **Optimization Strategy**:
+
 ```javascript
 // MongoDB optimization settings
 {
@@ -167,9 +176,11 @@ effective_io_concurrency = 200          -- Concurrent I/O operations
 ```
 
 #### 4. Redis - High-Performance Caching
+
 **Purpose**: Ultra-low latency caching and real-time data distribution
 **Storage Allocation**: 50GB dedicated LVM volume with ext4 filesystem
 **Key Features**:
+
 - Session management and JWT token storage
 - Real-time price caching and distribution
 - Rate limiting counters for API throttling
@@ -177,6 +188,7 @@ effective_io_concurrency = 200          -- Concurrent I/O operations
 - Pub/sub messaging for real-time updates
 
 **Optimization Strategy**:
+
 ```conf
 # Redis performance configuration
 maxmemory 8gb
@@ -194,10 +206,11 @@ tcp-keepalive 300       # Connection management
 #### Phase 1: Storage and Base Configuration (Days 1-3)
 
 1. **LVM Volume Setup**
+
 ```bash
 # Create dedicated logical volumes for each database
 lvcreate -L 800G -n lv_postgres vg_jts
-lvcreate -L 2000G -n lv_clickhouse vg_jts  
+lvcreate -L 2000G -n lv_clickhouse vg_jts
 lvcreate -L 200G -n lv_mongodb vg_jts
 lvcreate -L 50G -n lv_redis vg_jts
 
@@ -212,6 +225,7 @@ mkdir -p /var/lib/{postgresql,clickhouse,mongodb,redis}
 ```
 
 2. **Docker Compose Database Services**
+
 ```yaml
 # docker-compose.databases.yml
 version: '3.8'
@@ -222,7 +236,7 @@ services:
     container_name: jts-postgresql
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - /var/lib/postgresql:/var/lib/postgresql/data
       - ./infrastructure/databases/postgresql/init:/docker-entrypoint-initdb.d
@@ -231,7 +245,7 @@ services:
       POSTGRES_DB: jts_trading
       POSTGRES_USER: jts_admin
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_INITDB_ARGS: "--data-checksums --encoding=UTF8"
+      POSTGRES_INITDB_ARGS: '--data-checksums --encoding=UTF8'
     command: >
       postgres
       -c config_file=/etc/postgresql/postgresql.conf
@@ -244,7 +258,7 @@ services:
       -c random_page_cost=1.1
       -c effective_io_concurrency=200
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U jts_admin -d jts_trading"]
+      test: ['CMD-SHELL', 'pg_isready -U jts_admin -d jts_trading']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -253,11 +267,11 @@ services:
 
   clickhouse:
     image: clickhouse/clickhouse-server:23.8-alpine
-    container_name: jts-clickhouse  
+    container_name: jts-clickhouse
     restart: unless-stopped
     ports:
-      - "8123:8123"
-      - "E09:E09"
+      - '8123:8123'
+      - 'E09:E09'
     volumes:
       - /var/lib/clickhouse:/var/lib/clickhouse
       - ./infrastructure/databases/clickhouse/config:/etc/clickhouse-server
@@ -270,7 +284,7 @@ services:
     ulimits:
       nofile: 262144
     healthcheck:
-      test: ["CMD", "clickhouse", "client", "--query", "SELECT 1"]
+      test: ['CMD', 'clickhouse', 'client', '--query', 'SELECT 1']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -282,7 +296,7 @@ services:
     container_name: jts-mongodb
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - /var/lib/mongodb:/data/db
       - ./infrastructure/databases/mongodb/init:/docker-entrypoint-initdb.d
@@ -290,11 +304,11 @@ services:
       MONGO_INITDB_ROOT_USERNAME: jts_mongo_admin
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
       MONGO_INITDB_DATABASE: jts_config
-    command: ["--replSet", "jts-rs0", "--bind_ip_all"]
+    command: ['--replSet', 'jts-rs0', '--bind_ip_all']
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      test: ['CMD', 'mongo', '--eval', "db.adminCommand('ping')"]
       interval: 30s
-      timeout: 10s  
+      timeout: 10s
       retries: 3
     networks:
       - jts-database-network
@@ -304,7 +318,7 @@ services:
     container_name: jts-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - /var/lib/redis:/data
       - ./infrastructure/databases/redis/config/redis.conf:/usr/local/etc/redis/redis.conf
@@ -312,7 +326,7 @@ services:
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -327,6 +341,7 @@ networks:
 #### Phase 2: Schema Design and Migrations (Days 4-6)
 
 3. **PostgreSQL Schema Design**
+
 ```sql
 -- infrastructure/databases/postgresql/init/01-create-schemas.sql
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -438,16 +453,17 @@ CREATE TRIGGER users_accounts_update_timestamp
     BEFORE UPDATE ON users.accounts
     FOR EACH ROW EXECUTE FUNCTION audit.update_timestamp();
 
-CREATE TRIGGER trading_strategies_update_timestamp  
+CREATE TRIGGER trading_strategies_update_timestamp
     BEFORE UPDATE ON trading.strategies
     FOR EACH ROW EXECUTE FUNCTION audit.update_timestamp();
 
 CREATE TRIGGER trading_orders_update_timestamp
-    BEFORE UPDATE ON trading.orders  
+    BEFORE UPDATE ON trading.orders
     FOR EACH ROW EXECUTE FUNCTION audit.update_timestamp();
 ```
 
 4. **ClickHouse Market Data Schema**
+
 ```sql
 -- infrastructure/databases/clickhouse/init/01-market-data-schema.sql
 CREATE DATABASE IF NOT EXISTS jts_market_data;
@@ -473,7 +489,7 @@ SETTINGS index_granularity = 8192;
 -- OHLCV aggregated data for charting and analysis
 CREATE TABLE jts_market_data.ohlcv_1min (
     timestamp DateTime,
-    symbol LowCardinality(String), 
+    symbol LowCardinality(String),
     exchange LowCardinality(String),
     open Decimal64(8),
     high Decimal64(8),
@@ -491,7 +507,7 @@ SETTINGS index_granularity = 8192;
 CREATE TABLE jts_market_data.orderbook_snapshots (
     timestamp DateTime64(3),
     symbol LowCardinality(String),
-    exchange LowCardinality(String), 
+    exchange LowCardinality(String),
     bids Array(Tuple(price Decimal64(8), size Decimal64(8))),
     asks Array(Tuple(price Decimal64(8), size Decimal64(8))),
     spread Decimal64(8),
@@ -538,6 +554,7 @@ GROUP BY strategy_id, toDate(timestamp);
 #### Phase 3: Connection Management and Security (Days 7-9)
 
 5. **Database Connection Configuration**
+
 ```typescript
 // libs/shared/database/src/lib/database.config.ts
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -558,15 +575,18 @@ export class DatabaseConfigService {
       migrations: ['dist/migrations/*{.ts,.js}'],
       synchronize: false,
       logging: this.configService.get<string>('NODE_ENV') === 'development',
-      ssl: this.configService.get<string>('NODE_ENV') === 'production' ? {
-        rejectUnauthorized: false
-      } : false,
+      ssl:
+        this.configService.get<string>('NODE_ENV') === 'production'
+          ? {
+              rejectUnauthorized: false,
+            }
+          : false,
       extra: {
         connectionLimit: this.configService.get<number>('POSTGRES_CONNECTION_LIMIT', 20),
         acquireTimeout: 60000,
         timeout: 60000,
         reconnect: true,
-        ssl: this.configService.get<string>('NODE_ENV') === 'production'
+        ssl: this.configService.get<string>('NODE_ENV') === 'production',
       },
       pool: {
         min: 5,
@@ -576,8 +596,8 @@ export class DatabaseConfigService {
         destroyTimeoutMillis: E05,
         idleTimeoutMillis: 30000,
         reapIntervalMillis: E01,
-        createRetryIntervalMillis: 200
-      }
+        createRetryIntervalMillis: 200,
+      },
     };
   }
 
@@ -591,19 +611,20 @@ export class DatabaseConfigService {
       queryOptions: {
         database: 'jts_market_data',
         format: 'JSON',
-        readonly: false
+        readonly: false,
       },
       max_execution_time: 300,
       session_timeout: 60,
       output_format_json_quote_64bit_integers: 0,
-      enable_http_compression: 1
+      enable_http_compression: 1,
     };
   }
 
   getMongoConfig() {
-    const uri = this.configService.get<string>('MONGODB_URI') || 
+    const uri =
+      this.configService.get<string>('MONGODB_URI') ||
       `mongodb://${this.configService.get<string>('MONGODB_USER', 'jts_mongo_admin')}:${this.configService.get<string>('MONGODB_PASSWORD')}@${this.configService.get<string>('MONGODB_HOST', 'localhost')}:${this.configService.get<number>('MONGODB_PORT', 27017)}/jts_config?authSource=admin`;
-    
+
     return {
       uri,
       useNewUrlParser: true,
@@ -615,7 +636,7 @@ export class DatabaseConfigService {
       socketTimeoutMS: 45000,
       bufferMaxEntries: 0,
       retryWrites: true,
-      w: 'majority'
+      w: 'majority',
     };
   }
 
@@ -629,13 +650,14 @@ export class DatabaseConfigService {
       maxRetriesPerRequest: 3,
       retryDelayOnFailover: 100,
       lazyConnect: true,
-      db: 0
+      db: 0,
     };
   }
 }
 ```
 
 6. **Database Migration System**
+
 ```typescript
 // libs/shared/database/src/lib/migration.service.ts
 import { Injectable, Logger } from '@nestjs/common';
@@ -648,30 +670,28 @@ import { join } from 'path';
 export class DatabaseMigrationService {
   private readonly logger = new Logger(DatabaseMigrationService.name);
 
-  constructor(
-    @InjectConnection() private connection: Connection
-  ) {}
+  constructor(@InjectConnection() private connection: Connection) {}
 
   async runMigrations(): Promise<void> {
     try {
       this.logger.log('Starting database migrations...');
-      
+
       // Ensure migration table exists
       await this.createMigrationTable();
-      
+
       // Get applied migrations
       const appliedMigrations = await this.getAppliedMigrations();
-      
+
       // Get migration files
       const migrationFiles = await this.getMigrationFiles();
-      
+
       // Apply pending migrations
       for (const file of migrationFiles) {
         if (!appliedMigrations.includes(file)) {
           await this.applyMigration(file);
         }
       }
-      
+
       this.logger.log('Database migrations completed successfully');
     } catch (error) {
       this.logger.error('Failed to run database migrations', error);
@@ -692,7 +712,7 @@ export class DatabaseMigrationService {
 
   private async getAppliedMigrations(): Promise<string[]> {
     const result = await this.connection.query(
-      'SELECT migration_name FROM schema_migrations ORDER BY applied_at'
+      'SELECT migration_name FROM schema_migrations ORDER BY applied_at',
     );
     return result.map((row: any) => row.migration_name);
   }
@@ -700,29 +720,26 @@ export class DatabaseMigrationService {
   private async getMigrationFiles(): Promise<string[]> {
     const migrationPath = join(process.cwd(), 'migrations');
     const files = await readdir(migrationPath);
-    return files
-      .filter(file => file.endsWith('.sql'))
-      .sort();
+    return files.filter((file) => file.endsWith('.sql')).sort();
   }
 
   private async applyMigration(filename: string): Promise<void> {
     try {
       this.logger.log(`Applying migration: ${filename}`);
-      
+
       const migrationPath = join(process.cwd(), 'migrations', filename);
       const sql = await readFile(migrationPath, 'utf-8');
-      
-      await this.connection.transaction(async manager => {
+
+      await this.connection.transaction(async (manager) => {
         // Execute migration SQL
         await manager.query(sql);
-        
+
         // Record migration as applied
-        await manager.query(
-          'INSERT INTO schema_migrations (migration_name) VALUES ($1)',
-          [filename]
-        );
+        await manager.query('INSERT INTO schema_migrations (migration_name) VALUES ($1)', [
+          filename,
+        ]);
       });
-      
+
       this.logger.log(`Migration applied successfully: ${filename}`);
     } catch (error) {
       this.logger.error(`Failed to apply migration: ${filename}`, error);
@@ -735,6 +752,7 @@ export class DatabaseMigrationService {
 #### Phase 4: Monitoring and Backup (Days 10-12)
 
 7. **Database Health Monitoring**
+
 ```typescript
 // libs/shared/database/src/lib/database-health.service.ts
 import { Injectable, Logger } from '@nestjs/common';
@@ -751,7 +769,7 @@ export class DatabaseHealthService extends HealthIndicator {
   constructor(
     @InjectConnection() private readonly postgresConnection: Connection,
     private readonly redis: Redis,
-    private readonly mongoClient: MongoClient
+    private readonly mongoClient: MongoClient,
   ) {
     super();
   }
@@ -759,15 +777,15 @@ export class DatabaseHealthService extends HealthIndicator {
   async checkPostgresHealth(key: string): Promise<HealthIndicatorResult> {
     try {
       await this.postgresConnection.query('SELECT 1');
-      
+
       // Check connection pool status
       const poolSize = this.postgresConnection.driver.pool?.totalCount || 0;
       const activeConnections = this.postgresConnection.driver.pool?.acquiredCount || 0;
-      
+
       return this.getStatus(key, true, {
         poolSize,
         activeConnections,
-        status: 'connected'
+        status: 'connected',
       });
     } catch (error) {
       this.logger.error('PostgreSQL health check failed', error);
@@ -780,15 +798,17 @@ export class DatabaseHealthService extends HealthIndicator {
       const result = await this.redis.ping();
       const info = await this.redis.info('memory');
       const memoryUsage = this.parseRedisMemoryInfo(info);
-      
+
       if (result !== 'PONG') {
         throw new Error('Redis ping failed');
       }
-      
+
       return this.getStatus(key, true, {
         status: 'connected',
         memoryUsage: memoryUsage,
-        connectedClients: await this.redis.client('LIST').then(list => list.split('\n').length - 1)
+        connectedClients: await this.redis
+          .client('LIST')
+          .then((list) => list.split('\n').length - 1),
       });
     } catch (error) {
       this.logger.error('Redis health check failed', error);
@@ -800,17 +820,17 @@ export class DatabaseHealthService extends HealthIndicator {
     try {
       const adminDb = this.mongoClient.db('admin');
       const result = await adminDb.admin().ping();
-      
+
       if (result.ok !== 1) {
         throw new Error('MongoDB ping failed');
       }
-      
+
       const serverStatus = await adminDb.admin().serverStatus();
-      
+
       return this.getStatus(key, true, {
         status: 'connected',
         connections: serverStatus.connections,
-        uptime: serverStatus.uptime
+        uptime: serverStatus.uptime,
       });
     } catch (error) {
       this.logger.error('MongoDB health check failed', error);
@@ -821,8 +841,8 @@ export class DatabaseHealthService extends HealthIndicator {
   private parseRedisMemoryInfo(info: string): any {
     const lines = info.split('\r\n');
     const memoryInfo: any = {};
-    
-    lines.forEach(line => {
+
+    lines.forEach((line) => {
       if (line.includes(':')) {
         const [key, value] = line.split(':');
         if (key.includes('memory')) {
@@ -830,13 +850,14 @@ export class DatabaseHealthService extends HealthIndicator {
         }
       }
     });
-    
+
     return memoryInfo;
   }
 }
 ```
 
 8. **Automated Backup System**
+
 ```bash
 #!/bin/bash
 # scripts/db-setup/backup-databases.sh
@@ -860,7 +881,7 @@ echo "Starting ClickHouse backup..."
 clickhouse-client --host localhost --user jts_ch_admin --password $CLICKHOUSE_PASSWORD \
   --query "BACKUP DATABASE jts_market_data TO Disk('default', 'clickhouse_${DATE}.zip')"
 
-# MongoDB backup  
+# MongoDB backup
 echo "Starting MongoDB backup..."
 mongodump --host localhost:27017 --username jts_mongo_admin --password $MONGODB_PASSWORD \
   --authenticationDatabase admin --out "$BACKUP_DIR/mongodb_${DATE}"
@@ -883,6 +904,7 @@ echo "Database backups completed successfully"
 ### Security Implementation
 
 **Database User Management:**
+
 ```sql
 -- Create application-specific users with minimal privileges
 CREATE USER jts_app_user WITH PASSWORD 'secure_app_password';
@@ -901,12 +923,13 @@ GRANT SELECT ON ALL TABLES IN DATABASE jts_trading TO jts_readonly_user;
 ```
 
 **SSL/TLS Configuration:**
+
 ```yaml
 # SSL configuration for all databases
 postgresql:
   environment:
     POSTGRES_SSL_MODE: require
-    POSTGRES_SSL_CERT: /certs/postgresql.crt  
+    POSTGRES_SSL_CERT: /certs/postgresql.crt
     POSTGRES_SSL_KEY: /certs/postgresql.key
     POSTGRES_SSL_CA: /certs/ca.crt
 
@@ -915,12 +938,20 @@ clickhouse:
     CLICKHOUSE_SSL_ENABLED: 1
     CLICKHOUSE_SSL_CERT: /certs/clickhouse.crt
     CLICKHOUSE_SSL_KEY: /certs/clickhouse.key
-    
+
 mongodb:
-  command: ["--sslMode", "requireSSL", "--sslPEMKeyFile", "/certs/mongodb.pem"]
-  
+  command: ['--sslMode', 'requireSSL', '--sslPEMKeyFile', '/certs/mongodb.pem']
+
 redis:
-  command: ["--tls-port", "6380", "--tls-cert-file", "/certs/redis.crt", "--tls-key-file", "/certs/redis.key"]
+  command:
+    [
+      '--tls-port',
+      '6380',
+      '--tls-cert-file',
+      '/certs/redis.crt',
+      '--tls-key-file',
+      '/certs/redis.key',
+    ]
 ```
 
 ## Dependencies
@@ -930,24 +961,28 @@ redis:
 ## Testing Plan
 
 ### Database Functionality Testing
+
 - **Connection Testing**: Verify all database connections work with proper authentication
 - **Schema Validation**: Confirm all schemas, indexes, and constraints are created correctly
 - **Migration Testing**: Test migration system with rollback capabilities
 - **CRUD Operations**: Validate basic database operations across all systems
 
 ### Performance Testing
+
 - **Load Testing**: Test each database under realistic trading workloads
 - **Concurrent Connection Testing**: Validate connection pooling under high concurrency
 - **Query Performance**: Test critical queries meet latency requirements
 - **Backup/Restore Performance**: Test backup and restore procedures under load
 
 ### Security Testing
+
 - **Authentication Testing**: Verify user authentication and access controls
 - **SSL/TLS Testing**: Confirm encrypted connections are working properly
 - **Permission Testing**: Validate least-privilege access is enforced
 - **Injection Testing**: Test SQL injection and other database attack vectors
 
 ### Reliability Testing
+
 - **Failover Testing**: Test database failover and recovery scenarios
 - **Data Integrity Testing**: Verify ACID compliance and data consistency
 - **Monitoring Testing**: Confirm all health checks and alerts work correctly

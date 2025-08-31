@@ -67,6 +67,7 @@ Build a comprehensive market data collection and processing system that ingests 
 ## Technical Approach
 
 ### Market Data Architecture
+
 Implement a scalable data pipeline that can handle high-frequency market updates from multiple sources, perform real-time analysis, and distribute processed data to various consumers with minimal latency.
 
 ### Key Components

@@ -1,8 +1,8 @@
 # JTS Storage Performance Optimization Guide
 
-*From: E01-F01-T05 Storage Performance Optimization*  
-*Version: 1.0*  
-*Date: 2025-08-30*
+_From: E01-F01-T05 Storage Performance Optimization_  
+_Version: 1.0_  
+_Date: 2025-08-30_
 
 ## Overview
 
@@ -47,16 +47,19 @@ sudo systemctl start fstrim-all.timer
 **Purpose**: Configure optimal I/O schedulers for NVMe drives to minimize latency.
 
 **Configuration**: `60-ssd-scheduler.rules`
+
 - Sets NVMe drives to use the 'none' scheduler
 - Eliminates unnecessary CPU overhead for NVMe devices
 - Applied automatically via udev rules
 
 **Benefits**:
+
 - Reduced I/O latency for trading operations
 - Lower CPU utilization for storage operations
 - Immediate performance improvement
 
 **Verification**:
+
 ```bash
 cat /sys/block/nvme0n1/queue/scheduler
 # Should show: [none] mq-deadline
@@ -66,13 +69,15 @@ cat /sys/block/nvme0n1/queue/scheduler
 
 **Purpose**: Maintain SSD performance over time through regular TRIM operations.
 
-**Configuration**: 
+**Configuration**:
+
 - `fstrim-all.service` - TRIM service definition
 - `fstrim-all.timer` - Weekly execution schedule
 
 **Schedule**: Every Sunday at 2:00 AM with 5-minute randomization
 
 **Target Filesystems**:
+
 - `/var/lib/postgresql` - Database storage
 - `/var/lib/clickhouse` - Time-series data
 - `/var/lib/kafka` - Message logs
@@ -82,6 +87,7 @@ cat /sys/block/nvme0n1/queue/scheduler
 - `/data/local-backup` - Backup storage
 
 **Benefits**:
+
 - Prevents SSD performance degradation
 - Extends SSD lifespan
 - Automated operation with minimal system impact
@@ -91,12 +97,14 @@ cat /sys/block/nvme0n1/queue/scheduler
 **Benchmark Script**: `performance-benchmark.sh`
 
 **Features**:
+
 - Sequential and random I/O testing across all storage tiers
 - Performance threshold validation for trading requirements
 - Support for quick and full testing modes
 - Automated pass/fail validation against trading system requirements
 
 **Usage**:
+
 ```bash
 # Quick test (256MB)
 ./performance-benchmark.sh --quick
@@ -108,12 +116,14 @@ cat /sys/block/nvme0n1/queue/scheduler
 **Optimization Monitor**: `ssd-optimization.sh`
 
 **Features**:
+
 - Real-time optimization status checking
 - Automated issue detection and resolution
 - Comprehensive system health reporting
 - Integration with monitoring systems via exit codes
 
 **Usage**:
+
 ```bash
 # Check status
 ./ssd-optimization.sh --check
@@ -129,11 +139,11 @@ cat /sys/block/nvme0n1/queue/scheduler
 
 ### Trading System Thresholds
 
-| Storage Tier | Min Throughput | Min IOPS | Use Case |
-|--------------|----------------|----------|----------|
-| Hot (NVMe)   | 1,000 MB/s    | 50,000   | Real-time trading data |
-| Warm (SATA)  | 500 MB/s      | 10,000   | Backups and logs |
-| Cold (NAS)   | 100 MB/s      | N/A      | Archival storage |
+| Storage Tier | Min Throughput | Min IOPS | Use Case               |
+| ------------ | -------------- | -------- | ---------------------- |
+| Hot (NVMe)   | 1,000 MB/s     | 50,000   | Real-time trading data |
+| Warm (SATA)  | 500 MB/s       | 10,000   | Backups and logs       |
+| Cold (NAS)   | 100 MB/s       | N/A      | Archival storage       |
 
 ### Performance Validation
 
@@ -208,6 +218,7 @@ sudo journalctl -u fstrim-all.service --no-pager
 **Symptoms**: Performance monitoring shows scheduler is not 'none'
 
 **Solutions**:
+
 1. Check if udev rules are installed: `ls -la /etc/udev/rules.d/60-ssd-scheduler.rules`
 2. Reload udev rules: `sudo udevadm control --reload-rules && sudo udevadm trigger`
 3. Manually set scheduler: `echo none | sudo tee /sys/block/nvme0n1/queue/scheduler`
@@ -217,6 +228,7 @@ sudo journalctl -u fstrim-all.service --no-pager
 **Symptoms**: `systemctl status fstrim-all.timer` shows inactive
 
 **Solutions**:
+
 1. Check service file exists: `ls -la /etc/systemd/system/fstrim-all.*`
 2. Reload systemd: `sudo systemctl daemon-reload`
 3. Enable timer: `sudo systemctl enable --now fstrim-all.timer`
@@ -226,6 +238,7 @@ sudo journalctl -u fstrim-all.service --no-pager
 **Symptoms**: Benchmark script exits with code 1
 
 **Solutions**:
+
 1. Check for background I/O processes: `iostat -x 1 5`
 2. Verify mount options include `noatime,discard`: `mount | grep nvme`
 3. Check system load: `htop` or `top`
@@ -236,6 +249,7 @@ sudo journalctl -u fstrim-all.service --no-pager
 **Symptoms**: Scripts fail with permission errors
 
 **Solutions**:
+
 1. Run optimization scripts as root: `sudo ./ssd-optimization.sh --fix`
 2. Check file permissions: `ls -la scripts/`
 3. Make scripts executable: `chmod +x scripts/*.sh`
@@ -245,16 +259,19 @@ sudo journalctl -u fstrim-all.service --no-pager
 #### Low Throughput Issues
 
 1. **Check I/O Scheduler**:
+
    ```bash
    cat /sys/block/nvme*/queue/scheduler
    ```
 
 2. **Verify Mount Options**:
+
    ```bash
    mount | grep -E "(postgresql|clickhouse|kafka)"
    ```
 
 3. **Check System Load**:
+
    ```bash
    iostat -x 1 5
    uptime
@@ -269,11 +286,13 @@ sudo journalctl -u fstrim-all.service --no-pager
 #### High Latency Issues
 
 1. **Check Queue Depth Settings**:
+
    ```bash
    cat /sys/block/nvme*/queue/nr_requests
    ```
 
 2. **Monitor Real-time I/O**:
+
    ```bash
    iotop -ao
    ```
@@ -304,6 +323,7 @@ ExecStartPost=/bin/bash -c 'if [ $? -ne 0 ]; then systemctl --user start alert-s
 #### Log Monitoring
 
 Monitor systemd journal for TRIM operations:
+
 ```bash
 # View recent TRIM operations
 journalctl -u fstrim-all.service --since="1 week ago"
@@ -315,19 +335,23 @@ journalctl -u fstrim-all.timer --since="1 month ago"
 ### Regular Maintenance Tasks
 
 #### Daily
+
 - Monitor I/O performance via `iostat` or system monitoring
 - Check for storage-related alerts
 
-#### Weekly  
+#### Weekly
+
 - Automated TRIM operations (configured via systemd timer)
 - Review TRIM operation logs
 
 #### Monthly
+
 - Run full performance benchmark
 - Review and update performance baselines
 - Check SSD health status via SMART data
 
 #### Quarterly
+
 - Review and update performance thresholds
 - Evaluate hardware upgrade needs
 - Audit optimization configuration
@@ -339,7 +363,7 @@ journalctl -u fstrim-all.timer --since="1 month ago"
 The optimizations provide immediate benefits for trading operations:
 
 - **Order Execution**: Reduced database I/O latency
-- **Market Data Processing**: Faster ClickHouse time-series operations  
+- **Market Data Processing**: Faster ClickHouse time-series operations
 - **Risk Management**: Improved real-time calculation performance
 - **Backup Operations**: Optimized backup and restore times
 
@@ -366,8 +390,9 @@ fi
 ### File Permissions
 
 All configuration files use appropriate permissions:
+
 - Udev rules: `644` (readable by all, writable by root)
-- Systemd files: `644` (readable by all, writable by root)  
+- Systemd files: `644` (readable by all, writable by root)
 - Scripts: `755` (executable by all, writable by root)
 
 ### System Changes

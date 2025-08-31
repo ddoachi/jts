@@ -27,33 +27,32 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
+  - T01
 blocks:
-- T07
-- T08
+  - T07
+  - T08
 related:
-- F03
+  - F03
 
 # === IMPLEMENTATION ===
 pull_requests: []
 commits: []
 context_file: 1042.context.md
 files:
-- .github/workflows/ci.yml
-- nx.json
-- jest.config.ts
+  - .github/workflows/ci.yml
+  - nx.json
+  - jest.config.ts
 
 # === METADATA ===
 tags:
-- ci
-- pipeline
-- testing
-- quality
-- nx
+  - ci
+  - pipeline
+  - testing
+  - quality
+  - nx
 effort: medium
 risk: medium
 unique_id: 9ac403da # Unique identifier (never changes)
-
 ---
 
 # Main CI Pipeline Configuration
@@ -78,6 +77,7 @@ Implement the comprehensive CI pipeline workflow that runs on every push and pul
 ### Main CI Workflow
 
 **`.github/workflows/ci.yml`**:
+
 ```yaml
 name: CI Pipeline
 
@@ -113,7 +113,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Determine Base SHA
         id: base
         run: |
@@ -122,18 +122,18 @@ jobs:
           else
             echo "sha=origin/main~1" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      
+
       - name: Generate Cache Key
         id: cache-key
         run: |
           echo "key=node-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}" >> $GITHUB_OUTPUT
-      
+
       - name: Cache Dependencies
         uses: actions/cache@v3
         with:
@@ -143,10 +143,10 @@ jobs:
           key: ${{ steps.cache-key.outputs.key }}
           restore-keys: |
             node-${{ runner.os }}-
-      
+
       - name: Install Dependencies
         run: npm ci --prefer-offline --no-audit
-      
+
       - name: Cache Nx
         uses: actions/cache@v3
         with:
@@ -154,18 +154,18 @@ jobs:
           key: nx-${{ runner.os }}-${{ github.sha }}
           restore-keys: |
             nx-${{ runner.os }}-
-      
+
       - name: Analyze Affected Projects
         id: affected
         run: |
           AFFECTED_APPS=$(npx nx show projects --affected --type=app --base=${{ steps.base.outputs.sha }} | tr '\n' ',' | sed 's/,$//')
           AFFECTED_LIBS=$(npx nx show projects --affected --type=lib --base=${{ steps.base.outputs.sha }} | tr '\n' ',' | sed 's/,$//')
           HAS_AFFECTED=$([[ -n "$AFFECTED_APPS" || -n "$AFFECTED_LIBS" ]] && echo 'true' || echo 'false')
-          
+
           echo "affected-apps=$AFFECTED_APPS" >> $GITHUB_OUTPUT
           echo "affected-libs=$AFFECTED_LIBS" >> $GITHUB_OUTPUT
           echo "has-affected=$HAS_AFFECTED" >> $GITHUB_OUTPUT
-          
+
           echo "📊 Analysis Results:"
           echo "  Apps: ${AFFECTED_APPS:-none}"
           echo "  Libs: ${AFFECTED_LIBS:-none}"
@@ -186,12 +186,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ env.NODE_VERSION }}
-      
+
       - name: Restore Caches
         uses: actions/cache@v3
         with:
@@ -199,7 +199,7 @@ jobs:
             node_modules
             .nx/cache
           key: ${{ needs.setup.outputs.cache-key }}
-      
+
       - name: Run Lint Check
         if: matrix.check == 'lint'
         run: |
@@ -207,14 +207,14 @@ jobs:
             --parallel=3 \
             --base=${{ needs.setup.outputs.base-sha }} \
             --configuration=ci
-      
+
       - name: Run Type Check
         if: matrix.check == 'type-check'
         run: |
           npx nx affected --target=type-check \
             --parallel=3 \
             --base=${{ needs.setup.outputs.base-sha }}
-      
+
       - name: Check Formatting
         if: matrix.check == 'format'
         run: |
@@ -245,7 +245,7 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-      
+
       redis:
         image: redis:7-alpine
         options: >-
@@ -255,18 +255,18 @@ jobs:
           --health-retries 5
         ports:
           - 6379:6379
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ env.NODE_VERSION }}
-      
+
       - name: Restore Caches
         uses: actions/cache@v3
         with:
@@ -274,7 +274,7 @@ jobs:
             node_modules
             .nx/cache
           key: ${{ needs.setup.outputs.cache-key }}
-      
+
       - name: Run Unit Tests
         if: matrix.test-type == 'unit'
         run: |
@@ -284,7 +284,7 @@ jobs:
             --base=${{ needs.setup.outputs.base-sha }} \
             --coverage \
             --coverageReporters=json,lcov,text-summary
-      
+
       - name: Run Integration Tests
         if: matrix.test-type == 'integration'
         env:
@@ -294,7 +294,7 @@ jobs:
           npx nx affected --target=integration-test \
             --parallel=2 \
             --base=${{ needs.setup.outputs.base-sha }}
-      
+
       - name: Run E2E Tests
         if: matrix.test-type == 'e2e'
         env:
@@ -304,7 +304,7 @@ jobs:
           npx nx affected --target=e2e \
             --parallel=1 \
             --base=${{ needs.setup.outputs.base-sha }}
-      
+
       - name: Upload Coverage
         if: matrix.test-type == 'unit' && github.event_name == 'pull_request'
         uses: codecov/codecov-action@v3
@@ -313,13 +313,13 @@ jobs:
           flags: ${{ matrix.test-type }}
           fail_ci_if_error: false
           verbose: true
-      
+
       - name: Coverage Quality Gate
         if: matrix.test-type == 'unit'
         run: |
           COVERAGE=$(node -p "require('./coverage/coverage-summary.json').total.lines.pct")
           echo "📊 Coverage: $COVERAGE%"
-          
+
           if (( $(echo "$COVERAGE < 95" | bc -l) )); then
             echo "❌ Coverage $COVERAGE% is below required 95%"
             exit 1
@@ -342,12 +342,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ env.NODE_VERSION }}
-      
+
       - name: Restore Caches
         uses: actions/cache@v3
         with:
@@ -355,14 +355,14 @@ jobs:
             node_modules
             .nx/cache
           key: ${{ needs.setup.outputs.cache-key }}
-      
+
       - name: Build Affected Projects
         run: |
           npx nx affected --target=build \
             --configuration=production \
             --parallel=3 \
             --base=${{ needs.setup.outputs.base-sha }}
-      
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -383,41 +383,36 @@ jobs:
             echo "ℹ️ No affected projects detected - skipping CI"
             exit 0
           fi
-          
+
           if [[ "${{ needs.code-quality.result }}" != "success" ]]; then
             echo "❌ Code quality checks failed"
             exit 1
           fi
-          
+
           if [[ "${{ needs.test.result }}" != "success" ]]; then
             echo "❌ Tests failed"
             exit 1
           fi
-          
+
           if [[ "${{ needs.build.result }}" != "success" ]]; then
             echo "❌ Build failed"
             exit 1
           fi
-          
+
           echo "✅ CI Pipeline completed successfully"
 ```
 
 ### Nx Configuration for CI
 
 **`nx.json` additions**:
+
 ```json
 {
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "test",
-          "lint",
-          "type-check",
-          "e2e"
-        ],
+        "cacheableOperations": ["build", "test", "lint", "type-check", "e2e"],
         "accessToken": "{{NX_CLOUD_ACCESS_TOKEN}}",
         "parallel": 3,
         "cacheDirectory": ".nx/cache"
@@ -442,6 +437,7 @@ jobs:
 ### Jest Configuration for CI
 
 **`jest.config.ci.js`**:
+
 ```javascript
 module.exports = {
   ...require('./jest.config'),
@@ -461,16 +457,19 @@ module.exports = {
       branches: 95,
       functions: 95,
       lines: 95,
-      statements: 95
-    }
+      statements: 95,
+    },
   },
   reporters: [
     'default',
-    ['jest-junit', {
-      outputDirectory: 'test-results',
-      outputName: 'junit.xml',
-    }]
-  ]
+    [
+      'jest-junit',
+      {
+        outputDirectory: 'test-results',
+        outputName: 'junit.xml',
+      },
+    ],
+  ],
 };
 ```
 

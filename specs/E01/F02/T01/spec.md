@@ -28,33 +28,32 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-- T02
-- T03
-- T04
-- T05
-- T06
+  - T02
+  - T03
+  - T04
+  - T05
+  - T06
 related: []
 pull_requests: []
 commits: []
 context_file: 1021.context.md
 files:
-- specs/E01/F02/deliverables/scripts/install-node-yarn.sh
-- specs/E01/F02/deliverables/scripts/install-node-yarn-linux.sh
-- specs/E01/F02/deliverables/scripts/install-node-yarn-windows.ps1
-- specs/E01/F02/deliverables/config/package.json.template
-- specs/E01/F02/deliverables/config/.yarnrc.yml
-- specs/E01/F02/deliverables/config/gitignore.template
+  - specs/E01/F02/deliverables/scripts/install-node-yarn.sh
+  - specs/E01/F02/deliverables/scripts/install-node-yarn-linux.sh
+  - specs/E01/F02/deliverables/scripts/install-node-yarn-windows.ps1
+  - specs/E01/F02/deliverables/config/package.json.template
+  - specs/E01/F02/deliverables/config/.yarnrc.yml
+  - specs/E01/F02/deliverables/config/gitignore.template
 
 # === METADATA ===
 tags:
-- nodejs
-- yarn
-- package-manager
-- setup
+  - nodejs
+  - yarn
+  - package-manager
+  - setup
 effort: small
 risk: low
 ---
-
 
 # Node.js and Yarn Environment Setup
 
@@ -78,6 +77,7 @@ Install and configure Node.js 20 LTS and Yarn 4 (Berry) as the foundation for th
 ### Installation Scripts
 
 **Linux Installation** (`scripts/install-node-yarn-linux.sh`):
+
 ```bash
 #!/bin/bash
 # Install Node.js 20 LTS
@@ -96,6 +96,7 @@ yarn --version
 ```
 
 **Windows Installation** (`scripts/install-node-yarn-windows.ps1`):
+
 ```powershell
 # Install Node.js via Chocolatey
 choco install nodejs-lts -y
@@ -114,10 +115,11 @@ yarn --version
 ### Yarn Configuration
 
 **`.yarnrc.yml`**:
+
 ```yaml
 nodeLinker: node-modules
 enableGlobalCache: false
-npmRegistryServer: "https://registry.npmjs.org"
+npmRegistryServer: 'https://registry.npmjs.org'
 
 # Workspace settings
 nmMode: hardlinks-local
@@ -126,7 +128,7 @@ compressionLevel: mixed
 # Plugin configuration
 plugins:
   - path: .yarn/plugins/@yarnpkg/plugin-workspace-tools.cjs
-    spec: "@yarnpkg/plugin-workspace-tools"
+    spec: '@yarnpkg/plugin-workspace-tools'
 ```
 
 ### Package.json Setup
@@ -136,10 +138,7 @@ plugins:
   "name": "jts-monorepo",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "libs/*"
-  ],
+  "workspaces": ["apps/*", "libs/*"],
   "packageManager": "yarn@4.0.0",
   "engines": {
     "node": ">=20.0.0",

@@ -27,30 +27,29 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F08
+  - F08
 blocks:
-- F11
+  - F11
 related:
-- F02
-- F04
-- F07
+  - F02
+  - F04
+  - F07
 branch: ''
 files:
-- libs/shared/errors/broker-errors.ts
-- libs/shared/services/recovery.service.ts
-- apps/brokers/common/circuit-breaker/
+  - libs/shared/errors/broker-errors.ts
+  - libs/shared/services/recovery.service.ts
+  - apps/brokers/common/circuit-breaker/
 
 # === METADATA ===
 tags:
-- error-handling
-- recovery
-- reliability
-- circuit-breaker
-- failover
+  - error-handling
+  - recovery
+  - reliability
+  - circuit-breaker
+  - failover
 effort: medium
 risk: high
 ---
-
 
 # Comprehensive Error Handling and Recovery System
 
@@ -165,31 +164,34 @@ Design a multi-layered error handling system that can detect, classify, and reco
 ## Error Classification
 
 ### Error Categories
+
 ```typescript
 enum ErrorCategory {
-  NETWORK = 'network',           // Connection failures
-  AUTHENTICATION = 'auth',       // Auth/permission issues
-  RATE_LIMIT = 'rate_limit',    // API limit violations
-  VALIDATION = 'validation',     // Invalid requests
-  BROKER = 'broker',            // Broker-side errors
-  TIMEOUT = 'timeout',          // Operation timeouts
-  DATA = 'data',                // Data inconsistency
-  SYSTEM = 'system'             // Internal errors
+  NETWORK = 'network', // Connection failures
+  AUTHENTICATION = 'auth', // Auth/permission issues
+  RATE_LIMIT = 'rate_limit', // API limit violations
+  VALIDATION = 'validation', // Invalid requests
+  BROKER = 'broker', // Broker-side errors
+  TIMEOUT = 'timeout', // Operation timeouts
+  DATA = 'data', // Data inconsistency
+  SYSTEM = 'system', // Internal errors
 }
 ```
 
 ### Severity Levels
+
 ```typescript
 enum ErrorSeverity {
-  CRITICAL = 'critical',  // Requires immediate action
-  HIGH = 'high',         // Significant impact
-  MEDIUM = 'medium',     // Moderate impact
-  LOW = 'low',          // Minor issues
-  INFO = 'info'         // Informational only
+  CRITICAL = 'critical', // Requires immediate action
+  HIGH = 'high', // Significant impact
+  MEDIUM = 'medium', // Moderate impact
+  LOW = 'low', // Minor issues
+  INFO = 'info', // Informational only
 }
 ```
 
 ### Recovery Strategies
+
 ```typescript
 enum RecoveryStrategy {
   RETRY_IMMEDIATE = 'retry_immediate',
@@ -198,32 +200,34 @@ enum RecoveryStrategy {
   FAILOVER = 'failover',
   DEGRADE = 'degrade',
   MANUAL = 'manual',
-  IGNORE = 'ignore'
+  IGNORE = 'ignore',
 }
 ```
 
 ## Circuit Breaker Configuration
 
 ### States and Transitions
+
 ```typescript
 interface CircuitBreakerConfig {
-  failureThreshold: 5;        // Failures to open
-  successThreshold: 3;        // Successes to close
-  timeout: 30000;             // Half-open timeout (ms)
-  volumeThreshold: 10;        // Min requests for statistics
-  errorThresholdPercentage: 50;  // Error % to open
-  resetTimeout: 60000;        // Force reset timeout
+  failureThreshold: 5; // Failures to open
+  successThreshold: 3; // Successes to close
+  timeout: 30000; // Half-open timeout (ms)
+  volumeThreshold: 10; // Min requests for statistics
+  errorThresholdPercentage: 50; // Error % to open
+  resetTimeout: 60000; // Force reset timeout
 }
 ```
 
 ### Exponential Backoff
+
 ```typescript
 interface RetryConfig {
-  initialDelay: 100;          // Initial delay (ms)
-  maxDelay: 32000;           // Maximum delay (ms)
-  multiplier: 2;             // Backoff multiplier
-  maxRetries: 5;             // Maximum attempts
-  jitter: true;              // Add randomization
+  initialDelay: 100; // Initial delay (ms)
+  maxDelay: 32000; // Maximum delay (ms)
+  multiplier: 2; // Backoff multiplier
+  maxRetries: 5; // Maximum attempts
+  jitter: true; // Add randomization
   retryableErrors: string[]; // Retryable error codes
 }
 ```
@@ -231,6 +235,7 @@ interface RetryConfig {
 ## Recovery Procedures
 
 ### Order State Recovery
+
 1. Query broker for order status
 2. Compare with local state
 3. Reconcile differences
@@ -238,6 +243,7 @@ interface RetryConfig {
 5. Notify affected systems
 
 ### Connection Recovery
+
 1. Detect connection failure
 2. Attempt immediate reconnection
 3. Apply exponential backoff
@@ -245,6 +251,7 @@ interface RetryConfig {
 5. Restore subscriptions
 
 ### Data Gap Recovery
+
 1. Detect missing data periods
 2. Query historical data API
 3. Fill gaps in sequence
@@ -254,6 +261,7 @@ interface RetryConfig {
 ## Trading-Specific Requirements
 
 ### Order Handling
+
 - Never lose track of open orders
 - Recover order state after disconnection
 - Handle partial fills during outages
@@ -261,6 +269,7 @@ interface RetryConfig {
 - Maintain order audit trail
 
 ### Position Safety
+
 - Freeze trading on position uncertainty
 - Reconcile positions after recovery
 - Validate against broker records
@@ -268,6 +277,7 @@ interface RetryConfig {
 - Maintain position history
 
 ### Market Data Continuity
+
 - Detect stale or missing data
 - Backfill from alternative sources
 - Mark questionable data
@@ -277,6 +287,7 @@ interface RetryConfig {
 ## Performance Requirements
 
 ### Recovery Metrics
+
 - Detection time: <1 second
 - Circuit breaker reaction: <100ms
 - Failover completion: <5 seconds
@@ -284,6 +295,7 @@ interface RetryConfig {
 - Data reconciliation: <1 minute
 
 ### Reliability Targets
+
 - 99.9% error detection rate
 - 95% automatic recovery rate
 - Zero data loss guarantee
@@ -333,21 +345,21 @@ When implementing this feature:
 ```typescript
 interface ErrorResponse {
   error: {
-    code: string;              // Unique error code
-    message: string;           // Human-readable message
-    category: ErrorCategory;   // Error classification
-    severity: ErrorSeverity;   // Impact level
-    retryable: boolean;       // Can be retried
-    details: any;             // Additional context
-    timestamp: string;        // When it occurred
-    correlationId: string;    // Request tracking ID
-    suggestion: string;       // Recovery suggestion
+    code: string; // Unique error code
+    message: string; // Human-readable message
+    category: ErrorCategory; // Error classification
+    severity: ErrorSeverity; // Impact level
+    retryable: boolean; // Can be retried
+    details: any; // Additional context
+    timestamp: string; // When it occurred
+    correlationId: string; // Request tracking ID
+    suggestion: string; // Recovery suggestion
   };
   recovery: {
     strategy: RecoveryStrategy;
-    retryAfter?: number;      // Seconds until retry
-    fallback?: string;        // Alternative action
-    manual?: string;          // Manual steps needed
+    retryAfter?: number; // Seconds until retry
+    fallback?: string; // Alternative action
+    manual?: string; // Manual steps needed
   };
 }
 ```
@@ -355,6 +367,7 @@ interface ErrorResponse {
 ## Monitoring & Alerting
 
 ### Key Metrics
+
 - Error rate by category
 - Circuit breaker state changes
 - Recovery success rate
@@ -362,6 +375,7 @@ interface ErrorResponse {
 - Error budget consumption
 
 ### Alert Conditions
+
 - Circuit breaker opened
 - High error rate (>1%)
 - Recovery failures

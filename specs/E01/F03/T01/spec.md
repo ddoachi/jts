@@ -31,33 +31,32 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-- T02
-- T03
-- T04
-- T05
-- T06
+  - T02
+  - T03
+  - T04
+  - T05
+  - T06
 related: []
 pull_requests: []
 commits: []
 context_file: 1003.context.md
 worktree: ''
 files:
-- nx.json
-- package.json
-- .gitignore
-- README.md
+  - nx.json
+  - package.json
+  - .gitignore
+  - README.md
 
 # === METADATA ===
 tags:
-- nx
-- monorepo
-- workspace
-- initialization
-- setup
+  - nx
+  - monorepo
+  - workspace
+  - initialization
+  - setup
 effort: small
 risk: low
 ---
-
 
 # Task T01: Initialize Nx Workspace with Base Configuration
 

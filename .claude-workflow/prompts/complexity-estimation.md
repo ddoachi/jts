@@ -5,6 +5,7 @@ Assess the implementation complexity of the system described in the PRD.
 ## Instructions
 
 Analyze complexity factors:
+
 - Technical complexity (algorithms, integrations, performance)
 - Integration complexity (external systems, APIs, protocols)
 - Data complexity (volume, variety, velocity)
@@ -22,7 +23,7 @@ Return results in JSON format:
   "reasoning": "High complexity due to real-time trading requirements, multiple broker integrations, and complex risk management algorithms. Moderate UI complexity with dashboard and configuration interfaces.",
   "factors": {
     "technical": 8,
-    "integration": 9, 
+    "integration": 9,
     "data": 7,
     "ui_ux": 6,
     "infrastructure": 8,

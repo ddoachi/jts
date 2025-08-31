@@ -3,7 +3,9 @@
 ## 🎯 Architecture at a Glance
 
 ### System Overview
+
 The JTS platform is a **comprehensive automated trading system** built with:
+
 - **Layered microservices architecture** with strict boundaries
 - **Domain-Driven Design** for clear business contexts
 - **Event-driven communication** via Kafka for scalability
@@ -12,15 +14,15 @@ The JTS platform is a **comprehensive automated trading system** built with:
 
 ### Key Architecture Decisions
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| **Monorepo Tool** | Nx Workspace | Efficient builds, dependency graph, code generation |
-| **Backend Framework** | NestJS (TypeScript) | Type safety, decorators, microservice support |
-| **Broker Integration** | FastAPI (Python) for Creon | Windows COM object compatibility |
-| **Communication** | gRPC (sync) + Kafka (async) | Low latency for critical paths, scalability for events |
-| **Time-Series DB** | ClickHouse | Optimized for OHLCV data and analytics |
-| **Caching** | Redis | Distributed cache, rate limiting, sessions |
-| **Frontend** | Next.js PWA | Server-side rendering, offline support, push notifications |
+| Decision               | Choice                      | Rationale                                                  |
+| ---------------------- | --------------------------- | ---------------------------------------------------------- |
+| **Monorepo Tool**      | Nx Workspace                | Efficient builds, dependency graph, code generation        |
+| **Backend Framework**  | NestJS (TypeScript)         | Type safety, decorators, microservice support              |
+| **Broker Integration** | FastAPI (Python) for Creon  | Windows COM object compatibility                           |
+| **Communication**      | gRPC (sync) + Kafka (async) | Low latency for critical paths, scalability for events     |
+| **Time-Series DB**     | ClickHouse                  | Optimized for OHLCV data and analytics                     |
+| **Caching**            | Redis                       | Distributed cache, rate limiting, sessions                 |
+| **Frontend**           | Next.js PWA                 | Server-side rendering, offline support, push notifications |
 
 ## 📊 Architecture Layers
 
@@ -28,7 +30,7 @@ The JTS platform is a **comprehensive automated trading system** built with:
 ┌─────────────────────────────────────┐
 │     PRESENTATION (React PWA)        │ ← User Interface
 ├─────────────────────────────────────┤
-│      GATEWAY (Express/Kong)         │ ← API Management  
+│      GATEWAY (Express/Kong)         │ ← API Management
 ├─────────────────────────────────────┤
 │        BUSINESS SERVICES            │ ← Core Logic
 │  Strategy | Risk | Portfolio | Order│
@@ -106,32 +108,36 @@ graph LR
 ## 🎮 Service Communication Patterns
 
 ### Synchronous (gRPC)
+
 - **Use Case**: Low-latency, request-response
 - **Example**: Strategy Engine → Risk Management (risk check)
 - **Timeout**: 100ms for critical paths
 
 ### Asynchronous (Kafka)
+
 - **Use Case**: Event streaming, decoupling
 - **Example**: Order Execution → Portfolio Tracker (trade executed)
 - **Retention**: 1-30 days based on topic
 
 ### Caching (Redis)
+
 - **Use Case**: Session, rate limiting, hot data
 - **Example**: Real-time prices, user sessions
 - **TTL**: 5 minutes for prices, 24 hours for sessions
 
 ## 📈 Rate Limiting Strategy
 
-| Broker | Limit | Window | Strategy |
-|--------|-------|--------|----------|
-| **Creon** | 60 requests | 15 seconds | Sliding window with queue |
-| **KIS** | 20 requests | 1 second | Token bucket per account |
-| **Binance** | 1200 weight | 1 minute | Weight-based limiting |
-| **Upbit** | 10 requests | 1 second | Fixed window |
+| Broker      | Limit       | Window     | Strategy                  |
+| ----------- | ----------- | ---------- | ------------------------- |
+| **Creon**   | 60 requests | 15 seconds | Sliding window with queue |
+| **KIS**     | 20 requests | 1 second   | Token bucket per account  |
+| **Binance** | 1200 weight | 1 minute   | Weight-based limiting     |
+| **Upbit**   | 10 requests | 1 second   | Fixed window              |
 
 ## 💾 Storage Architecture
 
 ### Hot Storage (4TB NVMe)
+
 ```
 2TB - ClickHouse (time-series)
 800GB - PostgreSQL (transactions)
@@ -142,10 +148,12 @@ graph LR
 ```
 
 ### Warm Storage (SATA SSD)
+
 - Recent historical data (7-90 days)
 - Completed trades and reports
 
 ### Cold Storage (16.4TB NAS)
+
 - Historical archives (>90 days)
 - Backups and audit logs
 
@@ -159,12 +167,14 @@ graph LR
 ## 📊 Key Metrics to Monitor
 
 ### Technical Metrics
+
 - API latency < 100ms (p95)
 - Order execution < 500ms
 - System uptime > 99.9%
 - Kafka lag < 1 second
 
 ### Business Metrics
+
 - Trade success rate > 95%
 - Risk limit breaches < 1/month
 - Portfolio accuracy > 99.9%
@@ -173,26 +183,31 @@ graph LR
 ## 🚦 Implementation Phases
 
 ### Phase 1: Foundation (Weeks 1-2)
+
 ✅ Core infrastructure  
 ✅ Creon integration  
 ✅ Basic trading capability
 
 ### Phase 2: Risk & Portfolio (Weeks 3-4)
+
 ⏳ Risk management  
 ⏳ Portfolio tracking  
 ⏳ API gateway
 
 ### Phase 3: Multi-Broker (Weeks 5-6)
+
 ⏳ KIS integration  
 ⏳ Crypto brokers  
 ⏳ Unified interface
 
 ### Phase 4: Advanced Features (Weeks 7-8)
+
 ⏳ DSL engine  
 ⏳ Backtesting  
 ⏳ Notifications
 
 ### Phase 5: Production (Weeks 9-10)
+
 ⏳ Monitoring  
 ⏳ Optimization  
 ⏳ Deployment
