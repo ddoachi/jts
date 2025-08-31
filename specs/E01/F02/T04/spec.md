@@ -36,6 +36,7 @@ pull_requests: []
 commits: 
 - text: "feat(E01-F02-T04): implement environment configuration and secrets management"
   hash: "8d06b99"
+  link: "https://github.com/ddoachi/jts/commit/8d06b99"
 context_file: context.md
 files:
 - .env.example
