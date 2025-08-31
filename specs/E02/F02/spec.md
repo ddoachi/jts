@@ -9,9 +9,9 @@ title: KIS REST API Integration
 type: feature
 
 # === HIERARCHY ===
-parent: [E02](../spec.md)
+parent: "[E02](../spec.md)"
 children: []
-epic: [E02](../spec.md)
+epic: "[E02](../spec.md)"
 domain: broker-kis
 
 # === WORKFLOW ===
@@ -27,12 +27,12 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - [F01](../F01/spec.md)
+  - "[F01](../F01/spec.md)"
 blocks:
-  - [F03](../F03/spec.md)
+  - "[F03](../F03/spec.md)"
 related:
-  - [F05](../F05/spec.md)
-  - [F06](../F06/spec.md)
+  - "[F05](../F05/spec.md)"
+  - "[F06](../F06/spec.md)"
 branch: ''
 files:
   - apps/brokers/kis/

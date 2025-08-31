@@ -9,7 +9,7 @@ title: Database Infrastructure
 type: feature
 
 # === HIERARCHY ===
-parent: [E01](../spec.md)
+parent: "[E01](../spec.md)"
 children: []
 epic: E01
 domain: infrastructure
@@ -27,17 +27,17 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - [T02](../F01/T02/spec.md)
+  - "[T02](../F01/T02/spec.md)"
 blocks:
-  - [F07](../F07/spec.md)
-  - [E02](../../E02/spec.md)
-  - [E03](../../E03/spec.md)
+  - "[F07](../F07/spec.md)"
+  - "[E02](../../E02/spec.md)"
+  - "[E03](../../E03/spec.md)"
 related:
-  - [F03](../F03/spec.md)
-  - [F06](../F06/spec.md)
+  - "[F03](../F03/spec.md)"
+  - "[F06](../F06/spec.md)"
 pull_requests: []
 commits: []
-context_file: [context.md](./context.md)
+context_file: "[context.md](./context.md)"
 files:
   - infrastructure/databases/
   - docker-compose.databases.yml

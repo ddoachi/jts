@@ -9,9 +9,9 @@ title: Creon Windows COM Integration Service
 type: feature
 
 # === HIERARCHY ===
-parent: [E02](../spec.md)
+parent: "[E02](../spec.md)"
 children: []
-epic: [E02](../spec.md)
+epic: "[E02](../spec.md)"
 domain: broker-creon
 
 # === WORKFLOW ===
@@ -27,11 +27,11 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - [F01](../F01/spec.md)
+  - "[F01](../F01/spec.md)"
 blocks: []
 related:
-  - [F05](../F05/spec.md)
-  - [F09](../F09/spec.md)
+  - "[F05](../F05/spec.md)"
+  - "[F09](../F09/spec.md)"
 branch: ''
 files:
   - apps/brokers/creon/

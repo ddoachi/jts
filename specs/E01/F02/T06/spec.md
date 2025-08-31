@@ -9,9 +9,9 @@ title: Development Scripts and Automation
 type: task
 
 # === HIERARCHY ===
-parent: [F02](../spec.md)
+parent: "[F02](../spec.md)"
 children: []
-epic: [E01](../../spec.md)
+epic: "[E01](../../spec.md)"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,16 +27,16 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - [T01](../T01/spec.md)
-  - [T02](../T02/spec.md)
-  - [T03](../T03/spec.md)
-  - [T04](../T04/spec.md)
-  - [T05](../T05/spec.md)
+  - "[T01](../T01/spec.md)"
+  - "[T02](../T02/spec.md)"
+  - "[T03](../T03/spec.md)"
+  - "[T04](../T04/spec.md)"
+  - "[T05](../T05/spec.md)"
 blocks: []
 related: []
 pull_requests: []
 commits: []
-context_file: [context.md](./context.md)
+context_file: "[context.md](./context.md)"
 files:
   - scripts/setup-dev-env.sh
   - scripts/health-check.js

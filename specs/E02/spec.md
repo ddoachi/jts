@@ -11,17 +11,17 @@ type: epic
 # === HIERARCHY ===
 parent: ''
 children:
-  - [F01](./F01/spec.md)
-  - [F02](./F02/spec.md)
-  - [F03](./F03/spec.md)
-  - [F04](./F04/spec.md)
-  - [F05](./F05/spec.md)
-  - [F06](./F06/spec.md)
-  - [F07](./F07/spec.md)
-  - [F08](./F08/spec.md)
-  - [F09](./F09/spec.md)
-  - [F10](./F10/spec.md)
-  - [F11](./F11/spec.md)
+  - "[F01](./F01/spec.md)"
+  - "[F02](./F02/spec.md)"
+  - "[F03](./F03/spec.md)"
+  - "[F04](./F04/spec.md)"
+  - "[F05](./F05/spec.md)"
+  - "[F06](./F06/spec.md)"
+  - "[F07](./F07/spec.md)"
+  - "[F08](./F08/spec.md)"
+  - "[F09](./F09/spec.md)"
+  - "[F10](./F10/spec.md)"
+  - "[F11](./F11/spec.md)"
 epic: E02
 domain: broker-integration
 
@@ -38,13 +38,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - [E01](../E01/spec.md)
+  - "[E01](../E01/spec.md)"
 blocks:
-  - [E04](../E04/spec.md)
-  - [E05](../E05/spec.md)
-  - [E06](../E06/spec.md)
+  - "[E04](../E04/spec.md)"
+  - "[E05](../E05/spec.md)"
+  - "[E06](../E06/spec.md)"
 related:
-  - [E03](../E03/spec.md)
+  - "[E03](../E03/spec.md)"
 branch: ''
 files:
   - apps/brokers/
