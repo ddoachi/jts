@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!-- Generated from spec: E01-F02-T03 (Docker and Database Services Setup) -->
+<!-- Spec ID: ce5140df -->
+<!-- ClickHouse configuration for JTS development -->
+<clickhouse>
+    <!-- Minimal configuration for development -->
+    <!-- Most settings use ClickHouse defaults which are suitable for development -->
+    
+    <!-- Listen on all interfaces for Docker -->
+    <listen_host>0.0.0.0</listen_host>
+    
+    <!-- Path to data directory -->
+    <path>/var/lib/clickhouse/</path>
+    
+    <!-- Path to temporary data -->
+    <tmp_path>/var/lib/clickhouse/tmp/</tmp_path>
+    
+    <!-- Users configuration -->
+    <users_config>users.xml</users_config>
+    
+    <!-- Default profile -->
+    <default_profile>default</default_profile>
+    
+    <!-- Default database -->
+    <default_database>jts_market_data_dev</default_database>
+    
+    <!-- Timezone -->
+    <timezone>Asia/Seoul</timezone>
+    
+    <!-- Maximum number of concurrent queries -->
+    <max_concurrent_queries>100</max_concurrent_queries>
+    
+    <!-- Mark cache size in bytes -->
+    <mark_cache_size>5368709120</mark_cache_size>
+    
+    <!-- Log level -->
+    <logger>
+        <level>information</level>
+        <log>/var/log/clickhouse-server/clickhouse-server.log</log>
+        <errorlog>/var/log/clickhouse-server/clickhouse-server.err.log</errorlog>
+        <size>1000M</size>
+        <count>10</count>
+    </logger>
+    
+    <!-- Query log settings -->
+    <query_log>
+        <database>system</database>
+        <table>query_log</table>
+        <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+    </query_log>
+    
+    <!-- Uncompress settings -->
+    <builtin_dictionaries_reload_interval>3600</builtin_dictionaries_reload_interval>
+    
+    <!-- Maximum table size to drop -->
+    <max_table_size_to_drop>0</max_table_size_to_drop>
+    
+    <!-- Compression settings for development -->
+    <compression incl="clickhouse_compression">
+        <case>
+            <min_part_size>10000000000</min_part_size>
+            <min_part_size_ratio>0.01</min_part_size_ratio>
+            <method>lz4</method>
+        </case>
+    </compression>
+</clickhouse>

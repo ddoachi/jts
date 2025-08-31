@@ -1,0 +1,164 @@
+# Generated from spec: E01-F02-T03 (Docker and Database Services Setup)
+# Spec ID: ce5140df
+
+version: '3.8'
+
+services:
+  # PostgreSQL - Core business data
+  postgres:
+    image: postgres:15-alpine
+    container_name: jts-postgres-dev
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: jts_trading_dev
+      POSTGRES_USER: jts_admin
+      POSTGRES_PASSWORD: dev_password
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./scripts/init-postgres.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jts_admin -d jts_trading_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - jts-network
+
+  # ClickHouse - Time-series market data
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.8
+    container_name: jts-clickhouse-dev
+    restart: unless-stopped
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      CLICKHOUSE_DB: jts_market_data_dev
+      CLICKHOUSE_USER: jts_ch
+      CLICKHOUSE_PASSWORD: dev_password
+    volumes:
+      - clickhouse_dev_data:/var/lib/clickhouse
+      - ./configs/clickhouse-config.xml:/etc/clickhouse-server/config.xml:ro
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - jts-network
+
+  # MongoDB - Configuration storage
+  mongodb:
+    image: mongo:7
+    container_name: jts-mongodb-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: jts_mongo
+      MONGO_INITDB_ROOT_PASSWORD: dev_password
+      MONGO_INITDB_DATABASE: jts_config_dev
+    volumes:
+      - mongodb_dev_data:/data/db
+      - ./scripts/init-mongo.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - jts-network
+
+  # Redis - Caching and rate limiting (multi-account support)
+  redis:
+    image: redis:7-alpine
+    container_name: jts-redis-dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - redis_dev_data:/data
+      - ./configs/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - jts-network
+
+  # Zookeeper - Kafka dependency
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: jts-zookeeper-dev
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper_dev_data:/var/lib/zookeeper/data
+      - zookeeper_dev_logs:/var/lib/zookeeper/log
+    networks:
+      - jts-network
+
+  # Kafka - Message broker
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: jts-kafka-dev
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    volumes:
+      - kafka_dev_data:/var/lib/kafka/data
+    networks:
+      - jts-network
+
+  # Grafana - Monitoring (Optional)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: jts-grafana-dev
+    restart: unless-stopped
+    ports:
+      - "3100:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: dev_password
+      GF_INSTALL_PLUGINS: 
+    volumes:
+      - grafana_dev_data:/var/lib/grafana
+    networks:
+      - jts-network
+
+volumes:
+  postgres_dev_data:
+    driver: local
+  clickhouse_dev_data:
+    driver: local
+  mongodb_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+  zookeeper_dev_data:
+    driver: local
+  zookeeper_dev_logs:
+    driver: local
+  kafka_dev_data:
+    driver: local
+  grafana_dev_data:
+    driver: local
+
+networks:
+  jts-network:
+    name: jts-dev-network
+    driver: bridge
