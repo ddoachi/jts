@@ -157,12 +157,12 @@ Build a modern, responsive web application using React/Next.js with real-time We
 
 ## Dependencies
 
-- **E01**: Foundation & Infrastructure Setup - Requires API Gateway for backend connectivity
-- **E02**: Multi-Broker Integration Layer - Needs broker data for account displays
-- **E03**: Market Data Collection & Processing - Requires real-time market data feeds
-- **E04**: Trading Strategy Engine & DSL - Needs strategy data and DSL definitions
-- **E05**: Risk Management System - Requires risk metrics and controls
-- **E06**: Order Execution & Portfolio Management - Needs order and portfolio data
+- **[E01](../E01/spec.md)**: Foundation & Infrastructure Setup - Requires API Gateway for backend connectivity
+- **[E02](../E02/spec.md)**: Multi-Broker Integration Layer - Needs broker data for account displays
+- **[E03](../E03/spec.md)**: Market Data Collection & Processing - Requires real-time market data feeds
+- **[E04](../E04/spec.md)**: Trading Strategy Engine & DSL - Needs strategy data and DSL definitions
+- **[E05](../E05/spec.md)**: Risk Management System - Requires risk metrics and controls
+- **[E06](../E06/spec.md)**: Order Execution & Portfolio Management - Needs order and portfolio data
 
 ## Testing Plan
 

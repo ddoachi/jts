@@ -27,14 +27,14 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - E01
-  - E02
+  - [E01](../E01/spec.md)
+  - [E02](../E02/spec.md)
 blocks:
-  - E04
-  - E05
-  - E09
+  - [E04](../E04/spec.md)
+  - [E05](../E05/spec.md)
+  - [E09](../E09/spec.md)
 related:
-  - E06
+  - [E06](../E06/spec.md)
 branch: ''
 files:
   - apps/integration/market-data-collector/
@@ -149,8 +149,8 @@ Implement a scalable data pipeline that can handle high-frequency market updates
 
 ## Dependencies
 
-- **E01**: Foundation & Infrastructure Setup - Requires databases and messaging infrastructure
-- **E02**: Multi-Broker Integration Layer - Needs broker connections for data sources
+- **[E01](../E01/spec.md)**: Foundation & Infrastructure Setup - Requires databases and messaging infrastructure
+- **[E02](../E02/spec.md)**: Multi-Broker Integration Layer - Needs broker connections for data sources
 
 ## Testing Plan
 

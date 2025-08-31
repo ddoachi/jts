@@ -9,14 +9,14 @@ title: Monorepo Structure and Tooling
 type: feature
 
 # === HIERARCHY ===
-parent: E01
+parent: [E01](../spec.md)
 children:
-  - T01
-  - T02
-  - T03
-  - T04
-  - T05
-  - T06
+  - [T01](./T01/spec.md)
+  - [T02](./T02/spec.md)
+  - [T03](./T03/spec.md)
+  - [T04](./T04/spec.md)
+  - [T05](./T05/spec.md)
+  - [T06](./T06/spec.md)
 epic: E01
 domain: infrastructure
 
@@ -33,17 +33,17 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - F02
+  - [F02](../F02/spec.md)
 blocks:
-  - F04
-  - F05
-  - F06
-  - F07
+  - [F04](../F04/spec.md)
+  - [F05](../F05/spec.md)
+  - [F06](../F06/spec.md)
+  - [F07](../F07/spec.md)
 related:
-  - F01
+  - [F01](../F01/spec.md)
 pull_requests: []
 commits: []
-context_file: context.md
+context_file: [context.md](./context.md)
 files:
   - nx.json
   - package.json

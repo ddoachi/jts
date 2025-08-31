@@ -9,9 +9,9 @@ title: Database Mount Integration
 type: task
 
 # === HIERARCHY ===
-parent: F01
+parent: [F01](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,13 +27,13 @@ actual_hours: 2.5
 
 # === DEPENDENCIES ===
 dependencies:
-  - T01
+  - [T01](../T01/spec.md)
 blocks:
-  - F02
-  - F05
+  - [F02](../../F02/spec.md)
+  - [F05](../../F05/spec.md)
 related:
-  - T05
-  - T06
+  - [T05](../T05/spec.md)
+  - [T06](../T06/spec.md)
 pull_requests: []
 commits: []
 context_file: ''

@@ -9,9 +9,9 @@ title: Branch Protection and Quality Gates
 type: task
 
 # === HIERARCHY ===
-parent: F04
+parent: [F04](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,14 +27,14 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - T01
-  - T02
-  - T03
+  - [T01](../T01/spec.md)
+  - [T02](../T02/spec.md)
+  - [T03](../T03/spec.md)
 blocks: []
 related: []
 pull_requests: []
 commits: []
-context_file: 1050.context.md
+context_file: [context.md](./context.md)
 files:
   - .github/branch-protection.yml
   - .github/CODEOWNERS

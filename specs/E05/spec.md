@@ -27,15 +27,15 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - E01
-  - E02
-  - E03
-  - E04
+  - [E01](../E01/spec.md)
+  - [E02](../E02/spec.md)
+  - [E03](../E03/spec.md)
+  - [E04](../E04/spec.md)
 blocks:
-  - E06
+  - [E06](../E06/spec.md)
 related:
-  - E07
-  - E08
+  - [E07](../E07/spec.md)
+  - [E08](../E08/spec.md)
 branch: ''
 files:
   - apps/core/risk-management/
@@ -156,10 +156,10 @@ Create a multi-layered risk management system that operates in real-time, evalua
 
 ## Dependencies
 
-- **E01**: Foundation & Infrastructure Setup - Requires Redis for real-time state management
-- **E02**: Multi-Broker Integration Layer - Needs broker connections for position queries
-- **E03**: Market Data Collection & Processing - Requires real-time pricing for mark-to-market
-- **E04**: Trading Strategy Engine & DSL - Needs strategy signals for position sizing decisions
+- **[E01](../E01/spec.md)**: Foundation & Infrastructure Setup - Requires Redis for real-time state management
+- **[E02](../E02/spec.md)**: Multi-Broker Integration Layer - Needs broker connections for position queries
+- **[E03](../E03/spec.md)**: Market Data Collection & Processing - Requires real-time pricing for mark-to-market
+- **[E04](../E04/spec.md)**: Trading Strategy Engine & DSL - Needs strategy signals for position sizing decisions
 
 ## Testing Plan
 

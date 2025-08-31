@@ -9,14 +9,14 @@ title: Storage Infrastructure Coordination
 type: feature
 
 # === HIERARCHY ===
-parent: E01
+parent: [E01](../spec.md)
 children:
-  - T01
-  - T02
-  - T03
-  - T04
-  - T05
-  - T06
+  - [T01](./T01/spec.md)
+  - [T02](./T02/spec.md)
+  - [T03](./T03/spec.md)
+  - [T04](./T04/spec.md)
+  - [T05](./T05/spec.md)
+  - [T06](./T06/spec.md)
 epic: E01
 domain: infrastructure
 
@@ -34,19 +34,19 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-  - F02
-  - F04
-  - F05
+  - [F02](../F02/spec.md)
+  - [F04](../F04/spec.md)
+  - [F05](../F05/spec.md)
 related:
-  - F06
-  - F08
+  - [F06](../F06/spec.md)
+  - [F08](../F08/spec.md)
 pull_requests:
   - '#18'
   - '#19'
 commits:
   - 08e4cc5
   - e5381ea
-context_file: context.md
+context_file: [context.md](./context.md)
 files:
   - /etc/fstab
   - scripts/setup-lvm.sh

@@ -205,13 +205,13 @@ Implement a comprehensive continuous integration and deployment pipeline using G
 
 This epic depends on all other epics being completed as it handles deployment of the entire system:
 
-- **Foundation & Infrastructure (E01)**: Base infrastructure must be established
-- **Broker Integration (E02)**: All broker services must be implemented
-- **Market Data (E03)**: Data collection services must be ready
-- **Strategy Engine (E04)**: Trading logic must be complete
-- **Risk Management (E05)**: Risk controls must be implemented
-- **Order Execution (E06)**: Order management must be functional
-- **User Interface (E07)**: Frontend applications must be ready
+- **Foundation & Infrastructure ([E01](../E01/spec.md))**: Base infrastructure must be established
+- **Broker Integration ([E02](../E02/spec.md))**: All broker services must be implemented
+- **Market Data ([E03](../E03/spec.md))**: Data collection services must be ready
+- **Strategy Engine ([E04](../E04/spec.md))**: Trading logic must be complete
+- **Risk Management ([E05](../E05/spec.md))**: Risk controls must be implemented
+- **Order Execution ([E06](../E06/spec.md))**: Order management must be functional
+- **User Interface ([E07](../E07/spec.md))**: Frontend applications must be ready
 
 ## Testing Plan
 

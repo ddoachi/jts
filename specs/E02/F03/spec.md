@@ -9,9 +9,9 @@ title: KIS WebSocket Real-time Data Integration
 type: feature
 
 # === HIERARCHY ===
-parent: E02
+parent: [E02](../spec.md)
 children: []
-epic: E02
+epic: [E02](../spec.md)
 domain: broker-kis-realtime
 
 # === WORKFLOW ===
@@ -27,11 +27,11 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - F02
+  - [F02](../F02/spec.md)
 blocks: []
 related:
-  - F05
-  - F11
+  - [F05](../F05/spec.md)
+  - [F11](../F11/spec.md)
 branch: ''
 files:
   - apps/brokers/kis/websocket/

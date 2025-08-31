@@ -9,9 +9,9 @@ title: Release Management and Semantic Versioning
 type: task
 
 # === HIERARCHY ===
-parent: F04
+parent: [F04](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,13 +27,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - T01
+  - [T01](../T01/spec.md)
 blocks: []
 related:
-  - T04
+  - [T04](../T04/spec.md)
 pull_requests: []
 commits: []
-context_file: 1049.context.md
+context_file: [context.md](./context.md)
 files:
   - .github/workflows/release.yml
   - .releaserc.json
