@@ -9,46 +9,39 @@ title: Development Scripts and Automation
 type: task
 
 # === HIERARCHY ===
-parent: "[F02](../spec.md)"
+parent: '[F02](../spec.md)'
 children: []
-epic: "[E01](../../spec.md)"
+epic: '[E01](../../spec.md)'
 domain: infrastructure
 
 # === WORKFLOW ===
-status: completed
+status: draft
 priority: medium
 
 # === TRACKING ===
 created: '2025-08-27'
-updated: '2025-08-31'
+updated: '2025-08-27'
 due_date: ''
 estimated_hours: 3
-actual_hours: 2.5
+actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[T01](../T01/spec.md)"
-  - "[T02](../T02/spec.md)"
-  - "[T03](../T03/spec.md)"
-  - "[T04](../T04/spec.md)"
-  - "[T05](../T05/spec.md)"
+  - '[T01](../T01/spec.md)'
+  - '[T02](../T02/spec.md)'
+  - '[T03](../T03/spec.md)'
+  - '[T04](../T04/spec.md)'
+  - '[T05](../T05/spec.md)'
 blocks: []
 related: []
-pull_requests:
-  - text: "feat(dev): add comprehensive development automation and documentation"
-    number: 58
-    link: "https://github.com/ddoachi/jts/pull/58"
-commits:
-  - text: "feat(dev): add comprehensive development automation and documentation"
-    hash: "5f8689d"
-    link: "https://github.com/ddoachi/jts/commit/5f8689d"
-context_file: "[context.md](./context.md)"
+pull_requests: []
+commits: []
+context_file: '[context.md](./context.md)'
 files:
   - scripts/setup-dev-env.sh
-  - scripts/check-services-health.js
+  - scripts/health-check.js
   - package.json
   - docs/DEVELOPMENT.md
-  - docs/QUICKSTART.md
 
 # === METADATA ===
 tags:
@@ -68,14 +61,14 @@ Create comprehensive automation scripts and documentation to streamline the deve
 
 ## Acceptance Criteria
 
-- [x] Master setup script for complete environment initialization
-- [x] Service health check and monitoring scripts
-- [x] Database migration and seeding automation
-- [x] Development workflow scripts in package.json
-- [x] Troubleshooting utilities
-- [x] Complete developer onboarding guide
-- [x] Platform-specific setup documentation
-- [x] Quick start guide for new developers
+- [ ] Master setup script for complete environment initialization
+- [ ] Service health check and monitoring scripts
+- [ ] Database migration and seeding automation
+- [ ] Development workflow scripts in package.json
+- [ ] Troubleshooting utilities
+- [ ] Complete developer onboarding guide
+- [ ] Platform-specific setup documentation
+- [ ] Quick start guide for new developers
 
 ## Technical Approach
 
@@ -425,8 +418,8 @@ checkAllServices().catch(console.error);
 - `scripts/check-services-health.js` - Health monitoring
 - `scripts/validate-env.js` - Environment validator
 - Updated `package.json` - All workflow scripts
-- `docs/DEVELOPMENT.md` - Complete developer guide
-- `docs/QUICKSTART.md` - 5-minute setup guide
+- [`docs/DEVELOPMENT.md`](`docs/DEVELOPMENT.md`) - Complete developer guide
+- [`docs/QUICKSTART.md`](`docs/QUICKSTART.md`) - 5-minute setup guide
 
 ## Testing Plan
 
