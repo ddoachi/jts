@@ -13,12 +13,14 @@ Based on comprehensive analysis of the JTS automated trading system requirements
 ### Technical Justification
 
 #### Real-time Trading Requirements
+
 - **WebSocket Integration**: Native support for real-time market data streams
 - **Performance**: Achieves <100ms UI update requirement through optimized rendering
 - **Server Components**: Reduces client-side JavaScript for faster initial loads
 - **Streaming SSR**: Progressive rendering for complex trading dashboards
 
 #### Implementation Architecture
+
 ```typescript
 // Recommended package stack
 {
@@ -37,12 +39,12 @@ Based on comprehensive analysis of the JTS automated trading system requirements
 
 ### Alternative Analysis
 
-| Framework | Pros | Cons | Verdict |
-|-----------|------|------|---------|
-| **SvelteKit** | Smaller bundles, faster runtime | Smaller ecosystem, less TypeScript support | ❌ Risk for financial systems |
-| **Angular** | Enterprise-ready, strong typing | Steep learning curve, verbose | ❌ Over-engineered for needs |
-| **Vue.js + Nuxt** | Simple, flexible | Less real-time tooling | ❌ Limited WebSocket ecosystem |
-| **React + Vite** | Fast builds, modern | No SSR, requires additional setup | ❌ Missing Next.js benefits |
+| Framework         | Pros                            | Cons                                       | Verdict                        |
+| ----------------- | ------------------------------- | ------------------------------------------ | ------------------------------ |
+| **SvelteKit**     | Smaller bundles, faster runtime | Smaller ecosystem, less TypeScript support | ❌ Risk for financial systems  |
+| **Angular**       | Enterprise-ready, strong typing | Steep learning curve, verbose              | ❌ Over-engineered for needs   |
+| **Vue.js + Nuxt** | Simple, flexible                | Less real-time tooling                     | ❌ Limited WebSocket ecosystem |
+| **React + Vite**  | Fast builds, modern             | No SSR, requires additional setup          | ❌ Missing Next.js benefits    |
 
 ## 2. Mobile Platform Strategy
 
@@ -53,6 +55,7 @@ Based on comprehensive analysis of the JTS automated trading system requirements
 ### Phase 1: PWA Implementation (MVP - Weeks 1-3)
 
 #### Key Features
+
 - **Single Codebase**: Reuse Next.js implementation
 - **Offline Trading**: Service Workers cache critical data
 - **Push Notifications**: Web Push API for price alerts
@@ -60,6 +63,7 @@ Based on comprehensive analysis of the JTS automated trading system requirements
 - **Biometric Security**: WebAuthn for fingerprint/face authentication
 
 #### PWA Configuration
+
 ```javascript
 // next.config.js PWA setup
 const withPWA = require('next-pwa')({
@@ -74,23 +78,25 @@ const withPWA = require('next-pwa')({
         cacheName: 'market-data-cache',
         expiration: {
           maxEntries: 100,
-          maxAgeSeconds: 300 // 5 minutes
-        }
-      }
-    }
-  ]
+          maxAgeSeconds: 300, // 5 minutes
+        },
+      },
+    },
+  ],
 });
 ```
 
 ### Phase 2: React Native (Post-MVP)
 
 #### When to Implement Native
+
 - User base exceeds 10,000 active traders
 - Complex charting performance issues on mobile browsers
 - App store presence becomes business requirement
 - Native notification reliability needed for critical alerts
 
 #### Technology Choice Rationale
+
 - **React Native**: Code reuse from Next.js components
 - **Not Flutter**: Different language ecosystem (Dart vs TypeScript)
 - **Not Native**: Maintenance overhead of two separate codebases
@@ -104,12 +110,14 @@ const withPWA = require('next-pwa')({
 ### Architecture Benefits
 
 #### Financial System Suitability
+
 - **Enterprise Patterns**: Built-in dependency injection, decorators, modules
 - **Type Safety**: Full TypeScript prevents trading errors
 - **Microservices Ready**: Native support for your multi-broker architecture
 - **Testing**: Comprehensive testing utilities for financial compliance
 
 #### Performance Optimization Strategy
+
 ```typescript
 // Critical NestJS optimizations for trading
 import { Module } from '@nestjs/common';
@@ -206,6 +214,7 @@ mkfs.ext4 /dev/vg_jts/lv_backup
 ### Service-Specific Optimizations
 
 #### PostgreSQL Tuning
+
 ```ini
 # postgresql.conf optimizations
 shared_buffers = 8GB              # 25% of 32GB RAM
@@ -221,6 +230,7 @@ max_parallel_workers_per_gather = 4
 ```
 
 #### ClickHouse Configuration
+
 ```xml
 <!-- config.xml optimizations -->
 <clickhouse>
@@ -233,6 +243,7 @@ max_parallel_workers_per_gather = 4
 ```
 
 #### Kafka Performance
+
 ```properties
 # server.properties optimizations
 num.network.threads=8
@@ -247,15 +258,15 @@ compression.type=lz4           # Fast compression
 
 ### Data Growth Projections
 
-| Service | Initial Daily | Peak Daily | 2-Year Total | Allocated | Usage |
-|---------|--------------|------------|--------------|-----------|-------|
-| ClickHouse | 500MB | 2GB | 1.5TB | 2TB | 75% |
-| PostgreSQL | 10MB | 50MB | 35GB | 800GB | 4% |
-| Kafka | 1GB | 5GB | 100GB* | 600GB | 17% |
-| MongoDB | 5MB | 10MB | 7GB | 200GB | 4% |
-| Redis | In-memory | In-memory | 10GB | 50GB | 20% |
+| Service    | Initial Daily | Peak Daily | 2-Year Total | Allocated | Usage |
+| ---------- | ------------- | ---------- | ------------ | --------- | ----- |
+| ClickHouse | 500MB         | 2GB        | 1.5TB        | 2TB       | 75%   |
+| PostgreSQL | 10MB          | 50MB       | 35GB         | 800GB     | 4%    |
+| Kafka      | 1GB           | 5GB        | 100GB\*      | 600GB     | 17%   |
+| MongoDB    | 5MB           | 10MB       | 7GB          | 200GB     | 4%    |
+| Redis      | In-memory     | In-memory  | 10GB         | 50GB      | 20%   |
 
-*Kafka with 7-day retention policy
+\*Kafka with 7-day retention policy
 
 ### Backup Strategy
 
@@ -286,18 +297,21 @@ cp /var/lib/redis/dump.rdb /backup/redis/dump_$(date +%Y%m%d).rdb
 ## Implementation Priorities
 
 ### Phase 1: Foundation (Week 1)
+
 1. Set up Next.js project with TypeScript
 2. Configure NestJS microservices structure
 3. Partition and format 4TB SSD with LVM
 4. Deploy PostgreSQL and Redis
 
 ### Phase 2: Core Services (Week 2)
+
 1. Implement WebSocket connections
 2. Set up Kafka message streaming
 3. Deploy ClickHouse for market data
 4. Create basic trading UI components
 
 ### Phase 3: Integration (Week 3)
+
 1. Connect to KIS broker API
 2. Implement real-time data flow
 3. Add PWA capabilities
@@ -306,12 +320,14 @@ cp /var/lib/redis/dump.rdb /backup/redis/dump_$(date +%Y%m%d).rdb
 ## Risk Mitigation
 
 ### Technology Risks
+
 - **Frontend Complexity**: Mitigated by incremental feature rollout
 - **Real-time Performance**: Address with Redis caching and WebSocket optimization
 - **Storage Growth**: LVM allows dynamic partition resizing
 - **Mobile Limitations**: PWA-first approach reduces native app risks
 
 ### Contingency Plans
+
 - **If Next.js performance insufficient**: Implement micro-frontends
 - **If NestJS bottlenecks appear**: Extract critical paths to Go services
 - **If 4TB fills prematurely**: Add second SSD, extend LVM volume group

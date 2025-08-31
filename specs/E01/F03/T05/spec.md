@@ -30,32 +30,31 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T03
-- T04
+  - T03
+  - T04
 blocks:
-- T06
+  - T06
 related: []
 pull_requests: []
 commits: []
 context_file: 1003.context.md
 worktree: ''
 files:
-- tools/generators/*
-- tools/scripts/*
-- package.json
-- docker-compose.yml
+  - tools/generators/*
+  - tools/scripts/*
+  - package.json
+  - docker-compose.yml
 
 # === METADATA ===
 tags:
-- generators
-- tooling
-- automation
-- dx
-- docker
+  - generators
+  - tooling
+  - automation
+  - dx
+  - docker
 effort: medium
 risk: low
 ---
-
 
 # Task T05: Create Development Tooling and Generators
 
@@ -98,7 +97,7 @@ interface ServiceGeneratorSchema {
 
 export default async function (tree: Tree, options: ServiceGeneratorSchema) {
   const normalizedOptions = normalizeOptions(tree, options);
-  
+
   // Generate NestJS application
   await applicationGenerator(tree, {
     name: normalizedOptions.projectName,
@@ -109,17 +108,12 @@ export default async function (tree: Tree, options: ServiceGeneratorSchema) {
   });
 
   // Add custom templates
-  generateFiles(
-    tree,
-    joinPathFragments(__dirname, 'files'),
-    normalizedOptions.projectRoot,
-    {
-      ...normalizedOptions,
-      ...names(options.name),
-      offsetFromRoot: offsetFromRoot(normalizedOptions.projectRoot),
-      template: '',
-    }
-  );
+  generateFiles(tree, joinPathFragments(__dirname, 'files'), normalizedOptions.projectRoot, {
+    ...normalizedOptions,
+    ...names(options.name),
+    offsetFromRoot: offsetFromRoot(normalizedOptions.projectRoot),
+    template: '',
+  });
 
   // Update configuration
   updateProjectConfiguration(tree, normalizedOptions);
@@ -132,8 +126,8 @@ export default async function (tree: Tree, options: ServiceGeneratorSchema) {
 
 function normalizeOptions(tree: Tree, options: ServiceGeneratorSchema) {
   const name = names(options.name).fileName;
-  const projectDirectory = options.directory 
-    ? `${names(options.directory).fileName}/${name}` 
+  const projectDirectory = options.directory
+    ? `${names(options.directory).fileName}/${name}`
     : name;
   const projectName = projectDirectory.replace(new RegExp('/', 'g'), '-');
   const projectRoot = `apps/${projectDirectory}`;
@@ -155,12 +149,7 @@ function normalizeOptions(tree: Tree, options: ServiceGeneratorSchema) {
 
 ```typescript
 // tools/generators/jts-library/index.ts
-import {
-  Tree,
-  formatFiles,
-  installPackagesTask,
-  libraryGenerator,
-} from '@nx/devkit';
+import { Tree, formatFiles, installPackagesTask, libraryGenerator } from '@nx/devkit';
 
 interface LibraryGeneratorSchema {
   name: string;
@@ -201,17 +190,17 @@ echo "🚀 Setting up JTS development environment..."
 # Check prerequisites
 check_prerequisites() {
   echo "Checking prerequisites..."
-  
+
   if ! command -v node &> /dev/null; then
     echo "❌ Node.js is not installed"
     exit 1
   fi
-  
+
   if ! command -v docker &> /dev/null; then
     echo "❌ Docker is not installed"
     exit 1
   fi
-  
+
   echo "✅ Prerequisites satisfied"
 }
 
@@ -226,11 +215,11 @@ install_dependencies() {
 setup_databases() {
   echo "Starting database services..."
   docker-compose up -d postgres clickhouse mongodb redis
-  
+
   # Wait for services
   echo "Waiting for databases to be ready..."
   sleep 10
-  
+
   # Run migrations
   npm run db:migrate
   echo "✅ Databases ready"
@@ -270,11 +259,11 @@ services:
       POSTGRES_PASSWORD: jts_pass
       POSTGRES_DB: jts_dev
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U jts_user"]
+      test: ['CMD-SHELL', 'pg_isready -U jts_user']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -282,8 +271,8 @@ services:
   clickhouse:
     image: clickhouse/clickhouse-server:23-alpine
     ports:
-      - "8123:8123"
-      - "E09:E09"
+      - '8123:8123'
+      - 'E09:E09'
     volumes:
       - clickhouse_data:/var/lib/clickhouse
     environment:
@@ -291,7 +280,7 @@ services:
       CLICKHOUSE_USER: jts_user
       CLICKHOUSE_PASSWORD: jts_pass
     healthcheck:
-      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      test: ['CMD', 'clickhouse-client', '--query', 'SELECT 1']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -303,7 +292,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: jts_pass
       MONGO_INITDB_DATABASE: jts_config
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - mongodb_data:/data/db
     healthcheck:
@@ -315,11 +304,11 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -334,7 +323,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
-      - "9092:9092"
+      - '9092:9092'
     volumes:
       - kafka_data:/var/lib/kafka/data
 
@@ -344,7 +333,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: E02
     ports:
-      - "2181:2181"
+      - '2181:2181'
     volumes:
       - zookeeper_data:/var/lib/zookeeper/data
 
@@ -373,7 +362,7 @@ const services = [
 
 async function checkHealth() {
   console.log('🔍 Checking service health...\n');
-  
+
   for (const service of services) {
     try {
       if (service.type === 'tcp') {
@@ -404,16 +393,16 @@ checkHealth();
     "dev:services:down": "docker-compose down",
     "dev:services:logs": "docker-compose logs -f",
     "dev:health": "node tools/scripts/check-services-health.js",
-    
+
     // Generators
     "g:service": "nx g ./tools/generators/nestjs-service",
     "g:lib": "nx g ./tools/generators/jts-library",
-    
+
     // Workspace
     "workspace:clean": "nx reset && rm -rf dist tmp coverage .nx",
     "workspace:setup": "npm install && npm run build:all",
     "workspace:reset": "npm run workspace:clean && npm install",
-    
+
     // Analysis
     "analyze:deps": "nx graph",
     "analyze:affected": "nx affected:graph",

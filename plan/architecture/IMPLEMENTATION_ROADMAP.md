@@ -3,9 +3,11 @@
 ## Phase-Based Implementation Strategy
 
 ### Phase 1: Foundation (Week 1-2)
+
 **Goal**: Core infrastructure and basic trading capability with Creon
 
 #### Infrastructure Setup
+
 ```bash
 # 1. Initialize Nx workspace
 npx create-nx-workspace@latest jts --preset=nest --packageManager=npm
@@ -23,6 +25,7 @@ nx g @nx/workspace:lib infrastructure/database
 ```
 
 #### Services to Implement
+
 1. **Creon Service** (Windows - Python FastAPI)
    - Basic API wrapper for Creon COM objects
    - Rate limiter (60 requests/15 seconds)
@@ -44,6 +47,7 @@ nx g @nx/workspace:lib infrastructure/database
    - Basic order management
 
 #### Database Setup
+
 ```sql
 -- PostgreSQL: Core tables
 CREATE TABLE strategies (
@@ -80,9 +84,11 @@ ORDER BY (symbol, timestamp);
 ```
 
 ### Phase 2: Risk & Portfolio (Week 3-4)
+
 **Goal**: Add risk management and portfolio tracking
 
 #### New Services
+
 1. **Risk Management Service**
    - Position sizing with Kelly Criterion
    - Drawdown monitoring
@@ -99,13 +105,14 @@ ORDER BY (symbol, timestamp);
    - Request routing
 
 #### Integration Points
+
 ```typescript
 // Risk checks before order execution
 class OrderExecutionService {
   async processSignal(signal: TradingSignal) {
     // 1. Risk check via gRPC
     const riskApproval = await this.riskService.checkRisk(signal);
-    
+
     // 2. Execute if approved
     if (riskApproval.approved) {
       await this.executeTrade(signal);
@@ -115,9 +122,11 @@ class OrderExecutionService {
 ```
 
 ### Phase 3: Multi-Broker Support (Week 5-6)
+
 **Goal**: Add KIS, Binance, Upbit integrations
 
 #### Broker Services
+
 ```bash
 # Generate broker services
 nx g @nestjs/schematics:app brokers/kis-service
@@ -129,19 +138,22 @@ nx g @nx/workspace:lib brokers/common
 ```
 
 #### Account Pool Management
+
 ```typescript
 // KIS account distribution for 1800 symbols
 const accountConfig = {
   kis_account_1: { symbols: 600, focus: 'KOSPI large-cap' },
   kis_account_2: { symbols: 600, focus: 'KOSDAQ tech' },
-  kis_account_3: { symbols: 600, focus: 'Small-cap momentum' }
+  kis_account_3: { symbols: 600, focus: 'Small-cap momentum' },
 };
 ```
 
 ### Phase 4: Advanced Features (Week 7-8)
+
 **Goal**: DSL engine, backtesting, notifications
 
 #### Components
+
 1. **Advanced Strategy Engine**
    - Full DSL parser and compiler
    - Multi-timeframe support
@@ -158,10 +170,13 @@ const accountConfig = {
    - Trading summaries
 
 ### Phase 5: Production Readiness (Week 9-10)
+
 **Goal**: Monitoring, optimization, deployment
 
 #### Production Setup
+
 1. **Monitoring Stack**
+
    ```yaml
    # docker-compose.monitoring.yml
    services:
@@ -186,6 +201,7 @@ const accountConfig = {
 ## Nx Workspace Configuration
 
 ### nx.json Configuration
+
 ```json
 {
   "tasksRunnerOptions": {
@@ -218,6 +234,7 @@ const accountConfig = {
 ```
 
 ### Project Tags and Constraints
+
 ```json
 {
   "projects": {
@@ -235,6 +252,7 @@ const accountConfig = {
 ```
 
 ### ESLint Module Boundaries
+
 ```json
 {
   "rules": {
@@ -264,6 +282,7 @@ const accountConfig = {
 ## Development Commands
 
 ### Service Development
+
 ```bash
 # Start specific service
 nx serve strategy-engine
@@ -282,6 +301,7 @@ nx lint strategy-engine
 ```
 
 ### Multi-Platform Development
+
 ```bash
 # Linux development (exclude Windows services)
 npm run serve:linux
@@ -296,6 +316,7 @@ npm run serve:all
 ## Testing Strategy
 
 ### Unit Testing
+
 ```typescript
 // libs/shared/utils/src/lib/math.utils.spec.ts
 describe('MathUtils', () => {
@@ -310,50 +331,52 @@ describe('MathUtils', () => {
 ```
 
 ### Integration Testing
+
 ```typescript
 // apps/business/order-execution/src/app/order.service.integration.spec.ts
 describe('OrderService Integration', () => {
   let kafkaProducer: KafkaProducer;
   let orderService: OrderService;
-  
+
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       imports: [KafkaModule, DatabaseModule],
-      providers: [OrderService]
+      providers: [OrderService],
     }).compile();
-    
+
     orderService = module.get<OrderService>(OrderService);
     kafkaProducer = module.get<KafkaProducer>(KafkaProducer);
   });
-  
+
   it('should publish order to Kafka', async () => {
     const order = { symbol: 'AAPL', quantity: 100, side: 'buy' };
     await orderService.placeOrder(order);
-    
+
     expect(kafkaProducer.send).toHaveBeenCalledWith({
       topic: 'orders.pending',
-      value: expect.objectContaining(order)
+      value: expect.objectContaining(order),
     });
   });
 });
 ```
 
 ### E2E Testing
+
 ```typescript
 // apps/business/strategy-engine/src/app/strategy.e2e.spec.ts
 describe('Strategy Engine E2E', () => {
   it('should generate signal on price cross', async () => {
     // 1. Create strategy
     const strategy = await createStrategy('SMA_Cross');
-    
+
     // 2. Send market data
     await sendMarketData({ symbol: 'AAPL', price: 150 });
-    
+
     // 3. Verify signal generation
     const signals = await waitForSignals();
     expect(signals).toContainEqual({
       type: 'BUY',
-      symbol: 'AAPL'
+      symbol: 'AAPL',
     });
   });
 });
@@ -362,6 +385,7 @@ describe('Strategy Engine E2E', () => {
 ## CI/CD Pipeline
 
 ### GitHub Actions Workflow
+
 ```yaml
 name: CI/CD Pipeline
 
@@ -377,22 +401,22 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: npm
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run affected tests
         run: npx nx affected:test --base=origin/main
-      
+
       - name: Build affected
         run: npx nx affected:build --base=origin/main
-      
+
       - name: Deploy (if main branch)
         if: github.ref == 'refs/heads/main'
         run: |
@@ -402,6 +426,7 @@ jobs:
 ## Deployment Strategy
 
 ### Docker Deployment
+
 ```yaml
 # docker-compose.production.yml
 version: '3.8'
@@ -419,13 +444,14 @@ services:
           memory: 2G
           cpus: '1.0'
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
       interval: 30s
       timeout: 10s
       retries: 3
 ```
 
 ### Kubernetes Deployment (Future)
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -442,26 +468,28 @@ spec:
         app: strategy-engine
     spec:
       containers:
-      - name: strategy-engine
-        image: jts/strategy-engine:latest
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi"
-            cpu: "1"
+        - name: strategy-engine
+          image: jts/strategy-engine:latest
+          resources:
+            requests:
+              memory: '1Gi'
+              cpu: '500m'
+            limits:
+              memory: '2Gi'
+              cpu: '1'
 ```
 
 ## Success Metrics
 
 ### Technical Metrics
+
 - API response time < 100ms (p95)
 - Order execution latency < 500ms
 - System availability > 99.9%
 - Test coverage > 80%
 
 ### Business Metrics
+
 - Daily trade execution success rate > 95%
 - Strategy backtest accuracy > 90%
 - Risk limit breach incidents < 1/month
@@ -470,12 +498,14 @@ spec:
 ## Risk Mitigation
 
 ### Technical Risks
+
 1. **Broker API failures**: Circuit breakers, fallback strategies
 2. **Data inconsistency**: Event sourcing, audit logs
 3. **Performance degradation**: Auto-scaling, caching
 4. **Security breaches**: Regular audits, penetration testing
 
 ### Operational Risks
+
 1. **Service outages**: Multi-region deployment, backups
 2. **Data loss**: Regular backups, disaster recovery plan
 3. **Compliance issues**: Audit trails, regulatory reporting

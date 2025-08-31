@@ -30,12 +30,12 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T02
+  - T02
 blocks:
-- T05
-- T06
+  - T05
+  - T06
 related:
-- T04
+  - T04
 
 # === IMPLEMENTATION ===
 pull_requests: []
@@ -43,22 +43,21 @@ commits: []
 context_file: 1003.context.md
 worktree: ''
 files:
-- jest.config.ts
-- jest.preset.js
-- nx.json
-- tools/test-setup.ts
+  - jest.config.ts
+  - jest.preset.js
+  - nx.json
+  - tools/test-setup.ts
 
 # === METADATA ===
 tags:
-- testing
-- jest
-- build
-- coverage
-- quality
+  - testing
+  - jest
+  - build
+  - coverage
+  - quality
 effort: small
 risk: low
 unique_id: e17184bc # Unique identifier (never changes)
-
 ---
 
 # Task T03: Set Up Build and Testing Infrastructure
@@ -96,40 +95,41 @@ export default {
     '!**/dist/**',
     '!**/*.d.ts',
     '!**/main.ts',
-    '!**/test-setup.ts'
+    '!**/test-setup.ts',
   ],
   coverageThreshold: {
     global: {
       branches: 95,
       functions: 95,
       lines: 95,
-      statements: 95
-    }
+      statements: 95,
+    },
   },
-  testMatch: [
-    '<rootDir>/{apps,libs}/**/*(*.)@(spec|test).[jt]s?(x)'
-  ],
+  testMatch: ['<rootDir>/{apps,libs}/**/*(*.)@(spec|test).[jt]s?(x)'],
   transform: {
-    '^.+\\.[jt]s$': ['@swc/jest', {
-      jsc: {
-        parser: {
-          syntax: 'typescript',
-          decorators: true
+    '^.+\\.[jt]s$': [
+      '@swc/jest',
+      {
+        jsc: {
+          parser: {
+            syntax: 'typescript',
+            decorators: true,
+          },
+          transform: {
+            legacyDecorator: true,
+            decoratorMetadata: true,
+          },
         },
-        transform: {
-          legacyDecorator: true,
-          decoratorMetadata: true
-        }
-      }
-    }]
+      },
+    ],
   },
   moduleNameMapper: {
-    '^@jts/(.*)$': '<rootDir>/libs/$1/src'
+    '^@jts/(.*)$': '<rootDir>/libs/$1/src',
   },
   setupFilesAfterEnv: ['<rootDir>/tools/test-setup.ts'],
   testEnvironment: 'node',
   maxWorkers: '50%',
-  verbose: true
+  verbose: true,
 };
 ```
 
@@ -144,7 +144,7 @@ module.exports = {
   coverageReporters: ['text', 'html', 'cobertura'],
   testTimeout: E10,
   clearMocks: true,
-  restoreMocks: true
+  restoreMocks: true,
 };
 ```
 
@@ -165,14 +165,14 @@ jest.mock('@jts/infrastructure/logging', () => ({
     log: jest.fn(),
     error: jest.fn(),
     warn: jest.fn(),
-    debug: jest.fn()
-  }))
+    debug: jest.fn(),
+  })),
 }));
 
 // Test helpers
 export const createMockService = <T>(service: new (...args: any[]) => T): jest.Mocked<T> => {
   const mockService = {} as jest.Mocked<T>;
-  Object.getOwnPropertyNames(service.prototype).forEach(name => {
+  Object.getOwnPropertyNames(service.prototype).forEach((name) => {
     if (name !== 'constructor') {
       mockService[name] = jest.fn();
     }

@@ -19,9 +19,9 @@ status: completed
 priority: medium
 
 # === TRACKING ===
-created: "2025-08-24"
-updated: "2025-08-24"
-due_date: ""
+created: '2025-08-24'
+updated: '2025-08-24'
+due_date: ''
 estimated_hours: 3
 actual_hours: 0
 
@@ -34,7 +34,7 @@ related:
   - T04
 pull_requests: []
 commits: []
-context_file: ""
+context_file: ''
 files:
   - /etc/fstab
   - scripts/setup-sata-storage.sh
@@ -88,13 +88,11 @@ Design an efficient intermediate storage layer optimized for:
 ### Key Components
 
 1. **SATA Drive Configuration**
-
    - 1TB SATA drive formatted with btrfs for compression benefits
    - Label assignment for easy identification and mounting
    - Optimized for sequential I/O patterns (backups, logs)
 
 2. **Btrfs Optimization**
-
    - zstd:3 compression for optimal balance of speed and space savings
    - Autodefrag for sustained performance over time
    - Subvolume structure for different data types

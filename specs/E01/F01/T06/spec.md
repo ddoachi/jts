@@ -27,47 +27,46 @@ actual_hours: 2
 
 # === DEPENDENCIES ===
 dependencies:
-- T03
-- T04
+  - T03
+  - T04
 blocks: []
 related:
-- T01
-- T02
-- T05
+  - T01
+  - T02
+  - T05
 pull_requests: []
 commits:
-- 65d4b03
-- f5c5cea
-- eae37cd
-- 80c1364
-- e1fd699
-- 675785b
-- 2838591
-- e7ccf93
+  - 65d4b03
+  - f5c5cea
+  - eae37cd
+  - 80c1364
+  - e1fd699
+  - 675785b
+  - 2838591
+  - e7ccf93
 context_file: 'specs/E01/F01/T06/context.md'
 files:
-- specs/E01/F01/deliverables/scripts/tiered-storage.sh
-- specs/E01/F01/deliverables/scripts/nas-archival.sh
-- specs/E01/F01/deliverables/scripts/storage-health.sh
-- specs/E01/F01/deliverables/scripts/lvm-backup.sh
-- specs/E01/F01/deliverables/config/tiered-storage.service
-- specs/E01/F01/deliverables/config/tiered-storage.timer
-- specs/E01/F01/deliverables/docs/TIERED_STORAGE_MANAGEMENT.md
+  - specs/E01/F01/deliverables/scripts/tiered-storage.sh
+  - specs/E01/F01/deliverables/scripts/nas-archival.sh
+  - specs/E01/F01/deliverables/scripts/storage-health.sh
+  - specs/E01/F01/deliverables/scripts/lvm-backup.sh
+  - specs/E01/F01/deliverables/config/tiered-storage.service
+  - specs/E01/F01/deliverables/config/tiered-storage.timer
+  - specs/E01/F01/deliverables/docs/TIERED_STORAGE_MANAGEMENT.md
 
 # === METADATA ===
 tags:
-- storage-management
-- automation
-- tiered-storage
-- data-lifecycle
-- archival
-- backup
-- monitoring
-- systemd
+  - storage-management
+  - automation
+  - tiered-storage
+  - data-lifecycle
+  - archival
+  - backup
+  - monitoring
+  - systemd
 effort: small
 risk: medium
 ---
-
 
 # Tiered Storage Management
 
@@ -123,14 +122,15 @@ Design intelligent automation that optimizes data placement and storage utilizat
 ### Implementation Steps
 
 1. **Multi-Tier Health Monitoring Script**
+
    ```bash
    # Create comprehensive health monitoring
    cat > scripts/storage-health.sh << 'EOF'
    #!/bin/bash
-   
+
    echo "🔍 JTS Tiered Storage Health Check - $(date)"
    echo "================================================"
-   
+
    # Hot tier (NVMe) status
    echo "🔥 Hot Tier (NVMe) Status:"
    if command -v vgdisplay >/dev/null 2>&1; then
@@ -140,7 +140,7 @@ Design intelligent automation that optimizes data placement and storage utilizat
    else
        echo "LVM not available - Hot tier not configured"
    fi
-   
+
    # Warm tier (SATA) status
    echo -e "\n🌡️ Warm Tier (SATA) Status:"
    if mountpoint -q "/data/warm-storage"; then
@@ -149,7 +149,7 @@ Design intelligent automation that optimizes data placement and storage utilizat
    else
        echo "Warm storage not mounted"
    fi
-   
+
    # Cold tier (NAS) status
    echo -e "\n🧊 Cold Tier (NAS) Status:"
    if mountpoint -q "/mnt/synology"; then
@@ -158,7 +158,7 @@ Design intelligent automation that optimizes data placement and storage utilizat
    else
        echo "NAS not mounted"
    fi
-   
+
    # Usage alerts across all tiers
    echo -e "\n⚠️ Usage Alerts:"
    df -h | awk 'NR>1 && /vg_jts|warm-storage|synology/ {
@@ -167,66 +167,67 @@ Design intelligent automation that optimizes data placement and storage utilizat
        else if ($5 > 80) print "WARNING: " $6 " usage at " $5 "%"
    }'
    EOF
-   
+
    chmod +x scripts/storage-health.sh
    ```
 
 2. **Automated Data Tiering Script**
+
    ```bash
    # Create tiered storage management
    cat > scripts/tiered-storage.sh << 'EOF'
    #!/bin/bash
    set -euo pipefail
-   
+
    HOT_TIER="/var/lib"
    WARM_TIER="/data/warm-storage"
    COLD_TIER="/mnt/synology/jts"
-   
+
    migrate_logs_to_warm() {
        echo "📎 Moving old logs to warm storage"
-       
+
        if [[ -d "$WARM_TIER" ]]; then
            # Move logs older than 7 days to warm tier
            find /var/log -name "*.log" -mtime +7 -exec mv {} "$WARM_TIER/logs/" \; 2>/dev/null || true
-           
+
            # Compress moved logs
            find "$WARM_TIER/logs/" -name "*.log" -exec gzip {} \; 2>/dev/null || true
-           
+
            echo "✅ Log migration to warm tier completed"
        else
            echo "⚠️ Warm tier not available - skipping log migration"
        fi
    }
-   
+
    migrate_backups_to_cold() {
        echo "📎 Moving old backups to cold storage"
-       
+
        if [[ -d "$COLD_TIER" && -d "$WARM_TIER" ]]; then
            # Move backups older than 30 days to cold tier
            find "$WARM_TIER/daily-backups/" -mtime +30 -exec mv {} "$COLD_TIER/archives/" \; 2>/dev/null || true
-           
+
            echo "✅ Backup migration to cold tier completed"
        else
            echo "⚠️ Cold or warm tier not available - skipping backup migration"
        fi
    }
-   
+
    cleanup_temp_files() {
        echo "🧤 Cleaning up temporary files"
-       
+
        # Clean up temp processing files older than 3 days
        if [[ -d "$WARM_TIER/temp-processing" ]]; then
            find "$WARM_TIER/temp-processing/" -mtime +3 -delete 2>/dev/null || true
        fi
-       
+
        # Clean up Docker temp files if Docker is available
        if command -v docker >/dev/null 2>&1; then
            docker system prune -f --volumes 2>/dev/null || true
        fi
-       
+
        echo "✅ Temporary file cleanup completed"
    }
-   
+
    case "${1:-check}" in
        migrate)
            migrate_logs_to_warm
@@ -246,52 +247,53 @@ Design intelligent automation that optimizes data placement and storage utilizat
            ;;
    esac
    EOF
-   
+
    chmod +x scripts/tiered-storage.sh
    ```
 
 3. **NAS Archival Management**
+
    ```bash
    # Create NAS archival script
    cat > scripts/nas-archival.sh << 'EOF'
    #!/bin/bash
    set -euo pipefail
-   
+
    NAS_BASE="/mnt/synology/jts"
    DATE=$(date +%Y%m%d_%H%M%S)
-   
+
    archive_development_data() {
        echo "📋 Syncing development resources to NAS"
-       
+
        if [[ -d "$NAS_BASE" ]]; then
            # Sync Jupyter notebooks if directory exists
            [[ -d "/home/joohan/notebooks" ]] && rsync -av --delete /home/joohan/notebooks/ "$NAS_BASE/development/notebooks/" || true
-           
+
            # Sync development datasets if directory exists
            [[ -d "/home/joohan/dev/datasets" ]] && rsync -av --delete /home/joohan/dev/datasets/ "$NAS_BASE/development/datasets/" || true
-           
+
            echo "✅ Development sync completed"
        else
            echo "⚠️ NAS not available - skipping development data sync"
        fi
    }
-   
+
    backup_configurations() {
        echo "📋 Backing up system configurations to NAS"
-       
+
        if [[ -d "$NAS_BASE" ]]; then
            mkdir -p "$NAS_BASE/archives/configs/$DATE"
-           
+
            # Backup important configs
            cp -r /etc/fstab "$NAS_BASE/archives/configs/$DATE/" 2>/dev/null || true
            [[ -d "/home/joohan/dev/project-jts/jts/configs" ]] && cp -r /home/joohan/dev/project-jts/jts/configs/ "$NAS_BASE/archives/configs/$DATE/" || true
-           
+
            echo "✅ Configuration backup completed"
        else
            echo "⚠️ NAS not available - skipping configuration backup"
        fi
    }
-   
+
    case "${1:-all}" in
        development)
            archive_development_data
@@ -309,37 +311,38 @@ Design intelligent automation that optimizes data placement and storage utilizat
            ;;
    esac
    EOF
-   
+
    chmod +x scripts/nas-archival.sh
    ```
 
 4. **LVM Backup Management**
+
    ```bash
    # Create LVM snapshot management
    cat > scripts/lvm-backup.sh << 'EOF'
    #!/bin/bash
-   
+
    DATE=$(date +%Y%m%d_%H%M%S)
    VG_NAME="vg_jts"
-   
+
    create_snapshots() {
        echo "📸 Creating LVM snapshots - $DATE"
-       
+
        if command -v lvcreate >/dev/null 2>&1 && vgs "$VG_NAME" >/dev/null 2>&1; then
            # Create snapshots for critical data
            lvcreate -L5G -s -n snap_postgres_$DATE /dev/$VG_NAME/lv_postgres 2>/dev/null || echo "PostgreSQL snapshot failed"
            lvcreate -L10G -s -n snap_clickhouse_$DATE /dev/$VG_NAME/lv_clickhouse 2>/dev/null || echo "ClickHouse snapshot failed"
            lvcreate -L2G -s -n snap_mongodb_$DATE /dev/$VG_NAME/lv_mongodb 2>/dev/null || echo "MongoDB snapshot failed"
-           
+
            echo "✅ Snapshots created successfully"
        else
            echo "⚠️ LVM not available - skipping snapshot creation"
        fi
    }
-   
+
    cleanup_old_snapshots() {
        echo "🧹 Cleaning up snapshots older than 7 days"
-       
+
        if command -v lvs >/dev/null 2>&1 && vgs "$VG_NAME" >/dev/null 2>&1; then
            # Find and remove old snapshots
            lvs --noheadings -o lv_name "$VG_NAME" 2>/dev/null | grep "snap_" | while read snapshot; do
@@ -352,13 +355,13 @@ Design intelligent automation that optimizes data placement and storage utilizat
                    fi
                fi
            done
-           
+
            echo "✅ Snapshot cleanup completed"
        else
            echo "⚠️ LVM not available - skipping snapshot cleanup"
        fi
    }
-   
+
    case "${1:-create}" in
        create)
            create_snapshots
@@ -372,18 +375,19 @@ Design intelligent automation that optimizes data placement and storage utilizat
            ;;
    esac
    EOF
-   
+
    chmod +x scripts/lvm-backup.sh
    ```
 
 5. **Systemd Automation Setup**
+
    ```bash
    # Create tiered storage service
    cat > /etc/systemd/system/tiered-storage.service << 'EOF'
    [Unit]
    Description=JTS Tiered Storage Management
    After=network.target
-   
+
    [Service]
    Type=oneshot
    ExecStart=/home/joohan/dev/project-jts/jts/scripts/tiered-storage.sh all
@@ -391,25 +395,25 @@ Design intelligent automation that optimizes data placement and storage utilizat
    StandardOutput=journal
    StandardError=journal
    EOF
-   
+
    # Create daily timer
    cat > /etc/systemd/system/tiered-storage.timer << 'EOF'
    [Unit]
    Description=Run tiered storage management daily
-   
+
    [Timer]
    OnCalendar=daily
    Persistent=true
-   
+
    [Install]
    WantedBy=timers.target
    EOF
-   
+
    # Enable and start timer
    systemctl daemon-reload
    systemctl enable tiered-storage.timer
    systemctl start tiered-storage.timer
-   
+
    # Verify timer status
    systemctl status tiered-storage.timer --no-pager
    ```
@@ -417,10 +421,12 @@ Design intelligent automation that optimizes data placement and storage utilizat
 ## Dependencies
 
 **Required Before Implementation:**
+
 - **Feature T03**: Warm Storage (SATA) Setup for backup and log management
 - **Feature T04**: Cold Storage (NAS) Integration for archival operations
 
 **Optional Enhancements:**
+
 - **Feature T01**: Hot Storage provides LVM snapshot capabilities
 - **Feature T02**: Database Mount Integration enables database-specific backup operations
 
@@ -474,12 +480,14 @@ SAFETY CONSIDERATIONS:
 ## Notes
 
 ### Management Benefits
+
 - **Operational Automation**: Reduces manual storage management overhead
 - **Proactive Monitoring**: Prevents storage capacity and performance issues
 - **Data Lifecycle**: Optimizes storage utilization through intelligent data placement
 - **Backup Orchestration**: Ensures comprehensive backup coverage across all tiers
 
 ### Integration Considerations
+
 - **Cross-Tier Dependencies**: Requires warm and cold storage tiers to be functional
 - **Graceful Degradation**: Continues operation even when some tiers are unavailable
 - **Performance Awareness**: Scheduled during low-activity periods to minimize impact

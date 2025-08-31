@@ -27,27 +27,26 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F02
+  - F02
 blocks: []
 related:
-- F05
-- F11
+  - F05
+  - F11
 branch: ''
 files:
-- apps/brokers/kis/websocket/
-- libs/shared/services/kis-websocket.service.ts
+  - apps/brokers/kis/websocket/
+  - libs/shared/services/kis-websocket.service.ts
 
 # === METADATA ===
 tags:
-- kis
-- websocket
-- real-time
-- market-data
-- streaming
+  - kis
+  - websocket
+  - real-time
+  - market-data
+  - streaming
 effort: medium
 risk: medium
 ---
-
 
 # KIS WebSocket Real-time Data Integration
 
@@ -162,6 +161,7 @@ Implement a robust WebSocket client that manages multiple concurrent connections
 ## WebSocket Specifications
 
 ### Connection Details
+
 - **Production**: `ws://ops.koreainvestment.com:21000`
 - **Sandbox**: `ws://ops.koreainvestment.com:31000`
 - **Max Connections**: 5 concurrent
@@ -169,6 +169,7 @@ Implement a robust WebSocket client that manages multiple concurrent connections
 - **Total Symbol Capacity**: 200 (5 × 40)
 
 ### Message Types
+
 - **Price Updates**: Real-time price changes
 - **Orderbook**: Bid/ask depth updates
 - **Trades**: Executed trade notifications
@@ -176,6 +177,7 @@ Implement a robust WebSocket client that manages multiple concurrent connections
 - **Heartbeat**: Keep-alive messages
 
 ### Performance Requirements
+
 - **Message Processing**: <10ms per tick
 - **Reconnection Time**: <5 seconds
 - **Data Delivery**: 99.9% reliability
@@ -184,6 +186,7 @@ Implement a robust WebSocket client that manages multiple concurrent connections
 ## Trading-Specific Requirements
 
 ### Real-time Data Processing
+
 - Sub-second price update handling for momentum strategies
 - Orderbook reconstruction for market making
 - Trade execution monitoring for position tracking
@@ -191,6 +194,7 @@ Implement a robust WebSocket client that manages multiple concurrent connections
 - Spread monitoring for arbitrage opportunities
 
 ### Connection Reliability
+
 - Heartbeat monitoring every 30 seconds
 - Stale data detection and alerting
 - Connection quality metrics tracking
@@ -198,6 +202,7 @@ Implement a robust WebSocket client that manages multiple concurrent connections
 - Priority reconnection for critical symbols
 
 ### Data Quality
+
 - Price sanity checks (>10% moves flagged)
 - Sequence number validation
 - Duplicate message detection

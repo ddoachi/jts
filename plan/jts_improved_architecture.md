@@ -13,7 +13,7 @@
          └───────────────────────┼───────────────────────┘
                                  │
                     ┌─────────────────┐
-                    │     Kafka       │ 
+                    │     Kafka       │
                     │ (Request Queue) │
                     └─────────────────┘
                                  │
@@ -103,23 +103,23 @@ class CreonRateLimiter {
   async processRequest(request: CreonApiRequest): Promise<BrokerApiResponse> {
     // 우선순위 큐에 추가
     await this.requestQueue.enqueue(request, request.priority);
-    
+
     // Rate limit 체크 및 처리
     await this.waitForRateLimit();
-    
+
     // 실제 API 호출
     return await this.executeCreonApi(request);
   }
 
   private async waitForRateLimit(): Promise<void> {
     const now = Date.now();
-    
+
     // 윈도우 리셋
     if (now - this.windowStart >= this.WINDOW_SIZE_MS) {
       this.requestCount = 0;
       this.windowStart = now;
     }
-    
+
     // Rate limit 초과시 대기
     if (this.requestCount >= this.MAX_REQUESTS) {
       const waitTime = this.WINDOW_SIZE_MS - (now - this.windowStart);
@@ -127,13 +127,13 @@ class CreonRateLimiter {
       this.requestCount = 0;
       this.windowStart = Date.now();
     }
-    
+
     this.requestCount++;
   }
 
   private async executeCreonApi(request: CreonApiRequest): Promise<BrokerApiResponse> {
     const startTime = Date.now();
-    
+
     try {
       let result;
       switch (request.apiMethod) {
@@ -145,14 +145,14 @@ class CreonRateLimiter {
           break;
         // ... 다른 API 메서드들
       }
-      
+
       return {
         requestId: request.requestId,
         correlationId: request.correlationId,
         success: true,
         data: result,
         timestamp: Date.now(),
-        executionTimeMs: Date.now() - startTime
+        executionTimeMs: Date.now() - startTime,
       };
     } catch (error) {
       return {
@@ -162,10 +162,10 @@ class CreonRateLimiter {
         error: {
           code: error.code || 'UNKNOWN_ERROR',
           message: error.message,
-          retryAfter: this.calculateRetryAfter()
+          retryAfter: this.calculateRetryAfter(),
         },
         timestamp: Date.now(),
-        executionTimeMs: Date.now() - startTime
+        executionTimeMs: Date.now() - startTime,
       };
     }
   }
@@ -180,7 +180,7 @@ class CreonRateLimiter {
 // service-worker.ts
 self.addEventListener('push', (event) => {
   if (!event.data) return;
-  
+
   const data = event.data.json();
   const options = {
     body: data.message,
@@ -189,36 +189,32 @@ self.addEventListener('push', (event) => {
     data: {
       correlationId: data.correlationId,
       tradeType: data.tradeType,
-      url: data.url
+      url: data.url,
     },
     actions: [
       {
         action: 'view-trade',
         title: '거래 확인',
-        icon: '/icons/view-icon.png'
+        icon: '/icons/view-icon.png',
       },
       {
         action: 'close',
-        title: '닫기'
-      }
+        title: '닫기',
+      },
     ],
     requireInteraction: data.priority === 'high',
-    vibrate: data.priority === 'high' ? [200, 100, 200] : [100]
+    vibrate: data.priority === 'high' ? [200, 100, 200] : [100],
   };
-  
-  event.waitUntil(
-    self.registration.showNotification(data.title, options)
-  );
+
+  event.waitUntil(self.registration.showNotification(data.title, options));
 });
 
 // 알림 클릭 처리
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  
+
   if (event.action === 'view-trade') {
-    event.waitUntil(
-      clients.openWindow(`/trades/${event.notification.data.correlationId}`)
-    );
+    event.waitUntil(clients.openWindow(`/trades/${event.notification.data.correlationId}`));
   }
 });
 ```
@@ -256,15 +252,15 @@ class NotificationService {
         symbol: trade.symbol,
         side: trade.side,
         quantity: trade.quantity,
-        price: trade.price
+        price: trade.price,
       },
       url: `/trades/${trade.correlationId}`,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    
+
     await this.pushToSubscribers(notification);
   }
-  
+
   async sendRiskAlert(alert: RiskAlert): Promise<void> {
     const notification: PushNotificationData = {
       title: '리스크 알림',
@@ -272,9 +268,9 @@ class NotificationService {
       priority: 'high',
       type: 'risk_alert',
       correlationId: alert.correlationId,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    
+
     await this.pushToSubscribers(notification);
   }
 }
@@ -323,6 +319,7 @@ jts-trading-platform/
 **messaging을 독립 계층으로 분리하는 것을 추천합니다:**
 
 #### 이유:
+
 1. **기능적 응집성**: Kafka(이벤트 스트리밍) + Redis(캐싱/세션) 모두 데이터 흐름 관리
 2. **운영 관점**: 두 시스템 모두 고가용성과 성능이 중요
 3. **개발 관점**: 메시지 스키마와 캐싱 전략이 밀접하게 연관
@@ -340,11 +337,11 @@ export interface MessagingService {
   // Kafka 이벤트 스트리밍
   publishEvent(topic: string, event: any): Promise<void>;
   subscribeToEvents(topic: string, handler: EventHandler): void;
-  
+
   // Redis 캐싱
   setCache(key: string, value: any, ttl?: number): Promise<void>;
   getCache(key: string): Promise<any>;
-  
+
   // 분산 락 (Redis 기반)
   acquireLock(resource: string, ttl: number): Promise<boolean>;
   releaseLock(resource: string): Promise<void>;
@@ -400,16 +397,19 @@ export interface MessagingService {
 ## 핵심 설계 원칙
 
 ### 1. Layer 간 통신 규칙
+
 - **상위 계층만 하위 계층 호출**: Presentation → Gateway → Business → Integration → Brokers → Data
 - **같은 계층 내 통신**: Messaging Layer를 통해서만 진행
 - **의존성 역전**: 인터페이스를 통한 느슨한 결합
 
 ### 2. Rate Limiter 패턴
+
 - **각 브로커 서비스 내부에 구현**: 브로커별 특성에 맞는 최적화
 - **우선순위 큐**: 거래 실행 > 실시간 데이터 > 히스토리 데이터
 - **백프레셔**: Rate limit 초과시 상위 서비스에 대기 신호 전송
 
 ### 3. PWA 알림 전략
+
 - **중요도별 알림**: 거래 체결(즉시) > 리스크 알림(즉시) > 일일 요약(배치)
 - **오프라인 지원**: Service Worker로 오프라인시에도 알림 큐잉
 - **개인화**: 사용자별 알림 설정 및 필터링

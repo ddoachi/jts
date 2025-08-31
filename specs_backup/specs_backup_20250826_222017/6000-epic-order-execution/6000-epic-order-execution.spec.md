@@ -67,6 +67,7 @@ Build a sophisticated order execution and portfolio management system that handl
 ## Technical Approach
 
 ### Order Execution Architecture
+
 Implement a centralized order management system that coordinates execution across multiple brokers while maintaining real-time visibility into order status, execution quality, and portfolio state.
 
 ### Key Components

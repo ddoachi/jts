@@ -28,32 +28,31 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-- T02
-- T03
-- T04
-- T07
-- T08
-- T09
+  - T02
+  - T03
+  - T04
+  - T07
+  - T08
+  - T09
 related:
-- F03
+  - F03
 pull_requests: []
 commits: []
 context_file: 1041.context.md
 files:
-- .github/workflows/
-- .github/dependabot.yml
-- .github/CODEOWNERS
+  - .github/workflows/
+  - .github/dependabot.yml
+  - .github/CODEOWNERS
 
 # === METADATA ===
 tags:
-- github-actions
-- cicd
-- workflow
-- automation
+  - github-actions
+  - cicd
+  - workflow
+  - automation
 effort: small
 risk: low
 ---
-
 
 # GitHub Actions Workflow Structure Setup
 
@@ -103,6 +102,7 @@ Set up the foundational GitHub Actions workflow structure for the JTS CI/CD pipe
 ### Reusable Setup Workflow
 
 **`.github/workflows/_templates/setup.yml`**:
+
 ```yaml
 name: Reusable Setup Workflow
 
@@ -119,7 +119,7 @@ on:
         default: 0
     outputs:
       cache-key:
-        description: "Node modules cache key"
+        description: 'Node modules cache key'
         value: ${{ jobs.setup.outputs.cache-key }}
 
 jobs:
@@ -132,18 +132,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: ${{ inputs.checkout-depth }}
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node-version }}
           cache: 'npm'
-      
+
       - name: Generate Cache Key
         id: cache-key
         run: |
           echo "key=node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}" >> $GITHUB_OUTPUT
-      
+
       - name: Cache Node Modules
         uses: actions/cache@v3
         with:
@@ -151,7 +151,7 @@ jobs:
           key: ${{ steps.cache-key.outputs.key }}
           restore-keys: |
             node-modules-${{ runner.os }}-
-      
+
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci --prefer-offline
@@ -160,6 +160,7 @@ jobs:
 ### Custom Composite Actions
 
 **`.github/actions/setup-node/action.yml`**:
+
 ```yaml
 name: 'Setup Node Environment'
 description: 'Setup Node.js with caching and Nx configuration'
@@ -178,7 +179,7 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         cache: 'npm'
-    
+
     - name: Cache Dependencies
       uses: actions/cache@v3
       with:
@@ -188,7 +189,7 @@ runs:
         key: deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           deps-${{ runner.os }}-
-    
+
     - name: Install Dependencies
       shell: bash
       run: |
@@ -199,6 +200,7 @@ runs:
 ### Workflow Templates
 
 **Concurrency Template**:
+
 ```yaml
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -206,6 +208,7 @@ concurrency:
 ```
 
 **Environment Variables Template**:
+
 ```yaml
 env:
   NODE_VERSION: '20.x'
@@ -218,47 +221,49 @@ env:
 ### Dependabot Configuration
 
 **`.github/dependabot.yml`**:
+
 ```yaml
 version: 2
 updates:
   # Node.js dependencies
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "03:00"
+      interval: 'weekly'
+      day: 'monday'
+      time: '03:00'
     reviewers:
-      - "core-team"
+      - 'core-team'
     labels:
-      - "dependencies"
-      - "javascript"
+      - 'dependencies'
+      - 'javascript'
     open-pull-requests-limit: 10
     groups:
       production:
-        dependency-type: "production"
+        dependency-type: 'production'
       development:
-        dependency-type: "development"
+        dependency-type: 'development'
         patterns:
-          - "@types/*"
-          - "eslint*"
-          - "prettier*"
+          - '@types/*'
+          - 'eslint*'
+          - 'prettier*'
 
   # GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "monthly"
+      interval: 'monthly'
     reviewers:
-      - "devops-team"
+      - 'devops-team'
     labels:
-      - "dependencies"
-      - "github-actions"
+      - 'dependencies'
+      - 'github-actions'
 ```
 
 ### Code Owners Configuration
 
 **`.github/CODEOWNERS`**:
+
 ```
 # Global owners
 * @core-team

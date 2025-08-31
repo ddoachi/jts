@@ -27,32 +27,31 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01
-- E02
+  - E01
+  - E02
 blocks: []
 related:
-- E03
-- E05
+  - E03
+  - E05
 branch: ''
 files:
-- apps/brokers/binance/
-- apps/brokers/upbit/
-- libs/shared/interfaces/crypto.interface.ts
-- libs/shared/dto/crypto.dto.ts
+  - apps/brokers/binance/
+  - apps/brokers/upbit/
+  - libs/shared/interfaces/crypto.interface.ts
+  - libs/shared/dto/crypto.dto.ts
 
 # === METADATA ===
 tags:
-- cryptocurrency
-- binance
-- upbit
-- crypto-trading
-- 24-7
-- arbitrage
-- compliance
+  - cryptocurrency
+  - binance
+  - upbit
+  - crypto-trading
+  - 24-7
+  - arbitrage
+  - compliance
 effort: epic
 risk: high
 unique_id: b7a78274 # Unique identifier (never changes)
-
 ---
 
 # Cryptocurrency Integration
@@ -77,6 +76,7 @@ Implement comprehensive cryptocurrency trading capabilities by integrating Binan
 ## Technical Approach
 
 ### Cryptocurrency Trading Architecture
+
 Build a specialized cryptocurrency trading infrastructure that handles the unique characteristics of crypto markets including 24/7 operation, high volatility, cross-exchange opportunities, and regulatory requirements specific to Korean crypto trading.
 
 ### Key Components
@@ -233,6 +233,7 @@ When implementing this epic:
 ## Korean Regulatory Considerations
 
 ### Key Compliance Requirements
+
 - **Real Name Verification**: All accounts must be verified with real names
 - **Daily Trading Limits**: Monitor and enforce daily trading volume limits
 - **Tax Reporting**: Collect transaction data for capital gains reporting
@@ -241,6 +242,7 @@ When implementing this epic:
 - **Data Retention**: Maintain transaction records for regulatory audits
 
 ### Implementation Requirements
+
 - KYC status verification for all trading accounts
 - Automated daily limit tracking and enforcement
 - Transaction categorization for tax purposes
@@ -251,6 +253,7 @@ When implementing this epic:
 ## Cross-Exchange Arbitrage Strategy
 
 ### Opportunity Detection
+
 - Real-time price monitoring across Binance and Upbit
 - Minimum profit threshold configuration (accounting for fees)
 - Network congestion impact assessment
@@ -262,6 +265,7 @@ When implementing this epic:
   - Time value risk
 
 ### Execution Considerations
+
 - Account balance verification on both exchanges
 - Simultaneous order execution capability
 - Network latency monitoring
@@ -272,6 +276,7 @@ When implementing this epic:
 ## 24/7 Operations Management
 
 ### Continuous Monitoring
+
 - Global market session awareness (Asian/European/American)
 - Weekend and holiday trading support
 - Low-volume period detection and strategy adjustment
@@ -280,6 +285,7 @@ When implementing this epic:
 - Market volatility spike detection and response
 
 ### Resource Management
+
 - CPU and memory optimization for continuous operation
 - Database connection pooling for 24/7 queries
 - WebSocket connection management and reconnection

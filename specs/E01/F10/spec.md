@@ -27,37 +27,36 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F02
-- F03
+  - F02
+  - F03
 blocks:
-- F04
+  - F04
 related:
-- F08
-- F09
+  - F08
+  - F09
 branch: feature/1010-testing-framework
 files:
-- jest.config.js
-- cypress.config.ts
-- apps/*/test/
-- libs/shared/testing/
-- scripts/test-setup.sh
-- scripts/test-data-seed.sh
-- .github/workflows/ci-tests.yml
+  - jest.config.js
+  - cypress.config.ts
+  - apps/*/test/
+  - libs/shared/testing/
+  - scripts/test-setup.sh
+  - scripts/test-data-seed.sh
+  - .github/workflows/ci-tests.yml
 
 # === METADATA ===
 tags:
-- testing
-- jest
-- cypress
-- e2e
-- integration
-- coverage
-- quality
-- tdd
+  - testing
+  - jest
+  - cypress
+  - e2e
+  - integration
+  - coverage
+  - quality
+  - tdd
 effort: large
 risk: medium
 ---
-
 
 # Testing Framework Setup
 
@@ -83,6 +82,7 @@ Establish a comprehensive testing framework for the JTS automated trading platfo
 ### Testing Architecture Strategy
 
 Design a multi-layered testing approach that mirrors the microservices architecture:
+
 - **Unit Tests**: Individual component and service logic validation
 - **Integration Tests**: Service-to-service communication and database interactions
 - **Contract Tests**: API contract validation between services
@@ -92,13 +92,11 @@ Design a multi-layered testing approach that mirrors the microservices architect
 ### Key Components
 
 1. **Jest Configuration & Setup**
+
    ```typescript
    // jest.config.js - Root configuration
    module.exports = {
-     projects: [
-       '<rootDir>/apps/*/jest.config.js',
-       '<rootDir>/libs/*/jest.config.js'
-     ],
+     projects: ['<rootDir>/apps/*/jest.config.js', '<rootDir>/libs/*/jest.config.js'],
      coverageDirectory: '<rootDir>/coverage',
      coverageReporters: ['html', 'text', 'lcov', 'clover'],
      collectCoverageFrom: [
@@ -107,39 +105,40 @@ Design a multi-layered testing approach that mirrors the microservices architect
        '!**/*.spec.ts',
        '!**/*.e2e-spec.ts',
        '!**/node_modules/**',
-       '!**/dist/**'
+       '!**/dist/**',
      ],
      coverageThreshold: {
        global: {
          branches: 85,
          functions: 85,
          lines: 85,
-         statements: 85
+         statements: 85,
        },
        // Higher thresholds for critical trading services
        'apps/strategy-engine/': {
          branches: 95,
          functions: 95,
          lines: 95,
-         statements: 95
+         statements: 95,
        },
        'apps/risk-management/': {
          branches: 95,
          functions: 95,
          lines: 95,
-         statements: 95
+         statements: 95,
        },
        'apps/order-execution/': {
          branches: 95,
          functions: 95,
          lines: 95,
-         statements: 95
-       }
-     }
+         statements: 95,
+       },
+     },
    };
    ```
 
 2. **NestJS Testing Utilities**
+
    ```typescript
    // libs/shared/testing/src/lib/test-utils.ts
    export class TestingModule {
@@ -148,21 +147,21 @@ Design a multi-layered testing approach that mirrors the microservices architect
          imports: options.imports || [],
          controllers: options.controllers || [],
          providers: [
-           ...options.providers || [],
+           ...(options.providers || []),
            // Mock implementations for external services
            {
              provide: 'REDIS_CLIENT',
-             useValue: mockRedisClient
+             useValue: mockRedisClient,
            },
            {
              provide: 'KAFKA_PRODUCER',
-             useValue: mockKafkaProducer
-           }
-         ]
+             useValue: mockKafkaProducer,
+           },
+         ],
        })
-       .overrideGuard(AuthGuard)
-       .useValue(mockAuthGuard)
-       .compile();
+         .overrideGuard(AuthGuard)
+         .useValue(mockAuthGuard)
+         .compile();
 
        return moduleRef;
      }
@@ -178,7 +177,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
          volume: Math.random() * 1000000,
          bid: price - 0.01,
          ask: price + 0.01,
-         lastTrade: price
+         lastTrade: price,
        };
      }
 
@@ -188,8 +187,8 @@ Design a multi-layered testing approach that mirrors the microservices architect
          type,
          side: OrderSide.BUY,
          quantity,
-         price: type === OrderType.MARKET ? undefined : 150.00,
-         timeInForce: TimeInForce.DAY
+         price: type === OrderType.MARKET ? undefined : 150.0,
+         timeInForce: TimeInForce.DAY,
        };
      }
 
@@ -203,6 +202,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
    ```
 
 3. **Integration Testing Framework**
+
    ```typescript
    // libs/shared/testing/src/lib/integration-test-base.ts
    export abstract class IntegrationTestBase {
@@ -220,18 +220,18 @@ Design a multi-layered testing approach that mirrors the microservices architect
        this.redisClient = new Redis({
          host: 'localhost',
          port: 6380, // Test Redis port
-         db: 15 // Test database
+         db: 15, // Test database
        });
 
        // Create NestJS testing module
        const moduleRef = await Test.createTestingModule({
          imports: [AppModule],
        })
-       .overrideProvider(getConnectionToken())
-       .useValue(this.testDb.connection)
-       .overrideProvider('REDIS_CLIENT')
-       .useValue(this.redisClient)
-       .compile();
+         .overrideProvider(getConnectionToken())
+         .useValue(this.testDb.connection)
+         .overrideProvider('REDIS_CLIENT')
+         .useValue(this.redisClient)
+         .compile();
 
        this.app = moduleRef.createNestApplication();
        await this.app.init();
@@ -258,6 +258,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
    ```
 
 4. **Cypress E2E Testing Configuration**
+
    ```typescript
    // cypress.config.ts
    import { defineConfig } from 'cypress';
@@ -280,20 +281,21 @@ Design a multi-layered testing approach that mirrors the microservices architect
        env: {
          apiUrl: 'http://localhost:E03/api',
          testUserId: 'test-user-123',
-         testAccountId: 'test-account-456'
-       }
+         testAccountId: 'test-account-456',
+       },
      },
      component: {
        devServer: {
          framework: 'next',
-         bundler: 'webpack'
+         bundler: 'webpack',
        },
-       specPattern: 'apps/web-app/components/**/*.cy.ts'
-     }
+       specPattern: 'apps/web-app/components/**/*.cy.ts',
+     },
    });
    ```
 
 5. **Test Data Management**
+
    ```typescript
    // libs/shared/testing/src/lib/test-data-manager.ts
    export class TestDataManager {
@@ -314,15 +316,15 @@ Design a multi-layered testing approach that mirrors the microservices architect
        const marketDataSeeds = [
          {
            symbol: 'AAPL',
-           price: 150.00,
+           price: 150.0,
            volume: 1000000,
-           timestamp: new Date('2024-01-01T09:30:00Z')
+           timestamp: new Date('2024-01-01T09:30:00Z'),
          },
          {
            symbol: 'GOOGL',
-           price: 2500.00,
+           price: 2500.0,
            volume: 500000,
-           timestamp: new Date('2024-01-01T09:30:00Z')
+           timestamp: new Date('2024-01-01T09:30:00Z'),
          },
          // ... more seeds
        ];
@@ -338,7 +340,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
          symbol,
          bids: [],
          asks: [],
-         timestamp: new Date()
+         timestamp: new Date(),
        };
 
        // Generate realistic bid/ask levels
@@ -346,13 +348,13 @@ Design a multi-layered testing approach that mirrors the microservices architect
          orderBook.bids.push({
            price: basePrice - (i + 1) * 0.01,
            quantity: Math.random() * E01 + 100,
-           orderCount: Math.floor(Math.random() * 10) + 1
+           orderCount: Math.floor(Math.random() * 10) + 1,
          });
 
          orderBook.asks.push({
            price: basePrice + (i + 1) * 0.01,
            quantity: Math.random() * E01 + 100,
-           orderCount: Math.floor(Math.random() * 10) + 1
+           orderCount: Math.floor(Math.random() * 10) + 1,
          });
        }
 
@@ -364,6 +366,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
 ### Implementation Steps
 
 1. **Jest Configuration Setup (Day 1)**
+
    ```bash
    # Install testing dependencies
    npm install --save-dev jest @types/jest ts-jest supertest @types/supertest
@@ -382,6 +385,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
    ```
 
 2. **Unit Testing Framework (Day 2-3)**
+
    ```bash
    # Create base test classes
    cat > libs/shared/testing/src/lib/unit-test-base.ts << 'EOF'
@@ -432,6 +436,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
    ```
 
 3. **Integration Testing Setup (Day 4-5)**
+
    ```typescript
    // Create database test manager
    // libs/shared/testing/src/lib/test-db-manager.ts
@@ -449,7 +454,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
          database: 'jts_test',
          entities: [__dirname + '/../**/*.entity{.ts,.js}'],
          synchronize: true,
-         logging: false
+         logging: false,
        });
 
        await this.connection.initialize();
@@ -477,6 +482,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
    ```
 
 4. **Cypress E2E Setup (Day 6-7)**
+
    ```bash
    # Install Cypress and dependencies
    npm install --save-dev cypress @cypress/webpack-preprocessor ts-loader
@@ -519,6 +525,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
    ```
 
 5. **Mock Strategy Implementation (Day 8)**
+
    ```typescript
    // libs/shared/testing/src/lib/mocks/broker-api.mock.ts
    export class MockBrokerApiService {
@@ -531,7 +538,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
          ...order,
          status: OrderStatus.PENDING,
          createdAt: new Date(),
-         executedQuantity: 0
+         executedQuantity: 0,
        };
 
        this.orders.set(newOrder.id, newOrder);
@@ -545,15 +552,17 @@ Design a multi-layered testing approach that mirrors the microservices architect
      }
 
      async getMarketData(symbol: string): Promise<MarketData> {
-       return this.marketData.get(symbol) || {
-         symbol,
-         price: 100.00,
-         timestamp: new Date(),
-         volume: E01,
-         bid: 99.99,
-         ask: 100.01,
-         lastTrade: 100.00
-       };
+       return (
+         this.marketData.get(symbol) || {
+           symbol,
+           price: 100.0,
+           timestamp: new Date(),
+           volume: E01,
+           bid: 99.99,
+           ask: 100.01,
+           lastTrade: 100.0,
+         }
+       );
      }
 
      private executeOrder(orderId: string): void {
@@ -569,6 +578,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
    ```
 
 6. **Performance Testing Framework (Day 9)**
+
    ```typescript
    // libs/shared/testing/src/lib/performance-test-base.ts
    export class PerformanceTestBase {
@@ -582,7 +592,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
          averageResponseTime: 0,
          maxResponseTime: 0,
          minResponseTime: Infinity,
-         requestsPerSecond: 0
+         requestsPerSecond: 0,
        };
 
        const startTime = Date.now();
@@ -593,7 +603,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
        }
 
        await Promise.all(promises);
-       
+
        const totalTime = (Date.now() - startTime) / E01;
        results.requestsPerSecond = results.successfulRequests / totalTime;
        results.averageResponseTime = results.averageResponseTime / results.successfulRequests;
@@ -602,20 +612,18 @@ Design a multi-layered testing approach that mirrors the microservices architect
      }
 
      private async runConcurrentRequests(
-       endpoint: string, 
-       duration: number, 
-       results: LoadTestResults
+       endpoint: string,
+       duration: number,
+       results: LoadTestResults,
      ): Promise<void> {
-       const endTime = Date.now() + (duration * E01);
-       
+       const endTime = Date.now() + duration * E01;
+
        while (Date.now() < endTime) {
          const startTime = Date.now();
-         
+
          try {
-           const response = await request(this.app.getHttpServer())
-             .get(endpoint)
-             .expect(200);
-           
+           const response = await request(this.app.getHttpServer()).get(endpoint).expect(200);
+
            const responseTime = Date.now() - startTime;
            results.successfulRequests++;
            results.averageResponseTime += responseTime;
@@ -624,15 +632,16 @@ Design a multi-layered testing approach that mirrors the microservices architect
          } catch (error) {
            results.failedRequests++;
          }
-         
+
          // Small delay to prevent overwhelming
-         await new Promise(resolve => setTimeout(resolve, 10));
+         await new Promise((resolve) => setTimeout(resolve, 10));
        }
      }
    }
    ```
 
 7. **Test Automation Scripts (Day 10)**
+
    ```bash
    # scripts/test-setup.sh
    cat > scripts/test-setup.sh << 'EOF'
@@ -704,6 +713,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
    ```
 
 8. **Coverage Reporting Configuration (Day 11)**
+
    ```json
    // package.json test scripts
    {
@@ -723,6 +733,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
    ```
 
 9. **CI/CD Integration (Day 12)**
+
    ```yaml
    # .github/workflows/ci-tests.yml
    name: 'JTS Testing Pipeline'
@@ -736,7 +747,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
    jobs:
      test:
        runs-on: ubuntu-latest
-       
+
        services:
          postgres:
            image: postgres:15
@@ -758,7 +769,7 @@ Design a multi-layered testing approach that mirrors the microservices architect
 
        steps:
          - uses: actions/checkout@v4
-         
+
          - name: Setup Node.js
            uses: actions/setup-node@v4
            with:

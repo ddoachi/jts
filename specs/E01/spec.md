@@ -11,16 +11,16 @@ type: epic
 # === HIERARCHY ===
 parent: ''
 children:
-- F01
-- F02
-- F03
-- F04
-- F05
-- F06
-- F07
-- F08
-- F09
-- F10
+  - F01
+  - F02
+  - F03
+  - F04
+  - F05
+  - F06
+  - F07
+  - F08
+  - F09
+  - F10
 epic: E01
 domain: infrastructure
 
@@ -38,44 +38,43 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-- E02
-- E03
-- E04
-- E05
-- E06
-- E07
-- E08
-- E09
-- E10
-- E11
+  - E02
+  - E03
+  - E04
+  - E05
+  - E06
+  - E07
+  - E08
+  - E09
+  - E10
+  - E11
 related: []
 pull_requests:
-- '#18'
-- '#19'
+  - '#18'
+  - '#19'
 commits:
-- 08e4cc5
-- e5381ea
-- 2da9f8d
+  - 08e4cc5
+  - e5381ea
+  - 2da9f8d
 context_file: context.md
 files:
-- package.json
-- nx.json
-- docker-compose.yml
-- infrastructure/
-- libs/shared/
+  - package.json
+  - nx.json
+  - docker-compose.yml
+  - infrastructure/
+  - libs/shared/
 
 # === METADATA ===
 tags:
-- infrastructure
-- architecture
-- setup
-- monorepo
-- docker
-- database
+  - infrastructure
+  - architecture
+  - setup
+  - monorepo
+  - docker
+  - database
 effort: epic
 risk: medium
 ---
-
 
 # Foundation & Infrastructure Setup
 
@@ -99,6 +98,7 @@ Establish the core system infrastructure for the JTS automated trading platform,
 ## Technical Approach
 
 ### System Architecture Design
+
 Design and document the complete microservices architecture following the layered approach outlined in the PRD. Create clear service boundaries, define communication protocols (HTTP/gRPC/Kafka), and establish data flow patterns.
 
 #### JTS System Architecture
@@ -150,6 +150,7 @@ Design and document the complete microservices architecture following the layere
 ```
 
 #### Architecture Principles
+
 - **Microservices**: Each layer contains independent, scalable services
 - **Clear Separation**: Well-defined boundaries between layers and services
 - **Protocol Optimization**: HTTP/REST for external APIs, gRPC for internal services, Kafka for events
@@ -167,11 +168,11 @@ Design and document the complete microservices architecture following the layere
    - Required packages:
      ```json
      {
-       "@tanstack/react-query": "^5.0.0",     // Efficient data fetching
-       "zustand": "^4.4.0",                    // State management
-       "socket.io-client": "^4.5.0",          // WebSocket connections
-       "lightweight-charts": "^4.0.0",         // TradingView charts
-       "next-pwa": "^5.6.0"                   // PWA capabilities
+       "@tanstack/react-query": "^5.0.0", // Efficient data fetching
+       "zustand": "^4.4.0", // State management
+       "socket.io-client": "^4.5.0", // WebSocket connections
+       "lightweight-charts": "^4.0.0", // TradingView charts
+       "next-pwa": "^5.6.0" // PWA capabilities
      }
      ```
 
@@ -182,10 +183,10 @@ Design and document the complete microservices architecture following the layere
    - Redis-backed Bull queues for job processing
    - Required modules:
      ```typescript
-     BullModule,           // Job queues
-     ThrottlerModule,      // Rate limiting
-     WebSocketModule,      // Real-time data
-     GrpcModule           // Inter-service communication
+     (BullModule, // Job queues
+       ThrottlerModule, // Rate limiting
+       WebSocketModule, // Real-time data
+       GrpcModule); // Inter-service communication
      ```
 
 3. **Database Infrastructure with LVM**
@@ -294,11 +295,12 @@ jts/
 ### Implementation Steps
 
 1. **Storage Infrastructure Setup (Day 1-2)**
+
    ```bash
    # Create LVM structure on 4TB SSD
    pvcreate /dev/nvme0n1
    vgcreate vg_jts /dev/nvme0n1
-   
+
    # Create logical volumes
    lvcreate -L 200G -n lv_system vg_jts
    lvcreate -L 800G -n lv_postgres vg_jts
@@ -307,29 +309,31 @@ jts/
    lvcreate -L 200G -n lv_mongodb vg_jts
    lvcreate -L 50G -n lv_redis vg_jts
    lvcreate -L 150G -n lv_backup vg_jts
-   
+
    # Format with optimized filesystems
    mkfs.ext4 -E lazy_itable_init=0,lazy_journal_init=0 /dev/vg_jts/lv_postgres
    mkfs.xfs -f /dev/vg_jts/lv_kafka  # XFS for Kafka
    ```
 
 2. **Monorepo & Frontend Setup (Day 3-4)**
+
    ```bash
    # Initialize Nx workspace with NestJS preset
    npx create-nx-workspace@latest jts --preset=nest
-   
+
    # Add Next.js application
    nx g @nrwl/next:app web-app
-   
+
    # Install frontend dependencies
    npm install @tanstack/react-query zustand socket.io-client
    npm install -D tailwindcss @tailwindcss/typography
-   
+
    # Configure PWA
    npm install next-pwa workbox-webpack-plugin
    ```
 
 3. **Backend Services Creation (Day 5-6)**
+
    ```bash
    # Generate NestJS microservices
    nx g @nestjs/schematics:app api-gateway
@@ -337,7 +341,7 @@ jts/
    nx g @nestjs/schematics:app risk-management
    nx g @nestjs/schematics:app order-execution
    nx g @nestjs/schematics:app market-data-collector
-   
+
    # Add shared libraries
    nx g @nrwl/workspace:lib shared/dto
    nx g @nrwl/workspace:lib shared/interfaces
@@ -345,6 +349,7 @@ jts/
    ```
 
 4. **Database Configuration (Day 7-8)**
+
    ```yaml
    # docker-compose.yml database services
    services:
@@ -361,7 +366,7 @@ jts/
          -c effective_cache_size=24GB
          -c maintenance_work_mem=2GB
          -c random_page_cost=1.1
-     
+
      clickhouse:
        image: clickhouse/clickhouse-server:23.8
        volumes:
@@ -373,6 +378,7 @@ jts/
    ```
 
 5. **Messaging Infrastructure (Day 9-10)**
+
    ```yaml
    # Kafka configuration
    kafka:
@@ -380,12 +386,12 @@ jts/
      volumes:
        - /var/lib/kafka:/var/kafka-logs
      environment:
-       KAFKA_LOG_SEGMENT_BYTES: 1073741824  # 1GB
-       KAFKA_LOG_RETENTION_HOURS: 168       # 7 days
+       KAFKA_LOG_SEGMENT_BYTES: 1073741824 # 1GB
+       KAFKA_LOG_RETENTION_HOURS: 168 # 7 days
        KAFKA_COMPRESSION_TYPE: lz4
        KAFKA_NUM_IO_THREADS: 16
        KAFKA_NUM_NETWORK_THREADS: 8
-   
+
    redis:
      image: redis:7-alpine
      volumes:
@@ -398,29 +404,32 @@ jts/
    ```
 
 6. **API Gateway & Authentication (Day 11-12)**
+
    ```typescript
    // apps/api-gateway/src/main.ts
    import { NestFactory } from '@nestjs/core';
    import { Transport } from '@nestjs/microservices';
-   
+
    async function bootstrap() {
      const app = await NestFactory.create(AppModule);
-     
+
      // Configure gRPC microservice
      app.connectMicroservice({
        transport: Transport.GRPC,
        options: {
          package: 'jts',
          protoPath: join(__dirname, 'protos/jts.proto'),
-       }
+       },
      });
-     
+
      // Rate limiting
-     app.use(rateLimit({
-       windowMs: 60 * E01, // 1 minute
-       max: 100 // limit each IP to 100 requests per minute
-     }));
-     
+     app.use(
+       rateLimit({
+         windowMs: 60 * E01, // 1 minute
+         max: 100, // limit each IP to 100 requests per minute
+       }),
+     );
+
      await app.startAllMicroservices();
      await app.listen(E03);
    }
@@ -442,6 +451,7 @@ This epic has no dependencies as it forms the foundation layer. All other epics 
 ## Configuration Files
 
 ### /etc/fstab (Mount Configuration)
+
 ```bash
 # JTS Trading System - Optimized Mount Points
 /dev/vg_jts/lv_system     /                    ext4  defaults                    0 1
@@ -454,6 +464,7 @@ This epic has no dependencies as it forms the foundation layer. All other epics 
 ```
 
 ### .env.production (Environment Variables)
+
 ```env
 # Database Credentials
 DB_PASSWORD=secure_postgres_password
@@ -511,7 +522,7 @@ Feature F01 (Storage Infrastructure) has been decomposed into specialized tasks 
 
 - **Task T01**: Hot Storage (NVMe) Foundation - Core LVM infrastructure setup
 - **Task T02**: Database Mount Integration - Service-specific mount points and permissions
-- **Task T03**: Warm Storage (SATA) Setup - Independent SATA/btrfs implementation  
+- **Task T03**: Warm Storage (SATA) Setup - Independent SATA/btrfs implementation
 - **Task T04**: Cold Storage (NAS) Integration - NFS optimization and directory structure
 - **Task T05**: Storage Performance Optimization - I/O schedulers and TRIM configuration
 - **Task T06**: Tiered Storage Management - Automation and lifecycle management

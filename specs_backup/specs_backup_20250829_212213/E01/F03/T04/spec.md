@@ -30,12 +30,12 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T02
+  - T02
 blocks:
-- T05
-- T06
+  - T05
+  - T06
 related:
-- T03
+  - T03
 
 # === IMPLEMENTATION ===
 pull_requests: []
@@ -43,22 +43,21 @@ commits: []
 context_file: 1003.context.md
 worktree: ''
 files:
-- tsconfig.base.json
-- .eslintrc.json
-- .prettierrc
-- .husky/*
+  - tsconfig.base.json
+  - .eslintrc.json
+  - .prettierrc
+  - .husky/*
 
 # === METADATA ===
 tags:
-- typescript
-- eslint
-- prettier
-- linting
-- code-quality
+  - typescript
+  - eslint
+  - prettier
+  - linting
+  - code-quality
 effort: small
 risk: low
 unique_id: bdb106a0 # Unique identifier (never changes)
-
 ---
 
 # Task T04: Implement TypeScript Configuration and Linting
@@ -97,7 +96,7 @@ Configure strict TypeScript settings for type safety, set up comprehensive ESLin
     "lib": ["ES2022", "DOM"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    
+
     // Strict type checking
     "strict": true,
     "noImplicitAny": true,
@@ -107,7 +106,7 @@ Configure strict TypeScript settings for type safety, set up comprehensive ESLin
     "strictPropertyInitialization": false, // For NestJS
     "noImplicitThis": true,
     "alwaysStrict": true,
-    
+
     // Additional checks
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -118,14 +117,14 @@ Configure strict TypeScript settings for type safety, set up comprehensive ESLin
     "noPropertyAccessFromIndexSignature": true,
     "exactOptionalPropertyTypes": true,
     "forceConsistentCasingInFileNames": true,
-    
+
     // Module resolution
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    
+
     "baseUrl": ".",
     "paths": {
       // Path mappings configured in task T02
@@ -188,7 +187,7 @@ Configure strict TypeScript settings for type safety, set up comprehensive ESLin
             ]
           }
         ],
-        
+
         // TypeScript rules
         "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
         "@typescript-eslint/no-explicit-any": "warn",
@@ -201,7 +200,7 @@ Configure strict TypeScript settings for type safety, set up comprehensive ESLin
         "@typescript-eslint/no-unsafe-call": "warn",
         "@typescript-eslint/no-unsafe-member-access": "warn",
         "@typescript-eslint/no-unsafe-return": "warn",
-        
+
         // Import rules
         "import/order": [
           "error",
@@ -216,7 +215,7 @@ Configure strict TypeScript settings for type safety, set up comprehensive ESLin
         ],
         "import/no-duplicates": "error",
         "import/no-cycle": "error",
-        
+
         // General rules
         "prefer-const": "error",
         "no-var": "error",
@@ -279,13 +278,8 @@ npx husky add .husky/pre-commit "npx lint-staged"
     "type-check": "nx run-many --target=type-check --all"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,yaml,yml}": [
-      "prettier --write"
-    ]
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,yaml,yml}": ["prettier --write"]
   }
 }
 ```

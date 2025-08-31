@@ -35,7 +35,11 @@ related: ['2101', '2107'] # Related to KIS and service endpoints
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
 worktree: '' # Worktree path (optional)
-files: ['libs/shared/services/account-pool.service.ts', 'apps/brokers/common/account-manager/', 'libs/shared/models/account.model.ts'] # Key files to modify
+files: [
+    'libs/shared/services/account-pool.service.ts',
+    'apps/brokers/common/account-manager/',
+    'libs/shared/models/account.model.ts',
+  ] # Key files to modify
 
 # === METADATA ===
 tags: ['account-pool', 'multi-account', 'load-balancing', 'trading'] # Searchable tags
@@ -158,41 +162,45 @@ Design a sophisticated account management system that treats multiple trading ac
 ## Account Management Specifications
 
 ### Account Types
+
 ```typescript
 enum AccountType {
-  REGULAR = 'regular',        // Standard trading account
-  MARGIN = 'margin',          // Margin trading enabled
-  PENSION = 'pension',        // Retirement account
-  INSTITUTIONAL = 'institutional',  // High-limit account
-  PAPER = 'paper'            // Testing account
+  REGULAR = 'regular', // Standard trading account
+  MARGIN = 'margin', // Margin trading enabled
+  PENSION = 'pension', // Retirement account
+  INSTITUTIONAL = 'institutional', // High-limit account
+  PAPER = 'paper', // Testing account
 }
 ```
 
 ### Distribution Strategies
+
 ```typescript
 enum DistributionStrategy {
-  HASH_BASED = 'hash',        // Consistent hash by symbol
+  HASH_BASED = 'hash', // Consistent hash by symbol
   ROUND_ROBIN = 'round_robin', // Equal distribution
-  WEIGHTED = 'weighted',       // Based on account capacity
-  MANUAL = 'manual',          // Explicit assignment
-  DYNAMIC = 'dynamic'         // ML-based optimization
+  WEIGHTED = 'weighted', // Based on account capacity
+  MANUAL = 'manual', // Explicit assignment
+  DYNAMIC = 'dynamic', // ML-based optimization
 }
 ```
 
 ### Account Health States
+
 ```typescript
 enum AccountHealth {
-  HEALTHY = 'healthy',        // Fully operational
-  DEGRADED = 'degraded',      // Partial issues
+  HEALTHY = 'healthy', // Fully operational
+  DEGRADED = 'degraded', // Partial issues
   QUARANTINED = 'quarantined', // Temporarily disabled
-  FAILED = 'failed',          // Connection lost
-  MAINTENANCE = 'maintenance'  // Scheduled downtime
+  FAILED = 'failed', // Connection lost
+  MAINTENANCE = 'maintenance', // Scheduled downtime
 }
 ```
 
 ## Trading-Specific Requirements
 
 ### Symbol Distribution
+
 - Maximum 200 symbols per account (KIS limit)
 - Even distribution for load balancing
 - Hot symbol isolation to dedicated accounts
@@ -200,6 +208,7 @@ enum AccountHealth {
 - Sticky sessions for active positions
 
 ### Balance Management
+
 - Real-time cash tracking
 - Margin requirement calculation
 - Position exposure limits
@@ -207,6 +216,7 @@ enum AccountHealth {
 - Settlement tracking (T+2)
 
 ### Risk Controls
+
 - Per-account position limits
 - Aggregate exposure monitoring
 - Concentration risk detection
@@ -214,6 +224,7 @@ enum AccountHealth {
 - Circuit breaker per account
 
 ### Regulatory Compliance
+
 - Account segregation maintenance
 - Beneficial ownership tracking
 - Tax lot accounting per account
@@ -223,6 +234,7 @@ enum AccountHealth {
 ## Performance Requirements
 
 ### Latency Targets
+
 - Account selection: <10ms
 - Balance aggregation: <50ms
 - Health check: <100ms
@@ -230,6 +242,7 @@ enum AccountHealth {
 - Failover detection: <5s
 
 ### Scalability
+
 - Support 100+ accounts
 - 10,000+ symbols total
 - 1,000+ operations/second
@@ -278,6 +291,7 @@ When implementing this feature:
 ## Data Models
 
 ### Account Entity
+
 ```typescript
 interface Account {
   id: string;
@@ -293,6 +307,7 @@ interface Account {
 ```
 
 ### Symbol Assignment
+
 ```typescript
 interface SymbolAssignment {
   symbol: string;
@@ -305,6 +320,7 @@ interface SymbolAssignment {
 ```
 
 ### Aggregated Portfolio
+
 ```typescript
 interface Portfolio {
   totalCash: number;
@@ -318,6 +334,7 @@ interface Portfolio {
 ## Monitoring & Alerting
 
 ### Key Metrics
+
 - Accounts active/total
 - Symbol distribution balance
 - Account utilization rates
@@ -326,6 +343,7 @@ interface Portfolio {
 - Error rates per account
 
 ### Alerts
+
 - Account connection failure
 - High error rate (>5%)
 - Imbalanced distribution (>20% skew)

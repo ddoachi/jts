@@ -1,6 +1,7 @@
 # Kafka Setup Guide for JTS
 
 ## Prerequisites
+
 - Docker and Docker Compose installed
 - At least 20GB free disk space (100GB+ recommended when 4TB SSD is installed)
 - Ports 2181, 8080, 8081, 9092-9094 available
@@ -8,6 +9,7 @@
 ## Initial Setup (Without 4TB SSD)
 
 1. **Create data directories:**
+
 ```bash
 cd infrastructure/kafka
 mkdir -p data/zookeeper/data data/zookeeper/logs
@@ -15,11 +17,13 @@ mkdir -p data/kafka/kafka1 data/kafka/kafka2 data/kafka/kafka3
 ```
 
 2. **Start Kafka cluster:**
+
 ```bash
 docker-compose -f docker-compose.kafka.yml up -d
 ```
 
 3. **Verify cluster health:**
+
 ```bash
 # Check if all containers are running
 docker-compose -f docker-compose.kafka.yml ps
@@ -29,22 +33,25 @@ docker exec jts-kafka1 kafka-broker-api-versions --bootstrap-server kafka1:29092
 ```
 
 4. **Create topics:**
+
 ```bash
 chmod +x setup-topics.sh
 ./setup-topics.sh
 ```
 
 5. **Access Kafka UI:**
-Open browser at http://localhost:8080 to monitor topics and messages
+   Open browser at http://localhost:8080 to monitor topics and messages
 
 ## After Installing 4TB SSD
 
 1. **Stop Kafka cluster:**
+
 ```bash
 docker-compose -f docker-compose.kafka.yml down
 ```
 
 2. **Mount the SSD (example for Samsung 990 PRO):**
+
 ```bash
 # Find the device
 sudo fdisk -l
@@ -68,6 +75,7 @@ sudo chown -R $USER:$USER /mnt/ssd4tb
 ```
 
 3. **Move Kafka data to SSD:**
+
 ```bash
 # Create Kafka directories on SSD
 mkdir -p /mnt/ssd4tb/kafka/{kafka1,kafka2,kafka3}
@@ -79,7 +87,8 @@ cp -r data/zookeeper/* /mnt/ssd4tb/zookeeper/
 ```
 
 4. **Update docker-compose.kafka.yml volumes:**
-Replace the volume paths:
+   Replace the volume paths:
+
 ```yaml
 # Old path:
 - ./data/kafka/kafka1:/var/lib/kafka/data
@@ -88,6 +97,7 @@ Replace the volume paths:
 ```
 
 5. **Restart Kafka cluster:**
+
 ```bash
 docker-compose -f docker-compose.kafka.yml up -d
 ```
@@ -95,7 +105,9 @@ docker-compose -f docker-compose.kafka.yml up -d
 ## Performance Tuning
 
 ### System Settings (Linux)
+
 Add to `/etc/sysctl.conf`:
+
 ```bash
 # Network optimizations for Kafka
 net.core.rmem_default=31457280
@@ -117,34 +129,41 @@ vm.dirty_ratio=15
 ```
 
 Apply settings:
+
 ```bash
 sudo sysctl -p
 ```
 
 ### JVM Heap Settings
+
 For production with 128GB RAM, update Kafka environment in docker-compose:
+
 ```yaml
-KAFKA_HEAP_OPTS: "-Xmx8G -Xms8G"
-KAFKA_JVM_PERFORMANCE_OPTS: "-XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent"
+KAFKA_HEAP_OPTS: '-Xmx8G -Xms8G'
+KAFKA_JVM_PERFORMANCE_OPTS: '-XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35 -XX:+ExplicitGCInvokesConcurrent'
 ```
 
 ## Monitoring
 
 ### Key Metrics to Monitor
+
 - **Throughput**: Messages/sec per topic
 - **Latency**: End-to-end latency for critical topics
 - **Disk Usage**: Monitor /mnt/ssd4tb usage
 - **Consumer Lag**: Ensure consumers keep up with producers
 
 ### Prometheus Metrics (Optional)
+
 Add JMX exporter for Prometheus:
+
 ```yaml
 kafka-exporter:
   image: danielqsj/kafka-exporter:latest
   container_name: jts-kafka-exporter
-  command: ["--kafka.server=kafka1:29092", "--kafka.server=kafka2:29093", "--kafka.server=kafka3:29094"]
+  command:
+    ['--kafka.server=kafka1:29092', '--kafka.server=kafka2:29093', '--kafka.server=kafka3:29094']
   ports:
-    - "9308:9308"
+    - '9308:9308'
   networks:
     - jts-network
 ```
@@ -152,6 +171,7 @@ kafka-exporter:
 ## Backup Strategy
 
 1. **Critical Topics Backup:**
+
 ```bash
 # Backup script (run daily)
 #!/bin/bash
@@ -170,6 +190,7 @@ done
 ```
 
 2. **Sync to NAS:**
+
 ```bash
 rsync -av /mnt/ssd4tb/kafka/ /mnt/nas/kafka-mirror/
 ```
@@ -179,6 +200,7 @@ rsync -av /mnt/ssd4tb/kafka/ /mnt/nas/kafka-mirror/
 ### Common Issues
 
 1. **Broker not available:**
+
 ```bash
 # Check logs
 docker logs jts-kafka1
@@ -188,6 +210,7 @@ docker-compose -f docker-compose.kafka.yml restart kafka1
 ```
 
 2. **Consumer lag:**
+
 ```bash
 # Check consumer groups
 docker exec jts-kafka1 kafka-consumer-groups --bootstrap-server kafka1:29092 --list
@@ -197,6 +220,7 @@ docker exec jts-kafka1 kafka-consumer-groups --bootstrap-server kafka1:29092 --d
 ```
 
 3. **Disk space issues:**
+
 ```bash
 # Check disk usage
 df -h /mnt/ssd4tb
@@ -208,6 +232,7 @@ docker exec jts-kafka1 kafka-configs --bootstrap-server kafka1:29092 \
 ```
 
 ## Security Notes
+
 - Currently using PLAINTEXT for development
 - For production, implement SASL/SSL authentication
 - Restrict network access using firewall rules

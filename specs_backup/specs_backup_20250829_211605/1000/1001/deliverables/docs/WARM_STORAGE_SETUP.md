@@ -11,7 +11,7 @@ This document provides comprehensive guidance for setting up and managing the in
 The warm storage tier serves as an intermediate layer between hot storage (NVMe) and cold storage, optimized for:
 
 - **Daily Backups**: Database snapshots and automated backup operations
-- **Log Aggregation**: Compressed storage for application and system logs  
+- **Log Aggregation**: Compressed storage for application and system logs
 - **Temporary Processing**: Workspace for large file operations and data processing
 - **Space Efficiency**: btrfs compression maximizes storage utilization
 
@@ -55,11 +55,12 @@ sudo scripts/setup-sata-storage.sh
 ```
 
 The script will:
+
 1. Verify SATA drive specifications and availability
 2. Format the partition with btrfs and zstd:3 compression
 3. Configure automatic mounting with optimized options
 4. Create organized directory structure
-5. Test compression effectiveness  
+5. Test compression effectiveness
 6. Configure system integration (logrotate, cron cleanup)
 
 ### Manual Setup (Alternative)
@@ -67,6 +68,7 @@ The script will:
 If you prefer manual setup or need to customize the process:
 
 #### Step 1: Verify Drive
+
 ```bash
 # Check drive specifications
 lsblk -o NAME,SIZE,MODEL,TRAN /dev/sda
@@ -76,6 +78,7 @@ lsblk /dev/sda2
 ```
 
 #### Step 2: Format Filesystem
+
 ```bash
 # Format with btrfs and compression
 sudo mkfs.btrfs -f -L "jts-warm-storage" \
@@ -87,6 +90,7 @@ sudo btrfs filesystem show /dev/sda2
 ```
 
 #### Step 3: Configure Mount
+
 ```bash
 # Create mount point
 sudo mkdir -p /data/warm-storage
@@ -99,6 +103,7 @@ sudo mount /data/warm-storage
 ```
 
 #### Step 4: Create Directory Structure
+
 ```bash
 # Create main directories
 sudo mkdir -p /data/warm-storage/{daily-backups,logs,temp-processing}
@@ -146,6 +151,7 @@ The warm storage is organized with a logical directory hierarchy:
 Warm storage integrates with the system's log management through logrotate:
 
 **Configuration**: `/etc/logrotate.d/warm-storage`
+
 ```
 /data/warm-storage/logs/*/*.log {
     daily
@@ -163,6 +169,7 @@ Warm storage integrates with the system's log management through logrotate:
 Temporary files are automatically cleaned up via cron job:
 
 **Configuration**: `/etc/crontab`
+
 ```
 0 2 * * * root find /data/warm-storage/temp-processing -mtime +3 -delete
 ```
@@ -212,6 +219,7 @@ The warm storage uses optimized mount options for performance:
 ### Compression Benefits
 
 btrfs with zstd:3 compression typically provides:
+
 - **Space Savings**: 40-60% reduction in storage usage
 - **Performance**: Minimal impact on I/O operations
 - **Flexibility**: Transparent compression/decompression
@@ -219,6 +227,7 @@ btrfs with zstd:3 compression typically provides:
 ### Sequential I/O Optimization
 
 SATA drives are optimized for sequential operations, making them ideal for:
+
 - Database backup operations
 - Log file writes
 - Large file processing
@@ -244,6 +253,7 @@ sudo btrfs subvolume list /data/warm-storage
 ### Backup Strategy
 
 The warm storage itself should be backed up to cold storage:
+
 1. Daily backup of critical data in daily-backups/
 2. Log rotation and archival to cold storage
 3. Snapshot-based recovery for rapid restoration
@@ -253,22 +263,24 @@ The warm storage itself should be backed up to cold storage:
 ### Common Issues
 
 1. **Mount Failures**:
+
    ```bash
    # Check device status
    lsblk /dev/sda2
-   
+
    # Verify fstab entry
    grep "/data/warm-storage" /etc/fstab
-   
+
    # Manual mount test
    sudo mount -t btrfs /dev/sda2 /data/warm-storage
    ```
 
 2. **Compression Not Working**:
+
    ```bash
    # Check mount options
    mount | grep warm-storage
-   
+
    # Test compression
    dd if=/dev/zero of=/data/warm-storage/test bs=1M count=10
    du -sh /data/warm-storage/test
@@ -277,22 +289,24 @@ The warm storage itself should be backed up to cold storage:
    ```
 
 3. **Permission Issues**:
+
    ```bash
    # Fix ownership
    sudo chown -R root:root /data/warm-storage
-   
+
    # Fix permissions
    sudo chmod -R 755 /data/warm-storage
    ```
 
 4. **High Disk Usage**:
+
    ```bash
    # Check space usage by directory
    sudo du -sh /data/warm-storage/*
-   
+
    # Clean old logs
    sudo find /data/warm-storage/logs -name "*.log.gz" -mtime +30 -delete
-   
+
    # Clean temp files
    sudo find /data/warm-storage/temp-processing -mtime +3 -delete
    ```
@@ -300,13 +314,14 @@ The warm storage itself should be backed up to cold storage:
 ### Recovery Procedures
 
 1. **Filesystem Corruption**:
+
    ```bash
    # Unmount filesystem
    sudo umount /data/warm-storage
-   
+
    # Check filesystem
    sudo btrfs check /dev/sda2
-   
+
    # Repair if needed (use with caution)
    sudo btrfs check --repair /dev/sda2
    ```
@@ -324,7 +339,7 @@ JTS services can use the warm storage for backup operations:
 # PostgreSQL backup example
 pg_dump jts_trading > /data/warm-storage/daily-backups/postgresql/jts_trading_$(date +%Y%m%d).sql
 
-# ClickHouse backup example  
+# ClickHouse backup example
 clickhouse-client --query "BACKUP TABLE market_data TO Disk('warm_storage', 'daily-backups/clickhouse/market_data_$(date +%Y%m%d)')"
 ```
 
@@ -350,16 +365,19 @@ Configure JTS services to write logs to warm storage:
 ## Maintenance Schedule
 
 ### Daily
+
 - Automated backup operations
 - Log rotation and compression
 - Temporary file cleanup
 
-### Weekly  
+### Weekly
+
 - Health check script execution
 - Disk usage monitoring
 - Performance validation
 
 ### Monthly
+
 - Full filesystem health check
 - Snapshot creation for critical data
 - Cleanup of old backup files

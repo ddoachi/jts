@@ -27,41 +27,40 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F05
-- F06
+  - F05
+  - F06
 blocks:
-- E02
-- E03
-- E04
-- E05
-- E06
+  - E02
+  - E03
+  - E04
+  - E05
+  - E06
 related:
-- F02
-- F08
+  - F02
+  - F08
 branch: feature/1007-service-communication
 files:
-- apps/api-gateway/
-- libs/shared/grpc/
-- libs/shared/websocket/
-- proto/
-- apps/*/src/grpc/
-- nginx.conf
-- docker-compose.yml
+  - apps/api-gateway/
+  - libs/shared/grpc/
+  - libs/shared/websocket/
+  - proto/
+  - apps/*/src/grpc/
+  - nginx.conf
+  - docker-compose.yml
 
 # === METADATA ===
 tags:
-- grpc
-- rest
-- websocket
-- api-gateway
-- service-discovery
-- microservices
-- communication
-- protocols
+  - grpc
+  - rest
+  - websocket
+  - api-gateway
+  - service-discovery
+  - microservices
+  - communication
+  - protocols
 effort: large
 risk: medium
 unique_id: d7322ed7 # Unique identifier (never changes)
-
 ---
 
 # Service Communication Patterns
@@ -90,6 +89,7 @@ Establish comprehensive inter-service communication patterns for the JTS trading
 ### Communication Architecture Design
 
 Design a multi-protocol communication system that optimizes for different use cases:
+
 - **gRPC**: High-performance, type-safe internal service communication
 - **REST**: Standards-based external APIs for web clients and third-party integrations
 - **WebSocket**: Real-time bidirectional communication for live data streaming
@@ -145,6 +145,7 @@ Design a multi-protocol communication system that optimizes for different use ca
 ```
 
 #### Protocol Selection Strategy
+
 - **gRPC**: Internal service communication requiring high performance, type safety, and streaming
 - **REST**: External APIs, admin interfaces, and third-party integrations
 - **WebSocket**: Real-time data streaming for market prices, order updates, and notifications
@@ -160,19 +161,20 @@ Design a multi-protocol communication system that optimizes for different use ca
    - Streaming support for real-time data flows
 
    **Protocol Buffer Schema Example:**
+
    ```protobuf
    // proto/trading.proto
    syntax = "proto3";
-   
+
    package jts.trading;
-   
+
    service StrategyEngineService {
      rpc CreateStrategy(CreateStrategyRequest) returns (CreateStrategyResponse);
      rpc ExecuteStrategy(ExecuteStrategyRequest) returns (stream ExecutionUpdate);
      rpc GetStrategyStatus(GetStrategyStatusRequest) returns (StrategyStatus);
      rpc ListStrategies(ListStrategiesRequest) returns (ListStrategiesResponse);
    }
-   
+
    message CreateStrategyRequest {
      string name = 1;
      string description = 2;
@@ -180,7 +182,7 @@ Design a multi-protocol communication system that optimizes for different use ca
      StrategyConfig config = 4;
      RiskParameters risk_params = 5;
    }
-   
+
    message ExecutionUpdate {
      string strategy_id = 1;
      ExecutionStatus status = 2;
@@ -188,7 +190,7 @@ Design a multi-protocol communication system that optimizes for different use ca
      Performance performance = 4;
      int64 timestamp = 5;
    }
-   
+
    enum StrategyType {
      STRATEGY_TYPE_UNSPECIFIED = 0;
      STRATEGY_TYPE_MOMENTUM = 1;
@@ -205,6 +207,7 @@ Design a multi-protocol communication system that optimizes for different use ca
    - Comprehensive endpoint testing with automated tests
 
    **REST Controller Example:**
+
    ```typescript
    // apps/api-gateway/src/controllers/strategy.controller.ts
    import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
@@ -212,14 +215,14 @@ Design a multi-protocol communication system that optimizes for different use ca
    import { JwtAuthGuard } from '../guards/jwt-auth.guard';
    import { RoleGuard } from '../guards/role.guard';
    import { Roles } from '../decorators/roles.decorator';
-   
+
    @ApiTags('strategies')
    @ApiBearerAuth()
    @UseGuards(JwtAuthGuard, RoleGuard)
    @Controller('api/v1/strategies')
    export class StrategyController {
      constructor(private readonly strategyService: StrategyService) {}
-   
+
      @Post()
      @Roles('trader', 'admin')
      @ApiOperation({ summary: 'Create a new trading strategy' })
@@ -228,7 +231,7 @@ Design a multi-protocol communication system that optimizes for different use ca
      async createStrategy(@Body() createStrategyDto: CreateStrategyDto): Promise<StrategyDto> {
        return this.strategyService.create(createStrategyDto);
      }
-   
+
      @Get(':id/performance')
      @Roles('trader', 'admin', 'viewer')
      @ApiOperation({ summary: 'Get strategy performance metrics' })
@@ -246,6 +249,7 @@ Design a multi-protocol communication system that optimizes for different use ca
    - Automatic reconnection and backoff strategies
 
    **WebSocket Gateway Example:**
+
    ```typescript
    // libs/shared/websocket/src/market-data.gateway.ts
    import {
@@ -258,7 +262,7 @@ Design a multi-protocol communication system that optimizes for different use ca
    import { Server, Socket } from 'socket.io';
    import { UseGuards } from '@nestjs/common';
    import { WsJwtGuard } from './guards/ws-jwt.guard';
-   
+
    @WebSocketGateway({
      namespace: '/market-data',
      cors: { origin: process.env.FRONTEND_URL },
@@ -267,32 +271,32 @@ Design a multi-protocol communication system that optimizes for different use ca
    export class MarketDataGateway implements OnGatewayConnection, OnGatewayDisconnect {
      @WebSocketServer()
      server: Server;
-   
+
      handleConnection(client: Socket) {
        console.log(`Client connected: ${client.id}`);
      }
-   
+
      handleDisconnect(client: Socket) {
        console.log(`Client disconnected: ${client.id}`);
      }
-   
+
      @SubscribeMessage('subscribe-ticker')
      handleSubscribeTicker(client: Socket, symbol: string) {
        client.join(`ticker-${symbol}`);
        return { event: 'subscription-confirmed', data: { symbol } };
      }
-   
+
      @SubscribeMessage('subscribe-orders')
      handleSubscribeOrders(client: Socket, userId: string) {
        client.join(`orders-${userId}`);
        return { event: 'subscription-confirmed', data: { type: 'orders' } };
      }
-   
+
      // Broadcast market data to subscribers
      broadcastTicker(symbol: string, data: TickerData) {
        this.server.to(`ticker-${symbol}`).emit('ticker-update', data);
      }
-   
+
      // Broadcast order updates to specific user
      broadcastOrderUpdate(userId: string, orderUpdate: OrderUpdate) {
        this.server.to(`orders-${userId}`).emit('order-update', orderUpdate);
@@ -308,6 +312,7 @@ Design a multi-protocol communication system that optimizes for different use ca
    - Request/response transformation and validation
 
    **Nginx Configuration:**
+
    ```nginx
    # nginx.conf
    upstream api_gateway {
@@ -316,21 +321,21 @@ Design a multi-protocol communication system that optimizes for different use ca
        server api-gateway-2:E03;
        server api-gateway-3:E03;
    }
-   
+
    upstream websocket_gateway {
        ip_hash;  # Sticky sessions for WebSocket
        server websocket-1:3001;
        server websocket-2:3001;
    }
-   
+
    server {
        listen 80;
        server_name api.jts.local;
-   
+
        # Rate limiting
        limit_req_zone $binary_remote_addr zone=api:10m rate=100r/m;
        limit_req_zone $binary_remote_addr zone=ws:10m rate=50r/m;
-   
+
        # REST API endpoints
        location /api/ {
            limit_req zone=api burst=20 nodelay;
@@ -340,7 +345,7 @@ Design a multi-protocol communication system that optimizes for different use ca
            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
            proxy_set_header X-Forwarded-Proto $scheme;
        }
-   
+
        # WebSocket endpoints
        location /socket.io/ {
            limit_req zone=ws burst=10 nodelay;
@@ -351,7 +356,7 @@ Design a multi-protocol communication system that optimizes for different use ca
            proxy_set_header Host $host;
            proxy_set_header X-Real-IP $remote_addr;
        }
-   
+
        # Health check endpoint
        location /health {
            access_log off;
@@ -368,6 +373,7 @@ Design a multi-protocol communication system that optimizes for different use ca
    - Load balancing integration
 
    **Consul Service Configuration:**
+
    ```json
    // consul/services/strategy-engine.json
    {
@@ -394,29 +400,30 @@ Design a multi-protocol communication system that optimizes for different use ca
 ### Implementation Steps
 
 1. **Protocol Buffer Schema Design (Day 1-2)**
+
    ```bash
    # Create proto directory structure
    mkdir -p proto/{trading,market-data,portfolio,risk,orders}
-   
+
    # Define core service interfaces
    # trading.proto - Strategy engine interfaces
    # market-data.proto - Market data streaming
    # portfolio.proto - Portfolio management
    # risk.proto - Risk management services
    # orders.proto - Order execution services
-   
+
    # Generate TypeScript definitions
    npm install @grpc/grpc-js @grpc/proto-loader
    npm install -D grpc-tools @types/google-protobuf
-   
+
    # Create generation script
    cat > scripts/generate-grpc.sh << 'EOF'
    #!/bin/bash
    PROTO_DIR="./proto"
    OUT_DIR="./libs/shared/grpc/src/generated"
-   
+
    mkdir -p "$OUT_DIR"
-   
+
    # Generate TypeScript definitions
    for proto_file in $(find "$PROTO_DIR" -name "*.proto"); do
        protoc \
@@ -428,113 +435,119 @@ Design a multi-protocol communication system that optimizes for different use ca
            "$proto_file"
    done
    EOF
-   
+
    chmod +x scripts/generate-grpc.sh
    ```
 
 2. **gRPC Service Infrastructure Setup (Day 3-4)**
+
    ```bash
    # Create gRPC shared library
    nx g @nrwl/workspace:lib shared/grpc
-   
+
    # Install gRPC dependencies
    npm install @grpc/grpc-js @grpc/proto-loader
    npm install @nestjs/microservices
-   
+
    # Create gRPC client factory
    # libs/shared/grpc/src/client-factory.ts
    # libs/shared/grpc/src/interceptors/
    # libs/shared/grpc/src/decorators/
-   
+
    # Configure each service to support gRPC
    # Add gRPC transport to main.ts in each service
    # Implement service controllers with gRPC decorators
    ```
 
 3. **REST API Framework Implementation (Day 5-6)**
+
    ```bash
    # Set up API Gateway service
    nx g @nestjs/schematics:app api-gateway
-   
+
    # Install required dependencies
    npm install @nestjs/swagger class-validator class-transformer
    npm install @nestjs/throttler @nestjs/jwt @nestjs/passport passport-jwt
-   
+
    # Create API structure
    # apps/api-gateway/src/controllers/
    # apps/api-gateway/src/services/
    # apps/api-gateway/src/guards/
    # apps/api-gateway/src/interceptors/
    # apps/api-gateway/src/middleware/
-   
+
    # Configure OpenAPI documentation
    # Set up validation pipes and error handling
    # Implement JWT authentication guards
    ```
 
 4. **WebSocket Gateway Development (Day 7-8)**
+
    ```bash
    # Create WebSocket shared library
    nx g @nrwl/workspace:lib shared/websocket
-   
+
    # Install Socket.IO dependencies
    npm install @nestjs/websockets @nestjs/platform-socket.io socket.io
    npm install -D @types/socket.io
-   
+
    # Create WebSocket gateways
    # libs/shared/websocket/src/gateways/market-data.gateway.ts
    # libs/shared/websocket/src/gateways/orders.gateway.ts
    # libs/shared/websocket/src/gateways/notifications.gateway.ts
-   
+
    # Implement authentication for WebSocket connections
    # Set up room-based subscription management
    # Create message queuing for reliable delivery
    ```
 
 5. **Service Discovery Integration (Day 9-10)**
+
    ```bash
    # Install Consul client
    npm install consul @types/consul
-   
+
    # Create service registry library
    nx g @nrwl/workspace:lib shared/service-discovery
-   
+
    # Implement Consul integration
    # libs/shared/service-discovery/src/consul-client.ts
    # libs/shared/service-discovery/src/service-registry.ts
    # libs/shared/service-discovery/src/health-check.service.ts
-   
+
    # Configure service registration on startup
    # Implement health check endpoints
    # Set up service discovery for gRPC clients
    ```
 
 6. **API Gateway Configuration (Day 11-12)**
+
    ```bash
    # Configure Nginx as reverse proxy
    # Create nginx.conf with load balancing rules
    # Set up SSL termination and security headers
-   
+
    # Implement API Gateway service
    # Create routing middleware for different service endpoints
    # Set up rate limiting with Redis
    # Configure CORS and security policies
-   
+
    # Create Docker Compose configuration
    # Include Nginx, API Gateway, and service discovery
    ```
 
 7. **Authentication & Authorization (Day 13-14)**
+
    ```bash
    # Implement JWT authentication service
    # Create role-based access control
    # Set up OAuth2/OpenID Connect integration
-   
+
    # Configure authentication for all communication patterns:
    # - JWT middleware for REST APIs
    # - gRPC interceptors for service-to-service auth
    # - WebSocket authentication on connection
-   
+
    # Create authorization policies and guards
    # Implement token refresh and session management
    ```

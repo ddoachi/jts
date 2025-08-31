@@ -35,10 +35,25 @@ related: ['1005'] # Related but not blocking (spec IDs)
 # === IMPLEMENTATION ===
 branch: 'feature/1006-message-queue-setup' # Git branch name
 worktree: '' # Worktree path (optional)
-files: ['infrastructure/kafka/', 'docker-compose.kafka.yml', 'libs/shared/messaging/', 'schemas/protobuf/', 'scripts/kafka-setup/'] # Key files to modify
+files: [
+    'infrastructure/kafka/',
+    'docker-compose.kafka.yml',
+    'libs/shared/messaging/',
+    'schemas/protobuf/',
+    'scripts/kafka-setup/',
+  ] # Key files to modify
 
 # === METADATA ===
-tags: ['kafka', 'messaging', 'event-streaming', 'protobuf', 'topics', 'partitioning', 'producers', 'consumers'] # Searchable tags
+tags: [
+    'kafka',
+    'messaging',
+    'event-streaming',
+    'protobuf',
+    'topics',
+    'partitioning',
+    'producers',
+    'consumers',
+  ] # Searchable tags
 effort: 'large' # small | medium | large | epic
 risk: 'medium' # low | medium | high
 
@@ -57,7 +72,7 @@ Implement a comprehensive Apache Kafka cluster configuration for the JTS automat
 - [ ] **Topic Design & Partitioning**: Well-architected topic structure with strategic partitioning for market data, order events, strategy signals, and system notifications
 - [ ] **Protocol Buffers Integration**: Complete Protocol Buffers schema definitions with code generation for TypeScript and efficient binary serialization
 - [ ] **Producer Patterns**: High-performance producer implementations with batching, compression, idempotent writes, and error handling strategies
-- [ ] **Consumer Patterns**: Robust consumer groups with offset management, rebalancing strategies, and parallel processing capabilities  
+- [ ] **Consumer Patterns**: Robust consumer groups with offset management, rebalancing strategies, and parallel processing capabilities
 - [ ] **Event Streaming Architecture**: Stream processing topology for real-time data transformation, aggregation, and event correlation
 - [ ] **Performance Optimization**: Kafka cluster tuned for sub-millisecond latency with proper memory allocation, I/O threading, and network configuration
 - [ ] **Monitoring & Observability**: Comprehensive metrics collection, alerting, and performance monitoring for message queuing infrastructure
@@ -110,6 +125,7 @@ Design a highly scalable event streaming architecture that supports real-time tr
 #### 1. Kafka Cluster Configuration
 
 **High-Performance Setup:**
+
 - 3-node Kafka cluster for fault tolerance
 - XFS filesystem with dedicated 600GB LVM volume
 - 16 I/O threads and 8 network threads for optimal throughput
@@ -126,7 +142,7 @@ services:
     container_name: jts-zookeeper
     restart: unless-stopped
     ports:
-      - "2181:2181"
+      - '2181:2181'
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -146,48 +162,48 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
-      - "19092:19092"
+      - '9092:9092'
+      - '19092:19092'
     volumes:
       - /var/lib/kafka/broker-1:/var/kafka-logs
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      
+
       # Listener Configuration
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-1:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      
+
       # Replication & Durability
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
       KAFKA_MIN_IN_SYNC_REPLICAS: 2
       KAFKA_DEFAULT_REPLICATION_FACTOR: 3
-      
+
       # Performance Optimization
       KAFKA_NUM_IO_THREADS: 16
       KAFKA_NUM_NETWORK_THREADS: 8
       KAFKA_SOCKET_SEND_BUFFER_BYTES: 102400
       KAFKA_SOCKET_RECEIVE_BUFFER_BYTES: 102400
       KAFKA_SOCKET_REQUEST_MAX_BYTES: 104857600
-      
+
       # Log Configuration
-      KAFKA_LOG_SEGMENT_BYTES: 1073741824  # 1GB segments
-      KAFKA_LOG_RETENTION_HOURS: 168       # 7 days
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824 # 1GB segments
+      KAFKA_LOG_RETENTION_HOURS: 168 # 7 days
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
       KAFKA_LOG_CLEANUP_POLICY: delete
-      
+
       # Compression
       KAFKA_COMPRESSION_TYPE: lz4
       KAFKA_LOG_COMPRESSION_TYPE: lz4
-      
+
       # Memory & GC
-      KAFKA_HEAP_OPTS: "-Xmx6G -Xms6G"
-      KAFKA_JVM_PERFORMANCE_OPTS: "-XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35"
-      
+      KAFKA_HEAP_OPTS: '-Xmx6G -Xms6G'
+      KAFKA_JVM_PERFORMANCE_OPTS: '-XX:+UseG1GC -XX:MaxGCPauseMillis=20 -XX:InitiatingHeapOccupancyPercent=35'
+
       # Monitoring
       KAFKA_JMX_PORT: 19092
       KAFKA_JMX_HOSTNAME: localhost
@@ -201,8 +217,8 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9093:9093"
-      - "19093:19093"
+      - '9093:9093'
+      - '19093:19093'
     volumes:
       - /var/lib/kafka/broker-2:/var/kafka-logs
     environment:
@@ -224,8 +240,8 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9094:9094"
-      - "19094:19094"
+      - '9094:9094'
+      - '19094:19094'
     volumes:
       - /var/lib/kafka/broker-3:/var/kafka-logs
     environment:
@@ -245,7 +261,7 @@ services:
     container_name: jts-kafka-ui
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
       KAFKA_CLUSTERS_0_NAME: jts-trading-cluster
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker-1:29092,kafka-broker-2:29093,kafka-broker-3:29094
@@ -691,14 +707,14 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
       maxInFlightRequests: 5,
       idempotent: true, // Exactly-once semantics
       transactionTimeout: 30000,
-      
+
       // Batching configuration
       batchSize: 16384, // 16KB batches
       lingerMs: 10, // Wait up to 10ms to batch messages
-      
+
       // Compression
       compression: 'lz4',
-      
+
       // Retry configuration
       retry: {
         maxRetryTime: 30000,
@@ -739,7 +755,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
 
   private getBrokers(): string[] {
     const brokers = this.configService.get<string>('KAFKA_BROKERS', 'localhost:9092');
-    return brokers.split(',').map(broker => broker.trim());
+    return brokers.split(',').map((broker) => broker.trim());
   }
 
   /**
@@ -750,7 +766,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
     message: any,
     key?: string,
     partition?: number,
-    headers?: Record<string, string>
+    headers?: Record<string, string>,
   ): Promise<RecordMetadata[]> {
     if (!this.isConnected) {
       await this.connect();
@@ -785,7 +801,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
       value: any;
       partition?: number;
       headers?: Record<string, string>;
-    }>
+    }>,
   ): Promise<RecordMetadata[]> {
     if (!this.isConnected) {
       await this.connect();
@@ -793,7 +809,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
 
     const record: ProducerRecord = {
       topic,
-      messages: messages.map(msg => ({
+      messages: messages.map((msg) => ({
         key: msg.key,
         value: Buffer.from(JSON.stringify(msg.value)),
         partition: msg.partition,
@@ -816,7 +832,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
     messageBuffer: Buffer,
     key?: string,
     partition?: number,
-    headers?: Record<string, string>
+    headers?: Record<string, string>,
   ): Promise<RecordMetadata[]> {
     if (!this.isConnected) {
       await this.connect();
@@ -842,26 +858,21 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
     return this.sendWithRetry(record);
   }
 
-  private async sendWithRetry(
-    record: ProducerRecord,
-    maxRetries = 3
-  ): Promise<RecordMetadata[]> {
+  private async sendWithRetry(record: ProducerRecord, maxRetries = 3): Promise<RecordMetadata[]> {
     let lastError: Error;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const result = await this.producer.send(record);
-        
-        this.logger.debug(
-          `Message sent to topic ${record.topic}: ${result.length} messages`
-        );
-        
+
+        this.logger.debug(`Message sent to topic ${record.topic}: ${result.length} messages`);
+
         return result;
       } catch (error) {
         lastError = error as Error;
         this.logger.warn(
           `Failed to send message to ${record.topic} (attempt ${attempt}/${maxRetries})`,
-          error
+          error,
         );
 
         if (attempt < maxRetries) {
@@ -874,7 +885,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
 
     this.logger.error(
       `Failed to send message to ${record.topic} after ${maxRetries} attempts`,
-      lastError
+      lastError,
     );
     throw lastError;
   }
@@ -913,13 +924,7 @@ export class KafkaProducerService implements OnModuleInit, OnModuleDestroy {
 ```typescript
 // libs/shared/messaging/src/lib/kafka-consumer.service.ts
 import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { 
-  Kafka, 
-  Consumer, 
-  ConsumerRunConfig, 
-  EachMessagePayload,
-  EachBatchPayload 
-} from 'kafkajs';
+import { Kafka, Consumer, ConsumerRunConfig, EachMessagePayload, EachBatchPayload } from 'kafkajs';
 import { ConfigService } from '@nestjs/config';
 
 export interface MessageHandler {
@@ -960,7 +965,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
 
   private getBrokers(): string[] {
     const brokers = this.configService.get<string>('KAFKA_BROKERS', 'localhost:9092');
-    return brokers.split(',').map(broker => broker.trim());
+    return brokers.split(',').map((broker) => broker.trim());
   }
 
   /**
@@ -976,7 +981,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
       heartbeatInterval?: number;
       maxBytesPerPartition?: number;
       maxBytes?: number;
-    }
+    },
   ): Promise<void> {
     const consumer = this.kafka.consumer({
       groupId,
@@ -991,33 +996,31 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     });
 
     await consumer.connect();
-    await consumer.subscribe({ 
+    await consumer.subscribe({
       topics,
-      fromBeginning: options?.fromBeginning || false 
+      fromBeginning: options?.fromBeginning || false,
     });
 
     const runConfig: ConsumerRunConfig = {
       eachMessage: async (payload) => {
         const { topic, partition, message } = payload;
-        
+
         try {
           this.logger.debug(
-            `Processing message from ${topic}[${partition}] offset ${message.offset}`
+            `Processing message from ${topic}[${partition}] offset ${message.offset}`,
           );
-          
+
           const startTime = Date.now();
           await handler(payload);
           const duration = Date.now() - startTime;
-          
-          this.logger.debug(
-            `Message processed in ${duration}ms from ${topic}[${partition}]`
-          );
+
+          this.logger.debug(`Message processed in ${duration}ms from ${topic}[${partition}]`);
         } catch (error) {
           this.logger.error(
             `Error processing message from ${topic}[${partition}] offset ${message.offset}`,
-            error
+            error,
           );
-          
+
           await this.handleFailedMessage(payload, error as Error);
         }
       },
@@ -1025,7 +1028,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
 
     await consumer.run(runConfig);
     this.consumers.set(groupId, consumer);
-    
+
     this.logger.log(`Subscribed to topics: ${topics.join(', ')} with group: ${groupId}`);
   }
 
@@ -1040,7 +1043,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
       fromBeginning?: boolean;
       batchSize?: number;
       maxWait?: number;
-    }
+    },
   ): Promise<void> {
     const consumer = this.kafka.consumer({
       groupId,
@@ -1050,33 +1053,33 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     });
 
     await consumer.connect();
-    await consumer.subscribe({ 
+    await consumer.subscribe({
       topics,
-      fromBeginning: options?.fromBeginning || false 
+      fromBeginning: options?.fromBeginning || false,
     });
 
     const runConfig: ConsumerRunConfig = {
       eachBatch: async (batchPayload) => {
         const { batch } = batchPayload;
-        
+
         try {
           this.logger.debug(
-            `Processing batch of ${batch.messages.length} messages from ${batch.topic}[${batch.partition}]`
+            `Processing batch of ${batch.messages.length} messages from ${batch.topic}[${batch.partition}]`,
           );
-          
+
           const startTime = Date.now();
           await batchHandler(batchPayload);
           const duration = Date.now() - startTime;
-          
+
           this.logger.debug(
-            `Batch processed in ${duration}ms from ${batch.topic}[${batch.partition}]`
+            `Batch processed in ${duration}ms from ${batch.topic}[${batch.partition}]`,
           );
         } catch (error) {
           this.logger.error(
             `Error processing batch from ${batch.topic}[${batch.partition}]`,
-            error
+            error,
           );
-          
+
           // Handle batch failure - could implement partial retry logic here
           throw error;
         }
@@ -1085,25 +1088,22 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
 
     await consumer.run(runConfig);
     this.consumers.set(groupId, consumer);
-    
+
     this.logger.log(`Subscribed to batch topics: ${topics.join(', ')} with group: ${groupId}`);
   }
 
   /**
    * Handle failed message processing - send to DLQ if configured
    */
-  private async handleFailedMessage(
-    payload: EachMessagePayload,
-    error: Error
-  ): Promise<void> {
+  private async handleFailedMessage(payload: EachMessagePayload, error: Error): Promise<void> {
     const { topic, partition, message } = payload;
     const dlqTopic = `dlq.${topic.replace(/\./g, '.')}`;
-    
+
     try {
       // Create a simple producer for DLQ (could be injected instead)
       const producer = this.kafka.producer();
       await producer.connect();
-      
+
       await producer.send({
         topic: dlqTopic,
         messages: [
@@ -1121,17 +1121,14 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
           },
         ],
       });
-      
+
       await producer.disconnect();
-      
+
       this.logger.warn(
-        `Message sent to DLQ ${dlqTopic} from ${topic}[${partition}] offset ${message.offset}`
+        `Message sent to DLQ ${dlqTopic} from ${topic}[${partition}] offset ${message.offset}`,
       );
     } catch (dlqError) {
-      this.logger.error(
-        `Failed to send message to DLQ ${dlqTopic}`,
-        dlqError
-      );
+      this.logger.error(`Failed to send message to DLQ ${dlqTopic}`, dlqError);
     }
   }
 
@@ -1159,7 +1156,7 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
         } catch (error) {
           this.logger.error(`Error disconnecting consumer for group: ${groupId}`, error);
         }
-      }
+      },
     );
 
     await Promise.allSettled(disconnectPromises);
@@ -1173,10 +1170,10 @@ export class KafkaConsumerService implements OnModuleInit, OnModuleDestroy {
     try {
       const admin = this.kafka.admin();
       await admin.connect();
-      
+
       const offsets = await admin.fetchOffsets({ groupId });
       await admin.disconnect();
-      
+
       return offsets;
     } catch (error) {
       this.logger.error(`Failed to fetch consumer lag for group: ${groupId}`, error);
@@ -1203,7 +1200,7 @@ export class StreamProcessorService {
 
   constructor(
     private consumerService: KafkaConsumerService,
-    private producerService: KafkaProducerService
+    private producerService: KafkaProducerService,
   ) {}
 
   /**
@@ -1212,21 +1209,21 @@ export class StreamProcessorService {
   async setupMarketDataAggregation(): Promise<void> {
     const handler: MessageHandler = async (payload: EachMessagePayload) => {
       const { topic, message } = payload;
-      
+
       if (topic === 'market.price.ticks') {
         const priceTick = JSON.parse(message.value?.toString() || '{}');
-        
+
         // Aggregate to OHLCV candles
         const ohlcvCandle = await this.aggregateToOHLCV(priceTick);
-        
+
         if (ohlcvCandle) {
           await this.producerService.sendMessage(
             'market.ohlcv.aggregated',
             ohlcvCandle,
-            `${priceTick.symbol}-${priceTick.exchange}`
+            `${priceTick.symbol}-${priceTick.exchange}`,
           );
         }
-        
+
         // Update order book if needed
         if (priceTick.bid_price && priceTick.ask_price) {
           await this.updateOrderBookSnapshot(priceTick);
@@ -1234,11 +1231,7 @@ export class StreamProcessorService {
       }
     };
 
-    await this.consumerService.subscribe(
-      ['market.price.ticks'],
-      'market-data-aggregator',
-      handler
-    );
+    await this.consumerService.subscribe(['market.price.ticks'], 'market-data-aggregator', handler);
   }
 
   /**
@@ -1248,22 +1241,22 @@ export class StreamProcessorService {
     const handler: MessageHandler = async (payload: EachMessagePayload) => {
       const { topic, message } = payload;
       const orderEvent = JSON.parse(message.value?.toString() || '{}');
-      
+
       // Update portfolio positions based on order execution
       if (topic === 'trading.orders.executed') {
         await this.updatePortfolioPosition(orderEvent);
-        
+
         // Calculate P&L
         const pnlUpdate = await this.calculatePnL(orderEvent);
         if (pnlUpdate) {
           await this.producerService.sendMessage(
             'portfolio.pnl.calculated',
             pnlUpdate,
-            orderEvent.strategy_id
+            orderEvent.strategy_id,
           );
         }
       }
-      
+
       // Check risk limits
       if (['trading.orders.submitted', 'trading.orders.executed'].includes(topic)) {
         const riskCheck = await this.checkRiskLimits(orderEvent);
@@ -1271,7 +1264,7 @@ export class StreamProcessorService {
           await this.producerService.sendMessage(
             'risk.violations.detected',
             riskCheck,
-            orderEvent.strategy_id
+            orderEvent.strategy_id,
           );
         }
       }
@@ -1282,10 +1275,10 @@ export class StreamProcessorService {
         'trading.orders.submitted',
         'trading.orders.executed',
         'trading.orders.cancelled',
-        'trading.orders.rejected'
+        'trading.orders.rejected',
       ],
       'order-lifecycle-tracker',
-      handler
+      handler,
     );
   }
 
@@ -1295,19 +1288,17 @@ export class StreamProcessorService {
   async setupStrategyPerformanceCalculation(): Promise<void> {
     const handler: MessageHandler = async (payload: EachMessagePayload) => {
       const { topic, message } = payload;
-      
+
       if (topic === 'portfolio.pnl.calculated') {
         const pnlEvent = JSON.parse(message.value?.toString() || '{}');
-        
+
         // Calculate strategy performance metrics
-        const performanceMetrics = await this.calculateStrategyPerformance(
-          pnlEvent.strategy_id
-        );
-        
+        const performanceMetrics = await this.calculateStrategyPerformance(pnlEvent.strategy_id);
+
         await this.producerService.sendMessage(
           'strategy.performance.metrics',
           performanceMetrics,
-          pnlEvent.strategy_id
+          pnlEvent.strategy_id,
         );
       }
     };
@@ -1315,16 +1306,16 @@ export class StreamProcessorService {
     await this.consumerService.subscribe(
       ['portfolio.pnl.calculated'],
       'strategy-performance-calculator',
-      handler
+      handler,
     );
   }
 
   private async aggregateToOHLCV(priceTick: any): Promise<any | null> {
     // Implementation for OHLCV aggregation
     // This would typically use a time window and state management
-    
+
     this.logger.debug(`Aggregating price tick for ${priceTick.symbol}`);
-    
+
     // Simplified example - real implementation would use proper time windows
     return {
       symbol: priceTick.symbol,
@@ -1337,7 +1328,7 @@ export class StreamProcessorService {
       volume: priceTick.volume,
       trade_count: 1,
       vwap: priceTick.price,
-      timeframe: '1m'
+      timeframe: '1m',
     };
   }
 
@@ -1349,29 +1340,30 @@ export class StreamProcessorService {
   private async updatePortfolioPosition(orderEvent: any): Promise<void> {
     // Update portfolio position based on order execution
     this.logger.debug(`Updating portfolio position for order ${orderEvent.order_id}`);
-    
+
     const positionUpdate = {
       user_id: orderEvent.user_id,
       strategy_id: orderEvent.strategy_id,
       symbol: orderEvent.symbol,
       exchange: orderEvent.exchange,
-      quantity_change: orderEvent.side === 'BUY' ? orderEvent.filled_quantity : -orderEvent.filled_quantity,
+      quantity_change:
+        orderEvent.side === 'BUY' ? orderEvent.filled_quantity : -orderEvent.filled_quantity,
       average_price: orderEvent.average_price,
       commission: orderEvent.commission,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
-    
+
     await this.producerService.sendMessage(
       'portfolio.positions.updated',
       positionUpdate,
-      `${orderEvent.user_id}-${orderEvent.symbol}-${orderEvent.exchange}`
+      `${orderEvent.user_id}-${orderEvent.symbol}-${orderEvent.exchange}`,
     );
   }
 
   private async calculatePnL(orderEvent: any): Promise<any | null> {
     // Calculate P&L based on order execution
     this.logger.debug(`Calculating P&L for order ${orderEvent.order_id}`);
-    
+
     // Simplified P&L calculation
     return {
       strategy_id: orderEvent.strategy_id,
@@ -1379,28 +1371,28 @@ export class StreamProcessorService {
       realized_pnl: 0, // Would calculate based on position history
       unrealized_pnl: 0, // Would calculate based on current market price
       commission: orderEvent.commission,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
   private async checkRiskLimits(orderEvent: any): Promise<any> {
     // Check risk limits for the order
     this.logger.debug(`Checking risk limits for order ${orderEvent.order_id}`);
-    
+
     // Simplified risk check - real implementation would check various limits
     return {
       violation: false,
       strategy_id: orderEvent.strategy_id,
       order_id: orderEvent.order_id,
       checks_performed: ['position_size', 'daily_loss', 'exposure'],
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
   private async calculateStrategyPerformance(strategyId: string): Promise<any> {
     // Calculate comprehensive strategy performance metrics
     this.logger.debug(`Calculating performance metrics for strategy ${strategyId}`);
-    
+
     return {
       strategy_id: strategyId,
       period_start: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
@@ -1416,7 +1408,7 @@ export class StreamProcessorService {
       max_drawdown: '0.00',
       sharpe_ratio: '0.00',
       sortino_ratio: '0.00',
-      volatility: '0.00'
+      volatility: '0.00',
     };
   }
 }
@@ -1425,7 +1417,9 @@ export class StreamProcessorService {
 ### Implementation Steps
 
 #### Phase 1: Infrastructure Setup (Days 1-3)
+
 1. **LVM Volume Configuration**
+
    ```bash
    # Create dedicated 600GB volume for Kafka
    lvcreate -L 600G -n lv_kafka vg_jts
@@ -1434,10 +1428,11 @@ export class StreamProcessorService {
    ```
 
 2. **Docker Compose Deployment**
+
    ```bash
    # Deploy Kafka cluster
    docker-compose -f docker-compose.kafka.yml up -d
-   
+
    # Verify cluster health
    docker logs jts-kafka-1
    docker logs jts-kafka-2
@@ -1452,12 +1447,14 @@ export class StreamProcessorService {
    ```
 
 #### Phase 2: Schema and Serialization (Days 4-5)
+
 1. **Protocol Buffers Setup**
+
    ```bash
    # Install protobuf compiler
    npm install -g protobuf
    npm install @types/google-protobuf google-protobuf
-   
+
    # Generate TypeScript definitions
    mkdir -p libs/shared/messaging/src/generated
    protoc --ts_out=libs/shared/messaging/src/generated schemas/protobuf/*.proto
@@ -1472,11 +1469,13 @@ export class StreamProcessorService {
    ```
 
 #### Phase 3: Producer/Consumer Implementation (Days 6-8)
+
 1. **Producer Service Integration**
+
    ```typescript
    // Add to each microservice that produces messages
    import { KafkaProducerService } from '@jts/shared/messaging';
-   
+
    @Module({
      imports: [SharedMessagingModule],
      // ...
@@ -1495,13 +1494,15 @@ export class StreamProcessorService {
    ```
 
 #### Phase 4: Monitoring and Testing (Days 9-10)
+
 1. **Monitoring Setup**
+
    ```yaml
    # Add Kafka monitoring to docker-compose
    kafka-exporter:
      image: danielqsj/kafka-exporter:latest
      ports:
-       - "9308:9308"
+       - '9308:9308'
      command:
        - '--kafka.server=kafka-broker-1:29092'
        - '--kafka.server=kafka-broker-2:29093'
@@ -1509,12 +1510,13 @@ export class StreamProcessorService {
    ```
 
 2. **Performance Testing**
+
    ```bash
    # Test producer performance
    kafka-producer-perf-test --topic market.price.ticks \
      --num-records 100000 --record-size 1000 \
      --throughput 10000 --producer-props bootstrap.servers=localhost:9092
-   
+
    # Test consumer performance
    kafka-consumer-perf-test --topic market.price.ticks \
      --bootstrap-server localhost:9092 --messages 100000
@@ -1527,24 +1529,28 @@ export class StreamProcessorService {
 ## Testing Plan
 
 ### Functional Testing
+
 - **Topic Creation**: Verify all topics are created with correct partitions and replication
 - **Producer Functionality**: Test message production with various payload sizes
 - **Consumer Group Operations**: Test consumer group rebalancing and offset management
 - **Schema Evolution**: Test Protocol Buffers schema compatibility and evolution
 
 ### Performance Testing
+
 - **Throughput Testing**: Achieve target throughput of 100K+ messages/second
 - **Latency Testing**: Verify sub-10ms end-to-end latency for critical paths
 - **Load Testing**: Test under realistic trading workload scenarios
 - **Stress Testing**: Test cluster behavior under extreme load conditions
 
 ### Reliability Testing
+
 - **Fault Tolerance**: Test broker failure and recovery scenarios
 - **Data Durability**: Verify message persistence and replication
 - **Consumer Recovery**: Test consumer failure and restart scenarios
 - **Network Partition**: Test behavior during network splits
 
 ### Integration Testing
+
 - **Service Integration**: Test message flow between all microservices
 - **Schema Compatibility**: Test schema evolution across service updates
 - **Dead Letter Queue**: Test failed message handling and DLQ processing

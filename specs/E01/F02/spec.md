@@ -11,12 +11,12 @@ type: feature
 # === HIERARCHY ===
 parent: E01
 children:
-- T01
-- T02
-- T03
-- T04
-- T05
-- T06
+  - T01
+  - T02
+  - T03
+  - T04
+  - T05
+  - T06
 epic: E01
 domain: infrastructure
 
@@ -34,33 +34,32 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-- F03
-- F04
-- F05
+  - F03
+  - F04
+  - F05
 related:
-- F01
+  - F01
 pull_requests: []
 commits: []
 context_file: context.md
 files:
-- .vscode/settings.json
-- .vscode/extensions.json
-- package.json
-- .env.example
-- docker-compose.dev.yml
-- docs/DEVELOPMENT.md
+  - .vscode/settings.json
+  - .vscode/extensions.json
+  - package.json
+  - .env.example
+  - docker-compose.dev.yml
+  - docs/DEVELOPMENT.md
 
 # === METADATA ===
 tags:
-- development
-- setup
-- ide
-- tools
-- workflow
+  - development
+  - setup
+  - ide
+  - tools
+  - workflow
 effort: medium
 risk: low
 ---
-
 
 # Development Environment Setup
 
@@ -86,6 +85,7 @@ Establish a standardized development environment for the JTS automated trading s
 ### Developer Workstation Requirements
 
 #### System Requirements
+
 ```yaml
 Minimum Specifications:
   CPU: 8 cores (Intel i7 or AMD Ryzen 7)
@@ -101,12 +101,14 @@ Recommended for Performance:
 ```
 
 #### Operating System Support
+
 - **Linux (Primary)**: Ubuntu 22.04+ or equivalent for main development
 - **Windows (Secondary)**: Windows 11 with WSL2 for Creon API integration
 
 ### Required Tools and SDKs
 
 #### Core Development Tools
+
 ```bash
 # Node.js and Package Managers
 Node.js: 20.x LTS
@@ -136,6 +138,7 @@ Postman: API development (optional)
 #### Platform-Specific Installation Scripts
 
 **Linux/Ubuntu Setup**:
+
 ```bash
 #!/bin/bash
 # install-dev-tools-linux.sh
@@ -171,6 +174,7 @@ sudo apt update && sudo apt install gh
 ```
 
 **Windows Setup (PowerShell)**:
+
 ```powershell
 # install-dev-tools-windows.ps1
 # Requires PowerShell as Administrator
@@ -202,6 +206,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 **VS Code Setup** (Primary Development Environment)
 
 **Extensions Configuration** (`.vscode/extensions.json`):
+
 ```json
 {
   "recommendations": [
@@ -221,13 +226,12 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
     "nrwl.angular-console",
     "ms-vscode.vscode-npm-dependency-links"
   ],
-  "unwantedRecommendations": [
-    "ms-vscode.vscode-typescript"
-  ]
+  "unwantedRecommendations": ["ms-vscode.vscode-typescript"]
 }
 ```
 
 **Workspace Settings** (`.vscode/settings.json`):
+
 ```json
 {
   "typescript.preferences.importModuleSpecifier": "relative",
@@ -263,6 +267,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 ```
 
 **Debug Configuration** (`.vscode/launch.json`):
+
 ```json
 {
   "version": "0.2.0",
@@ -315,12 +320,14 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 #### Two-File Strategy
 
 We use a simple two-file approach for environment configuration:
+
 - `.env.example` - Template with dummy values (committed to repository)
 - `.env.local` - Your actual credentials (gitignored, never committed)
 
 #### Environment File Templates
 
 **Example Template** (`.env.example`):
+
 ```env
 # Application Configuration
 NODE_ENV=development
@@ -384,6 +391,7 @@ ENABLE_MOCK_DATA=true
 ```
 
 **Local Configuration** (`.env.local` - copy from `.env.example` and customize):
+
 ```env
 # Copy this from .env.example and add your real credentials
 # This file is gitignored and should never be committed
@@ -463,6 +471,7 @@ cp .env.example .env.local
 ```
 
 **Why Two Files?**
+
 - `.env.example` serves as documentation for required variables
 - `.env.local` keeps your real credentials safe from accidental commits
 - Easy onboarding - new developers just copy and customize
@@ -473,6 +482,7 @@ cp .env.example .env.local
 Since Creon uses COM objects on Windows and requires login credentials instead of API keys, we need a secure approach:
 
 **Directory Structure**:
+
 ```bash
 /secure/creon/
 ├── credentials/
@@ -485,6 +495,7 @@ Since Creon uses COM objects on Windows and requires login credentials instead o
 ```
 
 **Secure Batch Script Template** (`creon-launcher.bat`):
+
 ```batch
 @echo off
 REM This is a template - actual credentials are injected at runtime
@@ -494,6 +505,7 @@ start /wait creon.exe /ID:%CREON_ID% /PW:%CREON_PW% /AUTOSTART
 ```
 
 **PowerShell Security Wrapper** (`decrypt-and-run.ps1`):
+
 ```powershell
 # Decrypt credentials from secure storage
 $encryptedPath = "$env:CREON_CREDENTIALS_PATH"
@@ -510,6 +522,7 @@ $credentials = $null
 ```
 
 **Security Notes**:
+
 - Never store Creon credentials in plain text
 - Use Windows Credential Manager or encrypted files
 - Audit all authentication attempts
@@ -520,6 +533,7 @@ $credentials = $null
 #### Docker Compose Development Setup
 
 **Development Services** (`docker-compose.dev.yml`):
+
 ```yaml
 version: '3.8'
 
@@ -675,12 +689,13 @@ networks:
 ```
 
 **Redis Database Allocation for Multi-Account**:
+
 ```yaml
 # Redis databases for different purposes
 Redis DB Allocation:
   0: Session cache
   1: KIS account 1 rate limits
-  2: KIS account 2 rate limits  
+  2: KIS account 2 rate limits
   3: Surge detection cache
   4: Order queue
   5: Account metrics
@@ -689,6 +704,7 @@ Redis DB Allocation:
 #### Development Scripts
 
 **Package.json Scripts**:
+
 ```json
 {
   "scripts": {
@@ -698,7 +714,7 @@ Redis DB Allocation:
     "dev:clean": "docker-compose -f docker-compose.dev.yml down -v --remove-orphans",
     "dev:logs": "docker-compose -f docker-compose.dev.yml logs -f",
     "dev:status": "docker-compose -f docker-compose.dev.yml ps",
-    
+
     "db:migrate": "yarn db:migrate:postgres && yarn db:migrate:clickhouse",
     "db:migrate:postgres": "yarn prisma migrate deploy",
     "db:migrate:clickhouse": "node scripts/migrate-clickhouse.js",
@@ -706,7 +722,7 @@ Redis DB Allocation:
     "db:seed:postgres": "yarn prisma db seed",
     "db:seed:clickhouse": "node scripts/seed-clickhouse.js",
     "db:reset": "yarn db:reset:postgres && yarn db:reset:clickhouse",
-    
+
     "services:health": "node scripts/check-services-health.js",
     "services:start": "concurrently \"yarn start:gateway\" \"yarn start:strategy\" \"yarn start:risk\" \"yarn start:order\" \"yarn start:market-data\"",
     "start:gateway": "nx serve api-gateway",
@@ -719,6 +735,7 @@ Redis DB Allocation:
 ```
 
 **Setup Script** (`scripts/setup-dev-env.sh`):
+
 ```bash
 #!/bin/bash
 set -e
@@ -787,6 +804,7 @@ echo "  yarn dev:clean     - Clean up everything"
 ### Code Quality and Pre-commit Setup
 
 #### Pre-commit Configuration (`.pre-commit-config.yaml`):
+
 ```yaml
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -836,42 +854,54 @@ repos:
 The feature has been broken down into the following implementation tasks:
 
 ### 1. [Task T01: Node.js and Yarn Environment Setup](T01/spec.md)
+
 **Estimated: 2 hours**
+
 - Install Node.js 20 LTS and Yarn 4
 - Configure package manager and workspaces
 - Create installation scripts for Linux and Windows
 - Set up monorepo structure
 
 ### 2. [Task T02: VS Code IDE Configuration](T02/spec.md)
+
 **Estimated: 2 hours**
+
 - Configure workspace settings for TypeScript/NestJS
 - Set up recommended extensions
 - Create debug configurations for all services
 - Configure task automation
 
 ### 3. [Task T03: Docker and Database Services Setup](T03/spec.md)
+
 **Estimated: 3 hours**
+
 - Install Docker and Docker Compose
 - Configure PostgreSQL, ClickHouse, MongoDB, Redis
 - Set up Kafka messaging infrastructure
 - Configure monitoring with Grafana (optional)
 
 ### 4. [Task T04: Environment Configuration and Secrets Management](T04/spec.md)
+
 **Estimated: 2 hours**
+
 - Implement two-file environment strategy (.env.example + .env.local)
 - Set up secure Creon credential management
 - Configure multi-account KIS settings
 - Create validation and setup scripts
 
 ### 5. [Task T05: Code Quality Tools and Git Hooks](T05/spec.md)
+
 **Estimated: 2 hours**
+
 - Configure ESLint and Prettier for TypeScript
 - Set up Husky pre-commit hooks
 - Configure lint-staged and commitlint
 - Implement automated code quality checks
 
 ### 6. [Task T06: Development Scripts and Automation](T06/spec.md)
+
 **Estimated: 3 hours**
+
 - Create master setup script for complete environment
 - Implement service health monitoring
 - Automate database migrations and seeding
@@ -895,6 +925,7 @@ This feature depends on having basic infrastructure components available for loc
 ## Configuration Files Summary
 
 The feature will create these key configuration files:
+
 - `.vscode/settings.json` - VS Code workspace settings
 - `.vscode/extensions.json` - Recommended extensions
 - `.vscode/launch.json` - Debug configurations
@@ -919,6 +950,7 @@ The feature will create these key configuration files:
 This spec focuses on the development environment. Staging and production environments will be addressed in separate specifications:
 
 **Spec Organization**:
+
 ```yaml
 Environment Specifications:
   F02: Development Environment Setup (this spec)
@@ -931,6 +963,7 @@ Environment Specifications:
 **Purpose**: Pre-production testing with real broker APIs
 
 **Key Differences from Development**:
+
 - Use paper trading accounts for KIS and Creon
 - Test with 2 KIS accounts initially
 - Real-time market data but simulated trading
@@ -938,6 +971,7 @@ Environment Specifications:
 - Integration testing with all broker APIs
 
 **Infrastructure**:
+
 ```yaml
 Staging:
   Platform: Linux server (cloud or on-premise)
@@ -952,6 +986,7 @@ Staging:
 **Purpose**: Live trading with real money
 
 **Key Differences from Staging**:
+
 - 3 KIS accounts for full market coverage (1,800 symbols)
 - Real money trading with strict risk limits
 - High availability and disaster recovery
@@ -959,6 +994,7 @@ Staging:
 - Professional monitoring and alerting
 
 **Infrastructure**:
+
 ```yaml
 Production:
   Platform: Dedicated Linux servers (redundant)
@@ -975,8 +1011,8 @@ Production:
 
 ```mermaid
 graph LR
-    Dev[Development<br/>1-2 accounts<br/>Mock data] --> 
-    Staging[Staging<br/>2 accounts<br/>Paper trading] --> 
+    Dev[Development<br/>1-2 accounts<br/>Mock data] -->
+    Staging[Staging<br/>2 accounts<br/>Paper trading] -->
     Prod[Production<br/>3 accounts<br/>Live trading]
 ```
 
