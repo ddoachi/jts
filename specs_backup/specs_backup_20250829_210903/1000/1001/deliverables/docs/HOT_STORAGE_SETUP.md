@@ -145,23 +145,27 @@ Use the validation script to verify your setup:
 ### Manual Validation Checks
 
 #### 1. Verify Users Exist
+
 ```bash
 id postgres clickhouse kafka mongodb redis
 ```
 
 #### 2. Check Directory Structure
+
 ```bash
 ls -la /data/jts/hot/
 tree /data/jts/hot/ -L 2
 ```
 
 #### 3. Verify Permissions
+
 ```bash
 ls -la /data/jts/hot/
 ls -la /data/jts/hot/*/
 ```
 
 #### 4. Test Write Access
+
 ```bash
 sudo -u postgres touch /data/jts/hot/postgresql/test_write
 sudo -u clickhouse touch /data/jts/hot/clickhouse/test_write
@@ -513,7 +517,7 @@ After successful hot storage setup:
 
 - [JTS Architecture Guide](../plan/jts_improved_architecture.md)
 - [Storage Infrastructure Spec](../specs/1000-epic-foundation-infrastructure/1001-feature-storage-infrastructure/)
-- [Database Integration Guide](./DATABASE_INTEGRATION.md) *(to be created)*
+- [Database Integration Guide](./DATABASE_INTEGRATION.md) _(to be created)_
 
 ### Monitoring and Alerts
 
@@ -525,6 +529,7 @@ After successful hot storage setup:
 ### Support
 
 For issues or questions:
+
 1. Run validation script with verbose output: `./scripts/validate-directories.sh -v`
 2. Check system logs: `journalctl -xe`
 3. Review service-specific logs in their respective directories

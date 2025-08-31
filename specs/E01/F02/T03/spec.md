@@ -15,46 +15,50 @@ epic: E01
 domain: infrastructure
 
 # === WORKFLOW ===
-status: draft
+status: completed
 priority: high
 
 # === TRACKING ===
 created: '2025-08-27'
-updated: '2025-08-27'
-due_date: ''
+updated: '2025-08-31'
+due_date: '2025-08-31'
 estimated_hours: 3
-actual_hours: 0
+actual_hours: 4
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
+  - T01
 blocks:
-- T04
-- T05
-- T06
+  - T04
+  - T05
+  - T06
 related: []
 pull_requests: []
 commits: []
 context_file: 1023.context.md
 files:
-- docker-compose.dev.yml
-- scripts/docker-setup.sh
-- configs/redis.conf
-- configs/postgres-init.sql
+  - docker-compose.dev.yml
+  - .env
+  - .env.example
+  - configs/redis.conf
+  - configs/clickhouse-config.xml
+  - scripts/init-postgres.sql
+  - scripts/init-mongo.js
+  - scripts/docker-setup.sh
+  - scripts/dev-services.sh
 
 # === METADATA ===
 tags:
-- docker
-- database
-- postgres
-- mongodb
-- redis
-- clickhouse
-- kafka
+  - docker
+  - database
+  - postgres
+  - mongodb
+  - redis
+  - clickhouse
+  - kafka
 effort: medium
 risk: medium
 ---
-
 
 # Docker and Database Services Setup
 
@@ -64,16 +68,17 @@ Set up Docker environment with all required database and messaging services for 
 
 ## Acceptance Criteria
 
-- [ ] Docker and Docker Compose installed on Linux and Windows
-- [ ] PostgreSQL configured with development database
-- [ ] ClickHouse set up for time-series data
-- [ ] MongoDB configured for configuration storage
-- [ ] Redis configured with database allocation for multi-accounts
-- [ ] Kafka and Zookeeper operational
-- [ ] Grafana monitoring dashboard (optional)
-- [ ] All services accessible and healthy
-- [ ] Initialization scripts for databases
-- [ ] Volume persistence configured
+- [x] Docker and Docker Compose installed on Linux and Windows
+- [x] PostgreSQL configured with development database
+- [x] ClickHouse set up for time-series data
+- [x] MongoDB configured for configuration storage
+- [x] Redis configured with database allocation for multi-accounts
+- [x] Kafka and Zookeeper operational
+- [x] Grafana monitoring dashboard (optional)
+- [x] All services accessible and healthy
+- [x] Initialization scripts for databases
+- [x] Volume persistence configured
+- [x] Centralized port configuration via `.env` file
 
 ## Technical Approach
 
@@ -89,7 +94,7 @@ services:
     container_name: jts-postgres-dev
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_DB: jts_trading_dev
       POSTGRES_USER: jts_admin
@@ -98,7 +103,7 @@ services:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./scripts/init-postgres.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U jts_admin -d jts_trading_dev"]
+      test: ['CMD-SHELL', 'pg_isready -U jts_admin -d jts_trading_dev']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -109,8 +114,8 @@ services:
     container_name: jts-clickhouse-dev
     restart: unless-stopped
     ports:
-      - "8123:8123"
-      - "E09:E09"
+      - '8123:8123'
+      - '9000:9000'
     environment:
       CLICKHOUSE_DB: jts_market_data_dev
       CLICKHOUSE_USER: jts_ch
@@ -129,7 +134,7 @@ services:
     container_name: jts-mongodb-dev
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - '27017:27017'
     environment:
       MONGO_INITDB_ROOT_USERNAME: jts_mongo
       MONGO_INITDB_ROOT_PASSWORD: dev_password
@@ -144,7 +149,7 @@ services:
     container_name: jts-redis-dev
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - '6379:6379'
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
       - redis_dev_data:/data
@@ -156,7 +161,7 @@ services:
     container_name: jts-zookeeper-dev
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: E02
+      ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
@@ -164,7 +169,7 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
+      - '9092:9092'
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -176,7 +181,7 @@ services:
     image: grafana/grafana:latest
     container_name: jts-grafana-dev
     ports:
-      - "3100:E03"
+      - '3100:3000'
     environment:
       GF_SECURITY_ADMIN_PASSWORD: dev_password
     volumes:
@@ -200,18 +205,21 @@ networks:
 # Redis configuration for multi-account support
 databases 16
 
-# Database allocation:
-# 0: Session cache
-# 1: KIS account 1 rate limits
-# 2: KIS account 2 rate limits
-# 3: Surge detection cache
-# 4: Order queue
-# 5: Account metrics
-# 6-15: Reserved for future use
+# Database allocation with naming convention:
+# 0: session:cache - Session and auth cache
+# 1: kis:account:1:ratelimit - KIS account 1 rate limiting
+# 2: kis:account:2:ratelimit - KIS account 2 rate limiting
+# 3: kis:account:3:ratelimit - KIS account 3 rate limiting
+# 4: kis:account:4:ratelimit - KIS account 4 rate limiting
+# 5: kis:account:5:ratelimit - KIS account 5 rate limiting
+# 6: surge:detection - Surge detection cache
+# 7: order:queue - Order processing queue
+# 8: metrics:account - Account metrics and analytics
+# 9-15: Reserved for future expansion
 
 save 900 1
 save 300 10
-save 60 E10
+save 60 10000
 
 appendonly yes
 appendfsync everysec
@@ -220,6 +228,7 @@ appendfsync everysec
 ### Database Initialization Scripts
 
 **PostgreSQL** (`scripts/init-postgres.sql`):
+
 ```sql
 -- Create schemas
 CREATE SCHEMA IF NOT EXISTS trading;
@@ -267,12 +276,15 @@ CREATE INDEX idx_orders_created ON trading.orders(created_at);
 
 ## Deliverables
 
-- `docker-compose.dev.yml` - Complete Docker configuration
-- `configs/redis.conf` - Redis configuration for multi-account
-- `scripts/init-postgres.sql` - PostgreSQL initialization
-- `scripts/init-mongo.js` - MongoDB initialization
-- `scripts/docker-setup.sh` - Docker installation script
-- `scripts/dev-services.sh` - Service management script
+- `docker-compose.dev.yml` - Complete Docker configuration with environment variables
+- `.env` - Centralized port and credential configuration
+- `.env.example` - Documentation and default configuration template
+- `configs/redis.conf` - Redis configuration for multi-account (5 KIS accounts)
+- `configs/clickhouse-config.xml` - ClickHouse configuration
+- `scripts/init-postgres.sql` - PostgreSQL initialization with trading schemas
+- `scripts/init-mongo.js` - MongoDB initialization with validated collections
+- `scripts/docker-setup.sh` - Cross-platform Docker installation script
+- `scripts/dev-services.sh` - Service management with ports, backup, and test commands
 
 ## Testing Plan
 
@@ -285,6 +297,7 @@ CREATE INDEX idx_orders_created ON trading.orders(created_at);
 
 ## Notes
 
-- Redis databases are pre-allocated for multi-account rate limiting
+- Redis databases are pre-allocated for multi-account rate limiting (supports up to 5 KIS accounts)
+- Redis DB naming convention: `service:purpose:identifier` for clarity and maintainability
 - Grafana is optional but recommended for monitoring
 - All services use dev_password for local development only

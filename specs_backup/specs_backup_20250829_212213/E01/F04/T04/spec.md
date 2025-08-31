@@ -27,32 +27,31 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
-- T05
+  - T01
+  - T05
 blocks: []
 related:
-- T02
-- T03
+  - T02
+  - T03
 
 # === IMPLEMENTATION ===
 pull_requests: []
 commits: []
 context_file: 1044.context.md
 files:
-- .github/workflows/deploy-dev.yml
-- .github/workflows/deploy-staging.yml
-- .github/workflows/deploy-production.yml
+  - .github/workflows/deploy-dev.yml
+  - .github/workflows/deploy-staging.yml
+  - .github/workflows/deploy-production.yml
 
 # === METADATA ===
 tags:
-- deployment
-- blue-green
-- rollback
-- kubernetes
+  - deployment
+  - blue-green
+  - rollback
+  - kubernetes
 effort: medium
 risk: high
 unique_id: 1019c809 # Unique identifier (never changes)
-
 ---
 
 # Deployment Pipeline Workflows

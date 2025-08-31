@@ -27,29 +27,28 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F01
+  - F01
 blocks:
-- F03
+  - F03
 related:
-- F05
-- F06
+  - F05
+  - F06
 branch: ''
 files:
-- apps/brokers/kis/
-- brokers/kis/KIS_API_SPEC.md
-- libs/shared/adapters/kis-adapter.ts
+  - apps/brokers/kis/
+  - brokers/kis/KIS_API_SPEC.md
+  - libs/shared/adapters/kis-adapter.ts
 
 # === METADATA ===
 tags:
-- kis
-- rest-api
-- oauth2
-- korean-market
-- trading
+  - kis
+  - rest-api
+  - oauth2
+  - korean-market
+  - trading
 effort: large
 risk: medium
 unique_id: c5866e93 # Unique identifier (never changes)
-
 ---
 
 # KIS REST API Integration
@@ -161,6 +160,7 @@ Implement a comprehensive KIS service using NestJS that wraps all 337 KIS REST A
 ## API Resources
 
 ### Endpoints Coverage
+
 - **Stock Trading**: 87 APIs
 - **Futures/Options**: 62 APIs
 - **International Markets**: 45 APIs
@@ -170,11 +170,13 @@ Implement a comprehensive KIS service using NestJS that wraps all 337 KIS REST A
 - **Total**: 337 APIs
 
 ### Environment URLs
+
 - **Production**: `https://openapi.koreainvestment.com:9443`
 - **Sandbox**: `https://openapivts.koreainvestment.com:29443`
 - **WebSocket**: Separate feature (F03)
 
 ### Rate Limits
+
 - **Per Second**: 20 requests
 - **Per Minute**: 1,000 requests
 - **Per Hour**: 50,000 requests
@@ -183,18 +185,21 @@ Implement a comprehensive KIS service using NestJS that wraps all 337 KIS REST A
 ## Trading-Specific Requirements
 
 ### Order Management
+
 - Support all Korean order types: Market, Limit, Market on Close, Limit on Close, Conditional, Best Limit, IOC, FOK
 - Handle order states: Pending, Submitted, Partial Fill, Filled, Cancelled, Rejected, Expired
 - Track order amendments with version history
 - Implement pre-trade validation
 
 ### Market Compliance
+
 - Enforce Korean trading hours (09:00-15:30 KST)
 - Handle pre-market (08:30-09:00) and after-hours (15:30-18:00) sessions
 - Respect circuit breakers and trading halts
 - Validate tick sizes and lot sizes per symbol
 
 ### Performance Requirements
+
 - Order placement: <50ms latency
 - Market data query: <100ms
 - Balance inquiry: <200ms

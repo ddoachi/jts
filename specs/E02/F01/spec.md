@@ -27,33 +27,32 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01
+  - E01
 blocks:
-- E02-F02
-- E02-F03
-- E02-F04
-- E02-F06
-- E02-F07
-- E02-F08
-- E02-F10
+  - F02
+  - F03
+  - F04
+  - F06
+  - F07
+  - F08
+  - F10
 related: []
 branch: ''
 files:
-- libs/shared/interfaces/broker.interface.ts
-- libs/shared/dtos/broker/
-- libs/shared/errors/broker-errors.ts
+  - libs/shared/interfaces/broker.interface.ts
+  - libs/shared/dtos/broker/
+  - libs/shared/errors/broker-errors.ts
 
 # === METADATA ===
 tags:
-- broker
-- interface
-- abstraction
-- foundation
-- architecture
+  - broker
+  - interface
+  - abstraction
+  - foundation
+  - architecture
 effort: medium
 risk: low
 ---
-
 
 # Unified Broker Interface Foundation
 
@@ -90,6 +89,7 @@ Implement a broker abstraction layer using TypeScript interfaces and the Adapter
    - Configuration methods
 
 2. **Common Data Models**
+
    ```typescript
    - Order: Unified order representation
    - Position: Current position details
@@ -152,18 +152,21 @@ Implement a broker abstraction layer using TypeScript interfaces and the Adapter
 ## Trading-Specific Requirements
 
 ### Order Lifecycle Management
+
 - Support all order states: pending, submitted, partial fill, filled, cancelled, rejected
 - Handle order amendments and cancellations
 - Track execution history with timestamps
 - Maintain order-to-trade relationships
 
 ### Market Data Normalization
+
 - Standardize price formats (decimal places, tick sizes)
 - Normalize volume representations
 - Convert timestamps to UTC
 - Handle currency conversions
 
 ### Performance Specifications
+
 - Order placement latency: <50ms
 - Balance/position queries: <100ms
 - Connection initialization: <5 seconds

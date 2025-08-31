@@ -27,36 +27,35 @@ actual_hours: 2.5
 
 # === DEPENDENCIES ===
 dependencies:
-- E01-F01-T01
+  - T01
 blocks: []
 related:
-- E01-F01-T03
-- E01-F01-T04
+  - T03
+  - T04
 pull_requests: []
 commits: []
 context_file: 'context.md'
 files:
-- specs/E01/F01/deliverables/config/60-ssd-scheduler.rules
-- specs/E01/F01/deliverables/config/fstrim-all.service
-- specs/E01/F01/deliverables/config/fstrim-all.timer
-- specs/E01/F01/deliverables/scripts/performance-benchmark.sh
-- specs/E01/F01/deliverables/scripts/ssd-optimization.sh
-- specs/E01/F01/deliverables/docs/PERFORMANCE_OPTIMIZATION.md
+  - specs/E01/F01/deliverables/config/60-ssd-scheduler.rules
+  - specs/E01/F01/deliverables/config/fstrim-all.service
+  - specs/E01/F01/deliverables/config/fstrim-all.timer
+  - specs/E01/F01/deliverables/scripts/performance-benchmark.sh
+  - specs/E01/F01/deliverables/scripts/ssd-optimization.sh
+  - specs/E01/F01/deliverables/docs/PERFORMANCE_OPTIMIZATION.md
 
 # === METADATA ===
 tags:
-- performance
-- optimization
-- ssd
-- trim
-- io-scheduler
-- benchmarking
-- tuning
-- systemd
+  - performance
+  - optimization
+  - ssd
+  - trim
+  - io-scheduler
+  - benchmarking
+  - tuning
+  - systemd
 effort: small
 risk: low
 ---
-
 
 # Storage Performance Optimization
 
@@ -84,7 +83,7 @@ These optimizations are critical for maintaining the sub-millisecond response ti
 Implement tier-specific optimizations to maximize performance across the entire storage infrastructure:
 
 - **Hot Storage (NVMe)**: Maximum IOPS with minimal latency for real-time operations
-- **Warm Storage (SATA)**: Optimized sequential I/O for backup and log operations  
+- **Warm Storage (SATA)**: Optimized sequential I/O for backup and log operations
 - **Cold Storage (NAS)**: Network-optimized bulk transfer performance
 - **Cross-Tier**: Coordinated optimizations that don't conflict between storage types
 
@@ -109,83 +108,86 @@ Implement tier-specific optimizations to maximize performance across the entire 
 ### Implementation Steps
 
 1. **SSD I/O Scheduler Configuration**
+
    ```bash
    # Configure NVMe I/O scheduler for optimal performance
    echo 'ACTION=="add|change", KERNEL=="nvme0n1", ATTR{queue/scheduler}="none"' > /etc/udev/rules.d/60-ssd-scheduler.rules
-   
+
    # Apply immediately without reboot
    echo none > /sys/block/nvme0n1/queue/scheduler
-   
+
    # Verify scheduler configuration
    cat /sys/block/nvme0n1/queue/scheduler
    ```
 
 2. **TRIM Support Configuration**
+
    ```bash
    # Configure automatic TRIM support
    echo 'ACTION=="add|change", KERNEL=="nvme0n1", ATTR{queue/discard_max_bytes}!="0", RUN+="/sbin/fstrim -v /"' >> /etc/udev/rules.d/60-ssd-scheduler.rules
-   
+
    # Create TRIM service for all NVMe mounts
    cat > /etc/systemd/system/fstrim-all.service << 'EOF'
    [Unit]
    Description=Discard unused filesystem blocks on all NVMe filesystems
-   
+
    [Service]
    Type=oneshot
    ExecStart=/bin/bash -c 'for mount in /var/lib/postgresql /var/lib/clickhouse /var/lib/kafka /var/lib/mongodb /var/lib/redis /var/lib/docker-jts /data/local-backup; do /sbin/fstrim -v "$mount"; done'
    EOF
-   
+
    # Create weekly TRIM timer
    cat > /etc/systemd/system/fstrim-all.timer << 'EOF'
    [Unit]
    Description=Run fstrim weekly for SSD longevity
-   
+
    [Timer]
    OnCalendar=weekly
    Persistent=true
-   
+
    [Install]
    WantedBy=timers.target
    EOF
-   
+
    # Enable and start TRIM timer
    systemctl enable fstrim-all.timer
    systemctl start fstrim-all.timer
    ```
 
 3. **Performance Benchmarking Setup**
+
    ```bash
    # Create comprehensive performance benchmark script
    cat > scripts/performance-benchmark.sh << 'EOF'
    #!/bin/bash
-   
+
    echo "🚀 JTS Storage Performance Benchmarking"
    echo "======================================="
-   
+
    test_sequential_performance() {
        local mount_point=$1
        local tier_name=$2
-       
+
        echo "Testing $tier_name sequential I/O on $mount_point"
-       
+
        # Sequential write test
        echo "  Sequential Write:"
        dd if=/dev/zero of="$mount_point/seq_write_test" bs=1M count=E01 oflag=direct 2>&1 | tail -1
-       
+
        # Sequential read test
        echo "  Sequential Read:"
        dd if="$mount_point/seq_write_test" of=/dev/null bs=1M 2>&1 | tail -1
-       
+
        # Cleanup
        rm -f "$mount_point/seq_write_test"
    }
-   
+
    test_random_iops() {
        local mount_point=$1
        local tier_name=$2
-       
+
        echo "Testing $tier_name random IOPS on $mount_point"
-       
+
        # Random read IOPS test (requires fio)
        if command -v fio >/dev/null 2>&1; then
            fio --name=random_test --ioengine=libaio --iodepth=32 --rw=randread --bs=4k \
@@ -196,7 +198,7 @@ Implement tier-specific optimizations to maximize performance across the entire 
            echo "  fio not installed - skipping random IOPS test"
        fi
    }
-   
+
    # Test hot storage performance
    echo "🔥 Hot Storage (NVMe) Performance Tests:"
    for mount in /var/lib/postgresql /var/lib/clickhouse /var/lib/kafka; do
@@ -206,59 +208,61 @@ Implement tier-specific optimizations to maximize performance across the entire 
            test_random_iops "$mount" "Hot"
        fi
    done
-   
+
    # Test warm storage if available
    if mountpoint -q "/data/warm-storage"; then
        echo -e "\n🌡️ Warm Storage (SATA) Performance Tests:"
        test_sequential_performance "/data/warm-storage" "Warm"
    fi
-   
+
    # Test cold storage if available
    if mountpoint -q "/mnt/synology"; then
        echo -e "\n🧊 Cold Storage (NAS) Performance Tests:"
        test_sequential_performance "/mnt/synology/jts/development" "Cold"
    fi
    EOF
-   
+
    chmod +x scripts/performance-benchmark.sh
    ```
 
 4. **Optimization Validation and Monitoring**
+
    ```bash
    # Create optimization monitoring script
    cat > scripts/ssd-optimization.sh << 'EOF'
    #!/bin/bash
-   
+
    echo "⚙️ SSD Optimization Status Check"
    echo "==============================="
-   
+
    # Check I/O scheduler
    echo "📊 I/O Scheduler Status:"
    echo "NVMe0n1: $(cat /sys/block/nvme0n1/queue/scheduler 2>/dev/null || echo 'Not found')"
-   
+
    # Check TRIM support
    echo -e "\n✂️ TRIM Support Status:"
    lsblk -D /dev/nvme0n1 2>/dev/null || echo "TRIM status unavailable"
-   
+
    # Check systemd timers
    echo -e "\n⏰ Automated Maintenance Status:"
    systemctl status fstrim-all.timer --no-pager -l
-   
+
    # Show next TRIM execution
    echo -e "\n📅 Next TRIM Execution:"
    systemctl list-timers fstrim-all.timer --no-pager
-   
+
    # Performance summary
    echo -e "\n📈 Quick Performance Check:"
    iostat -x 1 1 2>/dev/null | grep nvme0n1 | tail -1 || echo "iostat not available"
    EOF
-   
+
    chmod +x scripts/ssd-optimization.sh
    ```
 
 ## Dependencies
 
 **Required Before Implementation:**
+
 - **Feature T01**: Hot Storage (NVMe) Foundation must be completed with mounted filesystems
 
 **No Blocking Dependencies**: This feature enhances performance but doesn't block other features
@@ -312,12 +316,14 @@ LOW RISK IMPLEMENTATION:
 ## Notes
 
 ### Performance Benefits
+
 - **Immediate Impact**: I/O scheduler changes provide instant performance improvement
 - **Long-term Stability**: TRIM operations maintain SSD performance over time
 - **Measurable Results**: Performance benchmarking validates optimization effectiveness
 - **Automated Maintenance**: Reduces operational overhead while maintaining performance
 
 ### Trading System Impact
+
 - **Latency Reduction**: Optimized I/O paths reduce trading system latency
 - **Sustained Performance**: Automated maintenance prevents performance degradation
 - **Reliability**: Consistent performance under varying workloads
@@ -327,17 +333,18 @@ LOW RISK IMPLEMENTATION:
 
 ### Benchmark Results (2025-08-30)
 
-| Storage Tier | Service | Write Performance | Read Performance | Requirement | Status |
-|--------------|---------|------------------|------------------|-------------|---------|
-| **Hot (NVMe)** | PostgreSQL | 3.7 GB/s | 3.0 GB/s | ≥1.0 GB/s | ✅ 370% above |
-| **Hot (NVMe)** | ClickHouse | 3.7 GB/s | 3.2 GB/s | ≥1.0 GB/s | ✅ 370% above |
-| **Hot (NVMe)** | Kafka | 3.7 GB/s | 3.0 GB/s | ≥1.0 GB/s | ✅ 370% above |
-| **Hot (NVMe)** | MongoDB | 3.4 GB/s | 3.3 GB/s | ≥1.0 GB/s | ✅ 340% above |
-| **Hot (NVMe)** | Redis | 4.1 GB/s | 3.2 GB/s | ≥1.0 GB/s | ✅ 410% above |
-| **Warm (SATA)** | Backup Storage | 409 MB/s | 557 MB/s | ≥500 MB/s | ✅ 111% above |
-| **Cold (NAS)** | Archive Storage | 609-657 MB/s | 764-776 MB/s | ≥100 MB/s | ✅ 600-700% above |
+| Storage Tier    | Service         | Write Performance | Read Performance | Requirement | Status            |
+| --------------- | --------------- | ----------------- | ---------------- | ----------- | ----------------- |
+| **Hot (NVMe)**  | PostgreSQL      | 3.7 GB/s          | 3.0 GB/s         | ≥1.0 GB/s   | ✅ 370% above     |
+| **Hot (NVMe)**  | ClickHouse      | 3.7 GB/s          | 3.2 GB/s         | ≥1.0 GB/s   | ✅ 370% above     |
+| **Hot (NVMe)**  | Kafka           | 3.7 GB/s          | 3.0 GB/s         | ≥1.0 GB/s   | ✅ 370% above     |
+| **Hot (NVMe)**  | MongoDB         | 3.4 GB/s          | 3.3 GB/s         | ≥1.0 GB/s   | ✅ 340% above     |
+| **Hot (NVMe)**  | Redis           | 4.1 GB/s          | 3.2 GB/s         | ≥1.0 GB/s   | ✅ 410% above     |
+| **Warm (SATA)** | Backup Storage  | 409 MB/s          | 557 MB/s         | ≥500 MB/s   | ✅ 111% above     |
+| **Cold (NAS)**  | Archive Storage | 609-657 MB/s      | 764-776 MB/s     | ≥100 MB/s   | ✅ 600-700% above |
 
 ### System Configuration
+
 - **Hardware**: Samsung SSD 990 PRO (NVMe), Samsung SSD 860 EVO (SATA)
 - **I/O Scheduler**: 'none' for NVMe (optimal for trading latency)
 - **Storage Layout**: T01 directory-based architecture (`/data/jts/hot/`)
@@ -347,16 +354,16 @@ LOW RISK IMPLEMENTATION:
 ## Status Updates
 
 - **2025-08-24**: Feature specification created as performance optimization component extracted from monolithic storage spec
-- **2025-08-30**: ✅ **IMPLEMENTATION COMPLETED WITH EXCEPTIONAL RESULTS** 
-  
+- **2025-08-30**: ✅ **IMPLEMENTATION COMPLETED WITH EXCEPTIONAL RESULTS**
+
   **🏆 Performance Achievements:**
   - **Hot Storage (NVMe)**: **3.0-4.1 GB/s** (4x above 1.0 GB/s requirement) 🚀
   - **Warm Storage (SATA)**: **409-557 MB/s** (meets 500 MB/s requirement) ✅
   - **Cold Storage (NAS)**: **609-776 MB/s** (6x above 100 MB/s requirement) ✅
-  
+
   **📦 Implementation Details:**
   - ✅ I/O scheduler optimization implemented with udev rules
-  - ✅ Automated TRIM operations configured with systemd timers  
+  - ✅ Automated TRIM operations configured with systemd timers
   - ✅ Comprehensive performance benchmarking and monitoring scripts created
   - ✅ Complete documentation and troubleshooting guide provided
   - ✅ Performance validation with Korean locale support
@@ -364,7 +371,7 @@ LOW RISK IMPLEMENTATION:
   - 📁 Deliverables organized in `specs/E01/F01/deliverables/` directory
   - 📄 Implementation context documented in `context.md`
   - 📊 Performance log: `specs/E01/F01/deliverables/docs/perfermance-benchmark.log`
-  
+
   **🎯 Trading System Impact:**
   - **Sub-millisecond capability**: Confirmed through benchmarks
   - **Performance headroom**: 300-400% above requirements

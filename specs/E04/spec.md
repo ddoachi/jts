@@ -27,32 +27,31 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01
-- E02
-- E03
+  - E01
+  - E02
+  - E03
 blocks:
-- E05
-- E06
-- E09
+  - E05
+  - E06
+  - E09
 related:
-- E07
+  - E07
 branch: ''
 files:
-- apps/core/strategy-engine/
-- libs/shared/dsl/
-- libs/shared/indicators/
+  - apps/core/strategy-engine/
+  - libs/shared/dsl/
+  - libs/shared/indicators/
 
 # === METADATA ===
 tags:
-- strategy
-- dsl
-- algorithms
-- technical-indicators
-- trading-logic
+  - strategy
+  - dsl
+  - algorithms
+  - technical-indicators
+  - trading-logic
 effort: epic
 risk: medium
 ---
-
 
 # Trading Strategy Engine & DSL
 
@@ -76,6 +75,7 @@ Build a comprehensive trading strategy engine that executes algorithmic trading 
 ## Technical Approach
 
 ### Strategy Engine Architecture
+
 Implement a high-performance strategy execution engine that can process real-time market data, evaluate complex trading conditions, and generate actionable signals with minimal latency.
 
 ### Key Components

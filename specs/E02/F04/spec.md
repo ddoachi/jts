@@ -27,28 +27,27 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E02-F01
+  - F01
 blocks: []
 related:
-- E02-F05
-- E02-F09
+  - F05
+  - F09
 branch: ''
 files:
-- apps/brokers/creon/
-- deployment/creon-windows/
-- libs/shared/adapters/creon-adapter.ts
+  - apps/brokers/creon/
+  - deployment/creon-windows/
+  - libs/shared/adapters/creon-adapter.ts
 
 # === METADATA ===
 tags:
-- creon
-- windows
-- com
-- korean-market
-- fastapi
+  - creon
+  - windows
+  - com
+  - korean-market
+  - fastapi
 effort: large
 risk: high
 ---
-
 
 # Creon Windows COM Integration Service
 
@@ -163,6 +162,7 @@ Deploy a Python FastAPI service directly on a dedicated Windows PC that interfac
 ## Creon Specifications
 
 ### Platform Requirements
+
 - **OS**: Windows 10/11 Professional (bare metal)
 - **Hardware**: Dedicated PC with static IP
 - **Software**: Creon Plus API, Python 3.8+
@@ -170,12 +170,14 @@ Deploy a Python FastAPI service directly on a dedicated Windows PC that interfac
 - **Memory**: 8GB minimum, 16GB recommended
 
 ### Rate Limits
+
 - **Primary Limit**: 15 requests per 60 seconds
 - **Safety Buffer**: Maintain 20% reserve (12 req/60s)
 - **Queue Depth**: Maximum 100 pending requests
 - **Priority Levels**: Critical, High, Normal, Low
 
 ### API Categories
+
 - **Trading**: Order management, executions
 - **Account**: Balance, positions, history
 - **Market Data**: Quotes, charts, orderbook
@@ -184,6 +186,7 @@ Deploy a Python FastAPI service directly on a dedicated Windows PC that interfac
 ## Trading-Specific Requirements
 
 ### Order Management
+
 - Support Korean order types compatible with Creon
 - Handle Creon-specific order codes and statuses
 - Map Creon errors to unified error system
@@ -191,6 +194,7 @@ Deploy a Python FastAPI service directly on a dedicated Windows PC that interfac
 - Track partial fills accurately
 
 ### Session Reliability
+
 - Automatic login retry on failure
 - Session timeout detection
 - Market hours awareness
@@ -198,6 +202,7 @@ Deploy a Python FastAPI service directly on a dedicated Windows PC that interfac
 - Maintenance window handling
 
 ### Performance Optimization
+
 - Request batching where possible
 - Response caching for static data
 - Connection pooling for COM objects
@@ -207,6 +212,7 @@ Deploy a Python FastAPI service directly on a dedicated Windows PC that interfac
 ## Windows Deployment
 
 ### Hardware Setup
+
 ```
 - Dedicated Windows PC (no virtualization)
 - Static IP address configuration
@@ -216,6 +222,7 @@ Deploy a Python FastAPI service directly on a dedicated Windows PC that interfac
 ```
 
 ### Software Configuration
+
 ```
 - Windows 10/11 Professional
 - Creon Plus API latest version
@@ -225,6 +232,7 @@ Deploy a Python FastAPI service directly on a dedicated Windows PC that interfac
 ```
 
 ### Network Security
+
 ```
 - Firewall rules for API access only
 - VPN connection to main system
@@ -275,18 +283,22 @@ When implementing this feature:
 ## Risk Mitigation
 
 ### Single Point of Failure
+
 - **Risk**: Windows PC failure disrupts all Creon trading
 - **Mitigation**: Hot standby PC with rapid switchover capability
 
 ### Rate Limit Violations
+
 - **Risk**: Exceeding 15 req/60s causes API suspension
 - **Mitigation**: Conservative limit (12 req/60s), priority queuing
 
 ### Memory Leaks
+
 - **Risk**: COM objects can leak memory over time
 - **Mitigation**: Daily service restart, memory monitoring
 
 ### Network Security
+
 - **Risk**: Exposed Windows PC vulnerable to attacks
 - **Mitigation**: Strict firewall rules, VPN-only access
 

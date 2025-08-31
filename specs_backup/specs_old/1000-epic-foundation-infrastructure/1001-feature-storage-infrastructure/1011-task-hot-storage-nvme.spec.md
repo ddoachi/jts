@@ -4,57 +4,57 @@
 # ============================================================================
 
 # === IDENTIFICATION ===
-id: "1011" # Numeric ID for stable reference
-title: "Hot Storage (NVMe) Directory Setup"
-type: "task" # prd | epic | feature | task | subtask | bug | spike
+id: '1011' # Numeric ID for stable reference
+title: 'Hot Storage (NVMe) Directory Setup'
+type: 'task' # prd | epic | feature | task | subtask | bug | spike
 
 # === HIERARCHY ===
-parent: "1001" # Parent spec ID
+parent: '1001' # Parent spec ID
 children: [] # Child spec IDs (if any)
-epic: "1000" # Root epic ID for this work
-domain: "infrastructure" # Business domain
+epic: '1000' # Root epic ID for this work
+domain: 'infrastructure' # Business domain
 
 # === WORKFLOW ===
-status: "done" # draft | reviewing | approved | in-progress | testing | done
-priority: "high" # high | medium | low
-assignee: "" # Who's working on this
-reviewer: "" # Who should review (optional)
+status: 'done' # draft | reviewing | approved | in-progress | testing | done
+priority: 'high' # high | medium | low
+assignee: '' # Who's working on this
+reviewer: '' # Who should review (optional)
 
 # === TRACKING ===
-created: "2025-08-24" # YYYY-MM-DD
-updated: "2025-08-24" # YYYY-MM-DD
-due_date: "" # YYYY-MM-DD (optional)
+created: '2025-08-24' # YYYY-MM-DD
+updated: '2025-08-24' # YYYY-MM-DD
+due_date: '' # YYYY-MM-DD (optional)
 estimated_hours: 2 # Time estimate in hours
 actual_hours: 3 # Time spent so far
 
 # === DEPENDENCIES ===
 dependencies: [] # Must be done before this (spec IDs)
-blocks: ["1012", "1015"] # This blocks these specs (spec IDs)
-related: ["1013", "1014"] # Related but not blocking (spec IDs)
+blocks: ['1012', '1015'] # This blocks these specs (spec IDs)
+related: ['1013', '1014'] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
-branch: "feature/1011-hot-storage-nvme" # Git branch name
-worktree: "" # Worktree path (optional)
+branch: 'feature/1011-hot-storage-nvme' # Git branch name
+worktree: '' # Worktree path (optional)
 files: [
-    "scripts/setup-hot-directories.sh",
-    "scripts/validate-directories.sh", 
-    "/usr/local/bin/jts-storage-monitor.sh",
-    "docs/HOT_STORAGE_SETUP.md",
+    'scripts/setup-hot-directories.sh',
+    'scripts/validate-directories.sh',
+    '/usr/local/bin/jts-storage-monitor.sh',
+    'docs/HOT_STORAGE_SETUP.md',
   ] # Key files to modify
 
 # === METADATA ===
 tags: [
-    "storage",
-    "nvme",
-    "directories",
-    "hot-storage",
-    "ssd",
-    "permissions",
-    "organization",
-    "performance",
+    'storage',
+    'nvme',
+    'directories',
+    'hot-storage',
+    'ssd',
+    'permissions',
+    'organization',
+    'performance',
   ] # Searchable tags
-effort: "small" # small | medium | large | epic
-risk: "low" # low | medium | high
+effort: 'small' # small | medium | large | epic
+risk: 'low' # low | medium | high
 
 # ============================================================================
 ---
@@ -98,6 +98,7 @@ Design a simple, flexible directory organization that leverages the existing fil
    - Backup staging area organization
 
 2. **Hot Storage Directory Layout**
+
    ```
    /data/jts/hot/ (4TB NVMe SSD)
    ├── postgresql/          # PostgreSQL data (~800GB planned)
@@ -124,35 +125,38 @@ Design a simple, flexible directory organization that leverages the existing fil
 ### Implementation Steps
 
 1. **Pre-Implementation Verification**
+
    ```bash
    # Verify available disk space on NVMe mount
    df -h /
-   
+
    # Check current directory structure
    ls -la /data/ || echo "/data directory doesn't exist yet"
-   
+
    # Verify system users exist or need creation
    id postgres clickhouse kafka mongodb redis || echo "Some service users need creation"
    ```
 
 2. **Create Service Users** (if they don't exist)
+
    ```bash
    # Create database service users
    useradd -r -s /bin/false -d /data/jts/hot/postgresql postgres 2>/dev/null || echo "postgres user exists"
-   useradd -r -s /bin/false -d /data/jts/hot/clickhouse clickhouse 2>/dev/null || echo "clickhouse user exists"  
+   useradd -r -s /bin/false -d /data/jts/hot/clickhouse clickhouse 2>/dev/null || echo "clickhouse user exists"
    useradd -r -s /bin/false -d /data/jts/hot/kafka kafka 2>/dev/null || echo "kafka user exists"
    useradd -r -s /bin/false -d /data/jts/hot/mongodb mongodb 2>/dev/null || echo "mongodb user exists"
    useradd -r -s /bin/false -d /data/jts/hot/redis redis 2>/dev/null || echo "redis user exists"
-   
+
    # Verify users
    id postgres clickhouse kafka mongodb redis
    ```
 
 3. **Directory Structure Creation**
+
    ```bash
    # Create base directory structure
    sudo mkdir -p /data/jts/hot/{postgresql,clickhouse,kafka,mongodb,redis,docker,backup}
-   
+
    # Create subdirectories for organization
    sudo mkdir -p /data/jts/hot/postgresql/{data,logs,config}
    sudo mkdir -p /data/jts/hot/clickhouse/{data,logs,tmp}
@@ -161,12 +165,13 @@ Design a simple, flexible directory organization that leverages the existing fil
    sudo mkdir -p /data/jts/hot/redis/{data,logs}
    sudo mkdir -p /data/jts/hot/docker/{volumes,containers,tmp}
    sudo mkdir -p /data/jts/hot/backup/{daily,snapshots,staging}
-   
+
    # Verify structure
    tree /data/jts/hot/ || ls -la /data/jts/hot/
    ```
 
 4. **Permission Configuration**
+
    ```bash
    # Set proper ownership for each service
    sudo chown -R postgres:postgres /data/jts/hot/postgresql/
@@ -176,7 +181,7 @@ Design a simple, flexible directory organization that leverages the existing fil
    sudo chown -R redis:redis /data/jts/hot/redis/
    sudo chown -R root:docker /data/jts/hot/docker/
    sudo chown -R root:root /data/jts/hot/backup/
-   
+
    # Set appropriate permissions
    sudo chmod 750 /data/jts/hot/{postgresql,clickhouse,kafka,mongodb,redis}/
    sudo chmod 755 /data/jts/hot/{docker,backup}/
@@ -184,6 +189,7 @@ Design a simple, flexible directory organization that leverages the existing fil
    ```
 
 5. **Directory Space Monitoring Setup**
+
    ```bash
    # Create monitoring script
    cat > /usr/local/bin/jts-storage-monitor.sh << 'EOF'
@@ -195,14 +201,15 @@ Design a simple, flexible directory organization that leverages the existing fil
    echo "Available space on NVMe:"
    df -h / | tail -1
    EOF
-   
+
    chmod +x /usr/local/bin/jts-storage-monitor.sh
-   
+
    # Test the monitoring script
    /usr/local/bin/jts-storage-monitor.sh
    ```
 
 6. **Validation and Testing**
+
    ```bash
    # Test write access for each service
    sudo -u postgres touch /data/jts/hot/postgresql/test_write
@@ -210,11 +217,11 @@ Design a simple, flexible directory organization that leverages the existing fil
    sudo -u kafka touch /data/jts/hot/kafka/test_write
    sudo -u mongodb touch /data/jts/hot/mongodb/test_write
    sudo -u redis touch /data/jts/hot/redis/test_write
-   
+
    # Verify directory structure and permissions
    ls -la /data/jts/hot/
    ls -la /data/jts/hot/*/
-   
+
    # Clean up test files
    sudo rm -f /data/jts/hot/*/test_write
    ```
@@ -222,6 +229,7 @@ Design a simple, flexible directory organization that leverages the existing fil
 ## Dependencies
 
 This feature has no dependencies and serves as the foundation for:
+
 - **Feature 1012**: Database Mount Integration (requires completed LVM setup)
 - **Feature 1015**: Storage Performance Optimization (requires mounted filesystems)
 
@@ -279,12 +287,14 @@ ERROR HANDLING:
 ## Notes
 
 ### Critical Safety Considerations
+
 - **FOUNDATION DEPENDENCY**: This feature blocks all other storage infrastructure work
 - **DATA LOSS RISK**: High-risk disk partitioning operations require extensive backups
 - **PERFORMANCE CRITICAL**: Trading system performance directly depends on this implementation
 - **NO ROLLBACK**: Once LVM is created, rollback requires complete data restoration
 
 ### Technical Considerations
+
 - **SSD Longevity**: Proper TRIM and noatime configurations critical for drive lifespan
 - **Trading Performance**: Sub-millisecond latency requirements demand optimal configuration
 - **Scalability**: LVM provides flexibility for future volume expansion
@@ -295,7 +305,7 @@ ERROR HANDLING:
 - **2025-08-24**: Feature specification created as foundation component extracted from monolithic storage spec
 - **2025-08-24**: Implementation completed with comprehensive tooling and documentation
   - Created automated setup script (`scripts/setup-hot-directories.sh`)
-  - Built validation script with multiple output modes (`scripts/validate-directories.sh`)  
+  - Built validation script with multiple output modes (`scripts/validate-directories.sh`)
   - Developed monitoring script with JSON support (`scripts/jts-storage-monitor.sh`)
   - Authored complete setup guide (`docs/HOT_STORAGE_SETUP.md`)
   - Established directory-based architecture with proper service isolation

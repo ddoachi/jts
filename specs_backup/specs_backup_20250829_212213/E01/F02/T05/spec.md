@@ -27,10 +27,10 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
-- T02
+  - T01
+  - T02
 blocks:
-- T06
+  - T06
 related: []
 
 # === IMPLEMENTATION ===
@@ -38,23 +38,22 @@ pull_requests: []
 commits: []
 context_file: 1025.context.md
 files:
-- .eslintrc.js
-- .prettierrc
-- .pre-commit-config.yaml
-- husky/
-- lint-staged.config.js
+  - .eslintrc.js
+  - .prettierrc
+  - .pre-commit-config.yaml
+  - husky/
+  - lint-staged.config.js
 
 # === METADATA ===
 tags:
-- eslint
-- prettier
-- husky
-- pre-commit
-- code-quality
+  - eslint
+  - prettier
+  - husky
+  - pre-commit
+  - code-quality
 effort: small
 risk: low
 unique_id: 82b8a343 # Unique identifier (never changes)
-
 ---
 
 # Code Quality Tools and Git Hooks
@@ -147,6 +146,7 @@ yarn husky install
 ```
 
 **Pre-commit Hook** (`.husky/pre-commit`):
+
 ```bash
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
@@ -155,6 +155,7 @@ yarn lint-staged
 ```
 
 **Pre-push Hook** (`.husky/pre-push`):
+
 ```bash
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
@@ -163,6 +164,7 @@ yarn test:affected
 ```
 
 **Commit Message Hook** (`.husky/commit-msg`):
+
 ```bash
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
@@ -174,21 +176,10 @@ yarn commitlint --edit $1
 
 ```javascript
 module.exports = {
-  '*.{ts,tsx}': [
-    'eslint --fix',
-    'prettier --write',
-    'jest --bail --findRelatedTests',
-  ],
-  '*.{js,jsx}': [
-    'eslint --fix',
-    'prettier --write',
-  ],
-  '*.{json,md,yml,yaml}': [
-    'prettier --write',
-  ],
-  '*.sql': [
-    'prettier --write --parser sql',
-  ],
+  '*.{ts,tsx}': ['eslint --fix', 'prettier --write', 'jest --bail --findRelatedTests'],
+  '*.{js,jsx}': ['eslint --fix', 'prettier --write'],
+  '*.{json,md,yml,yaml}': ['prettier --write'],
+  '*.sql': ['prettier --write --parser sql'],
 };
 ```
 
@@ -202,17 +193,17 @@ module.exports = {
       2,
       'always',
       [
-        'feat',     // New feature
-        'fix',      // Bug fix
-        'docs',     // Documentation
-        'style',    // Formatting
+        'feat', // New feature
+        'fix', // Bug fix
+        'docs', // Documentation
+        'style', // Formatting
         'refactor', // Code change that neither fixes a bug nor adds a feature
-        'perf',     // Performance improvement
-        'test',     // Adding tests
-        'chore',    // Maintenance
-        'revert',   // Revert previous commit
-        'build',    // Build system changes
-        'ci',       // CI configuration
+        'perf', // Performance improvement
+        'test', // Adding tests
+        'chore', // Maintenance
+        'revert', // Revert previous commit
+        'build', // Build system changes
+        'ci', // CI configuration
       ],
     ],
     'subject-case': [2, 'always', 'sentence-case'],

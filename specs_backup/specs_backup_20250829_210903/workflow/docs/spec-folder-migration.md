@@ -3,18 +3,22 @@
 ## Current Structure Problems
 
 ### 1. Redundant Naming
+
 ```
 specs/1001-feature-storage-infrastructure/
 └── 1001-feature-storage-infrastructure.spec.md  ← Repetitive!
 ```
 
 ### 2. Long Paths
+
 ```
 specs/1000-epic-foundation-infrastructure/1001-feature-storage-infrastructure/1014-task-cold-storage-nas.spec.md
 ```
+
 Total: 115 characters!
 
 ### 3. Unclear Hierarchy
+
 - Mixing epic folders with feature files
 - Sub-specs buried in feature folders
 - No clear separation of deliverables
@@ -22,6 +26,7 @@ Total: 115 characters!
 ## Proposed New Structure
 
 ### Design Principles
+
 1. **Shorter paths** - Use IDs as folder names
 2. **Clear hierarchy** - Epic → Feature → Task
 3. **Co-located assets** - Keep deliverables with specs
@@ -76,22 +81,24 @@ specs/
 
 ### Path Comparison
 
-| Content | Old Path | New Path | Savings |
-|---------|----------|----------|---------|
-| Epic spec | `1000-epic-foundation-infrastructure/1000-epic-foundation-infrastructure.spec.md` | `1000/epic.md` | 75 chars |
+| Content      | Old Path                                                                                                              | New Path            | Savings  |
+| ------------ | --------------------------------------------------------------------------------------------------------------------- | ------------------- | -------- |
+| Epic spec    | `1000-epic-foundation-infrastructure/1000-epic-foundation-infrastructure.spec.md`                                     | `1000/epic.md`      | 75 chars |
 | Feature spec | `1000-epic-foundation-infrastructure/1001-feature-storage-infrastructure/1001-feature-storage-infrastructure.spec.md` | `1000/1001/spec.md` | 98 chars |
-| Task spec | `1000-epic-foundation-infrastructure/1001-feature-storage-infrastructure/1014-task-cold-storage-nas.spec.md` | `1000/1001/1014.md` | 91 chars |
+| Task spec    | `1000-epic-foundation-infrastructure/1001-feature-storage-infrastructure/1014-task-cold-storage-nas.spec.md`          | `1000/1001/1014.md` | 91 chars |
 
 ## File Naming Conventions
 
 ### Standard Files
+
 - `epic.md` - Epic-level specifications
-- `spec.md` - Feature-level specifications  
+- `spec.md` - Feature-level specifications
 - `context.md` - Implementation context/journal
 - `README.md` - Navigation and overview
 - `{id}.md` - Task-level specifications (e.g., `1014.md`)
 
 ### Benefits
+
 - Shorter, cleaner paths
 - No redundant information
 - Consistent naming pattern
@@ -116,11 +123,11 @@ for feature in specs/1000-epic-foundation-infrastructure/100*/; do
   if [[ -d "$feature" ]]; then
     feature_id=$(basename "$feature" | cut -d'-' -f1)
     mkdir -p "specs_new/1000/$feature_id"
-    
+
     # Move feature spec
     mv "$feature/${feature_id}-*.spec.md" \
        "specs_new/1000/$feature_id/spec.md"
-    
+
     # Move task specs
     for task in "$feature"/10*.spec.md; do
       if [[ -f "$task" ]]; then
@@ -143,12 +150,14 @@ echo "Migration complete!"
 ## Link Update Examples
 
 ### Before
+
 ```markdown
 [[../1001-feature-storage-infrastructure/1001-feature-storage-infrastructure.spec.md|Storage Infrastructure]]
 [[1014-task-cold-storage-nas.spec.md|Cold Storage Task]]
 ```
 
-### After  
+### After
+
 ```markdown
 [[../1001/spec|Storage Infrastructure]]
 [[1014|Cold Storage Task]]
@@ -164,6 +173,7 @@ Create `specs/index.md` for navigation:
 ## Epic Overview
 
 ### [1000 - Foundation Infrastructure](1000/epic)
+
 - [1001 - Storage Infrastructure](1000/1001/spec)
   - [1011 - Hot Storage NVMe](1000/1001/1011)
   - [1012 - Database Mount](1000/1001/1012)
@@ -173,6 +183,7 @@ Create `specs/index.md` for navigation:
 - [1003 - Monorepo Structure](1000/1003/spec)
 
 ### [2000 - Broker Integration](2000/epic)
+
 - [2100 - Unified Broker Interface](2000/2100)
 - [2101 - KIS REST API](2000/2101)
 - [2102 - KIS WebSocket](2000/2102)
@@ -180,16 +191,20 @@ Create `specs/index.md` for navigation:
 ## Implementation Status
 
 ### In Progress
+
 - [[1000/1001/context|Storage Infrastructure]] - 71% complete
 - [[2000/context|Broker Integration]] - Planning phase
 
 ### Completed
+
 - [[1000/1001/1014.context|Cold Storage NAS]] ✅
 
 ### Blocked
+
 - None
 
 ## Recent Updates
+
 - 2025-08-26: Cold Storage NAS implementation completed
 - 2025-08-25: Broker Integration epic split into features
 - 2025-08-24: Foundation Infrastructure restructured
@@ -198,29 +213,35 @@ Create `specs/index.md` for navigation:
 ## Advantages of New Structure
 
 ### 1. Shorter Paths
+
 - Average path length reduced by 60%
 - Easier to type and remember
 - Better for command-line usage
 
 ### 2. Clear Hierarchy
+
 ```
 Epic (1000/) → Feature (1001/) → Task (1014.md)
 ```
+
 - Instantly understand relationships
 - Natural navigation pattern
 - Consistent at all levels
 
 ### 3. Co-located Deliverables
+
 - Scripts, docs, configs in `deliverables/`
 - No more searching across project
 - Clear ownership of artifacts
 
 ### 4. Simplified Naming
+
 - No redundant prefixes
 - Standard file names (`spec.md`, `context.md`)
 - IDs only where needed
 
 ### 5. Better Organization
+
 - Related files grouped together
 - Context files adjacent to specs
 - Deliverables with their source
@@ -228,21 +249,25 @@ Epic (1000/) → Feature (1001/) → Task (1014.md)
 ## Migration Timeline
 
 ### Phase 1: Setup (Day 1)
+
 1. Create migration script
 2. Test on small subset
 3. Backup current structure
 
 ### Phase 2: Migration (Day 2)
+
 1. Run migration script
 2. Update all internal links
 3. Verify file integrity
 
 ### Phase 3: Validation (Day 3)
+
 1. Test all links work
 2. Update documentation
 3. Update commands/tools
 
 ### Phase 4: Cleanup (Day 4)
+
 1. Archive old structure
 2. Update team documentation
 3. Communicate changes
@@ -250,6 +275,7 @@ Epic (1000/) → Feature (1001/) → Task (1014.md)
 ## Rollback Plan
 
 If issues arise:
+
 ```bash
 # Restore from backup
 mv specs specs_failed
@@ -262,6 +288,7 @@ git checkout -- specs/
 ## Summary
 
 The new structure provides:
+
 - **60% shorter paths** on average
 - **Clearer hierarchy** with consistent naming
 - **Co-located deliverables** for better organization

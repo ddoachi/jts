@@ -27,26 +27,25 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01-F04-T01
+  - T01
 blocks: []
 related: []
 pull_requests: []
 commits: []
 context_file: 1043.context.md
 files:
-- .github/workflows/security.yml
-- .github/workflows/dependency-check.yml
+  - .github/workflows/security.yml
+  - .github/workflows/dependency-check.yml
 
 # === METADATA ===
 tags:
-- security
-- sast
-- dependencies
-- scanning
+  - security
+  - sast
+  - dependencies
+  - scanning
 effort: small
 risk: medium
 ---
-
 
 # Security Scanning Workflows
 

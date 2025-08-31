@@ -15,44 +15,49 @@ epic: E01
 domain: infrastructure
 
 # === WORKFLOW ===
-status: draft
+status: completed
 priority: medium
 
 # === TRACKING ===
 created: '2025-08-27'
-updated: '2025-08-27'
+updated: '2025-08-31'
 due_date: ''
 estimated_hours: 2
-actual_hours: 0
+actual_hours: 1
 
 # === DEPENDENCIES ===
 dependencies:
-- E01-F02-T01
-- E01-F02-T02
+  - T01
+  - T02
 blocks:
-- E01-F02-T06
+  - T06
 related: []
 pull_requests: []
-commits: []
-context_file: 1025.context.md
+commits:
+  - text: 'feat(E01-F02-T05): configure comprehensive code quality tools'
+    hash: '8f1521e'
+context_file: context.md
 files:
-- .eslintrc.js
-- .prettierrc
-- .pre-commit-config.yaml
-- husky/
-- lint-staged.config.js
+  - .eslintrc.js
+  - .prettierrc
+  - .prettierignore
+  - .pre-commit-config.yaml
+  - .husky/pre-commit
+  - .husky/pre-push
+  - .husky/commit-msg
+  - lint-staged.config.js
+  - .commitlintrc.js
 
 # === METADATA ===
 tags:
-- eslint
-- prettier
-- husky
-- pre-commit
-- code-quality
+  - eslint
+  - prettier
+  - husky
+  - pre-commit
+  - code-quality
 effort: small
 risk: low
 ---
-
 
 # Code Quality Tools and Git Hooks
 
@@ -62,14 +67,14 @@ Set up comprehensive code quality tooling including ESLint, Prettier, Husky, and
 
 ## Acceptance Criteria
 
-- [ ] ESLint configured for TypeScript/NestJS
-- [ ] Prettier configured with team standards
-- [ ] Husky pre-commit hooks installed
-- [ ] Lint-staged for selective file checking
-- [ ] Pre-commit configuration for Python hooks
-- [ ] Type checking in pre-commit
-- [ ] Test execution on pre-push
-- [ ] Commit message validation
+- [x] ESLint configured for TypeScript/NestJS
+- [x] Prettier configured with team standards
+- [x] Husky pre-commit hooks installed
+- [x] Lint-staged for selective file checking
+- [x] Pre-commit configuration for Python hooks
+- [x] Type checking in pre-commit
+- [x] Test execution on pre-push
+- [x] Commit message validation
 
 ## Technical Approach
 
@@ -144,6 +149,7 @@ yarn husky install
 ```
 
 **Pre-commit Hook** (`.husky/pre-commit`):
+
 ```bash
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
@@ -152,6 +158,7 @@ yarn lint-staged
 ```
 
 **Pre-push Hook** (`.husky/pre-push`):
+
 ```bash
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
@@ -160,6 +167,7 @@ yarn test:affected
 ```
 
 **Commit Message Hook** (`.husky/commit-msg`):
+
 ```bash
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
@@ -171,21 +179,10 @@ yarn commitlint --edit $1
 
 ```javascript
 module.exports = {
-  '*.{ts,tsx}': [
-    'eslint --fix',
-    'prettier --write',
-    'jest --bail --findRelatedTests',
-  ],
-  '*.{js,jsx}': [
-    'eslint --fix',
-    'prettier --write',
-  ],
-  '*.{json,md,yml,yaml}': [
-    'prettier --write',
-  ],
-  '*.sql': [
-    'prettier --write --parser sql',
-  ],
+  '*.{ts,tsx}': ['eslint --fix', 'prettier --write', 'jest --bail --findRelatedTests'],
+  '*.{js,jsx}': ['eslint --fix', 'prettier --write'],
+  '*.{json,md,yml,yaml}': ['prettier --write'],
+  '*.sql': ['prettier --write --parser sql'],
 };
 ```
 
@@ -199,17 +196,17 @@ module.exports = {
       2,
       'always',
       [
-        'feat',     // New feature
-        'fix',      // Bug fix
-        'docs',     // Documentation
-        'style',    // Formatting
+        'feat', // New feature
+        'fix', // Bug fix
+        'docs', // Documentation
+        'style', // Formatting
         'refactor', // Code change that neither fixes a bug nor adds a feature
-        'perf',     // Performance improvement
-        'test',     // Adding tests
-        'chore',    // Maintenance
-        'revert',   // Revert previous commit
-        'build',    // Build system changes
-        'ci',       // CI configuration
+        'perf', // Performance improvement
+        'test', // Adding tests
+        'chore', // Maintenance
+        'revert', // Revert previous commit
+        'build', // Build system changes
+        'ci', // CI configuration
       ],
     ],
     'subject-case': [2, 'always', 'sentence-case'],

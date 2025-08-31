@@ -27,33 +27,32 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01
-- E02
-- E03
-- E04
+  - E01
+  - E02
+  - E03
+  - E04
 blocks:
-- E06
+  - E06
 related:
-- E07
-- E08
+  - E07
+  - E08
 branch: ''
 files:
-- apps/core/risk-management/
-- libs/shared/risk-models/
-- libs/shared/position-sizing/
+  - apps/core/risk-management/
+  - libs/shared/risk-models/
+  - libs/shared/position-sizing/
 
 # === METADATA ===
 tags:
-- risk
-- position-sizing
-- portfolio
-- limits
-- kelly-criterion
-- var
+  - risk
+  - position-sizing
+  - portfolio
+  - limits
+  - kelly-criterion
+  - var
 effort: epic
 risk: high
 ---
-
 
 # Risk Management System
 
@@ -77,6 +76,7 @@ Implement a comprehensive risk management system that protects capital through i
 ## Technical Approach
 
 ### Risk Management Architecture
+
 Create a multi-layered risk management system that operates in real-time, evaluating risk at multiple levels from individual positions to overall portfolio exposure, with the ability to halt trading instantly when limits are breached.
 
 ### Key Components

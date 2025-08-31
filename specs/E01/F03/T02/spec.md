@@ -30,32 +30,31 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01-F03-T01
+  - T01
 blocks:
-- E01-F03-T03
-- E01-F03-T04
-- E01-F03-T05
+  - T03
+  - T04
+  - T05
 related: []
 pull_requests: []
 commits: []
 context_file: 1003.context.md
 worktree: ''
 files:
-- tsconfig.base.json
-- libs/**/project.json
-- libs/**/src/index.ts
+  - tsconfig.base.json
+  - libs/**/project.json
+  - libs/**/src/index.ts
 
 # === METADATA ===
 tags:
-- libraries
-- shared
-- domain
-- infrastructure
-- ddd
+  - libraries
+  - shared
+  - domain
+  - infrastructure
+  - ddd
 effort: medium
 risk: low
 ---
-
 
 # Task T02: Configure Shared Libraries Infrastructure
 

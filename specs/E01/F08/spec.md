@@ -27,40 +27,39 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01-F03
-- E01-F05
+  - F03
+  - F05
 blocks:
-- E02
-- E03
-- E04
-- E05
-- E06
+  - E02
+  - E03
+  - E04
+  - E05
+  - E06
 related:
-- E01-F06
-- E01-F07
+  - F06
+  - F07
 branch: feature/1008-monitoring-logging
 files:
-- infrastructure/monitoring/
-- docker-compose.monitoring.yml
-- libs/shared/logging/
-- libs/shared/metrics/
-- infrastructure/grafana/
-- infrastructure/prometheus/
+  - infrastructure/monitoring/
+  - docker-compose.monitoring.yml
+  - libs/shared/logging/
+  - libs/shared/metrics/
+  - infrastructure/grafana/
+  - infrastructure/prometheus/
 
 # === METADATA ===
 tags:
-- monitoring
-- logging
-- elk-stack
-- prometheus
-- grafana
-- observability
-- alerts
-- tracing
+  - monitoring
+  - logging
+  - elk-stack
+  - prometheus
+  - grafana
+  - observability
+  - alerts
+  - tracing
 effort: large
 risk: medium
 ---
-
 
 # Monitoring and Logging Foundation
 
@@ -88,6 +87,7 @@ Establish a comprehensive monitoring, logging, and observability infrastructure 
 Implement a multi-layered observability stack designed specifically for high-frequency trading systems with strict latency and reliability requirements:
 
 **Observability Stack Components:**
+
 - **Logging**: ELK stack with structured JSON logging and correlation tracking
 - **Metrics**: Prometheus with custom trading metrics and business KPIs
 - **Tracing**: Jaeger for distributed request tracing across microservices
@@ -97,9 +97,11 @@ Implement a multi-layered observability stack designed specifically for high-fre
 ### Key Components
 
 #### 1. ELK Stack - Centralized Logging
+
 **Purpose**: Centralized log aggregation, processing, and analysis for all system components
 **Storage Allocation**: Shared with database infrastructure, leveraging ClickHouse for long-term log storage
 **Key Features**:
+
 - Structured JSON logging with correlation IDs for request tracing
 - Log parsing and enrichment with trading context (strategy, symbol, exchange)
 - Real-time log streaming and search capabilities
@@ -107,6 +109,7 @@ Implement a multi-layered observability stack designed specifically for high-fre
 - Log-based alerting for critical system events
 
 **ELK Configuration Strategy**:
+
 ```yaml
 # Elasticsearch cluster configuration
 elasticsearch:
@@ -132,9 +135,11 @@ logstash:
 ```
 
 #### 2. Prometheus Metrics Collection
+
 **Purpose**: High-performance metrics collection and storage for system and business metrics
 **Storage Strategy**: Integrated with existing infrastructure, short-term storage in Prometheus, long-term in ClickHouse
 **Key Features**:
+
 - Custom trading metrics (order latency, execution success rates, P&L)
 - System metrics (CPU, memory, disk I/O, network throughput)
 - Application metrics (request rates, error rates, response times)
@@ -142,6 +147,7 @@ logstash:
 - Real-time metric streaming to external systems
 
 **Prometheus Configuration Strategy**:
+
 ```yaml
 # Prometheus server configuration
 global:
@@ -158,22 +164,24 @@ scrape_configs:
       - targets: ['api-gateway:E03']
     scrape_interval: 5s
     metrics_path: '/metrics'
-    
+
   - job_name: 'jts-strategy-engine'
     static_configs:
       - targets: ['strategy-engine:3001']
-    scrape_interval: 2s  # High frequency for trading metrics
-    
+    scrape_interval: 2s # High frequency for trading metrics
+
   - job_name: 'jts-order-execution'
     static_configs:
       - targets: ['order-execution:3003']
-    scrape_interval: 1s  # Critical path monitoring
+    scrape_interval: 1s # Critical path monitoring
 ```
 
 #### 3. Grafana Visualization Dashboards
+
 **Purpose**: Real-time visualization and monitoring dashboards for trading operations
 **Integration**: Connected to Prometheus, Elasticsearch, and ClickHouse data sources
 **Key Features**:
+
 - Real-time trading dashboard with P&L, positions, and order flow
 - System health dashboard with infrastructure metrics
 - Strategy performance dashboard with backtesting comparisons
@@ -181,6 +189,7 @@ scrape_configs:
 - Alerting dashboard with current alerts and escalation status
 
 **Dashboard Configuration Strategy**:
+
 ```json
 {
   "dashboard": {
@@ -196,8 +205,8 @@ scrape_configs:
           }
         ],
         "thresholds": [
-          {"value": 0.1, "color": "yellow"},
-          {"value": 0.5, "color": "red"}
+          { "value": 0.1, "color": "yellow" },
+          { "value": 0.5, "color": "red" }
         ]
       }
     ]
@@ -206,9 +215,11 @@ scrape_configs:
 ```
 
 #### 4. Jaeger Distributed Tracing
+
 **Purpose**: End-to-end request tracing across microservices and external integrations
 **Storage**: Elasticsearch backend for trace storage and analysis
 **Key Features**:
+
 - Order lifecycle tracing from submission to execution
 - Strategy execution tracing across all components
 - Broker API interaction tracing with latency analysis
@@ -216,6 +227,7 @@ scrape_configs:
 - Performance bottleneck identification
 
 **Jaeger Configuration Strategy**:
+
 ```yaml
 # Jaeger configuration
 jaeger:
@@ -237,6 +249,7 @@ jaeger:
 #### Phase 1: ELK Stack Deployment (Days 1-4)
 
 1. **Elasticsearch Cluster Setup**
+
 ```yaml
 # docker-compose.monitoring.yml
 version: '3.8'
@@ -247,8 +260,8 @@ services:
     container_name: jts-elasticsearch
     restart: unless-stopped
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - '9200:9200'
+      - '9300:9300'
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
       - ./infrastructure/monitoring/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
@@ -258,7 +271,7 @@ services:
       - node.name=jts-es-node-1
       - discovery.type=single-node
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+      - 'ES_JAVA_OPTS=-Xms4g -Xmx4g'
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - xpack.security.enabled=true
       - xpack.security.authc.api_key.enabled=true
@@ -270,7 +283,11 @@ services:
         soft: 65536
         hard: 65536
     healthcheck:
-      test: ["CMD-SHELL", "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"\\(green\\|yellow\\)\"'"]
+      test:
+        [
+          'CMD-SHELL',
+          "curl -s http://localhost:9200/_cluster/health | grep -q '\"status\":\"\\(green\\|yellow\\)\"'",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -282,8 +299,8 @@ services:
     container_name: jts-logstash
     restart: unless-stopped
     ports:
-      - "5044:5044"
-      - "9600:9600"
+      - '5044:5044'
+      - '9600:9600'
     volumes:
       - ./infrastructure/monitoring/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
       - ./infrastructure/monitoring/logstash/pipeline:/usr/share/logstash/pipeline
@@ -294,7 +311,7 @@ services:
       elasticsearch:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9600/_node/stats"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:9600/_node/stats']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -306,7 +323,7 @@ services:
     container_name: jts-kibana
     restart: unless-stopped
     ports:
-      - "5601:5601"
+      - '5601:5601'
     volumes:
       - ./infrastructure/monitoring/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
     environment:
@@ -318,7 +335,7 @@ services:
       elasticsearch:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 200 OK'"]
+      test: ['CMD-SHELL', "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 200 OK'"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -327,19 +344,20 @@ services:
 ```
 
 2. **Logstash Pipeline Configuration**
+
 ```ruby
 # infrastructure/monitoring/logstash/pipeline/trading-logs.conf
 input {
   beats {
     port => 5044
   }
-  
+
   # Direct log input from applications
   tcp {
     port => E05
     codec => json_lines
   }
-  
+
   # Redis input for high-frequency logs
   redis {
     host => "redis"
@@ -358,23 +376,23 @@ filter {
       add_field => { "timestamp" => "%{@timestamp}" }
     }
   }
-  
+
   # Parse trading-specific fields
   if [service] == "order-execution" {
     grok {
-      match => { 
+      match => {
         "message" => "%{WORD:action} order %{WORD:order_id} for %{WORD:symbol} at %{NUMBER:price} quantity %{NUMBER:quantity}"
       }
     }
-    
+
     mutate {
-      convert => { 
+      convert => {
         "price" => "float"
         "quantity" => "float"
       }
     }
   }
-  
+
   # Add geolocation for IP addresses
   if [client_ip] {
     geoip {
@@ -382,7 +400,7 @@ filter {
       target => "geoip"
     }
   }
-  
+
   # Calculate execution latency
   if [start_time] and [end_time] {
     ruby {
@@ -396,7 +414,7 @@ filter {
       "
     }
   }
-  
+
   # Enrich with trading context
   if [strategy_id] {
     elasticsearch {
@@ -423,7 +441,7 @@ output {
     template_pattern => "jts-logs-*"
     template => "/usr/share/logstash/templates/jts-logs-template.json"
   }
-  
+
   # Output critical errors to separate index
   if [level] == "ERROR" or [level] == "FATAL" {
     elasticsearch {
@@ -433,7 +451,7 @@ output {
       index => "jts-errors-%{+YYYY.MM.dd}"
     }
   }
-  
+
   # Real-time alerts for trading errors
   if [service] == "order-execution" and [level] == "ERROR" {
     http {
@@ -464,58 +482,60 @@ output {
 #### Phase 2: Prometheus and Metrics (Days 5-8)
 
 3. **Prometheus Server Setup**
+
 ```yaml
 # Continue docker-compose.monitoring.yml
-  prometheus:
-    image: prom/prometheus:v2.47.0
-    container_name: jts-prometheus
-    restart: unless-stopped
-    ports:
-      - "9090:9090"
-    volumes:
-      - prometheus-data:/prometheus
-      - ./infrastructure/monitoring/prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./infrastructure/monitoring/prometheus/rules:/etc/prometheus/rules
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-      - '--web.enable-admin-api'
-      - '--storage.tsdb.retention.time=30d'
-      - '--storage.tsdb.retention.size=10GB'
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - jts-monitoring-network
+prometheus:
+  image: prom/prometheus:v2.47.0
+  container_name: jts-prometheus
+  restart: unless-stopped
+  ports:
+    - '9090:9090'
+  volumes:
+    - prometheus-data:/prometheus
+    - ./infrastructure/monitoring/prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
+    - ./infrastructure/monitoring/prometheus/rules:/etc/prometheus/rules
+  command:
+    - '--config.file=/etc/prometheus/prometheus.yml'
+    - '--storage.tsdb.path=/prometheus'
+    - '--web.console.libraries=/etc/prometheus/console_libraries'
+    - '--web.console.templates=/etc/prometheus/consoles'
+    - '--web.enable-lifecycle'
+    - '--web.enable-admin-api'
+    - '--storage.tsdb.retention.time=30d'
+    - '--storage.tsdb.retention.size=10GB'
+  healthcheck:
+    test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:9090/-/healthy']
+    interval: 30s
+    timeout: 10s
+    retries: 3
+  networks:
+    - jts-monitoring-network
 
-  alertmanager:
-    image: prom/alertmanager:v0.25.0
-    container_name: jts-alertmanager
-    restart: unless-stopped
-    ports:
-      - "9093:9093"
-    volumes:
-      - alertmanager-data:/alertmanager
-      - ./infrastructure/monitoring/alertmanager/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/alertmanager'
-      - '--web.external-url=http://localhost:9093'
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - jts-monitoring-network
+alertmanager:
+  image: prom/alertmanager:v0.25.0
+  container_name: jts-alertmanager
+  restart: unless-stopped
+  ports:
+    - '9093:9093'
+  volumes:
+    - alertmanager-data:/alertmanager
+    - ./infrastructure/monitoring/alertmanager/config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+  command:
+    - '--config.file=/etc/alertmanager/alertmanager.yml'
+    - '--storage.path=/alertmanager'
+    - '--web.external-url=http://localhost:9093'
+  healthcheck:
+    test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:9093/-/healthy']
+    interval: 30s
+    timeout: 10s
+    retries: 3
+  networks:
+    - jts-monitoring-network
 ```
 
 4. **Custom Trading Metrics Implementation**
+
 ```typescript
 // libs/shared/metrics/src/lib/trading-metrics.service.ts
 import { Injectable } from '@nestjs/common';
@@ -528,38 +548,38 @@ export class TradingMetricsService {
     name: 'order_execution_duration_seconds',
     help: 'Duration of order execution in seconds',
     labelNames: ['strategy_id', 'symbol', 'exchange', 'side', 'order_type'],
-    buckets: [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 2, 5]
+    buckets: [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 2, 5],
   });
 
   private readonly orderExecutionTotal = new Counter({
     name: 'order_execution_total',
     help: 'Total number of order executions',
-    labelNames: ['strategy_id', 'symbol', 'exchange', 'side', 'status']
+    labelNames: ['strategy_id', 'symbol', 'exchange', 'side', 'status'],
   });
 
   private readonly orderExecutionErrors = new Counter({
     name: 'order_execution_errors_total',
     help: 'Total number of order execution errors',
-    labelNames: ['strategy_id', 'symbol', 'exchange', 'error_type']
+    labelNames: ['strategy_id', 'symbol', 'exchange', 'error_type'],
   });
 
   // Strategy performance metrics
   private readonly strategyPnl = new Gauge({
     name: 'strategy_pnl_total',
     help: 'Total P&L for each strategy',
-    labelNames: ['strategy_id', 'strategy_name', 'user_id']
+    labelNames: ['strategy_id', 'strategy_name', 'user_id'],
   });
 
   private readonly strategyDrawdown = new Gauge({
     name: 'strategy_drawdown_current',
     help: 'Current drawdown for each strategy',
-    labelNames: ['strategy_id', 'strategy_name']
+    labelNames: ['strategy_id', 'strategy_name'],
   });
 
   private readonly strategyWinRate = new Gauge({
     name: 'strategy_win_rate',
     help: 'Win rate percentage for each strategy',
-    labelNames: ['strategy_id', 'strategy_name']
+    labelNames: ['strategy_id', 'strategy_name'],
   });
 
   // Market data metrics
@@ -567,26 +587,26 @@ export class TradingMetricsService {
     name: 'market_data_latency_seconds',
     help: 'Latency of market data updates',
     labelNames: ['symbol', 'exchange', 'data_type'],
-    buckets: [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1]
+    buckets: [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1],
   });
 
   private readonly marketDataUpdates = new Counter({
     name: 'market_data_updates_total',
     help: 'Total number of market data updates',
-    labelNames: ['symbol', 'exchange', 'data_type']
+    labelNames: ['symbol', 'exchange', 'data_type'],
   });
 
   // Risk management metrics
   private readonly riskViolations = new Counter({
     name: 'risk_violations_total',
     help: 'Total number of risk rule violations',
-    labelNames: ['strategy_id', 'rule_type', 'severity']
+    labelNames: ['strategy_id', 'rule_type', 'severity'],
   });
 
   private readonly portfolioExposure = new Gauge({
     name: 'portfolio_exposure_total',
     help: 'Total portfolio exposure by currency',
-    labelNames: ['currency', 'user_id']
+    labelNames: ['currency', 'user_id'],
   });
 
   // System performance metrics
@@ -594,13 +614,13 @@ export class TradingMetricsService {
     name: 'api_request_duration_seconds',
     help: 'Duration of API requests',
     labelNames: ['method', 'endpoint', 'status_code'],
-    percentiles: [0.5, 0.9, 0.95, 0.99]
+    percentiles: [0.5, 0.9, 0.95, 0.99],
   });
 
   private readonly databaseConnectionPool = new Gauge({
     name: 'database_connection_pool_active',
     help: 'Active database connections',
-    labelNames: ['database_type', 'database_name']
+    labelNames: ['database_type', 'database_name'],
   });
 
   // Method implementations
@@ -611,83 +631,53 @@ export class TradingMetricsService {
     side: string,
     orderType: string,
     duration: number,
-    status: string
+    status: string,
   ): void {
     this.orderExecutionDuration
       .labels(strategyId, symbol, exchange, side, orderType)
       .observe(duration);
-    
-    this.orderExecutionTotal
-      .labels(strategyId, symbol, exchange, side, status)
-      .inc();
+
+    this.orderExecutionTotal.labels(strategyId, symbol, exchange, side, status).inc();
   }
 
   recordOrderExecutionError(
     strategyId: string,
     symbol: string,
     exchange: string,
-    errorType: string
+    errorType: string,
   ): void {
-    this.orderExecutionErrors
-      .labels(strategyId, symbol, exchange, errorType)
-      .inc();
+    this.orderExecutionErrors.labels(strategyId, symbol, exchange, errorType).inc();
   }
 
-  updateStrategyPnl(
-    strategyId: string,
-    strategyName: string,
-    userId: string,
-    pnl: number
-  ): void {
-    this.strategyPnl
-      .labels(strategyId, strategyName, userId)
-      .set(pnl);
+  updateStrategyPnl(strategyId: string, strategyName: string, userId: string, pnl: number): void {
+    this.strategyPnl.labels(strategyId, strategyName, userId).set(pnl);
   }
 
   recordMarketDataUpdate(
     symbol: string,
     exchange: string,
     dataType: string,
-    latency: number
+    latency: number,
   ): void {
-    this.marketDataLatency
-      .labels(symbol, exchange, dataType)
-      .observe(latency);
-    
-    this.marketDataUpdates
-      .labels(symbol, exchange, dataType)
-      .inc();
+    this.marketDataLatency.labels(symbol, exchange, dataType).observe(latency);
+
+    this.marketDataUpdates.labels(symbol, exchange, dataType).inc();
   }
 
-  recordRiskViolation(
-    strategyId: string,
-    ruleType: string,
-    severity: string
-  ): void {
-    this.riskViolations
-      .labels(strategyId, ruleType, severity)
-      .inc();
+  recordRiskViolation(strategyId: string, ruleType: string, severity: string): void {
+    this.riskViolations.labels(strategyId, ruleType, severity).inc();
   }
 
-  recordApiRequest(
-    method: string,
-    endpoint: string,
-    statusCode: string,
-    duration: number
-  ): void {
-    this.apiRequestDuration
-      .labels(method, endpoint, statusCode)
-      .observe(duration);
+  recordApiRequest(method: string, endpoint: string, statusCode: string, duration: number): void {
+    this.apiRequestDuration.labels(method, endpoint, statusCode).observe(duration);
   }
 
   updateDatabaseConnections(
     databaseType: string,
     databaseName: string,
-    activeConnections: number
+    activeConnections: number,
   ): void {
-    this.databaseConnectionPool
-      .labels(databaseType, databaseName)
-      .set(activeConnections);
+    this.databaseConnectionPool.labels(databaseType, databaseName).set(activeConnections);
   }
 
   // Get all metrics for Prometheus scraping
@@ -705,36 +695,38 @@ export class TradingMetricsService {
 #### Phase 3: Grafana Dashboards (Days 9-12)
 
 5. **Grafana Setup and Configuration**
+
 ```yaml
 # Continue docker-compose.monitoring.yml
-  grafana:
-    image: grafana/grafana:10.2.0
-    container_name: jts-grafana
-    restart: unless-stopped
-    ports:
-      - "E03:E03"
-    volumes:
-      - grafana-data:/var/lib/grafana
-      - ./infrastructure/monitoring/grafana/config/grafana.ini:/etc/grafana/grafana.ini
-      - ./infrastructure/monitoring/grafana/provisioning:/etc/grafana/provisioning
-      - ./infrastructure/monitoring/grafana/dashboards:/var/lib/grafana/dashboards
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
-      - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
-    depends_on:
-      - prometheus
-      - elasticsearch
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:E03/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - jts-monitoring-network
+grafana:
+  image: grafana/grafana:10.2.0
+  container_name: jts-grafana
+  restart: unless-stopped
+  ports:
+    - 'E03:E03'
+  volumes:
+    - grafana-data:/var/lib/grafana
+    - ./infrastructure/monitoring/grafana/config/grafana.ini:/etc/grafana/grafana.ini
+    - ./infrastructure/monitoring/grafana/provisioning:/etc/grafana/provisioning
+    - ./infrastructure/monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+  environment:
+    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    - GF_USERS_ALLOW_SIGN_UP=false
+    - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+  depends_on:
+    - prometheus
+    - elasticsearch
+  healthcheck:
+    test: ['CMD-SHELL', 'curl -f http://localhost:E03/api/health']
+    interval: 30s
+    timeout: 10s
+    retries: 3
+  networks:
+    - jts-monitoring-network
 ```
 
 6. **Trading Operations Dashboard**
+
 ```json
 {
   "dashboard": {
@@ -753,7 +745,7 @@ export class TradingMetricsService {
         "id": 1,
         "title": "Order Execution Latency",
         "type": "stat",
-        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+        "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 },
         "targets": [
           {
             "expr": "histogram_quantile(0.95, order_execution_duration_seconds_bucket)",
@@ -766,9 +758,9 @@ export class TradingMetricsService {
             "unit": "s",
             "thresholds": {
               "steps": [
-                {"color": "green", "value": null},
-                {"color": "yellow", "value": 0.1},
-                {"color": "red", "value": 0.5}
+                { "color": "green", "value": null },
+                { "color": "yellow", "value": 0.1 },
+                { "color": "red", "value": 0.5 }
               ]
             }
           }
@@ -778,7 +770,7 @@ export class TradingMetricsService {
         "id": 2,
         "title": "Active Orders by Strategy",
         "type": "piechart",
-        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
+        "gridPos": { "h": 8, "w": 6, "x": 6, "y": 0 },
         "targets": [
           {
             "expr": "sum by (strategy_id) (order_execution_total)",
@@ -791,7 +783,7 @@ export class TradingMetricsService {
         "id": 3,
         "title": "Real-time P&L",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
         "targets": [
           {
             "expr": "sum(strategy_pnl_total)",
@@ -807,7 +799,7 @@ export class TradingMetricsService {
         "fieldConfig": {
           "defaults": {
             "unit": "currencyUSD",
-            "color": {"mode": "continuous-GrYlRd"}
+            "color": { "mode": "continuous-GrYlRd" }
           }
         }
       },
@@ -815,7 +807,7 @@ export class TradingMetricsService {
         "id": 4,
         "title": "Market Data Latency",
         "type": "heatmap",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
         "targets": [
           {
             "expr": "increase(market_data_latency_seconds_bucket[5m])",
@@ -828,7 +820,7 @@ export class TradingMetricsService {
         "id": 5,
         "title": "System Resource Usage",
         "type": "timeseries",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
         "targets": [
           {
             "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
@@ -846,7 +838,7 @@ export class TradingMetricsService {
         "id": 6,
         "title": "Order Success Rate",
         "type": "stat",
-        "gridPos": {"h": 6, "w": 4, "x": 0, "y": 16},
+        "gridPos": { "h": 6, "w": 4, "x": 0, "y": 16 },
         "targets": [
           {
             "expr": "(sum(order_execution_total{status=\"filled\"}) / sum(order_execution_total)) * 100",
@@ -861,9 +853,9 @@ export class TradingMetricsService {
             "max": 100,
             "thresholds": {
               "steps": [
-                {"color": "red", "value": null},
-                {"color": "yellow", "value": 85},
-                {"color": "green", "value": 95}
+                { "color": "red", "value": null },
+                { "color": "yellow", "value": 85 },
+                { "color": "green", "value": 95 }
               ]
             }
           }
@@ -873,7 +865,7 @@ export class TradingMetricsService {
         "id": 7,
         "title": "Risk Violations",
         "type": "table",
-        "gridPos": {"h": 6, "w": 8, "x": 4, "y": 16},
+        "gridPos": { "h": 6, "w": 8, "x": 4, "y": 16 },
         "targets": [
           {
             "expr": "sum by (strategy_id, rule_type) (increase(risk_violations_total[1h]))",
@@ -886,7 +878,7 @@ export class TradingMetricsService {
         "id": 8,
         "title": "API Error Rate",
         "type": "timeseries",
-        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 16},
+        "gridPos": { "h": 6, "w": 12, "x": 12, "y": 16 },
         "targets": [
           {
             "expr": "sum(rate(api_request_duration_seconds_count{status_code=~\"4..|5..\"}[5m])) / sum(rate(api_request_duration_seconds_count[5m])) * 100",
@@ -897,10 +889,10 @@ export class TradingMetricsService {
         "alert": {
           "conditions": [
             {
-              "evaluator": {"params": [5], "type": "gt"},
-              "operator": {"type": "and"},
-              "query": {"params": ["A", "5m", "now"]},
-              "reducer": {"type": "avg"},
+              "evaluator": { "params": [5], "type": "gt" },
+              "operator": { "type": "and" },
+              "query": { "params": ["A", "5m", "now"] },
+              "reducer": { "type": "avg" },
               "type": "query"
             }
           ],
@@ -920,38 +912,40 @@ export class TradingMetricsService {
 #### Phase 4: Distributed Tracing (Days 13-16)
 
 7. **Jaeger Tracing Setup**
+
 ```yaml
 # Continue docker-compose.monitoring.yml
-  jaeger:
-    image: jaegertracing/all-in-one:1.50
-    container_name: jts-jaeger
-    restart: unless-stopped
-    ports:
-      - "16686:16686"
-      - "14268:14268"
-      - "14250:14250"
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
-      - SPAN_STORAGE_TYPE=elasticsearch
-      - ES_SERVER_URLS=http://elasticsearch:9200
-      - ES_USERNAME=jaeger
-      - ES_PASSWORD=${JAEGER_PASSWORD}
-      - ES_INDEX_PREFIX=jaeger
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:16686/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - jts-monitoring-network
+jaeger:
+  image: jaegertracing/all-in-one:1.50
+  container_name: jts-jaeger
+  restart: unless-stopped
+  ports:
+    - '16686:16686'
+    - '14268:14268'
+    - '14250:14250'
+    - '6831:6831/udp'
+    - '6832:6832/udp'
+  environment:
+    - COLLECTOR_OTLP_ENABLED=true
+    - SPAN_STORAGE_TYPE=elasticsearch
+    - ES_SERVER_URLS=http://elasticsearch:9200
+    - ES_USERNAME=jaeger
+    - ES_PASSWORD=${JAEGER_PASSWORD}
+    - ES_INDEX_PREFIX=jaeger
+  depends_on:
+    elasticsearch:
+      condition: service_healthy
+  healthcheck:
+    test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:16686/']
+    interval: 30s
+    timeout: 10s
+    retries: 3
+  networks:
+    - jts-monitoring-network
 ```
 
 8. **Tracing Integration Service**
+
 ```typescript
 // libs/shared/tracing/src/lib/tracing.service.ts
 import { Injectable, Logger } from '@nestjs/common';
@@ -973,18 +967,27 @@ export class TracingService {
 
   private initializeTracing(): void {
     const serviceName = this.configService.get<string>('SERVICE_NAME', 'jts-service');
-    const jaegerEndpoint = this.configService.get<string>('JAEGER_ENDPOINT', 'http://localhost:14268/api/traces');
+    const jaegerEndpoint = this.configService.get<string>(
+      'JAEGER_ENDPOINT',
+      'http://localhost:14268/api/traces',
+    );
 
     const provider = new NodeTracerProvider({
       resource: new Resource({
         [SemanticResourceAttributes.SERVICE_NAME]: serviceName,
-        [SemanticResourceAttributes.SERVICE_VERSION]: this.configService.get<string>('SERVICE_VERSION', '1.0.0'),
-        [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: this.configService.get<string>('NODE_ENV', 'development')
-      })
+        [SemanticResourceAttributes.SERVICE_VERSION]: this.configService.get<string>(
+          'SERVICE_VERSION',
+          '1.0.0',
+        ),
+        [SemanticResourceAttributes.DEPLOYMENT_ENVIRONMENT]: this.configService.get<string>(
+          'NODE_ENV',
+          'development',
+        ),
+      }),
     });
 
     const jaegerExporter = new JaegerExporter({
-      endpoint: jaegerEndpoint
+      endpoint: jaegerEndpoint,
     });
 
     provider.addSpanProcessor(
@@ -992,8 +995,8 @@ export class TracingService {
         maxQueueSize: E01,
         scheduledDelayMillis: E05,
         exportTimeoutMillis: 30000,
-        maxExportBatchSize: 100
-      })
+        maxExportBatchSize: 100,
+      }),
     );
 
     provider.register();
@@ -1003,21 +1006,14 @@ export class TracingService {
   }
 
   // Create a new span with trading context
-  createTradingSpan(
-    operationName: string,
-    parentContext?: any,
-    attributes?: Record<string, any>
-  ) {
-    const span = this.tracer.startSpan(
-      operationName,
-      {
-        kind: SpanKind.INTERNAL,
-        parent: parentContext
-      }
-    );
+  createTradingSpan(operationName: string, parentContext?: any, attributes?: Record<string, any>) {
+    const span = this.tracer.startSpan(operationName, {
+      kind: SpanKind.INTERNAL,
+      parent: parentContext,
+    });
 
     if (attributes) {
-      Object.keys(attributes).forEach(key => {
+      Object.keys(attributes).forEach((key) => {
         span.setAttribute(key, attributes[key]);
       });
     }
@@ -1030,34 +1026,34 @@ export class TracingService {
     orderId: string,
     strategyId: string,
     symbol: string,
-    operation: () => Promise<T>
+    operation: () => Promise<T>,
   ): Promise<T> {
     const span = this.createTradingSpan('order.execution', undefined, {
       'trading.order_id': orderId,
       'trading.strategy_id': strategyId,
       'trading.symbol': symbol,
-      'trading.operation': 'order_execution'
+      'trading.operation': 'order_execution',
     });
 
     try {
       const startTime = Date.now();
       const result = await operation();
-      
+
       const endTime = Date.now();
       const duration = endTime - startTime;
-      
+
       span.setAttributes({
         'trading.execution_time_ms': duration,
-        'trading.execution_status': 'success'
+        'trading.execution_status': 'success',
       });
-      
+
       span.setStatus({ code: SpanStatusCode.OK });
       return result;
     } catch (error) {
       span.recordException(error);
       span.setStatus({
         code: SpanStatusCode.ERROR,
-        message: error.message
+        message: error.message,
       });
       span.setAttribute('trading.execution_status', 'error');
       throw error;
@@ -1070,12 +1066,12 @@ export class TracingService {
   async traceStrategyExecution<T>(
     strategyId: string,
     strategyName: string,
-    operation: () => Promise<T>
+    operation: () => Promise<T>,
   ): Promise<T> {
     const span = this.createTradingSpan('strategy.execution', undefined, {
       'trading.strategy_id': strategyId,
       'trading.strategy_name': strategyName,
-      'trading.operation': 'strategy_execution'
+      'trading.operation': 'strategy_execution',
     });
 
     return await this.executeWithSpan(span, operation);
@@ -1086,13 +1082,13 @@ export class TracingService {
     symbol: string,
     exchange: string,
     dataType: string,
-    operation: () => Promise<T>
+    operation: () => Promise<T>,
   ): Promise<T> {
     const span = this.createTradingSpan('market_data.processing', undefined, {
       'trading.symbol': symbol,
       'trading.exchange': exchange,
       'trading.data_type': dataType,
-      'trading.operation': 'market_data_processing'
+      'trading.operation': 'market_data_processing',
     });
 
     return await this.executeWithSpan(span, operation);
@@ -1102,35 +1098,32 @@ export class TracingService {
   async traceBrokerApiCall<T>(
     broker: string,
     apiEndpoint: string,
-    operation: () => Promise<T>
+    operation: () => Promise<T>,
   ): Promise<T> {
     const span = this.createTradingSpan('broker.api_call', undefined, {
       'trading.broker': broker,
       'trading.api_endpoint': apiEndpoint,
-      'trading.operation': 'broker_api_call'
+      'trading.operation': 'broker_api_call',
     });
 
     return await this.executeWithSpan(span, operation);
   }
 
-  private async executeWithSpan<T>(
-    span: any,
-    operation: () => Promise<T>
-  ): Promise<T> {
+  private async executeWithSpan<T>(span: any, operation: () => Promise<T>): Promise<T> {
     try {
       const startTime = Date.now();
       const result = await context.with(trace.setSpan(context.active(), span), operation);
-      
+
       const endTime = Date.now();
       span.setAttribute('execution_time_ms', endTime - startTime);
       span.setStatus({ code: SpanStatusCode.OK });
-      
+
       return result;
     } catch (error) {
       span.recordException(error);
       span.setStatus({
         code: SpanStatusCode.ERROR,
-        message: error.message
+        message: error.message,
       });
       throw error;
     } finally {
@@ -1154,6 +1147,7 @@ export class TracingService {
 #### Phase 5: Alerting and Notifications (Days 17-18)
 
 9. **AlertManager Configuration**
+
 ```yaml
 # infrastructure/monitoring/alertmanager/config/alertmanager.yml
 global:
@@ -1173,13 +1167,13 @@ route:
       receiver: 'critical-alerts'
       group_wait: 10s
       repeat_interval: 10m
-    
+
     - match:
         service: order-execution
       receiver: 'trading-team'
       group_wait: 15s
       repeat_interval: 30m
-    
+
     - match:
         service: market-data-collector
       receiver: 'data-team'
@@ -1231,6 +1225,7 @@ inhibit_rules:
 ```
 
 10. **Prometheus Alert Rules**
+
 ```yaml
 # infrastructure/monitoring/prometheus/rules/trading-alerts.yml
 groups:
@@ -1244,8 +1239,8 @@ groups:
           severity: warning
           service: order-execution
         annotations:
-          summary: "High order execution latency detected"
-          description: "95th percentile order execution latency is {{ $value }}s"
+          summary: 'High order execution latency detected'
+          description: '95th percentile order execution latency is {{ $value }}s'
 
       - alert: OrderExecutionFailureRate
         expr: (sum(rate(order_execution_errors_total[5m])) / sum(rate(order_execution_total[5m]))) * 100 > 5
@@ -1254,8 +1249,8 @@ groups:
           severity: critical
           service: order-execution
         annotations:
-          summary: "High order execution failure rate"
-          description: "Order execution failure rate is {{ $value }}%"
+          summary: 'High order execution failure rate'
+          description: 'Order execution failure rate is {{ $value }}%'
 
       - alert: MarketDataLatency
         expr: histogram_quantile(0.95, market_data_latency_seconds_bucket) > 0.1
@@ -1264,8 +1259,8 @@ groups:
           severity: warning
           service: market-data-collector
         annotations:
-          summary: "High market data latency"
-          description: "95th percentile market data latency is {{ $value }}s"
+          summary: 'High market data latency'
+          description: '95th percentile market data latency is {{ $value }}s'
 
       # Strategy performance alerts
       - alert: StrategyDrawdownAlert
@@ -1275,8 +1270,8 @@ groups:
           severity: warning
           service: strategy-engine
         annotations:
-          summary: "Strategy experiencing high drawdown"
-          description: "Strategy {{ $labels.strategy_name }} has {{ $value }}% drawdown"
+          summary: 'Strategy experiencing high drawdown'
+          description: 'Strategy {{ $labels.strategy_name }} has {{ $value }}% drawdown'
 
       - alert: CriticalStrategyDrawdown
         expr: strategy_drawdown_current > 20
@@ -1285,8 +1280,8 @@ groups:
           severity: critical
           service: strategy-engine
         annotations:
-          summary: "CRITICAL: Strategy experiencing excessive drawdown"
-          description: "Strategy {{ $labels.strategy_name }} has {{ $value }}% drawdown - immediate attention required"
+          summary: 'CRITICAL: Strategy experiencing excessive drawdown'
+          description: 'Strategy {{ $labels.strategy_name }} has {{ $value }}% drawdown - immediate attention required'
 
       # System health alerts
       - alert: HighCPUUsage
@@ -1295,8 +1290,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High CPU usage detected"
-          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}"
+          summary: 'High CPU usage detected'
+          description: 'CPU usage is {{ $value }}% on {{ $labels.instance }}'
 
       - alert: HighMemoryUsage
         expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
@@ -1304,8 +1299,8 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "High memory usage detected"
-          description: "Memory usage is {{ $value }}% on {{ $labels.instance }}"
+          summary: 'High memory usage detected'
+          description: 'Memory usage is {{ $value }}% on {{ $labels.instance }}'
 
       - alert: DatabaseConnectionPoolExhaustion
         expr: database_connection_pool_active / database_connection_pool_max > 0.9
@@ -1313,8 +1308,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "Database connection pool near exhaustion"
-          description: "{{ $labels.database_type }} connection pool is {{ $value }}% full"
+          summary: 'Database connection pool near exhaustion'
+          description: '{{ $labels.database_type }} connection pool is {{ $value }}% full'
 
       # Business logic alerts
       - alert: RiskViolationSpike
@@ -1324,8 +1319,8 @@ groups:
           severity: critical
           service: risk-management
         annotations:
-          summary: "Risk violation spike detected"
-          description: "{{ $value }} risk violations in the last hour for strategy {{ $labels.strategy_id }}"
+          summary: 'Risk violation spike detected'
+          description: '{{ $value }} risk violations in the last hour for strategy {{ $labels.strategy_id }}'
 
       - alert: TotalPnlAlert
         expr: sum(strategy_pnl_total) < -E10
@@ -1333,8 +1328,8 @@ groups:
         labels:
           severity: critical
         annotations:
-          summary: "Total portfolio P&L below threshold"
-          description: "Total P&L is {{ $value }} USD"
+          summary: 'Total portfolio P&L below threshold'
+          description: 'Total P&L is {{ $value }} USD'
 
       - alert: APIErrorRateHigh
         expr: (sum(rate(api_request_duration_seconds_count{status_code=~"4..|5.."}[5m])) / sum(rate(api_request_duration_seconds_count[5m]))) * 100 > 5
@@ -1342,33 +1337,34 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "High API error rate"
-          description: "API error rate is {{ $value }}%"
+          summary: 'High API error rate'
+          description: 'API error rate is {{ $value }}%'
 ```
 
 ### Security and Compliance
 
 **Log Security and Retention:**
+
 ```yaml
 # Log retention and security policies
 log_retention_policies:
-  error_logs: 90d      # Critical for debugging
-  trading_logs: 365d   # Required for regulatory compliance
-  audit_logs: 2555d    # 7 years for financial regulations
-  system_logs: 30d     # Infrastructure monitoring
-  
+  error_logs: 90d # Critical for debugging
+  trading_logs: 365d # Required for regulatory compliance
+  audit_logs: 2555d # 7 years for financial regulations
+  system_logs: 30d # Infrastructure monitoring
+
 security_configurations:
   elasticsearch:
     - enable_security: true
     - audit_logging: true
     - field_level_security: true
     - document_level_security: true
-    
+
   grafana:
     - oauth_integration: true
     - role_based_access: true
     - dashboard_permissions: true
-    
+
   prometheus:
     - basic_auth: true
     - tls_encryption: true
@@ -1376,6 +1372,7 @@ security_configurations:
 ```
 
 **Compliance Monitoring:**
+
 ```typescript
 // Compliance-specific logging and monitoring
 export class ComplianceMonitoringService {
@@ -1390,23 +1387,23 @@ export class ComplianceMonitoringService {
       riskAssessment: decision.riskAssessment,
       timestamp: new Date().toISOString(),
       userId: decision.userId,
-      complianceChecked: decision.complianceChecked
+      complianceChecked: decision.complianceChecked,
     });
   }
 
   // Monitor for suspicious trading patterns
   detectAnomalousActivity(tradingActivity: TradingActivity[]): void {
     const anomalies = this.anomalyDetector.detect(tradingActivity);
-    
-    anomalies.forEach(anomaly => {
+
+    anomalies.forEach((anomaly) => {
       this.securityLogger.warn('Anomalous trading activity detected', {
         anomalyType: anomaly.type,
         severity: anomaly.severity,
         affectedAccounts: anomaly.accounts,
         timeWindow: anomaly.timeWindow,
-        description: anomaly.description
+        description: anomaly.description,
       });
-      
+
       // Trigger compliance review if needed
       if (anomaly.severity === 'high') {
         this.triggerComplianceReview(anomaly);
@@ -1424,24 +1421,28 @@ export class ComplianceMonitoringService {
 ## Testing Plan
 
 ### Infrastructure Testing
+
 - **Deployment Testing**: Verify all monitoring services deploy correctly with Docker Compose
 - **Integration Testing**: Test data flow from applications to ELK stack and Prometheus
 - **Dashboard Testing**: Validate all Grafana dashboards display correct data
 - **Alert Testing**: Test alert rules trigger correctly and notifications are sent
 
 ### Performance Testing
+
 - **Log Ingestion Testing**: Test high-volume log ingestion under trading load
-- **Metric Collection Testing**: Validate metric collection doesn't impact application performance  
+- **Metric Collection Testing**: Validate metric collection doesn't impact application performance
 - **Query Performance**: Test dashboard queries perform well with large datasets
 - **Storage Performance**: Test log and metric storage under sustained load
 
 ### Reliability Testing
+
 - **Failover Testing**: Test monitoring system resilience when components fail
 - **Data Retention Testing**: Verify log and metric retention policies work correctly
 - **Backup Testing**: Test monitoring data backup and recovery procedures
 - **Security Testing**: Validate access controls and authentication mechanisms
 
 ### Compliance Testing
+
 - **Audit Trail Testing**: Verify all trading activities are properly logged
 - **Retention Policy Testing**: Test compliance with regulatory data retention requirements
 - **Access Control Testing**: Verify role-based access to sensitive monitoring data

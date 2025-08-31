@@ -67,6 +67,7 @@ Implement a comprehensive risk management system that protects capital through i
 ## Technical Approach
 
 ### Risk Management Architecture
+
 Create a multi-layered risk management system that operates in real-time, evaluating risk at multiple levels from individual positions to overall portfolio exposure, with the ability to halt trading instantly when limits are breached.
 
 ### Key Components

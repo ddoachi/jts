@@ -27,34 +27,33 @@ actual_hours: 2
 
 # === DEPENDENCIES ===
 dependencies:
-- E01-F02-T01
+  - T01
 blocks:
-- E01-F02-T05
-- E01-F02-T06
+  - T05
+  - T06
 related: []
 pull_requests: []
-commits: 
-- text: "feat(E01-F02-T02): configure VS Code IDE environment"
-  hash: "9db8326"
-  link: "https://github.com/ddoachi/jts/commit/9db8326"
+commits:
+  - text: 'feat(E01-F02-T02): configure VS Code IDE environment'
+    hash: '9db8326'
+    link: 'https://github.com/ddoachi/jts/commit/9db8326'
 context_file: context.md
 files:
-- .vscode/settings.json
-- .vscode/extensions.json
-- .vscode/launch.json
-- .vscode/tasks.json
-- specs/E01/F02/deliverables/docs/IDE-SETUP.md
+  - .vscode/settings.json
+  - .vscode/extensions.json
+  - .vscode/launch.json
+  - .vscode/tasks.json
+  - specs/E01/F02/deliverables/docs/IDE-SETUP.md
 
 # === METADATA ===
 tags:
-- vscode
-- ide
-- debugging
-- extensions
+  - vscode
+  - ide
+  - debugging
+  - extensions
 effort: small
 risk: low
 ---
-
 
 # VS Code IDE Configuration
 
@@ -100,12 +99,7 @@ Configure Visual Studio Code as the primary development environment with project
     "**/.yarn": true,
     "**/coverage": true
   },
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "tailwindCSS.includeLanguages": {
     "typescript": "html",
     "typescriptreact": "html"

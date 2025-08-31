@@ -27,31 +27,30 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
-- T02
-- T06
+  - T01
+  - T02
+  - T06
 blocks: []
 related:
-- T05
+  - T05
 pull_requests: []
 commits: []
 context_file: 1047.context.md
 files:
-- jest.config.ts
-- jest.config.ci.ts
-- test-setup.ts
-- .github/workflows/test-*.yml
+  - jest.config.ts
+  - jest.config.ci.ts
+  - test-setup.ts
+  - .github/workflows/test-*.yml
 
 # === METADATA ===
 tags:
-- testing
-- jest
-- coverage
-- automation
+  - testing
+  - jest
+  - coverage
+  - automation
 effort: medium
 risk: medium
 ---
-
 
 # Test Automation and Coverage Configuration
 

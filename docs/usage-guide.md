@@ -10,11 +10,13 @@ This guide provides step-by-step instructions for setting up Node.js 20 LTS and 
 ## Prerequisites
 
 ### Linux/WSL2
+
 - Ubuntu 20.04+ or compatible distribution
 - sudo access for package installation
 - curl installed (`sudo apt-get install curl`)
 
 ### Windows
+
 - Windows 10/11
 - PowerShell with Administrator privileges
 - Internet connection for downloading packages
@@ -24,11 +26,13 @@ This guide provides step-by-step instructions for setting up Node.js 20 LTS and 
 ### Option 1: Unified Installation Script (Recommended)
 
 1. **Make the script executable:**
+
    ```bash
    chmod +x scripts/install-node-yarn.sh
    ```
 
 2. **Run the unified installer:**
+
    ```bash
    ./scripts/install-node-yarn.sh
    ```
@@ -43,6 +47,7 @@ This guide provides step-by-step instructions for setting up Node.js 20 LTS and 
 #### Linux/WSL2
 
 1. **Make the script executable:**
+
    ```bash
    chmod +x scripts/install-node-yarn-linux.sh
    ```
@@ -57,6 +62,7 @@ This guide provides step-by-step instructions for setting up Node.js 20 LTS and 
 1. **Open PowerShell as Administrator**
 
 2. **Navigate to the project directory:**
+
    ```powershell
    cd path\to\jts-monorepo
    ```
@@ -119,6 +125,7 @@ yarn workspaces list
 ### Yarn Configuration (.yarnrc.yml)
 
 The provided configuration includes:
+
 - **nodeLinker**: Uses traditional node_modules for compatibility
 - **Workspace settings**: Optimized for monorepo development
 - **Plugins**: Workspace tools for managing multiple packages
@@ -127,7 +134,8 @@ The provided configuration includes:
 ### Package.json Structure
 
 The template provides:
-- **Workspaces**: Configured for apps/* and libs/* directories
+
+- **Workspaces**: Configured for apps/_ and libs/_ directories
 - **Engine requirements**: Node.js >=20 and Yarn >=4
 - **Common scripts**: dev, build, test, lint, type-check
 - **Nx integration**: Ready for Nx workspace tooling
@@ -137,12 +145,14 @@ The template provides:
 ### Common Issues and Solutions
 
 #### 1. Permission Denied (Linux)
+
 ```bash
 # If you get permission errors, ensure scripts are executable
 chmod +x scripts/*.sh
 ```
 
 #### 2. Corepack Not Found
+
 ```bash
 # Install Corepack globally if missing
 npm install -g corepack
@@ -150,6 +160,7 @@ corepack enable
 ```
 
 #### 3. Wrong Node.js Version
+
 ```bash
 # On Linux, reinstall with the correct version
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
@@ -157,6 +168,7 @@ sudo apt-get install -y nodejs
 ```
 
 #### 4. Yarn Command Not Found
+
 ```bash
 # Enable Corepack and set Yarn version
 corepack enable
@@ -164,6 +176,7 @@ corepack prepare yarn@stable --activate
 ```
 
 #### 5. Windows Execution Policy
+
 ```powershell
 # If PowerShell blocks script execution
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
@@ -172,6 +185,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ## Workspace Management
 
 ### Creating a New Service
+
 ```bash
 # Create a new app
 mkdir apps/my-service
@@ -185,6 +199,7 @@ yarn init -p
 ```
 
 ### Installing Dependencies
+
 ```bash
 # Install to root
 yarn add -D typescript @types/node
@@ -197,6 +212,7 @@ yarn workspaces foreach add eslint
 ```
 
 ### Running Scripts
+
 ```bash
 # Run script in all workspaces
 yarn workspaces foreach run test
@@ -226,6 +242,7 @@ yarn workspaces foreach -p run build
 ## Support
 
 If you encounter issues not covered in this guide:
+
 1. Check the installation script output for specific error messages
 2. Verify all prerequisites are met
 3. Consult the project's issue tracker
@@ -234,8 +251,8 @@ If you encounter issues not covered in this guide:
 ## Version Compatibility
 
 | Component | Required Version | Verified Version |
-|-----------|-----------------|------------------|
-| Node.js   | >=20.0.0       | 20.x LTS         |
-| Yarn      | >=4.0.0        | 4.x (Berry)      |
-| npm       | >=10.0.0       | Included w/ Node |
-| Corepack  | >=0.20.0       | Included w/ Node |
+| --------- | ---------------- | ---------------- |
+| Node.js   | >=20.0.0         | 20.x LTS         |
+| Yarn      | >=4.0.0          | 4.x (Berry)      |
+| npm       | >=10.0.0         | Included w/ Node |
+| Corepack  | >=0.20.0         | Included w/ Node |

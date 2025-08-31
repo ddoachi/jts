@@ -1,3 +1,8 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
 # Python
 __pycache__/
 *.py[cod]
@@ -45,12 +50,25 @@ build/
 coverage/
 
 # Environment
+# Generated/Modified by spec: E01-F02-T04 (Environment Configuration)
 .env
 .env.local
+.env.*.local
+*.env
 
 # Logs
 logs/
 *.log
+
+# Secure credentials (spec: E01-F02-T04)
+/secure/creon/credentials/*
+!/secure/creon/credentials/.gitkeep
+!/secure/creon/credentials/README.md
+/secure/creon/logs/*
+!/secure/creon/logs/.gitkeep
+
+# Backup files
+.env.local.backup.*
 
 # Data
 *.xlsx

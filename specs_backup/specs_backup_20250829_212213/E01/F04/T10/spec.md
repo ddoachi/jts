@@ -27,9 +27,9 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
-- T02
-- T03
+  - T01
+  - T02
+  - T03
 blocks: []
 related: []
 
@@ -38,20 +38,19 @@ pull_requests: []
 commits: []
 context_file: 1050.context.md
 files:
-- .github/branch-protection.yml
-- .github/CODEOWNERS
-- scripts/setup-branch-protection.sh
+  - .github/branch-protection.yml
+  - .github/CODEOWNERS
+  - scripts/setup-branch-protection.sh
 
 # === METADATA ===
 tags:
-- branch-protection
-- quality-gates
-- code-review
-- governance
+  - branch-protection
+  - quality-gates
+  - code-review
+  - governance
 effort: small
 risk: low
 unique_id: 5055cbf4 # Unique identifier (never changes)
-
 ---
 
 # Branch Protection and Quality Gates

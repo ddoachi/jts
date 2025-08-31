@@ -67,6 +67,7 @@ Build a comprehensive trading strategy engine that executes algorithmic trading 
 ## Technical Approach
 
 ### Strategy Engine Architecture
+
 Implement a high-performance strategy execution engine that can process real-time market data, evaluate complex trading conditions, and generate actionable signals with minimal latency.
 
 ### Key Components

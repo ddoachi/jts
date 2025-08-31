@@ -11,17 +11,17 @@ type: feature
 # === HIERARCHY ===
 parent: E01
 children:
-- T01
-- T02
-- T03
-- T04
-- T05
-- T06
-- T07
-- T08
-- T09
-- T10
-- T11
+  - T01
+  - T02
+  - T03
+  - T04
+  - T05
+  - T06
+  - T07
+  - T08
+  - T09
+  - T10
+  - T11
 epic: E01
 domain: infrastructure
 
@@ -38,40 +38,39 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01-F03
+  - F03
 blocks:
-- E01-F05
-- E01-F06
-- E01-F07
-- E01-F08
+  - F05
+  - F06
+  - F07
+  - F08
 related:
-- E01-F02
+  - F02
 pull_requests: []
 commits: []
 context_file: context.md
 files:
-- .github/workflows/
-- Dockerfile
-- docker-compose.ci.yml
-- package.json
-- nx.json
-- jest.config.ts
-- .dockerignore
-- scripts/
+  - .github/workflows/
+  - Dockerfile
+  - docker-compose.ci.yml
+  - package.json
+  - nx.json
+  - jest.config.ts
+  - .dockerignore
+  - scripts/
 
 # === METADATA ===
 tags:
-- cicd
-- github-actions
-- docker
-- automation
-- testing
-- deployment
-- security
+  - cicd
+  - github-actions
+  - docker
+  - automation
+  - testing
+  - deployment
+  - security
 effort: medium
 risk: medium
 ---
-
 
 # CI/CD Pipeline Foundation
 
@@ -97,6 +96,7 @@ Establish a comprehensive CI/CD pipeline foundation using GitHub Actions for the
 ### CI/CD Architecture
 
 #### Pipeline Overview
+
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        GitHub Actions Pipeline                     │
@@ -115,6 +115,7 @@ Establish a comprehensive CI/CD pipeline foundation using GitHub Actions for the
 ```
 
 #### Workflow Structure
+
 ```
 .github/workflows/
 ├── ci.yml                    # Main CI pipeline
@@ -204,11 +205,11 @@ jobs:
           AFFECTED_APPS=$(npx nx show projects --affected --type=app --base=origin/main~1 | tr '\n' ',' | sed 's/,$//')
           AFFECTED_LIBS=$(npx nx show projects --affected --type=lib --base=origin/main~1 | tr '\n' ',' | sed 's/,$//')
           HAS_AFFECTED=$([ -n "$AFFECTED_APPS" ] || [ -n "$AFFECTED_LIBS" ] && echo 'true' || echo 'false')
-          
+
           echo "affected-apps=$AFFECTED_APPS" >> $GITHUB_OUTPUT
           echo "affected-libs=$AFFECTED_LIBS" >> $GITHUB_OUTPUT
           echo "has-affected=$HAS_AFFECTED" >> $GITHUB_OUTPUT
-          
+
           echo "Affected Apps: $AFFECTED_APPS"
           echo "Affected Libs: $AFFECTED_LIBS"
           echo "Has Affected: $HAS_AFFECTED"
@@ -363,7 +364,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: ['api-gateway', 'strategy-engine', 'risk-management', 'order-execution', 'market-data-collector', 'web-app']
+        service:
+          [
+            'api-gateway',
+            'strategy-engine',
+            'risk-management',
+            'order-execution',
+            'market-data-collector',
+            'web-app',
+          ]
     outputs:
       image-tags: ${{ steps.meta.outputs.tags }}
     steps:
@@ -434,7 +443,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: ['api-gateway', 'strategy-engine', 'risk-management', 'order-execution', 'market-data-collector', 'web-app']
+        service:
+          [
+            'api-gateway',
+            'strategy-engine',
+            'risk-management',
+            'order-execution',
+            'market-data-collector',
+            'web-app',
+          ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -471,7 +488,7 @@ name: Security Scanning
 
 on:
   schedule:
-    - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM
+    - cron: '0 2 * * 1' # Weekly on Monday at 2 AM
   push:
     branches: [main]
   pull_request:
@@ -607,7 +624,14 @@ jobs:
     environment: production
     strategy:
       matrix:
-        service: ['api-gateway', 'strategy-engine', 'risk-management', 'order-execution', 'market-data-collector']
+        service:
+          [
+            'api-gateway',
+            'strategy-engine',
+            'risk-management',
+            'order-execution',
+            'market-data-collector',
+          ]
     steps:
       - name: Deploy to Green Environment
         run: |
@@ -733,7 +757,7 @@ services:
       POSTGRES_USER: test_user
       POSTGRES_PASSWORD: test_password
     ports:
-      - "5432:5432"
+      - '5432:5432'
     tmpfs:
       - /var/lib/postgresql/data
     command: postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off
@@ -741,7 +765,7 @@ services:
   redis-test:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     tmpfs:
       - /data
 
@@ -752,8 +776,8 @@ services:
       CLICKHOUSE_USER: test_user
       CLICKHOUSE_PASSWORD: test_password
     ports:
-      - "8123:8123"
-      - "E09:E09"
+      - '8123:8123'
+      - 'E09:E09'
     tmpfs:
       - /var/lib/clickhouse
 
@@ -764,7 +788,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: test_password
       MONGO_INITDB_DATABASE: jts_test_config
     ports:
-      - "27017:27017"
+      - '27017:27017'
     tmpfs:
       - /data/db
 
@@ -776,7 +800,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
-      - "9092:9092"
+      - '9092:9092'
     depends_on:
       - zookeeper-test
     tmpfs:
@@ -803,14 +827,14 @@ protection_rules:
     required_status_checks:
       strict: true
       contexts:
-        - "CI Pipeline / Code Quality (lint)"
-        - "CI Pipeline / Code Quality (type-check)"
-        - "CI Pipeline / Code Quality (format)"
-        - "CI Pipeline / Test (unit)"
-        - "CI Pipeline / Test (integration)"
-        - "CI Pipeline / Test (e2e)"
-        - "CI Pipeline / Build"
-        - "CI Pipeline / Security Scan"
+        - 'CI Pipeline / Code Quality (lint)'
+        - 'CI Pipeline / Code Quality (type-check)'
+        - 'CI Pipeline / Code Quality (format)'
+        - 'CI Pipeline / Test (unit)'
+        - 'CI Pipeline / Test (integration)'
+        - 'CI Pipeline / Test (e2e)'
+        - 'CI Pipeline / Build'
+        - 'CI Pipeline / Security Scan'
     enforce_admins: true
     required_pull_request_reviews:
       required_approving_review_count: 2
@@ -818,7 +842,7 @@ protection_rules:
       require_code_owner_reviews: true
     restrictions:
       users: []
-      teams: ["core-developers"]
+      teams: ['core-developers']
 ```
 
 #### Code Coverage Configuration
@@ -856,14 +880,7 @@ module.exports = {
       statements: 90,
     },
   },
-  coverageReporters: [
-    'text',
-    'text-summary',
-    'html',
-    'lcov',
-    'clover',
-    'json-summary',
-  ],
+  coverageReporters: ['text', 'text-summary', 'html', 'lcov', 'clover', 'json-summary'],
 };
 ```
 
@@ -877,7 +894,7 @@ name: Performance Testing
 
 on:
   schedule:
-    - cron: '0 1 * * *'  # Daily at 1 AM
+    - cron: '0 1 * * *' # Daily at 1 AM
   workflow_dispatch:
 
 jobs:
@@ -969,11 +986,7 @@ jobs:
     [
       "@semantic-release/git",
       {
-        "assets": [
-          "CHANGELOG.md",
-          "package.json",
-          "package-lock.json"
-        ],
+        "assets": ["CHANGELOG.md", "package.json", "package-lock.json"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ]
@@ -986,67 +999,89 @@ jobs:
 The feature has been broken down into the following implementation tasks:
 
 ### 1. [Task T01: GitHub Actions Workflow Structure Setup](T01/spec.md)
+
 **Estimated: 2 hours**
+
 - Set up workflow directory structure and templates
 - Configure reusable workflows and composite actions
 - Establish caching strategy and environment configuration
 
 ### 2. [Task T02: Main CI Pipeline Configuration](T02/spec.md)
+
 **Estimated: 3 hours**
+
 - Implement comprehensive CI workflow with Nx affected detection
 - Configure parallel execution for quality checks and tests
 - Set up coverage gates and build validation
 
 ### 3. [Task T03: Security Scanning Workflows](T03/spec.md)
+
 **Estimated: 2 hours**
+
 - Configure SAST with CodeQL analysis
 - Implement dependency and secret scanning
 - Set up container vulnerability scanning with Trivy
 
 ### 4. [Task T04: Deployment Pipeline Workflows](T04/spec.md)
+
 **Estimated: 3 hours**
+
 - Create environment-specific deployment workflows
 - Implement blue-green deployment strategy
 - Configure rollback mechanisms and health checks
 
 ### 5. [Task T05: Docker Multi-stage Build Configuration](T05/spec.md)
+
 **Estimated: 2 hours**
+
 - Create optimized multi-stage Dockerfiles
 - Implement security hardening and non-root users
 - Optimize layer caching and image sizes
 
 ### 6. [Task T06: Docker Compose CI Testing Environment](T06/spec.md)
+
 **Estimated: 2 hours**
+
 - Configure Docker Compose for CI testing
 - Set up test databases and message queues
 - Optimize for fast startup and teardown
 
 ### 7. [Task T07: Test Automation and Coverage Configuration](T07/spec.md)
+
 **Estimated: 3 hours**
+
 - Configure Jest for unit, integration, and E2E tests
 - Implement 95% coverage requirements
 - Set up test reports and parallel execution
 
 ### 8. [Task T08: Performance Testing Workflow](T08/spec.md)
+
 **Estimated: 2 hours**
+
 - Implement k6 for API load testing
 - Configure Lighthouse for frontend audits
 - Set up performance budgets and alerts
 
 ### 9. [Task T09: Release Management and Semantic Versioning](T09/spec.md)
+
 **Estimated: 1 hour**
+
 - Configure semantic-release for versioning
 - Set up automated changelog generation
 - Implement GitHub release creation
 
 ### 10. [Task T10: Branch Protection and Quality Gates](T10/spec.md)
+
 **Estimated: 1 hour**
+
 - Configure branch protection rules
 - Set up required status checks and reviews
 - Implement CODEOWNERS for automatic assignments
 
 ### 11. [Task T11: CI/CD Monitoring and Notifications](T11/spec.md)
+
 **Estimated: 2 hours**
+
 - Integrate Slack/Discord notifications
 - Configure build status reporting
 - Set up PR comment integration
@@ -1071,6 +1106,7 @@ The feature has been broken down into the following implementation tasks:
 ## Quality Gates
 
 ### Build Quality Gates
+
 - All linting and formatting checks must pass
 - TypeScript compilation must succeed without errors
 - Unit test coverage must be ≥95%
@@ -1079,6 +1115,7 @@ The feature has been broken down into the following implementation tasks:
 - Performance benchmarks must meet thresholds
 
 ### Deployment Quality Gates
+
 - All quality gates must pass
 - Security scans must show no critical vulnerabilities
 - Health checks must pass in target environment
@@ -1088,6 +1125,7 @@ The feature has been broken down into the following implementation tasks:
 ## Configuration Files Summary
 
 Key files created by this feature:
+
 - `.github/workflows/ci.yml` - Main CI pipeline
 - `.github/workflows/security.yml` - Security scanning
 - `.github/workflows/deploy-*.yml` - Deployment pipelines

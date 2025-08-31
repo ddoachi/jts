@@ -27,28 +27,27 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01-F04-T01
-- E01-F04-T02
+  - T01
+  - T02
 blocks: []
 related: []
 pull_requests: []
 commits: []
 context_file: 1048.context.md
 files:
-- .github/workflows/performance.yml
-- tools/performance/k6-tests.js
-- lighthouse.config.js
+  - .github/workflows/performance.yml
+  - tools/performance/k6-tests.js
+  - lighthouse.config.js
 
 # === METADATA ===
 tags:
-- performance
-- load-testing
-- k6
-- lighthouse
+  - performance
+  - load-testing
+  - k6
+  - lighthouse
 effort: small
 risk: low
 ---
-
 
 # Performance Testing Workflow
 

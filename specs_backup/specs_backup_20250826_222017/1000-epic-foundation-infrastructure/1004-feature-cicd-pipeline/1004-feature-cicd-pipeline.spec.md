@@ -35,7 +35,16 @@ related: ['1002'] # Related but not blocking (spec IDs)
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
 worktree: '' # Worktree path (optional)
-files: ['.github/workflows/', 'Dockerfile', 'docker-compose.ci.yml', 'package.json', 'nx.json', 'jest.config.ts', '.dockerignore', 'scripts/'] # Key files to modify
+files: [
+    '.github/workflows/',
+    'Dockerfile',
+    'docker-compose.ci.yml',
+    'package.json',
+    'nx.json',
+    'jest.config.ts',
+    '.dockerignore',
+    'scripts/',
+  ] # Key files to modify
 
 # === METADATA ===
 tags: ['cicd', 'github-actions', 'docker', 'automation', 'testing', 'deployment', 'security'] # Searchable tags
@@ -69,6 +78,7 @@ Establish a comprehensive CI/CD pipeline foundation using GitHub Actions for the
 ### CI/CD Architecture
 
 #### Pipeline Overview
+
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        GitHub Actions Pipeline                     │
@@ -87,6 +97,7 @@ Establish a comprehensive CI/CD pipeline foundation using GitHub Actions for the
 ```
 
 #### Workflow Structure
+
 ```
 .github/workflows/
 ├── ci.yml                    # Main CI pipeline
@@ -176,11 +187,11 @@ jobs:
           AFFECTED_APPS=$(npx nx show projects --affected --type=app --base=origin/main~1 | tr '\n' ',' | sed 's/,$//')
           AFFECTED_LIBS=$(npx nx show projects --affected --type=lib --base=origin/main~1 | tr '\n' ',' | sed 's/,$//')
           HAS_AFFECTED=$([ -n "$AFFECTED_APPS" ] || [ -n "$AFFECTED_LIBS" ] && echo 'true' || echo 'false')
-          
+
           echo "affected-apps=$AFFECTED_APPS" >> $GITHUB_OUTPUT
           echo "affected-libs=$AFFECTED_LIBS" >> $GITHUB_OUTPUT
           echo "has-affected=$HAS_AFFECTED" >> $GITHUB_OUTPUT
-          
+
           echo "Affected Apps: $AFFECTED_APPS"
           echo "Affected Libs: $AFFECTED_LIBS"
           echo "Has Affected: $HAS_AFFECTED"
@@ -335,7 +346,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: ['api-gateway', 'strategy-engine', 'risk-management', 'order-execution', 'market-data-collector', 'web-app']
+        service:
+          [
+            'api-gateway',
+            'strategy-engine',
+            'risk-management',
+            'order-execution',
+            'market-data-collector',
+            'web-app',
+          ]
     outputs:
       image-tags: ${{ steps.meta.outputs.tags }}
     steps:
@@ -406,7 +425,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: ['api-gateway', 'strategy-engine', 'risk-management', 'order-execution', 'market-data-collector', 'web-app']
+        service:
+          [
+            'api-gateway',
+            'strategy-engine',
+            'risk-management',
+            'order-execution',
+            'market-data-collector',
+            'web-app',
+          ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -443,7 +470,7 @@ name: Security Scanning
 
 on:
   schedule:
-    - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM
+    - cron: '0 2 * * 1' # Weekly on Monday at 2 AM
   push:
     branches: [main]
   pull_request:
@@ -579,7 +606,14 @@ jobs:
     environment: production
     strategy:
       matrix:
-        service: ['api-gateway', 'strategy-engine', 'risk-management', 'order-execution', 'market-data-collector']
+        service:
+          [
+            'api-gateway',
+            'strategy-engine',
+            'risk-management',
+            'order-execution',
+            'market-data-collector',
+          ]
     steps:
       - name: Deploy to Green Environment
         run: |
@@ -705,7 +739,7 @@ services:
       POSTGRES_USER: test_user
       POSTGRES_PASSWORD: test_password
     ports:
-      - "5432:5432"
+      - '5432:5432'
     tmpfs:
       - /var/lib/postgresql/data
     command: postgres -c fsync=off -c synchronous_commit=off -c full_page_writes=off
@@ -713,7 +747,7 @@ services:
   redis-test:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     tmpfs:
       - /data
 
@@ -724,8 +758,8 @@ services:
       CLICKHOUSE_USER: test_user
       CLICKHOUSE_PASSWORD: test_password
     ports:
-      - "8123:8123"
-      - "9000:9000"
+      - '8123:8123'
+      - '9000:9000'
     tmpfs:
       - /var/lib/clickhouse
 
@@ -736,7 +770,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: test_password
       MONGO_INITDB_DATABASE: jts_test_config
     ports:
-      - "27017:27017"
+      - '27017:27017'
     tmpfs:
       - /data/db
 
@@ -748,7 +782,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     ports:
-      - "9092:9092"
+      - '9092:9092'
     depends_on:
       - zookeeper-test
     tmpfs:
@@ -775,14 +809,14 @@ protection_rules:
     required_status_checks:
       strict: true
       contexts:
-        - "CI Pipeline / Code Quality (lint)"
-        - "CI Pipeline / Code Quality (type-check)"
-        - "CI Pipeline / Code Quality (format)"
-        - "CI Pipeline / Test (unit)"
-        - "CI Pipeline / Test (integration)"
-        - "CI Pipeline / Test (e2e)"
-        - "CI Pipeline / Build"
-        - "CI Pipeline / Security Scan"
+        - 'CI Pipeline / Code Quality (lint)'
+        - 'CI Pipeline / Code Quality (type-check)'
+        - 'CI Pipeline / Code Quality (format)'
+        - 'CI Pipeline / Test (unit)'
+        - 'CI Pipeline / Test (integration)'
+        - 'CI Pipeline / Test (e2e)'
+        - 'CI Pipeline / Build'
+        - 'CI Pipeline / Security Scan'
     enforce_admins: true
     required_pull_request_reviews:
       required_approving_review_count: 2
@@ -790,7 +824,7 @@ protection_rules:
       require_code_owner_reviews: true
     restrictions:
       users: []
-      teams: ["core-developers"]
+      teams: ['core-developers']
 ```
 
 #### Code Coverage Configuration
@@ -828,14 +862,7 @@ module.exports = {
       statements: 90,
     },
   },
-  coverageReporters: [
-    'text',
-    'text-summary',
-    'html',
-    'lcov',
-    'clover',
-    'json-summary',
-  ],
+  coverageReporters: ['text', 'text-summary', 'html', 'lcov', 'clover', 'json-summary'],
 };
 ```
 
@@ -849,7 +876,7 @@ name: Performance Testing
 
 on:
   schedule:
-    - cron: '0 1 * * *'  # Daily at 1 AM
+    - cron: '0 1 * * *' # Daily at 1 AM
   workflow_dispatch:
 
 jobs:
@@ -941,11 +968,7 @@ jobs:
     [
       "@semantic-release/git",
       {
-        "assets": [
-          "CHANGELOG.md",
-          "package.json",
-          "package-lock.json"
-        ],
+        "assets": ["CHANGELOG.md", "package.json", "package-lock.json"],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
     ]
@@ -1009,6 +1032,7 @@ jobs:
 ## Quality Gates
 
 ### Build Quality Gates
+
 - All linting and formatting checks must pass
 - TypeScript compilation must succeed without errors
 - Unit test coverage must be ≥95%
@@ -1017,6 +1041,7 @@ jobs:
 - Performance benchmarks must meet thresholds
 
 ### Deployment Quality Gates
+
 - All quality gates must pass
 - Security scans must show no critical vulnerabilities
 - Health checks must pass in target environment
@@ -1026,6 +1051,7 @@ jobs:
 ## Configuration Files Summary
 
 Key files created by this feature:
+
 - `.github/workflows/ci.yml` - Main CI pipeline
 - `.github/workflows/security.yml` - Security scanning
 - `.github/workflows/deploy-*.yml` - Deployment pipelines

@@ -27,39 +27,38 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01
+  - E01
 blocks: []
 related:
-- E02
-- E03
-- E04
-- E05
-- E06
-- E07
-- E09
-- E10
-- E11
+  - E02
+  - E03
+  - E04
+  - E05
+  - E06
+  - E07
+  - E09
+  - E10
+  - E11
 branch: ''
 files:
-- apps/core/monitoring/
-- libs/shared/metrics/
-- libs/shared/tracing/
-- infrastructure/monitoring/
+  - apps/core/monitoring/
+  - libs/shared/metrics/
+  - libs/shared/tracing/
+  - infrastructure/monitoring/
 
 # === METADATA ===
 tags:
-- monitoring
-- observability
-- metrics
-- logging
-- alerting
-- tracing
-- dashboards
-- health-checks
+  - monitoring
+  - observability
+  - metrics
+  - logging
+  - alerting
+  - tracing
+  - dashboards
+  - health-checks
 effort: epic
 risk: medium
 ---
-
 
 # Monitoring & Observability
 
@@ -85,6 +84,7 @@ Implement a comprehensive monitoring and observability system that provides real
 ## Technical Approach
 
 ### Monitoring Architecture
+
 Design a multi-layered observability stack that captures metrics, logs, and traces from all system components, providing both technical and business insights through unified dashboards and intelligent alerting.
 
 ### Key Components
@@ -211,6 +211,7 @@ When implementing this epic:
 ## Monitoring Specifications
 
 ### System Health Metrics
+
 - Service uptime and availability
 - Response time percentiles (P50, P95, P99)
 - Error rates and exception tracking
@@ -219,6 +220,7 @@ When implementing this epic:
 - Network latency between services
 
 ### Trading Performance Metrics
+
 - Order execution latency (market data to order placement)
 - Fill rate percentage by symbol and strategy
 - Slippage tracking and analysis
@@ -227,6 +229,7 @@ When implementing this epic:
 - Risk-adjusted returns (Sharpe ratio, Sortino ratio)
 
 ### Business KPIs
+
 - Daily/monthly trading volume
 - Profit and loss trends
 - Strategy performance rankings
@@ -235,6 +238,7 @@ When implementing this epic:
 - Market data latency and quality
 
 ### Infrastructure Metrics
+
 - Container resource usage
 - Database query performance
 - Cache hit rates (Redis)
@@ -243,6 +247,7 @@ When implementing this epic:
 - Network bandwidth utilization
 
 ### Alert Categories
+
 - **Critical**: Trading system down, data corruption, security breach
 - **Warning**: High latency, approaching risk limits, broker API throttling
 - **Info**: Strategy performance notifications, system maintenance alerts
@@ -250,6 +255,7 @@ When implementing this epic:
 ## Dashboard Layouts
 
 ### Executive Dashboard
+
 - P&L overview with trend analysis
 - Trading volume and activity summary
 - System availability and performance scores
@@ -257,6 +263,7 @@ When implementing this epic:
 - Top performing strategies
 
 ### Operations Dashboard
+
 - Service health matrix
 - Infrastructure resource utilization
 - Error rate trends
@@ -264,6 +271,7 @@ When implementing this epic:
 - System performance metrics
 
 ### Trading Dashboard
+
 - Real-time P&L by strategy and symbol
 - Order execution performance
 - Market data latency tracking
@@ -271,6 +279,7 @@ When implementing this epic:
 - Risk limit utilization
 
 ### Risk Management Dashboard
+
 - Portfolio exposure analysis
 - VaR and stress testing results
 - Correlation heat maps

@@ -30,7 +30,7 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01-F03-T05
+  - T05
 blocks: []
 related: []
 pull_requests: []
@@ -38,21 +38,20 @@ commits: []
 context_file: 1003.context.md
 worktree: ''
 files:
-- .github/workflows/ci.yml
-- .github/workflows/deploy.yml
-- .github/dependabot.yml
+  - .github/workflows/ci.yml
+  - .github/workflows/deploy.yml
+  - .github/dependabot.yml
 
 # === METADATA ===
 tags:
-- ci
-- cd
-- github-actions
-- automation
-- deployment
+  - ci
+  - cd
+  - github-actions
+  - automation
+  - deployment
 effort: small
 risk: low
 ---
-
 
 # Task T06: Configure CI/CD Pipeline and Automation
 
@@ -127,11 +126,11 @@ jobs:
           else
             NX_BASE=$(git rev-parse HEAD~1)
           fi
-          
+
           AFFECTED_APPS=$(npx nx print-affected --base=$NX_BASE --head=HEAD --select=projects --type=app)
           AFFECTED_LIBS=$(npx nx print-affected --base=$NX_BASE --head=HEAD --select=projects --type=lib)
           HAS_AFFECTED=$(npx nx print-affected --base=$NX_BASE --head=HEAD --select=projects | grep -q '.' && echo 'true' || echo 'false')
-          
+
           echo "apps=$AFFECTED_APPS" >> $GITHUB_OUTPUT
           echo "libs=$AFFECTED_LIBS" >> $GITHUB_OUTPUT
           echo "has-affected=$HAS_AFFECTED" >> $GITHUB_OUTPUT
@@ -416,44 +415,44 @@ jobs:
 version: 2
 updates:
   # NPM dependencies
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "03:00"
+      interval: 'weekly'
+      day: 'monday'
+      time: '03:00'
     open-pull-requests-limit: 10
     groups:
       nx:
         patterns:
-          - "@nx/*"
-          - "nx"
+          - '@nx/*'
+          - 'nx'
       nestjs:
         patterns:
-          - "@nestjs/*"
+          - '@nestjs/*'
       testing:
         patterns:
-          - "jest*"
-          - "@types/jest"
-          - "@swc/*"
+          - 'jest*'
+          - '@types/jest'
+          - '@swc/*'
       linting:
         patterns:
-          - "eslint*"
-          - "@typescript-eslint/*"
-          - "prettier"
+          - 'eslint*'
+          - '@typescript-eslint/*'
+          - 'prettier'
 
   # GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 5
 
   # Docker
-  - package-ecosystem: "docker"
-    directory: "/"
+  - package-ecosystem: 'docker'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
 ```
 
 ### 4. Code Quality Workflow

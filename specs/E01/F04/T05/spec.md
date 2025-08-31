@@ -27,29 +27,28 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01-F03
+  - F03
 blocks:
-- E01-F04-T04
-- E01-F04-T06
+  - T04
+  - T06
 related: []
 pull_requests: []
 commits: []
 context_file: 1045.context.md
 files:
-- apps/*/Dockerfile
-- .dockerignore
-- docker/base.Dockerfile
+  - apps/*/Dockerfile
+  - .dockerignore
+  - docker/base.Dockerfile
 
 # === METADATA ===
 tags:
-- docker
-- containerization
-- optimization
-- security
+  - docker
+  - containerization
+  - optimization
+  - security
 effort: small
 risk: low
 ---
-
 
 # Docker Multi-stage Build Configuration
 

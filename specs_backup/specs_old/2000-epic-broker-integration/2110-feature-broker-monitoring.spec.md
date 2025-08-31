@@ -35,7 +35,12 @@ related: ['2104', '2106', '2107'] # Related to rate limiting, routing, endpoints
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
 worktree: '' # Worktree path (optional)
-files: ['apps/monitoring/', 'libs/shared/metrics/', 'deployment/monitoring/grafana/', 'deployment/monitoring/prometheus/'] # Key files to modify
+files: [
+    'apps/monitoring/',
+    'libs/shared/metrics/',
+    'deployment/monitoring/grafana/',
+    'deployment/monitoring/prometheus/',
+  ] # Key files to modify
 
 # === METADATA ===
 tags: ['monitoring', 'observability', 'metrics', 'alerting', 'dashboard'] # Searchable tags
@@ -158,6 +163,7 @@ Build a comprehensive observability platform using the three pillars: metrics, l
 ## Monitoring Specifications
 
 ### Key Metrics
+
 ```typescript
 interface BrokerMetrics {
   // Connection Metrics
@@ -165,24 +171,24 @@ interface BrokerMetrics {
   connectionLatency: number;
   reconnectionCount: number;
   uptimePercentage: number;
-  
+
   // Performance Metrics
   orderLatency: Histogram;
   throughput: Counter;
   errorRate: Gauge;
   successRate: Gauge;
-  
+
   // Trading Metrics
   executionQuality: number;
   slippageBps: number;
   fillRate: number;
   rejectionRate: number;
-  
+
   // Rate Limit Metrics
   rateLimitUsage: Gauge;
   rateLimitViolations: Counter;
   queueDepth: Gauge;
-  
+
   // Business Metrics
   totalVolume: Counter;
   profitLoss: Gauge;
@@ -192,6 +198,7 @@ interface BrokerMetrics {
 ```
 
 ### Dashboard Categories
+
 ```yaml
 Dashboards:
   - Broker Health Overview
@@ -207,6 +214,7 @@ Dashboards:
 ```
 
 ### Alert Conditions
+
 ```typescript
 interface AlertRules {
   critical: {
@@ -227,6 +235,7 @@ interface AlertRules {
 ## Compliance & Audit
 
 ### Regulatory Requirements
+
 - Korean FSS compliance monitoring
 - Best execution tracking
 - Order audit trail
@@ -234,6 +243,7 @@ interface AlertRules {
 - Data retention (5+ years)
 
 ### Audit Logging
+
 ```typescript
 interface AuditLog {
   timestamp: Date;
@@ -248,6 +258,7 @@ interface AuditLog {
 ```
 
 ### Compliance Reports
+
 - Daily trading summary
 - Monthly execution quality
 - Quarterly compliance review
@@ -257,6 +268,7 @@ interface AuditLog {
 ## Performance Monitoring
 
 ### Latency Tracking
+
 - Order placement latency (p50, p95, p99)
 - Market data latency
 - API response times
@@ -264,6 +276,7 @@ interface AuditLog {
 - Network round-trip times
 
 ### Throughput Metrics
+
 - Orders per second
 - Messages per second
 - API calls per minute
@@ -271,6 +284,7 @@ interface AuditLog {
 - Concurrent connections
 
 ### Resource Utilization
+
 - CPU usage per service
 - Memory consumption
 - Network bandwidth
@@ -280,6 +294,7 @@ interface AuditLog {
 ## Anomaly Detection
 
 ### Detection Algorithms
+
 - Statistical deviation detection
 - Machine learning models
 - Pattern recognition
@@ -287,6 +302,7 @@ interface AuditLog {
 - Predictive analytics
 
 ### Monitored Anomalies
+
 - Unusual trading patterns
 - Abnormal error spikes
 - Performance degradation
@@ -335,6 +351,7 @@ When implementing this feature:
 ## Dashboard Design
 
 ### Broker Health Dashboard
+
 - Connection status grid
 - Uptime percentage trends
 - Error rate heat map
@@ -342,6 +359,7 @@ When implementing this feature:
 - Circuit breaker states
 
 ### Execution Quality Dashboard
+
 - Fill rate trends
 - Slippage distribution
 - Execution latency histogram
@@ -349,6 +367,7 @@ When implementing this feature:
 - Broker comparison matrix
 
 ### Rate Limit Dashboard
+
 - Current usage gauges
 - Historical usage patterns
 - Violation incidents
@@ -356,6 +375,7 @@ When implementing this feature:
 - Prediction models
 
 ### Compliance Dashboard
+
 - Regulatory metrics
 - Audit trail completeness
 - Data retention status
@@ -365,6 +385,7 @@ When implementing this feature:
 ## Alert Channels
 
 ### Notification Methods
+
 - Email notifications
 - Slack integration
 - PagerDuty escalation
@@ -372,6 +393,7 @@ When implementing this feature:
 - Webhook for automation
 
 ### Escalation Policies
+
 ```yaml
 Level 1: Email to team
 Level 2: Slack notification + Email
@@ -383,6 +405,7 @@ Level 5: Emergency response team
 ## Data Retention
 
 ### Retention Policies
+
 ```yaml
 Metrics:
   raw: 15 days

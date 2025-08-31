@@ -28,42 +28,41 @@ actual_hours: 1
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-- E01-F01-T06
+  - T06
 related:
-- E01-F01-T01
-- E01-F01-T03
+  - T01
+  - T03
 pull_requests:
-- '#15'
+  - '#15'
 commits:
-- d41de7a
+  - d41de7a
 context_file: 1014.context.md
 files:
-- /etc/fstab
-- /etc/sysctl.conf
-- scripts/setup-nas-integration.sh
-- scripts/nas-health-check.sh
-- docs/COLD_STORAGE_SETUP.md
+  - /etc/fstab
+  - /etc/sysctl.conf
+  - scripts/setup-nas-integration.sh
+  - scripts/nas-health-check.sh
+  - docs/COLD_STORAGE_SETUP.md
 deliverables:
-- specs/1000/1001/deliverables/docs/COLD_STORAGE_SETUP.md
+  - specs/1000/1001/deliverables/docs/COLD_STORAGE_SETUP.md
 
 # === METADATA ===
 tags:
-- storage
-- nas
-- nfs
-- cold-storage
-- synology
-- network-storage
-- archival
-- backup
-- historical-data
+  - storage
+  - nas
+  - nfs
+  - cold-storage
+  - synology
+  - network-storage
+  - archival
+  - backup
+  - historical-data
 effort: small
 risk: low
 acceptance_criteria: 6
 acceptance_met: 6
 test_coverage: 90
 ---
-
 
 # Cold Storage (NAS) Integration
 
@@ -89,6 +88,7 @@ The NAS integration includes network optimization, organized directory structure
 ### NAS Integration Architecture
 
 Design efficient network storage integration optimized for:
+
 - **Bulk Data Operations**: Large file transfers with optimized network buffers
 - **Archive Storage**: Long-term retention of historical market data and backups
 - **Development Resources**: Shared storage for notebooks, datasets, and experimental data
@@ -103,6 +103,7 @@ Design efficient network storage integration optimized for:
    - Enhanced timeout and retry settings for reliability
 
 2. **Directory Organization**
+
    ```
    /mnt/synology/jts/
    ├── archives/               # Long-term backups (3TB allocation)
@@ -135,63 +136,67 @@ Design efficient network storage integration optimized for:
 ### Implementation Steps
 
 1. **Current NFS Mount Analysis**
+
    ```bash
    # Check current NFS mount status
    mount | grep synology
    df -h /mnt/synology
-   
+
    # Test current connectivity
    ping -c 5 192.168.1.101
-   
+
    # Check current NFS performance
    dd if=/dev/zero of=/mnt/synology/speed_test bs=1M count=100 2>&1 | tail -1
    rm /mnt/synology/speed_test
    ```
 
 2. **Network Buffer Optimization**
+
    ```bash
    # Backup current sysctl configuration
    cp /etc/sysctl.conf /etc/sysctl.conf.backup.$(date +%Y%m%d_%H%M%S)
-   
+
    # Add NFS performance optimizations
    cat >> /etc/sysctl.conf << 'EOF'
-   
+
    # JTS NAS - Network buffer optimizations for NFS
    net.core.rmem_default = 262144
    net.core.rmem_max = 16777216
    net.core.wmem_default = 262144
    net.core.wmem_max = 16777216
    EOF
-   
+
    # Apply network optimizations
    sysctl -p
    ```
 
 3. **Enhanced NFS Mount Configuration**
+
    ```bash
    # Unmount current NFS mount
    sudo umount /mnt/synology
-   
+
    # Backup current fstab
    cp /etc/fstab /etc/fstab.backup.$(date +%Y%m%d_%H%M%S)
-   
+
    # Update fstab with optimized NFS mount
    sed -i '/192.168.1.101:\/volume1\/cocodev/d' /etc/fstab
-   
+
    cat >> /etc/fstab << 'EOF'
-   
+
    # JTS NAS - Optimized NFS mount for bulk data operations
    192.168.1.101:/volume1/cocodev /mnt/synology nfs rw,hard,intr,rsize=1048576,wsize=1048576,timeo=600,retrans=2,_netdev 0 0
    EOF
-   
+
    # Remount with optimized settings
    sudo mount /mnt/synology
-   
+
    # Verify optimized mount
    mount | grep synology
    ```
 
 4. **NAS Directory Structure Setup**
+
    ```bash
    # Create comprehensive directory structure
    mkdir -p /mnt/synology/jts/{archives,market-data,backtesting,models,development}
@@ -200,63 +205,65 @@ Design efficient network storage integration optimized for:
    mkdir -p /mnt/synology/jts/backtesting/{datasets,results,reports}
    mkdir -p /mnt/synology/jts/models/{training,models,validation}
    mkdir -p /mnt/synology/jts/development/{datasets,notebooks,experiments}
-   
+
    # Set proper ownership
    chown -R $USER:$USER /mnt/synology/jts/
-   
+
    # Set appropriate permissions
    chmod -R 755 /mnt/synology/jts/
    ```
 
 5. **Performance Testing and Validation**
+
    ```bash
    # Test large file write performance
    dd if=/dev/zero of=/mnt/synology/jts/development/write_test bs=1M count=E01 2>&1
-   
-   # Test large file read performance  
+
+   # Test large file read performance
    dd if=/mnt/synology/jts/development/write_test of=/dev/null bs=1M 2>&1
-   
+
    # Test concurrent access
    for i in {1..3}; do
      dd if=/dev/zero of=/mnt/synology/jts/development/concurrent_test_$i bs=1M count=100 &
    done
    wait
-   
+
    # Cleanup test files
    rm /mnt/synology/jts/development/{write_test,concurrent_test_*}
    ```
 
 6. **Health Monitoring Setup**
+
    ```bash
    # Create NAS health check script
    cat > scripts/nas-health-check.sh << 'EOF'
    #!/bin/bash
-   
+
    echo "🧊 JTS Cold Storage (NAS) Health Check - $(date)"
    echo "============================================="
-   
+
    # Check NAS connectivity
    echo "📡 NAS Connectivity:"
    ping -c 2 192.168.1.101 >/dev/null 2>&1 && echo "✅ NAS reachable" || echo "❌ NAS unreachable"
-   
+
    # Check mount status
    echo -e "\n💾 Mount Status:"
    mount | grep synology || echo "❌ NAS not mounted"
-   
+
    # Check space usage
    echo -e "\n📊 Storage Usage:"
    df -h /mnt/synology | tail -1
-   
+
    # Check directory structure
    echo -e "\n📁 Directory Structure:"
    ls -la /mnt/synology/jts/ 2>/dev/null || echo "❌ JTS directory not found"
-   
+
    # Network performance test
    echo -e "\n⚡ Network Performance Test:"
    timeout 10s dd if=/dev/zero of=/mnt/synology/jts/development/speed_test bs=1M count=50 2>&1 | tail -1
    rm -f /mnt/synology/jts/development/speed_test
    EOF
-   
+
    chmod +x scripts/nas-health-check.sh
    ```
 
@@ -265,6 +272,7 @@ Design efficient network storage integration optimized for:
 **No Dependencies**: This feature can be implemented completely independently and in parallel with other storage features.
 
 **Enables After Implementation:**
+
 - **Feature T06**: Tiered Storage Management requires NAS for archival operations
 
 ## Testing Plan
@@ -317,12 +325,14 @@ PERFORMANCE CONSIDERATIONS:
 ## Notes
 
 ### Network Storage Benefits
+
 - **Massive Capacity**: 28TB provides substantial growth runway
 - **Cost Effectiveness**: Network storage more economical for archival data
 - **Accessibility**: Shared access from multiple development machines
 - **Redundancy**: Synology NAS provides built-in data protection
 
 ### Integration Considerations
+
 - **Development Workflow**: Immediate benefit for storing notebooks and datasets
 - **Backup Strategy**: Foundation for long-term backup retention
 - **Compliance**: Enables long-term data retention for regulatory requirements

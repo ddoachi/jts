@@ -3,6 +3,7 @@
 ## How to Include Architecture Diagrams for Better Task Generation
 
 ### 1. Mermaid Diagram Format (Recommended)
+
 Include architecture diagrams in Mermaid format within the PRD or as separate files:
 
 ```mermaid
@@ -52,31 +53,31 @@ graph TB
     Gateway --> OE
     Gateway --> RM
     Gateway --> PT
-    
+
     SE --> Kafka
     OE --> Kafka
     RM --> Kafka
     PT --> Kafka
     MDC --> Kafka
-    
+
     Kafka --> OE
     Kafka --> SE
     Kafka --> PT
     Kafka --> NS
-    
+
     OE --> Creon
     OE --> KIS
     OE --> Binance
     OE --> Upbit
-    
+
     MDC --> Creon
     MDC --> KIS
     MDC --> Binance
     MDC --> Upbit
-    
+
     SE --> Redis
     OE --> Redis
-    
+
     OE --> PG
     PT --> PG
     MDC --> CH
@@ -84,17 +85,19 @@ graph TB
 ```
 
 ### 2. Service Communication Matrix
+
 Include a clear matrix showing service interactions:
 
-| Service | Communicates With | Protocol | Purpose |
-|---------|------------------|----------|---------|
-| Strategy Engine | Kafka, MongoDB, Redis | gRPC/Event | Signal generation, strategy storage |
-| Order Execution | Kafka, PostgreSQL, Brokers | HTTP/Event | Order placement and tracking |
-| Market Data Collector | Brokers, ClickHouse, Kafka | WebSocket/Event | Real-time data ingestion |
-| Risk Management | Kafka, PostgreSQL | Event | Portfolio risk monitoring |
-| API Gateway | All Business Services | HTTP/gRPC | Request routing |
+| Service               | Communicates With          | Protocol        | Purpose                             |
+| --------------------- | -------------------------- | --------------- | ----------------------------------- |
+| Strategy Engine       | Kafka, MongoDB, Redis      | gRPC/Event      | Signal generation, strategy storage |
+| Order Execution       | Kafka, PostgreSQL, Brokers | HTTP/Event      | Order placement and tracking        |
+| Market Data Collector | Brokers, ClickHouse, Kafka | WebSocket/Event | Real-time data ingestion            |
+| Risk Management       | Kafka, PostgreSQL          | Event           | Portfolio risk monitoring           |
+| API Gateway           | All Business Services      | HTTP/gRPC       | Request routing                     |
 
 ### 3. Data Flow Diagrams
+
 Include sequence diagrams for critical flows:
 
 ```mermaid
@@ -110,7 +113,7 @@ sequenceDiagram
     User->>Gateway: Define Strategy (DSL)
     Gateway->>StrategyEngine: Parse & Compile DSL
     StrategyEngine->>Kafka: Subscribe to market data
-    
+
     loop Market Hours
         Kafka->>StrategyEngine: Market Data Event
         StrategyEngine->>StrategyEngine: Evaluate Rules
@@ -128,6 +131,7 @@ sequenceDiagram
 ```
 
 ### 4. Component Dependency Tree
+
 Show clear dependencies for build order:
 
 ```yaml
@@ -162,9 +166,11 @@ Level 5 (Presentation):
 ```
 
 ### 5. Phase-Aligned Architecture Views
+
 Create phase-specific views showing what gets built when:
 
 #### Phase 1 Architecture (Foundation)
+
 ```
 Windows Machine          Linux Server
 ┌─────────────┐         ┌──────────────────────┐
@@ -176,11 +182,13 @@ Windows Machine          Linux Server
 ```
 
 #### Phase 2 Architecture (Enhanced)
+
 ```
 Add: PWA Dashboard, Risk Management, Portfolio Tracker
 ```
 
 #### Phase 3 Architecture (Multi-Broker)
+
 ```
 Add: KIS, Binance, Upbit services
 Add: Unified Broker Abstraction Layer
@@ -197,12 +205,15 @@ Add: Unified Broker Abstraction Layer
 ## How to Provide Architecture Information
 
 ### Option 1: Embedded in PRD
+
 ```markdown
 ## System Architecture
+
 [Include Mermaid diagrams here]
 ```
 
 ### Option 2: Separate Architecture File
+
 ```
 .claude-workflow/
 ├── specs/
@@ -212,7 +223,9 @@ Add: Unified Broker Abstraction Layer
 ```
 
 ### Option 3: Interactive Format
+
 When starting a task, provide:
+
 1. The specific component being worked on
 2. Its upstream and downstream dependencies
 3. The communication protocols it uses
@@ -225,7 +238,8 @@ When starting a task, provide:
 
 **With Architecture Diagram:**
 "Implement order execution service that:
-- Subscribes to signals.entry.* Kafka topics
+
+- Subscribes to signals.entry.\* Kafka topics
 - Communicates with Creon/KIS/Binance/Upbit via HTTP
 - Publishes to orders.executions topic
 - Stores orders in PostgreSQL
@@ -241,6 +255,7 @@ When starting a task, provide:
 5. Keep architecture diagrams updated as system evolves
 
 This will enable me to:
+
 - Generate more accurate boilerplate
 - Create proper service interfaces
 - Implement correct communication patterns
