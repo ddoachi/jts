@@ -39,12 +39,14 @@
 
 ## Files Created/Modified
 
-1. `specs/E01/F02/deliverables/scripts/install-node-yarn.sh` - Main installation entry point
-2. `specs/E01/F02/deliverables/scripts/install-node-yarn-linux.sh` - Linux installer
-3. `specs/E01/F02/deliverables/scripts/install-node-yarn-windows.ps1` - Windows installer
-4. `specs/E01/F02/deliverables/config/.yarnrc.yml` - Yarn 4 configuration
-5. `specs/E01/F02/deliverables/config/package.json.template` - Workspace-enabled package.json template
-6. `specs/E01/F02/deliverables/config/gitignore.template` - Git ignore patterns for Yarn 4
+1. `scripts/install-node-yarn.sh` - Main installation entry point
+2. `scripts/install-node-yarn-linux.sh` - Linux installer  
+3. `scripts/install-node-yarn-windows.ps1` - Windows installer
+4. `configs/.yarnrc.yml` - Yarn 4 configuration
+5. `configs/package.json.template` - Workspace-enabled package.json template
+6. `configs/gitignore.template` - Git ignore patterns for Yarn 4
+
+**Note**: Files moved from `specs/E01/F02/deliverables/` to proper project locations on 2025-08-31 for better maintainability.
 
 ## Deliverables Completed
 

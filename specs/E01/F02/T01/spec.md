@@ -38,12 +38,12 @@ pull_requests: []
 commits: []
 context_file: 1021.context.md
 files:
-  - specs/E01/F02/deliverables/scripts/install-node-yarn.sh
-  - specs/E01/F02/deliverables/scripts/install-node-yarn-linux.sh
-  - specs/E01/F02/deliverables/scripts/install-node-yarn-windows.ps1
-  - specs/E01/F02/deliverables/config/package.json.template
-  - specs/E01/F02/deliverables/config/.yarnrc.yml
-  - specs/E01/F02/deliverables/config/gitignore.template
+  - scripts/install-node-yarn.sh
+  - scripts/install-node-yarn-linux.sh
+  - scripts/install-node-yarn-windows.ps1
+  - configs/package.json.template
+  - configs/.yarnrc.yml
+  - configs/gitignore.template
 
 # === METADATA ===
 tags:
@@ -175,12 +175,12 @@ plugins:
 
 ## Deliverables
 
-- `specs/E01/F02/deliverables/scripts/install-node-yarn.sh` - Unified installation script
-- `specs/E01/F02/deliverables/scripts/install-node-yarn-linux.sh` - Linux-specific installer
-- `specs/E01/F02/deliverables/scripts/install-node-yarn-windows.ps1` - Windows PowerShell installer
-- `specs/E01/F02/deliverables/config/.yarnrc.yml` - Yarn configuration
-- `specs/E01/F02/deliverables/config/package.json.template` - Root package configuration template
-- `specs/E01/F02/deliverables/config/gitignore.template` - Git ignore patterns for Yarn 4
+- `scripts/install-node-yarn.sh` - Unified installation script
+- `scripts/install-node-yarn-linux.sh` - Linux-specific installer
+- `scripts/install-node-yarn-windows.ps1` - Windows PowerShell installer
+- `configs/.yarnrc.yml` - Yarn configuration
+- `configs/package.json.template` - Root package configuration template
+- `configs/gitignore.template` - Git ignore patterns for Yarn 4
 - Installation verification checklist
 
 ## Testing Plan
