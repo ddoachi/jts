@@ -27,12 +27,12 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F01
+- E02-F01
 blocks: []
 related:
-- F02
-- F04
-- F07
+- E02-F02
+- E02-F04
+- E02-F07
 branch: ''
 files:
 - apps/brokers/mock/

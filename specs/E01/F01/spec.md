@@ -34,12 +34,12 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-- F02
-- F04
-- F05
+- E01-F02
+- E01-F04
+- E01-F05
 related:
-- F06
-- F08
+- E01-F06
+- E01-F08
 pull_requests:
 - '#18'
 - '#19'
@@ -51,44 +51,44 @@ files:
 - /etc/fstab
 deliverables:
   scripts:
-    - scripts/storage/configure-permissions.sh
-    - scripts/storage/fix-test-issues.sh  
-    - scripts/storage/hot-storage-monitor.sh
-    - scripts/storage/jts-storage-monitor.sh
-    - scripts/storage/lvm-backup.sh
-    - scripts/storage/nas-archival.sh
-    - scripts/storage/nas-health-check.sh
-    - scripts/storage/performance-benchmark.sh
-    - scripts/storage/sata-health-check.sh
-    - scripts/storage/setup-database-users.sh
-    - scripts/storage/setup-hot-directories.sh
-    - scripts/storage/setup-mount-points.sh
-    - scripts/storage/setup-sata-storage.sh
-    - scripts/storage/ssd-optimization.sh
-    - scripts/storage/storage-health.sh
-    - scripts/storage/test-database-mounts.sh
-    - scripts/storage/test-summary.sh
-    - scripts/storage/tiered-storage.sh
-    - scripts/storage/validate-database-mounts.sh
-    - scripts/storage/validate-directories.sh
+    - scripts/configure-permissions.sh
+    - scripts/fix-test-issues.sh  
+    - scripts/hot-storage-monitor.sh
+    - scripts/jts-storage-monitor.sh
+    - scripts/lvm-backup.sh
+    - scripts/nas-archival.sh
+    - scripts/nas-health-check.sh
+    - scripts/performance-benchmark.sh
+    - scripts/sata-health-check.sh
+    - scripts/setup-database-users.sh
+    - scripts/setup-hot-directories.sh
+    - scripts/setup-mount-points.sh
+    - scripts/setup-sata-storage.sh
+    - scripts/ssd-optimization.sh
+    - scripts/storage-health.sh
+    - scripts/test-database-mounts.sh
+    - scripts/test-summary.sh
+    - scripts/tiered-storage.sh
+    - scripts/validate-database-mounts.sh
+    - scripts/validate-directories.sh
   docs:
-    - docs/infrastructure/COLD_STORAGE_SETUP.md
-    - docs/infrastructure/DATABASE_MOUNT_SETUP.md
-    - docs/infrastructure/HOT_STORAGE_SETUP.md
-    - docs/infrastructure/PERFORMANCE_OPTIMIZATION.md
-    - docs/infrastructure/TIERED_STORAGE_MANAGEMENT.md
-    - docs/infrastructure/WARM_STORAGE_SETUP.md
+    - docs/COLD_STORAGE_SETUP.md
+    - docs/DATABASE_MOUNT_SETUP.md
+    - docs/HOT_STORAGE_SETUP.md
+    - docs/PERFORMANCE_OPTIMIZATION.md
+    - docs/TIERED_STORAGE_MANAGEMENT.md
+    - docs/WARM_STORAGE_SETUP.md
   configs:
-    - configs/storage/rollback_migration.sh
-    - configs/storage/migration_log.json
-    - configs/storage/fstab-nas-mount.conf
-    - configs/storage/sysctl-nas-optimization.conf
-    - configs/storage/60-ssd-scheduler.rules
-    - configs/storage/fstrim-all.service
-    - configs/storage/fstrim-all.timer
-    - configs/storage/tiered-storage.service
-    - configs/storage/tiered-storage.timer
-    - configs/storage/fstab.backup.20250826_000534
+    - configs/rollback_migration.sh
+    - configs/migration_log.json
+    - configs/fstab-nas-mount.conf
+    - configs/sysctl-nas-optimization.conf
+    - configs/60-ssd-scheduler.rules
+    - configs/fstrim-all.service
+    - configs/fstrim-all.timer
+    - configs/tiered-storage.service
+    - configs/tiered-storage.timer
+    - configs/fstab.backup.20250826_000534
 
 # === METADATA ===
 tags:

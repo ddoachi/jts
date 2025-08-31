@@ -34,11 +34,11 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-- F03
-- F04
-- F05
+- E01-F03
+- E01-F04
+- E01-F05
 related:
-- F01
+- E01-F01
 pull_requests: []
 commits: []
 context_file: context.md
@@ -51,16 +51,15 @@ files:
 - docs/DEVELOPMENT.md
 deliverables:
   scripts:
-    - scripts/setup/install-node-yarn.sh
-    - scripts/setup/install-node-yarn-linux.sh
-    - scripts/setup/install-node-yarn-windows.ps1
+    - scripts/install-node-yarn.sh
+    - scripts/install-node-yarn-linux.sh
+    - scripts/install-node-yarn-windows.ps1
   docs:
-    - docs/development/IDE-SETUP.md
-    - docs/development/usage-guide.md
+    - docs/IDE-SETUP.md
+    - docs/usage-guide.md
   configs:
-    - configs/development/.yarnrc.yml
-    - configs/development/gitignore.template
-    - configs/development/package.json.template
+    - configs/gitignore.template
+    - configs/package.json.template
 
 # === METADATA ===
 tags:

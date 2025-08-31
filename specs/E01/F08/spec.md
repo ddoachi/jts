@@ -27,8 +27,8 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F03
-- F05
+- E01-F03
+- E01-F05
 blocks:
 - E02
 - E03
@@ -36,8 +36,8 @@ blocks:
 - E05
 - E06
 related:
-- F06
-- F07
+- E01-F06
+- E01-F07
 branch: feature/1008-monitoring-logging
 files:
 - infrastructure/monitoring/

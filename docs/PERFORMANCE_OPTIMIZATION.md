@@ -14,12 +14,12 @@ This document provides comprehensive guidance for implementing and maintaining s
 
 ```bash
 # Copy udev rules for I/O scheduler optimization
-sudo cp configs/storage/60-ssd-scheduler.rules /etc/udev/rules.d/
+sudo cp configs/60-ssd-scheduler.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules
 
 # Copy systemd service and timer for automated TRIM
-sudo cp configs/storage/fstrim-all.service /etc/systemd/system/
-sudo cp configs/storage/fstrim-all.timer /etc/systemd/system/
+sudo cp configs/fstrim-all.service /etc/systemd/system/
+sudo cp configs/fstrim-all.timer /etc/systemd/system/
 
 # Enable and start the TRIM timer
 sudo systemctl daemon-reload
@@ -31,13 +31,13 @@ sudo systemctl start fstrim-all.timer
 
 ```bash
 # Quick performance check
-./scripts/storage/performance-benchmark.sh --quick
+./scripts/performance-benchmark.sh --quick
 
 # Full performance benchmark
-./scripts/storage/performance-benchmark.sh --full
+./scripts/performance-benchmark.sh --full
 
 # Check optimization status
-./scripts/storage/ssd-optimization.sh --check
+./scripts/ssd-optimization.sh --check
 ```
 
 ## Performance Optimization Components

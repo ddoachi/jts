@@ -2,6 +2,11 @@
 # ============================================================================
 # Hot Storage (NVMe) Directory Setup Script
 # ============================================================================
+# Generated from: specs/1000/1001/1011.md
+# Context: specs/1000/1001/1011.context.md
+# Created: 2025-08-24
+# Purpose: Set up foundational directory structure for hot storage
+#
 # This script sets up the foundational directory structure for JTS hot storage
 # on NVMe SSD with proper permissions and service user configuration.
 #

@@ -29,12 +29,12 @@ actual_hours: 0
 dependencies:
 - E01
 blocks:
-- F06
-- F07
+- E02-F06
+- E02-F07
 related:
-- F02
-- F03
-- F04
+- E02-F02
+- E02-F03
+- E02-F04
 branch: ''
 files:
 - libs/shared/services/rate-limiter.service.ts

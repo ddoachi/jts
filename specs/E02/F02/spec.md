@@ -27,12 +27,12 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F01
+- E02-F01
 blocks:
-- F03
+- E02-F03
 related:
-- F05
-- F06
+- E02-F05
+- E02-F06
 branch: ''
 files:
 - apps/brokers/kis/

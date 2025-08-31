@@ -2,6 +2,11 @@
 # ============================================================================
 # JTS Hot Storage Directory Validation Script
 # ============================================================================
+# Generated from: specs/1000/1001/1011.md
+# Context: specs/1000/1001/1011.context.md
+# Created: 2025-08-24
+# Purpose: Validate hot storage directory structure and permissions
+#
 # Validates the hot storage directory structure, permissions, and service
 # user access for the JTS trading system infrastructure.
 #

@@ -27,9 +27,9 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F03
-- F05
-- F07
+- E01-F03
+- E01-F05
+- E01-F07
 blocks:
 - E02
 - E03
@@ -37,7 +37,7 @@ blocks:
 - E05
 - E06
 related:
-- F08
+- E01-F08
 branch: feature/1009-security-foundation
 files:
 - infrastructure/security/

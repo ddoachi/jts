@@ -29,13 +29,13 @@ actual_hours: 0
 dependencies:
 - E01
 blocks:
-- F02
-- F03
-- F04
-- F06
-- F07
-- F08
-- F10
+- E02-F02
+- E02-F03
+- E02-F04
+- E02-F06
+- E02-F07
+- E02-F08
+- E02-F10
 related: []
 branch: ''
 files:

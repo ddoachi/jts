@@ -27,10 +27,10 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
+- E01-F04-T01
 blocks: []
 related:
-- T04
+- E01-F04-T04
 pull_requests: []
 commits: []
 context_file: 1051.context.md

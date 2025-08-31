@@ -27,8 +27,8 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
-- T02
+- E01-F04-T01
+- E01-F04-T02
 blocks: []
 related: []
 pull_requests: []

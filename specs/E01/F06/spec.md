@@ -27,13 +27,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F01
+- E01-F01
 blocks:
-- F07
+- E01-F07
 - E02
 - E03
 related:
-- F05
+- E01-F05
 branch: feature/1006-message-queue-setup
 files:
 - infrastructure/kafka/

@@ -27,13 +27,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F08
+- E02-F08
 blocks:
-- F11
+- E02-F11
 related:
-- F02
-- F04
-- F07
+- E02-F02
+- E02-F04
+- E02-F07
 branch: ''
 files:
 - libs/shared/errors/broker-errors.ts

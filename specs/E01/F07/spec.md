@@ -27,8 +27,8 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F05
-- F06
+- E01-F05
+- E01-F06
 blocks:
 - E02
 - E03
@@ -36,8 +36,8 @@ blocks:
 - E05
 - E06
 related:
-- F02
-- F08
+- E01-F02
+- E01-F08
 branch: feature/1007-service-communication
 files:
 - apps/api-gateway/

@@ -27,12 +27,12 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F09
+- E02-F09
 blocks: []
 related:
-- F05
-- F07
-- F08
+- E02-F05
+- E02-F07
+- E02-F08
 branch: ''
 files:
 - apps/monitoring/

@@ -27,13 +27,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F01
-- F07
+- E02-F01
+- E02-F07
 blocks:
-- F09
+- E02-F09
 related:
-- F02
-- F04
+- E02-F02
+- E02-F04
 branch: ''
 files:
 - apps/api-gateway/broker/

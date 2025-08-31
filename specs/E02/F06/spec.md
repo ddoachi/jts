@@ -27,13 +27,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F01
-- F05
+- E02-F01
+- E02-F05
 blocks:
-- F07
+- E02-F07
 related:
-- F02
-- F08
+- E02-F02
+- E02-F08
 branch: ''
 files:
 - libs/shared/services/account-pool.service.ts

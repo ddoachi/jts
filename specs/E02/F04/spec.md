@@ -27,11 +27,11 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F01
+- E02-F01
 blocks: []
 related:
-- F05
-- F09
+- E02-F05
+- E02-F09
 branch: ''
 files:
 - apps/brokers/creon/

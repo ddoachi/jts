@@ -25,12 +25,12 @@ This guide provides step-by-step instructions for setting up Node.js 20 LTS and 
 
 1. **Make the script executable:**
    ```bash
-   chmod +x scripts/setup/install-node-yarn.sh
+   chmod +x scripts/install-node-yarn.sh
    ```
 
 2. **Run the unified installer:**
    ```bash
-   ./scripts/setup/install-node-yarn.sh
+   ./scripts/install-node-yarn.sh
    ```
 
    This script will:
@@ -44,12 +44,12 @@ This guide provides step-by-step instructions for setting up Node.js 20 LTS and 
 
 1. **Make the script executable:**
    ```bash
-   chmod +x scripts/setup/install-node-yarn-linux.sh
+   chmod +x scripts/install-node-yarn-linux.sh
    ```
 
 2. **Run the Linux installer:**
    ```bash
-   ./scripts/setup/install-node-yarn-linux.sh
+   ./scripts/install-node-yarn-linux.sh
    ```
 
 #### Windows
@@ -74,13 +74,13 @@ After installation, copy the configuration templates to the root directory:
 
 ```bash
 # Copy Yarn configuration
-cp configs/development/.yarnrc.yml .yarnrc.yml
+cp configs/.yarnrc.yml .yarnrc.yml
 
 # Copy package.json template
-cp configs/development/package.json.template package.json
+cp configs/package.json.template package.json
 
 # Update .gitignore with Yarn 4 patterns
-cat configs/development/gitignore.template >> .gitignore
+cat configs/gitignore.template >> .gitignore
 ```
 
 ### 2. Initialize Yarn Workspace
@@ -139,7 +139,7 @@ The template provides:
 #### 1. Permission Denied (Linux)
 ```bash
 # If you get permission errors, ensure scripts are executable
-chmod +x scripts/setup/*.sh
+chmod +x scripts/*.sh
 ```
 
 #### 2. Corepack Not Found

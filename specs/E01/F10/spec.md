@@ -27,13 +27,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F02
-- F03
+- E01-F02
+- E01-F03
 blocks:
-- F04
+- E01-F04
 related:
-- F08
-- F09
+- E01-F08
+- E01-F09
 branch: feature/1010-testing-framework
 files:
 - jest.config.js

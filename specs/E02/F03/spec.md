@@ -27,11 +27,11 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F02
+- E02-F02
 blocks: []
 related:
-- F05
-- F11
+- E02-F05
+- E02-F11
 branch: ''
 files:
 - apps/brokers/kis/websocket/

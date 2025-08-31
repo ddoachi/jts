@@ -27,12 +27,12 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F06
+- E02-F06
 blocks:
-- F08
+- E02-F08
 related:
-- F01
-- F05
+- E02-F01
+- E02-F05
 branch: ''
 files:
 - libs/shared/services/order-router.service.ts
