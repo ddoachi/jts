@@ -9,9 +9,9 @@ title: Development Scripts and Automation
 type: task
 
 # === HIERARCHY ===
-parent: "[F02](../spec.md)"
+parent: '[F02](../spec.md)'
 children: []
-epic: "[E01](../../spec.md)"
+epic: '[E01](../../spec.md)'
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,16 +27,16 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[T01](../T01/spec.md)"
-  - "[T02](../T02/spec.md)"
-  - "[T03](../T03/spec.md)"
-  - "[T04](../T04/spec.md)"
-  - "[T05](../T05/spec.md)"
+  - '[T01](../T01/spec.md)'
+  - '[T02](../T02/spec.md)'
+  - '[T03](../T03/spec.md)'
+  - '[T04](../T04/spec.md)'
+  - '[T05](../T05/spec.md)'
 blocks: []
 related: []
 pull_requests: []
 commits: []
-context_file: "[context.md](./context.md)"
+context_file: '[context.md](./context.md)'
 files:
   - scripts/setup-dev-env.sh
   - scripts/health-check.js
@@ -418,8 +418,8 @@ checkAllServices().catch(console.error);
 - `scripts/check-services-health.js` - Health monitoring
 - `scripts/validate-env.js` - Environment validator
 - Updated `package.json` - All workflow scripts
-- `docs/DEVELOPMENT.md` - Complete developer guide
-- `docs/QUICKSTART.md` - 5-minute setup guide
+- [`docs/DEVELOPMENT.md`](`docs/DEVELOPMENT.md`) - Complete developer guide
+- [`docs/QUICKSTART.md`](`docs/QUICKSTART.md`) - 5-minute setup guide
 
 ## Testing Plan
 
