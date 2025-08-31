@@ -9,9 +9,9 @@ title: Tiered Storage Management
 type: task
 
 # === HIERARCHY ===
-parent: "[F01](../spec.md)"
+parent: '[F01](../spec.md)'
 children: []
-epic: "[E01](../../spec.md)"
+epic: '[E01](../../spec.md)'
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,13 +27,13 @@ actual_hours: 2
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[T03](../T03/spec.md)"
-  - "[T04](../T04/spec.md)"
+  - '[T03](../T03/spec.md)'
+  - '[T04](../T04/spec.md)'
 blocks: []
 related:
-  - "[T01](../T01/spec.md)"
-  - "[T02](../T02/spec.md)"
-  - "[T05](../T05/spec.md)"
+  - '[T01](../T01/spec.md)'
+  - '[T02](../T02/spec.md)'
+  - '[T05](../T05/spec.md)'
 pull_requests: []
 commits:
   - 65d4b03
@@ -44,15 +44,15 @@ commits:
   - 675785b
   - 2838591
   - e7ccf93
-context_file: "[context.md](./context.md)"
+context_file: '[context.md](./context.md)'
 files:
-  - specs/E01/F01/deliverables/scripts/tiered-storage.sh
-  - specs/E01/F01/deliverables/scripts/nas-archival.sh
-  - specs/E01/F01/deliverables/scripts/storage-health.sh
-  - specs/E01/F01/deliverables/scripts/lvm-backup.sh
-  - specs/E01/F01/deliverables/config/tiered-storage.service
-  - specs/E01/F01/deliverables/config/tiered-storage.timer
-  - specs/E01/F01/deliverables/docs/TIERED_STORAGE_MANAGEMENT.md
+  - ../../../../scripts/tiered-storage.sh
+  - ../../../../scripts/nas-archival.sh
+  - ../../../../scripts/storage-health.sh
+  - ../../../../scripts/lvm-backup.sh
+  - ../../../../config/tiered-storage.service
+  - ../../../../config/tiered-storage.timer
+  - ../../../../docs/TIERED_STORAGE_MANAGEMENT.md
 
 # === METADATA ===
 tags:

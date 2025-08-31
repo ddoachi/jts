@@ -9,9 +9,9 @@ title: Cold Storage (NAS) Integration
 type: task
 
 # === HIERARCHY ===
-parent: "[F01](../spec.md)"
+parent: '[F01](../spec.md)'
 children: []
-epic: "[E01](../../spec.md)"
+epic: '[E01](../../spec.md)'
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -28,15 +28,15 @@ actual_hours: 1
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-  - "[T06](../T06/spec.md)"
+  - '[T06](../T06/spec.md)'
 related:
-  - "[T01](../T01/spec.md)"
-  - "[T03](../T03/spec.md)"
+  - '[T01](../T01/spec.md)'
+  - '[T03](../T03/spec.md)'
 pull_requests:
   - '#15'
 commits:
   - d41de7a
-context_file: "[1014.context.md](./1014.context.md)"
+context_file: '[context.md](context.md)'
 files:
   - /etc/fstab
   - /etc/sysctl.conf
@@ -44,7 +44,7 @@ files:
   - scripts/nas-health-check.sh
   - docs/COLD_STORAGE_SETUP.md
 deliverables:
-  - specs/1000/1001/deliverables/docs/COLD_STORAGE_SETUP.md
+  - ../../../../docs/COLD_STORAGE_SETUP.md
 
 # === METADATA ===
 tags:

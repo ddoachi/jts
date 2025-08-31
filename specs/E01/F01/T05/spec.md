@@ -9,9 +9,9 @@ title: Storage Performance Optimization
 type: task
 
 # === HIERARCHY ===
-parent: "[F01](../spec.md)"
+parent: '[F01](../spec.md)'
 children: []
-epic: "[E01](../../spec.md)"
+epic: '[E01](../../spec.md)'
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,21 +27,21 @@ actual_hours: 2.5
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[T01](../T01/spec.md)"
+  - '[T01](../T01/spec.md)'
 blocks: []
 related:
-  - "[T03](../T03/spec.md)"
-  - "[T04](../T04/spec.md)"
+  - '[T03](../T03/spec.md)'
+  - '[T04](../T04/spec.md)'
 pull_requests: []
 commits: []
-context_file: "[context.md](./context.md)"
+context_file: '[context.md](./context.md)'
 files:
-  - specs/E01/F01/deliverables/config/60-ssd-scheduler.rules
-  - specs/E01/F01/deliverables/config/fstrim-all.service
-  - specs/E01/F01/deliverables/config/fstrim-all.timer
-  - specs/E01/F01/deliverables/scripts/performance-benchmark.sh
-  - specs/E01/F01/deliverables/scripts/ssd-optimization.sh
-  - specs/E01/F01/deliverables/docs/PERFORMANCE_OPTIMIZATION.md
+  - ./config/60-ssd-scheduler.rules
+  - ./config/fstrim-all.service
+  - ./config/fstrim-all.timer
+  - ./scripts/performance-benchmark.sh
+  - ./scripts/ssd-optimization.sh
+  - ./docs/PERFORMANCE_OPTIMIZATION.md
 
 # === METADATA ===
 tags:

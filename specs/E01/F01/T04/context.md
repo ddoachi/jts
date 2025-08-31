@@ -43,19 +43,19 @@ Successfully integrated 28TB Synology NAS as cold storage tier with optimized NF
 
 ### Scripts
 
-- [NAS Setup Script](deliverables/scripts/nas-setup.sh) - Automated NFS mount configuration
-- [NAS Health Check](deliverables/scripts/nas-health-check.sh) - Connectivity and performance monitoring
-- [Performance Benchmark](deliverables/scripts/nas-benchmark.sh) - Speed testing tools
+- [NAS Setup Script](../../../../scripts/nas-setup.sh) - Automated NFS mount configuration
+- [NAS Health Check](../../../../scripts/nas-health-check.sh) - Connectivity and performance monitoring
+- [Performance Benchmark](../../../../scripts/nas-benchmark.sh) - Speed testing tools
 
 ### Documentation
 
-- [Cold Storage Guide](deliverables/docs/COLD_STORAGE_GUIDE.md) - Complete NAS setup documentation
-- [Troubleshooting Guide](deliverables/docs/NAS_TROUBLESHOOTING.md) - Common issues and solutions
+- [Cold Storage Guide](../../../../docs/COLD_STORAGE_GUIDE.md) - Complete NAS setup documentation
+- [Troubleshooting Guide](../../../../docs/NAS_TROUBLESHOOTING.md) - Common issues and solutions
 
 ### Configuration
 
-- [NFS Mount Config](deliverables/config/fstab.nas) - Example fstab entries
-- [Network Optimization](deliverables/config/sysctl.nas.conf) - Sysctl settings for NFS
+- [NFS Mount Config](../../../../config/fstab.nas) - Example fstab entries
+- [Network Optimization](../../../../config/sysctl.nas.conf) - Sysctl settings for NFS
 
 ### Integration Points
 
