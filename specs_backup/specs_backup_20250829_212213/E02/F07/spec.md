@@ -27,28 +27,27 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F06
+  - F06
 blocks:
-- F08
+  - F08
 related:
-- F01
-- F05
+  - F01
+  - F05
 branch: ''
 files:
-- libs/shared/services/order-router.service.ts
-- apps/brokers/common/routing/
-- libs/shared/algorithms/routing/
+  - libs/shared/services/order-router.service.ts
+  - apps/brokers/common/routing/
+  - libs/shared/algorithms/routing/
 
 # === METADATA ===
 tags:
-- order-routing
-- smart-routing
-- execution
-- optimization
+  - order-routing
+  - smart-routing
+  - execution
+  - optimization
 effort: large
 risk: medium
 unique_id: c6335734 # Unique identifier (never changes)
-
 ---
 
 # Smart Order Routing and Execution Engine
@@ -164,49 +163,53 @@ Build a sophisticated routing engine that evaluates multiple factors in real-tim
 ## Routing Specifications
 
 ### Routing Factors
+
 ```typescript
 interface RoutingFactors {
-  executionQuality: number;    // Historical fill quality (0-100)
-  latency: number;            // Average execution latency (ms)
-  fees: number;               // Transaction costs
-  liquidity: number;          // Available liquidity score
-  availability: number;       // Broker uptime percentage
-  rateLimit: number;          // Available rate limit capacity
-  marketImpact: number;       // Estimated price impact
+  executionQuality: number; // Historical fill quality (0-100)
+  latency: number; // Average execution latency (ms)
+  fees: number; // Transaction costs
+  liquidity: number; // Available liquidity score
+  availability: number; // Broker uptime percentage
+  rateLimit: number; // Available rate limit capacity
+  marketImpact: number; // Estimated price impact
 }
 ```
 
 ### Routing Strategies
+
 ```typescript
 enum RoutingStrategy {
-  BEST_EXECUTION = 'best_execution',     // Optimize for price
-  FASTEST = 'fastest',                    // Minimize latency
-  CHEAPEST = 'cheapest',                  // Minimize fees
-  LIQUIDITY_SEEKING = 'liquidity',        // Maximum liquidity
-  BALANCED = 'balanced',                  // Weighted combination
-  CUSTOM = 'custom'                       // User-defined rules
+  BEST_EXECUTION = 'best_execution', // Optimize for price
+  FASTEST = 'fastest', // Minimize latency
+  CHEAPEST = 'cheapest', // Minimize fees
+  LIQUIDITY_SEEKING = 'liquidity', // Maximum liquidity
+  BALANCED = 'balanced', // Weighted combination
+  CUSTOM = 'custom', // User-defined rules
 }
 ```
 
 ### Order Classifications
+
 ```typescript
 enum OrderSize {
-  SMALL = 'small',      // <$10,000
-  MEDIUM = 'medium',    // $10,000-$100,000
-  LARGE = 'large',      // $100,000-$1,000,000
-  BLOCK = 'block'       // >$1,000,000
+  SMALL = 'small', // <$10,000
+  MEDIUM = 'medium', // $10,000-$100,000
+  LARGE = 'large', // $100,000-$1,000,000
+  BLOCK = 'block', // >$1,000,000
 }
 
 enum OrderUrgency {
-  IMMEDIATE = 'immediate',  // Fill ASAP
-  NORMAL = 'normal',        // Standard priority
-  PATIENT = 'patient'       // Can wait for better price
+  IMMEDIATE = 'immediate', // Fill ASAP
+  NORMAL = 'normal', // Standard priority
+  PATIENT = 'patient', // Can wait for better price
 }
 ```
 
 ## Trading-Specific Requirements
 
 ### Execution Quality Metrics
+
 - Fill rate: Percentage of order filled
 - Slippage: Difference from expected price
 - Execution speed: Time to fill
@@ -214,6 +217,7 @@ enum OrderUrgency {
 - Rejection rate: Failed order percentage
 
 ### Market Impact Minimization
+
 - Detect large orders requiring splitting
 - Time-weighted average price (TWAP) execution
 - Volume-weighted average price (VWAP) targeting
@@ -221,6 +225,7 @@ enum OrderUrgency {
 - Dark pool integration (if available)
 
 ### Best Execution Compliance
+
 - Document all routing decisions
 - Justify broker selection
 - Track execution quality over time
@@ -228,6 +233,7 @@ enum OrderUrgency {
 - Regulatory reporting capability
 
 ### Risk Management
+
 - Maximum order size per broker
 - Concentration limits per venue
 - Failover thresholds
@@ -237,6 +243,7 @@ enum OrderUrgency {
 ## Performance Requirements
 
 ### Latency Targets
+
 - Routing decision: <20ms
 - Order placement: <50ms
 - Execution tracking: Real-time
@@ -244,6 +251,7 @@ enum OrderUrgency {
 - Report generation: <1s
 
 ### Throughput
+
 - 1,000+ routing decisions/second
 - 100+ concurrent executions
 - Real-time tracking all orders
@@ -252,6 +260,7 @@ enum OrderUrgency {
 ## Machine Learning Integration
 
 ### Features for ML Model
+
 - Historical execution quality
 - Time of day patterns
 - Market conditions
@@ -259,6 +268,7 @@ enum OrderUrgency {
 - Broker performance metrics
 
 ### Model Deployment
+
 - Online learning capability
 - A/B testing framework
 - Performance monitoring
@@ -307,6 +317,7 @@ When implementing this feature:
 ## Routing Rules Examples
 
 ### Rule: Large Order Splitting
+
 ```typescript
 if (orderValue > 100000 && marketImpact > 0.5%) {
   splitIntoChildOrders(order, {
@@ -318,25 +329,27 @@ if (orderValue > 100000 && marketImpact > 0.5%) {
 ```
 
 ### Rule: Broker Selection
+
 ```typescript
 selectBroker({
   weights: {
     executionQuality: 0.4,
     fees: 0.2,
     latency: 0.2,
-    liquidity: 0.2
+    liquidity: 0.2,
   },
   constraints: {
     minQuality: 80,
     maxLatency: 100,
-    requiresAvailable: true
-  }
+    requiresAvailable: true,
+  },
 });
 ```
 
 ## Monitoring & Analytics
 
 ### Key Metrics
+
 - Routing decision distribution
 - Execution quality by broker
 - Average slippage
@@ -345,6 +358,7 @@ selectBroker({
 - Cost savings
 
 ### Dashboards
+
 - Real-time routing flow
 - Broker performance comparison
 - Execution quality trends
@@ -352,6 +366,7 @@ selectBroker({
 - ML model performance
 
 ### Alerts
+
 - Poor execution quality
 - High slippage detected
 - Broker degradation

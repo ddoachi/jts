@@ -27,31 +27,30 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01
+  - E01
 blocks:
-- F06
-- F07
+  - F06
+  - F07
 related:
-- F02
-- F03
-- F04
+  - F02
+  - F03
+  - F04
 branch: ''
 files:
-- libs/shared/services/rate-limiter.service.ts
-- libs/shared/redis/
-- apps/brokers/common/rate-limiting/
+  - libs/shared/services/rate-limiter.service.ts
+  - libs/shared/redis/
+  - apps/brokers/common/rate-limiting/
 
 # === METADATA ===
 tags:
-- rate-limiting
-- redis
-- distributed
-- performance
-- compliance
+  - rate-limiting
+  - redis
+  - distributed
+  - performance
+  - compliance
 effort: medium
 risk: medium
 ---
-
 
 # Redis-based Distributed Rate Limiting System
 
@@ -166,6 +165,7 @@ Build a distributed rate limiting system using Redis as the central coordination
 ## Rate Limit Specifications
 
 ### Broker Limits
+
 ```typescript
 KIS: {
   perSecond: 20,
@@ -187,16 +187,18 @@ Binance: {
 ```
 
 ### Priority Levels
+
 ```typescript
 enum Priority {
-  CRITICAL = 0,  // Order cancellations, risk management
-  HIGH = 1,      // Order placement, modifications
-  NORMAL = 2,    // Balance queries, position checks
-  LOW = 3        // Historical data, analytics
+  CRITICAL = 0, // Order cancellations, risk management
+  HIGH = 1, // Order placement, modifications
+  NORMAL = 2, // Balance queries, position checks
+  LOW = 3, // Historical data, analytics
 }
 ```
 
 ### Redis Data Structures
+
 ```
 rate_limit:{broker}:{account}:{window} - Counter
 queue:{broker}:{priority} - Sorted set for queue
@@ -207,6 +209,7 @@ config:{broker} - Hash for configuration
 ## Performance Requirements
 
 ### Latency Targets
+
 - Rate check operation: <1ms
 - Queue enqueue: <2ms
 - Queue dequeue: <2ms
@@ -214,12 +217,14 @@ config:{broker} - Hash for configuration
 - Configuration update: <5ms
 
 ### Throughput
+
 - 10,000+ rate checks per second
 - 1,000+ queue operations per second
 - Horizontal scaling support
 - Zero downtime updates
 
 ### Reliability
+
 - 99.99% availability
 - No data loss on Redis failure
 - Automatic failover
@@ -228,18 +233,21 @@ config:{broker} - Hash for configuration
 ## Trading-Specific Requirements
 
 ### Critical Operation Handling
+
 - Emergency order cancellations bypass queue
 - Risk management operations get priority
 - Market close operations prioritized
 - Stop-loss orders never delayed
 
 ### Cross-Account Coordination
+
 - Aggregate limits across accounts
 - Fair distribution algorithm
 - Account priority settings
 - Symbol-based allocation
 
 ### Compliance Features
+
 - Audit trail of all rate limit decisions
 - Violation reporting
 - Regulatory compliance logs
@@ -287,6 +295,7 @@ When implementing this feature:
 ## Monitoring & Observability
 
 ### Metrics to Track
+
 - Current utilization per broker/window
 - Queue depth per priority
 - Request latency percentiles
@@ -295,6 +304,7 @@ When implementing this feature:
 - Redis operation latency
 
 ### Dashboards
+
 - Real-time rate limit utilization
 - Queue status visualization
 - Historical usage patterns
@@ -302,6 +312,7 @@ When implementing this feature:
 - Performance metrics
 
 ### Alerts
+
 - Approaching rate limit (>70%)
 - Rate limit violation
 - Queue overflow

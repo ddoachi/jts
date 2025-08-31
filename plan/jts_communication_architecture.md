@@ -27,18 +27,18 @@
 
 통신 규칙:
 - A → B: 직접 HTTP/gRPC 호출 (동기)
-- A → C: Kafka 이벤트 (비동기)  
+- A → C: Kafka 이벤트 (비동기)
 - B → D: 직접 HTTP/gRPC 호출 (동기)
 ```
 
 ### HTTP vs gRPC 선택 기준
 
-| 통신 유형 | 권장 방식 | 이유 | JTS 적용 예시 |
-|-----------|-----------|------|---------------|
-| **실시간 동기 요청** | gRPC | 저지연, 타입 안전성 | Strategy Engine → Risk Management (리스크 체크) |
-| **단순 REST API** | HTTP | 개발 편의성, 디버깅 용이 | Web App → API Gateway |
-| **이벤트 기반 비동기** | Kafka | 확장성, 장애 허용성 | Order Execution → Portfolio Tracker (체결 알림) |
-| **외부 API 연동** | HTTP | 표준 호환성 | KIS API, Binance API |
+| 통신 유형              | 권장 방식 | 이유                     | JTS 적용 예시                                   |
+| ---------------------- | --------- | ------------------------ | ----------------------------------------------- |
+| **실시간 동기 요청**   | gRPC      | 저지연, 타입 안전성      | Strategy Engine → Risk Management (리스크 체크) |
+| **단순 REST API**      | HTTP      | 개발 편의성, 디버깅 용이 | Web App → API Gateway                           |
+| **이벤트 기반 비동기** | Kafka     | 확장성, 장애 허용성      | Order Execution → Portfolio Tracker (체결 알림) |
+| **외부 API 연동**      | HTTP      | 표준 호환성              | KIS API, Binance API                            |
 
 ### 권장 통신 아키텍처
 
@@ -49,7 +49,7 @@ syntax = "proto3";
 service RiskManagementService {
   // 동기 리스크 체크 (빠른 응답 필요)
   rpc CheckTradingRisk(RiskCheckRequest) returns (RiskCheckResponse);
-  
+
   // 포지션 사이징 계산
   rpc CalculatePositionSize(PositionSizeRequest) returns (PositionSizeResponse);
 }
@@ -57,7 +57,7 @@ service RiskManagementService {
 service PortfolioService {
   // 실시간 포트폴리오 조회
   rpc GetCurrentPortfolio(PortfolioRequest) returns (PortfolioResponse);
-  
+
   // 포지션 업데이트 (스트리밍)
   rpc StreamPositionUpdates(Empty) returns (stream PositionUpdate);
 }
@@ -86,12 +86,12 @@ message RiskCheckResponse {
 class StrategyEngineService {
   constructor(
     private riskClient: RiskManagementClient,
-    private kafkaProducer: KafkaProducer
+    private kafkaProducer: KafkaProducer,
   ) {}
 
   async processTradingSignal(signal: TradingSignal): Promise<void> {
     const correlationId = signal.correlationId;
-    
+
     // 1. 동기 리스크 체크 (gRPC)
     const riskCheck = await this.riskClient.checkTradingRisk({
       correlationId,
@@ -99,21 +99,21 @@ class StrategyEngineService {
       quantity: signal.quantity,
       price: signal.price,
       side: signal.side,
-      currentPortfolio: await this.getPortfolio()
+      currentPortfolio: await this.getPortfolio(),
     });
-    
+
     if (!riskCheck.approved) {
       await this.kafkaProducer.send({
         topic: 'risk.alerts',
         value: {
           correlationId,
           reason: riskCheck.rejectionReason,
-          signal
-        }
+          signal,
+        },
       });
       return;
     }
-    
+
     // 2. 주문 실행 이벤트 발행 (Kafka)
     await this.kafkaProducer.send({
       topic: 'orders.signals',
@@ -123,8 +123,8 @@ class StrategyEngineService {
         quantity: riskCheck.adjustedQuantity,
         price: signal.price,
         side: signal.side,
-        approvedAt: new Date().toISOString()
-      }
+        approvedAt: new Date().toISOString(),
+      },
     });
   }
 }
@@ -204,10 +204,10 @@ apps/
     "build:windows": "nx run-many --target=build --projects=creon-service --parallel",
     "serve:linux": "nx run-many --target=serve --exclude=*windows* --parallel",
     "serve:windows": "nx serve creon-service:windows",
-    
+
     "docker:linux": "nx run-many --target=docker-build --exclude=*windows*",
     "docker:windows": "nx docker-build-windows creon-service",
-    
+
     "deploy:hybrid": "npm run docker:linux && npm run docker:windows"
   }
 }
@@ -249,7 +249,7 @@ async def startup_event():
 async def get_candle_data(request: CandleDataRequest):
     if not creon_client:
         raise HTTPException(status_code=503, detail="Creon client not initialized")
-    
+
     try:
         result = await creon_client.get_candle_data(
             symbol=request.symbol,
@@ -306,7 +306,7 @@ NODE_ENV=development
 PLATFORM=linux
 EXCLUDED_SERVICES=creon-service
 
-# .env.windows  
+# .env.windows
 NODE_ENV=development
 PLATFORM=windows
 INCLUDED_SERVICES=creon-service
@@ -358,40 +358,42 @@ nx serve creon-service
 ### 연결 방식
 
 **1. HTTP API 통합:**
+
 ```typescript
 // libs/shared/api-client/src/creon.client.ts
 export class CreonApiClient {
   private baseUrl: string;
-  
+
   constructor(config: { windowsHost: string; port: number }) {
     this.baseUrl = `http://${config.windowsHost}:${config.port}`;
   }
-  
+
   async getCandleData(request: CandleDataRequest): Promise<CandleData[]> {
     const response = await fetch(`${this.baseUrl}/api/v1/market-data/candles`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request)
+      body: JSON.stringify(request),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Creon API error: ${response.statusText}`);
     }
-    
+
     return response.json();
   }
 }
 ```
 
 **2. Market Data Collector에서 호출:**
+
 ```typescript
 // apps/integration/market-data-collector/src/collectors/creon.collector.ts
 export class CreonDataCollector implements DataCollector {
   constructor(
     private creonClient: CreonApiClient,
-    private kafkaProducer: KafkaProducer
+    private kafkaProducer: KafkaProducer,
   ) {}
-  
+
   async collectDailyCandles(symbols: string[]): Promise<void> {
     for (const symbol of symbols) {
       try {
@@ -399,16 +401,15 @@ export class CreonDataCollector implements DataCollector {
           symbol,
           timeframe: '1D',
           startDate: this.getYesterday(),
-          endDate: this.getToday()
+          endDate: this.getToday(),
         });
-        
+
         // Kafka로 정규화된 데이터 발행
         await this.kafkaProducer.send({
           topic: 'market-data.krx.candles',
           key: symbol,
-          value: this.normalizeData(candleData)
+          value: this.normalizeData(candleData),
         });
-        
       } catch (error) {
         await this.handleError(symbol, error);
       }
@@ -418,6 +419,7 @@ export class CreonDataCollector implements DataCollector {
 ```
 
 **3. 네트워크 설정:**
+
 ```yaml
 # docker-compose.yml
 version: '3.8'
@@ -427,7 +429,7 @@ services:
     networks:
       - jts-network
     environment:
-      - CREON_API_HOST=192.168.1.100  # Windows 머신 IP
+      - CREON_API_HOST=192.168.1.100 # Windows 머신 IP
       - CREON_API_PORT=8001
     depends_on:
       - kafka
@@ -435,7 +437,7 @@ services:
 
 networks:
   jts-network:
-    external: true  # Windows 머신과 통신 가능한 브리지 네트워크
+    external: true # Windows 머신과 통신 가능한 브리지 네트워크
 ```
 
 ### 하이브리드 배포 전략
@@ -457,15 +459,18 @@ curl http://192.168.1.100:8001/health
 ## 핵심 설계 원칙
 
 ### 1. 플랫폼 격리
+
 - **Linux**: 모든 비즈니스 로직 서비스
 - **Windows**: Creon API만 FastAPI로 분리
 - **통신**: HTTP REST API로 플랫폼 간 통신
 
 ### 2. 장애 격리
+
 - Windows 머신 장애시에도 다른 브로커(KIS, Binance) 서비스는 정상 동작
 - Circuit Breaker 패턴으로 Creon API 장애 감지 및 대응
 
 ### 3. 개발 효율성
+
 - 개발자는 Linux에서 대부분 작업
 - Windows는 Creon API 래퍼만 개발
 - 타입 안전성은 공통 인터페이스로 보장

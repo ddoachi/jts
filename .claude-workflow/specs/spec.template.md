@@ -34,8 +34,8 @@ related: [] # Related but not blocking (spec IDs)
 
 # === IMPLEMENTATION ===
 pull_requests: [] # GitHub PR numbers (e.g., ["#123", "#456"])
-commits: [] # Key implementation commits (e.g., ["abc1234", "def5678"])  
-context_file: "" # Implementation journal (e.g., "context.md")
+commits: [] # Key implementation commits (e.g., ["abc1234", "def5678"])
+context_file: '' # Implementation journal (e.g., "context.md")
 worktree: '' # Worktree path (optional, e.g., "../worktrees/oauth")
 files: [] # Key files to modify (e.g., ["src/auth/oauth.ts"])
 deliverables: [] # Generated artifacts (e.g., ["docs/setup.md", "scripts/install.sh"])

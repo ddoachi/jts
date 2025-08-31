@@ -35,7 +35,14 @@ related: ['1001'] # Related but not blocking (spec IDs)
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
 worktree: '' # Worktree path (optional)
-files: ['.vscode/settings.json', '.vscode/extensions.json', 'package.json', '.env.example', 'docker-compose.dev.yml', 'docs/DEVELOPMENT.md'] # Key files to modify
+files: [
+    '.vscode/settings.json',
+    '.vscode/extensions.json',
+    'package.json',
+    '.env.example',
+    'docker-compose.dev.yml',
+    'docs/DEVELOPMENT.md',
+  ] # Key files to modify
 
 # === METADATA ===
 tags: ['development', 'setup', 'ide', 'tools', 'workflow'] # Searchable tags
@@ -69,6 +76,7 @@ Establish a standardized development environment for the JTS automated trading s
 ### Developer Workstation Requirements
 
 #### System Requirements
+
 ```yaml
 Minimum Specifications:
   CPU: 8 cores (Intel i7 or AMD Ryzen 7)
@@ -84,6 +92,7 @@ Recommended for Performance:
 ```
 
 #### Operating System Support
+
 - **Linux (Primary)**: Ubuntu 22.04+ or equivalent
 - **macOS**: macOS 12+ with Apple Silicon or Intel
 - **Windows**: Windows 11 with WSL2 for Linux compatibility
@@ -91,6 +100,7 @@ Recommended for Performance:
 ### Required Tools and SDKs
 
 #### Core Development Tools
+
 ```bash
 # Node.js and Package Managers
 Node.js: 20.x LTS
@@ -121,6 +131,7 @@ Postman: API development (optional)
 #### Platform-Specific Installation Scripts
 
 **Linux/Ubuntu Setup**:
+
 ```bash
 #!/bin/bash
 # install-dev-tools-linux.sh
@@ -152,6 +163,7 @@ sudo apt update && sudo apt install gh
 ```
 
 **macOS Setup**:
+
 ```bash
 #!/bin/bash
 # install-dev-tools-macos.sh
@@ -176,6 +188,7 @@ brew link --force --overwrite node@20
 ```
 
 **Windows Setup (PowerShell)**:
+
 ```powershell
 # install-dev-tools-windows.ps1
 # Requires PowerShell as Administrator
@@ -203,6 +216,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 #### VS Code Setup
 
 **Extensions Configuration** (`.vscode/extensions.json`):
+
 ```json
 {
   "recommendations": [
@@ -222,13 +236,12 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
     "nrwl.angular-console",
     "ms-vscode.vscode-npm-dependency-links"
   ],
-  "unwantedRecommendations": [
-    "ms-vscode.vscode-typescript"
-  ]
+  "unwantedRecommendations": ["ms-vscode.vscode-typescript"]
 }
 ```
 
 **Workspace Settings** (`.vscode/settings.json`):
+
 ```json
 {
   "typescript.preferences.importModuleSpecifier": "relative",
@@ -264,6 +277,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 ```
 
 **Debug Configuration** (`.vscode/launch.json`):
+
 ```json
 {
   "version": "0.2.0",
@@ -314,6 +328,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 #### WebStorm Configuration
 
 **Project Settings** (`.idea/workspace.xml`):
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
@@ -335,6 +350,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 #### Environment File Templates
 
 **Development Environment** (`.env.development`):
+
 ```env
 # Application Configuration
 NODE_ENV=development
@@ -381,6 +397,7 @@ ENABLE_MOCK_DATA=true
 ```
 
 **Production Template** (`.env.production.template`):
+
 ```env
 # Application Configuration
 NODE_ENV=production
@@ -446,6 +463,7 @@ cp .env.development .env.local
 #### Docker Compose Development Setup
 
 **Development Services** (`docker-compose.dev.yml`):
+
 ```yaml
 version: '3.8'
 
@@ -456,7 +474,7 @@ services:
     container_name: jts-postgres-dev
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_DB: jts_trading_dev
       POSTGRES_USER: jts_admin
@@ -465,7 +483,7 @@ services:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U jts_admin -d jts_trading_dev"]
+      test: ['CMD-SHELL', 'pg_isready -U jts_admin -d jts_trading_dev']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -475,8 +493,8 @@ services:
     container_name: jts-clickhouse-dev
     restart: unless-stopped
     ports:
-      - "8123:8123"
-      - "9000:9000"
+      - '8123:8123'
+      - '9000:9000'
     environment:
       CLICKHOUSE_DB: jts_market_data_dev
       CLICKHOUSE_USER: jts_ch
@@ -494,7 +512,7 @@ services:
     container_name: jts-mongodb-dev
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - '27017:27017'
     environment:
       MONGO_INITDB_ROOT_USERNAME: jts_mongo
       MONGO_INITDB_ROOT_PASSWORD: dev_password
@@ -508,7 +526,7 @@ services:
     container_name: jts-redis-dev
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - '6379:6379'
     command: redis-server --appendonly yes --requirepass dev_password
     volumes:
       - redis_dev_data:/data
@@ -528,7 +546,7 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
+      - '9092:9092'
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -550,7 +568,7 @@ services:
     depends_on:
       - kafka
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
       KAFKA_CLUSTERS_0_NAME: jts-dev
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
@@ -562,7 +580,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "5050:80"
+      - '5050:80'
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@jts.dev
       PGADMIN_DEFAULT_PASSWORD: dev_password
@@ -585,6 +603,7 @@ networks:
 #### Development Scripts
 
 **Package.json Scripts**:
+
 ```json
 {
   "scripts": {
@@ -594,7 +613,7 @@ networks:
     "dev:clean": "docker-compose -f docker-compose.dev.yml down -v --remove-orphans",
     "dev:logs": "docker-compose -f docker-compose.dev.yml logs -f",
     "dev:status": "docker-compose -f docker-compose.dev.yml ps",
-    
+
     "db:migrate": "npm run db:migrate:postgres && npm run db:migrate:clickhouse",
     "db:migrate:postgres": "npx prisma migrate deploy",
     "db:migrate:clickhouse": "node scripts/migrate-clickhouse.js",
@@ -602,7 +621,7 @@ networks:
     "db:seed:postgres": "npx prisma db seed",
     "db:seed:clickhouse": "node scripts/seed-clickhouse.js",
     "db:reset": "npm run db:reset:postgres && npm run db:reset:clickhouse",
-    
+
     "services:health": "node scripts/check-services-health.js",
     "services:start": "concurrently \"npm run start:gateway\" \"npm run start:strategy\" \"npm run start:risk\" \"npm run start:order\" \"npm run start:market-data\"",
     "start:gateway": "nx serve api-gateway",
@@ -615,6 +634,7 @@ networks:
 ```
 
 **Setup Script** (`scripts/setup-dev-env.sh`):
+
 ```bash
 #!/bin/bash
 set -e
@@ -683,6 +703,7 @@ echo "  npm run dev:clean     - Clean up everything"
 ### Code Quality and Pre-commit Setup
 
 #### Pre-commit Configuration (`.pre-commit-config.yaml`):
+
 ```yaml
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -780,6 +801,7 @@ This feature depends on having basic infrastructure components available for loc
 ## Configuration Files Summary
 
 The feature will create these key configuration files:
+
 - `.vscode/settings.json` - VS Code workspace settings
 - `.vscode/extensions.json` - Recommended extensions
 - `.vscode/launch.json` - Debug configurations

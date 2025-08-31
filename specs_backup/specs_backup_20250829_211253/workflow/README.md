@@ -5,6 +5,7 @@ This folder contains all documentation and tools related to the specification wo
 ## Documentation
 
 ### Core System Documentation
+
 - [Spec Workflow System](docs/spec-workflow-system.md) - Complete workflow system design
 - [Folder Migration Guide](docs/spec-folder-migration.md) - Guide for migrating to new structure
 - [Workflow Examples](docs/spec-workflow-example.md) - Practical examples of the workflow
@@ -12,21 +13,25 @@ This folder contains all documentation and tools related to the specification wo
 ## Tools and Scripts
 
 ### Migration Scripts
+
 - [Python Migration Tool](scripts/migrate-specs-structure.py) - Advanced migration with link handling
 - [Shell Migration Tool](scripts/migrate-specs-structure.sh) - Simple bash migration script
 
-### Dashboard and Monitoring  
+### Dashboard and Monitoring
+
 - [Spec Dashboard](scripts/spec-dashboard.sh) - Live progress dashboard for separate terminal
 
 ## Usage
 
 ### Running the Dashboard
+
 ```bash
 # Open in separate terminal for live monitoring
 ./specs/workflow/scripts/spec-dashboard.sh
 ```
 
 ### Using Migration Tools
+
 ```bash
 # Run Python migration tool (recommended)
 python3 specs/workflow/scripts/migrate-specs-structure.py
@@ -36,6 +41,7 @@ python3 specs/workflow/scripts/migrate-specs-structure.py
 ```
 
 ### Commands Available
+
 - `/spec_work {spec-id}` - Start working on a spec
 - `/spec_work --dashboard` - Show interactive dashboard
 - `/spec_work --update-index` - Update index.md with latest stats

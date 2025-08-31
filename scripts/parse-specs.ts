@@ -38,12 +38,12 @@ interface SpecData {
 // Normalize status values to standard format
 function normalizeStatus(status: string): string {
   const normalizedMap: Record<string, string> = {
-    'done': 'completed',
-    'finished': 'completed',
+    done: 'completed',
+    finished: 'completed',
     'in-progress': 'in_progress',
-    'active': 'in_progress',
-    'todo': 'draft',
-    'pending': 'draft',
+    active: 'in_progress',
+    todo: 'draft',
+    pending: 'draft',
   };
   return normalizedMap[status] || status;
 }
@@ -54,17 +54,15 @@ function calculateParentStatus(children: any): string {
     return 'draft'; // No children, keep original status
   }
 
-  const childStatuses = Object.values(children).map((child: any) => 
-    normalizeStatus(child.status)
-  );
+  const childStatuses = Object.values(children).map((child: any) => normalizeStatus(child.status));
 
   // If all children are completed, parent is completed
-  if (childStatuses.every(status => status === 'completed')) {
+  if (childStatuses.every((status) => status === 'completed')) {
     return 'completed';
   }
 
   // If any child is not draft, parent is in_progress
-  if (childStatuses.some(status => status !== 'draft')) {
+  if (childStatuses.some((status) => status !== 'draft')) {
     return 'in_progress';
   }
 
@@ -79,30 +77,30 @@ function processHierarchy(hierarchy: any, specs: Record<string, SpecMetadata>): 
   }
 
   const result: any = {};
-  
+
   for (const [key, item] of Object.entries(hierarchy)) {
     const processedItem = { ...(item as any) };
-    
+
     // First process children recursively
     if (processedItem.children && Object.keys(processedItem.children).length > 0) {
       processedItem.children = processHierarchy(processedItem.children, specs);
-      
+
       // Calculate parent status based on processed children
       const calculatedStatus = calculateParentStatus(processedItem.children);
       processedItem.status = calculatedStatus;
-      
+
       // Update the specs record with the calculated status
       if (specs[processedItem.hierarchical_id]) {
         specs[processedItem.hierarchical_id].status = calculatedStatus;
       }
     }
-    
+
     // Normalize the item's own status
     processedItem.status = normalizeStatus(processedItem.status);
-    
+
     result[key] = processedItem;
   }
-  
+
   return result;
 }
 
@@ -110,30 +108,30 @@ async function parseAllSpecs(): Promise<SpecData> {
   const specFiles = await glob('specs/**/spec.md');
   const specs: Record<string, SpecMetadata> = {};
   const hierarchy: Record<string, any> = {};
-  
+
   // Parse each spec file and generate hierarchical IDs from directory structure
   for (const file of specFiles) {
     const content = fs.readFileSync(file, 'utf-8');
     const YAML = require('yaml');
-    
+
     const { data } = matter(content, {
       engines: {
         yaml: {
           parse: (str: string) => {
             return YAML.parse(str, { schema: 'failsafe' });
-          }
-        }
-      }
+          },
+        },
+      },
     });
-    
+
     // Extract directory structure: specs/E01/F01/T01/spec.md -> [E01, F01, T01]
     const dir = path.dirname(file);
-    const pathParts = dir.split('/').filter(part => part !== 'specs');
+    const pathParts = dir.split('/').filter((part) => part !== 'specs');
     const dirId = pathParts[pathParts.length - 1]; // E01, F01, T01, etc. (directory name)
-    
+
     // Generate hierarchical ID from directory path
     const hierarchicalId = pathParts.join('-'); // E01, E01-F01, E01-F01-T01, etc.
-    
+
     specs[hierarchicalId] = {
       id: String(data.id), // Ensure ID is always a string
       hierarchical_id: hierarchicalId,
@@ -150,31 +148,35 @@ async function parseAllSpecs(): Promise<SpecData> {
       pull_requests: data.pull_requests,
       commits: data.commits,
     };
-    
+
     // Build hierarchy with unified children structure
     if (data.type === 'epic') {
       hierarchy[dirId] = {
         ...specs[hierarchicalId],
-        children: {}
+        children: {},
       };
     } else if (data.type === 'feature' && data.parent) {
       if (!hierarchy[data.parent]) {
-        hierarchy[data.parent] = { 
+        hierarchy[data.parent] = {
           ...specs[data.parent],
-          children: {} 
+          children: {},
         };
       }
       hierarchy[data.parent].children[dirId] = {
         ...specs[hierarchicalId],
-        children: {}
+        children: {},
       };
     } else if (data.type === 'task' && data.parent) {
       // Find parent feature in hierarchy within the same epic
       const taskEpic = data.epic || data.parent.split('/')[0]; // Use explicit epic or derive from parent
-      if (hierarchy[taskEpic] && hierarchy[taskEpic].children && hierarchy[taskEpic].children[data.parent]) {
+      if (
+        hierarchy[taskEpic] &&
+        hierarchy[taskEpic].children &&
+        hierarchy[taskEpic].children[data.parent]
+      ) {
         hierarchy[taskEpic].children[data.parent].children[dirId] = {
           ...specs[hierarchicalId],
-          children: {}
+          children: {},
         };
       }
     } else if (data.type === 'subtask' && data.parent) {
@@ -186,7 +188,7 @@ async function parseAllSpecs(): Promise<SpecData> {
           if (feature.children && feature.children[data.parent]) {
             feature.children[data.parent].children[dirId] = {
               ...specs[hierarchicalId],
-              children: {}
+              children: {},
             };
             break;
           }
@@ -194,27 +196,29 @@ async function parseAllSpecs(): Promise<SpecData> {
       }
     }
   }
-  
+
   // Process hierarchy to normalize statuses and calculate parent statuses
   const processedHierarchy = processHierarchy(hierarchy, specs);
-  
+
   // Calculate statistics
   const stats = {
-    total_epics: Object.values(specs).filter(s => s.type === 'epic').length,
-    total_features: Object.values(specs).filter(s => s.type === 'feature').length,
-    total_tasks: Object.values(specs).filter(s => s.type === 'task').length,
-    total_subtasks: Object.values(specs).filter(s => s.type === 'subtask').length,
-    completed: Object.keys(specs).filter(id => specs[id].status === 'completed'),
-    in_progress: Object.keys(specs).filter(id => specs[id].status === 'in_progress' || specs[id].status === 'in-progress'),
-    draft: Object.keys(specs).filter(id => specs[id].status === 'draft'),
-    blocked: Object.keys(specs).filter(id => specs[id].status === 'blocked'),
+    total_epics: Object.values(specs).filter((s) => s.type === 'epic').length,
+    total_features: Object.values(specs).filter((s) => s.type === 'feature').length,
+    total_tasks: Object.values(specs).filter((s) => s.type === 'task').length,
+    total_subtasks: Object.values(specs).filter((s) => s.type === 'subtask').length,
+    completed: Object.keys(specs).filter((id) => specs[id].status === 'completed'),
+    in_progress: Object.keys(specs).filter(
+      (id) => specs[id].status === 'in_progress' || specs[id].status === 'in-progress',
+    ),
+    draft: Object.keys(specs).filter((id) => specs[id].status === 'draft'),
+    blocked: Object.keys(specs).filter((id) => specs[id].status === 'blocked'),
   };
-  
+
   const specData: SpecData = { specs, stats, hierarchy: processedHierarchy };
-  
+
   // Save to JSON file
   fs.writeFileSync('specs-data.json', JSON.stringify(specData, null, 2));
-  
+
   return specData;
 }
 

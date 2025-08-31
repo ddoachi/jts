@@ -5,6 +5,7 @@ Analyze dependencies between different components/features mentioned in the PRD.
 ## Instructions
 
 Identify:
+
 - Component dependencies
 - Feature dependencies
 - Service dependencies
@@ -19,12 +20,10 @@ Return results in JSON format with dependency graph structure:
 {
   "dependencies": {
     "nodes": [
-      {"id": "epic-001", "title": "Authentication System"},
-      {"id": "epic-002", "title": "User Dashboard"}
+      { "id": "epic-001", "title": "Authentication System" },
+      { "id": "epic-002", "title": "User Dashboard" }
     ],
-    "edges": [
-      {"from": "epic-002", "to": "epic-001", "type": "depends_on"}
-    ],
+    "edges": [{ "from": "epic-002", "to": "epic-001", "type": "depends_on" }],
     "parallelGroups": [
       ["epic-003", "epic-004"],
       ["epic-005", "epic-006"]

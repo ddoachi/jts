@@ -27,28 +27,27 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
+  - T01
 blocks: []
 related:
-- T04
+  - T04
 pull_requests: []
 commits: []
 context_file: 1051.context.md
 files:
-- .github/workflows/notify.yml
-- scripts/slack-notify.sh
-- .github/actions/notifications/
+  - .github/workflows/notify.yml
+  - scripts/slack-notify.sh
+  - .github/actions/notifications/
 
 # === METADATA ===
 tags:
-- monitoring
-- notifications
-- slack
-- alerts
+  - monitoring
+  - notifications
+  - slack
+  - alerts
 effort: small
 risk: low
 ---
-
 
 # CI/CD Monitoring and Notifications
 

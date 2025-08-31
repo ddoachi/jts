@@ -22,27 +22,29 @@ Completed: {{stats.completed.length}}/{{calculated.totalSpecs}}
 ## 📁 Specifications
 
 {{#each hierarchy}}
+
 ### {{statusIcon status}} [{{@key}} - {{title}}]({{@key}}/spec.md)
 
 > Status: `{{status}}` | Priority: `{{priority}}`
 
 {{#if children}}
 {{#each children}}
+
 - {{statusIcon status}} [{{@key}} - {{title}}]({{parent}}/{{@key}}/spec.md) `{{status}}`
-{{#if children}}
-{{#each children}}
+  {{#if children}}
+  {{#each children}}
   - {{statusIcon status}} [{{@key}} - {{title}}]({{../parent}}/{{parent}}/{{@key}}/spec.md) `{{status}}`
-{{#if children}}
-{{#each children}}
-    - {{statusIcon status}} [{{@key}} - {{title}}]({{../../parent}}/{{../parent}}/{{parent}}/{{@key}}/spec.md) `{{status}}`
-{{/each}}
-{{/if}}
-{{/each}}
-{{/if}}
-{{/each}}
-{{/if}}
+    {{#if children}}
+    {{#each children}} - {{statusIcon status}} [{{@key}} - {{title}}]({{../../parent}}/{{../parent}}/{{parent}}/{{@key}}/spec.md) `{{status}}`
+    {{/each}}
+    {{/if}}
+    {{/each}}
+    {{/if}}
+    {{/each}}
+    {{/if}}
 
 {{/each}}
 
 ---
-*Generated automatically by GitHub Actions*
+
+_Generated automatically by GitHub Actions_

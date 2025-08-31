@@ -28,35 +28,34 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-- T06
+  - T06
 related:
-- T01
-- T04
+  - T01
+  - T04
 
 # === IMPLEMENTATION ===
 pull_requests: []
 commits: []
 context_file: ''
 files:
-- /etc/fstab
-- scripts/setup-sata-storage.sh
-- scripts/sata-health-check.sh
-- docs/WARM_STORAGE_SETUP.md
+  - /etc/fstab
+  - scripts/setup-sata-storage.sh
+  - scripts/sata-health-check.sh
+  - docs/WARM_STORAGE_SETUP.md
 
 # === METADATA ===
 tags:
-- storage
-- sata
-- warm-storage
-- btrfs
-- compression
-- backup
-- logs
-- intermediate-storage
+  - storage
+  - sata
+  - warm-storage
+  - btrfs
+  - compression
+  - backup
+  - logs
+  - intermediate-storage
 effort: small
 risk: low
 unique_id: 6b180037 # Unique identifier (never changes)
-
 ---
 
 # Warm Storage (SATA) Setup
@@ -83,6 +82,7 @@ The warm storage tier enables efficient daily backup operations, log aggregation
 ### Warm Storage Architecture
 
 Design an efficient intermediate storage layer optimized for:
+
 - **Daily Backups**: Sequential write-optimized for database snapshot operations
 - **Log Aggregation**: Compressed storage for application and system logs
 - **Temporary Processing**: Workspace for large file operations and data processing
@@ -112,76 +112,82 @@ Design an efficient intermediate storage layer optimized for:
 ### Implementation Steps
 
 1. **SATA Drive Verification and Preparation**
+
    ```bash
    # Verify SATA drive specifications
    lsblk -o NAME,SIZE,MODEL,TRAN /dev/sda
-   
+
    # Check current partition status
    fdisk -l /dev/sda
-   
+
    # Verify partition 2 is available for formatting
    lsblk /dev/sda2
    ```
 
 2. **Btrfs Filesystem Creation**
+
    ```bash
    # Format SATA partition with btrfs and compression
    mkfs.btrfs -f -L "jts-warm-storage" \
      -O compress-force=zstd:3 \
      /dev/sda2
-   
+
    # Verify filesystem creation
    btrfs filesystem show /dev/sda2
    ```
 
 3. **Mount Point Configuration**
+
    ```bash
    # Create mount point
    mkdir -p /data/warm-storage
-   
+
    # Add optimized mount entry to fstab
    echo '/dev/sda2 /data/warm-storage btrfs defaults,compress=zstd:3,autodefrag,noatime 0 2' >> /etc/fstab
-   
+
    # Mount and verify
    mount /data/warm-storage
    mount | grep warm-storage
    ```
 
 4. **Directory Structure Creation**
+
    ```bash
    # Create organized directory structure
    mkdir -p /data/warm-storage/{daily-backups,logs,temp-processing}
-   
+
    # Set appropriate permissions
    chmod 755 /data/warm-storage
    chmod 755 /data/warm-storage/daily-backups
    chmod 755 /data/warm-storage/logs
    chmod 755 /data/warm-storage/temp-processing
-   
+
    # Create subdirectories for different backup types
    mkdir -p /data/warm-storage/daily-backups/{postgresql,clickhouse,mongodb}
-   
+
    # Create log subdirectories
    mkdir -p /data/warm-storage/logs/{application,system,audit}
    ```
 
 5. **Compression Validation and Optimization**
+
    ```bash
    # Test compression effectiveness
    dd if=/dev/zero of=/data/warm-storage/compression-test bs=1M count=100
-   
+
    # Check actual disk usage vs file size
    du -sh /data/warm-storage/compression-test
    ls -lh /data/warm-storage/compression-test
-   
+
    # Cleanup test file
    rm /data/warm-storage/compression-test
-   
+
    # Verify compression is active
    btrfs filesystem usage /data/warm-storage
    ```
 
 6. **Integration with System Services**
+
    ```bash
    # Configure logrotate for warm storage logs
    cat > /etc/logrotate.d/warm-storage << 'EOF'
@@ -195,7 +201,7 @@ Design an efficient intermediate storage layer optimized for:
        create 644 root root
    }
    EOF
-   
+
    # Set up automatic cleanup of temp files
    echo '0 2 * * * root find /data/warm-storage/temp-processing -mtime +3 -delete' >> /etc/crontab
    ```
@@ -205,6 +211,7 @@ Design an efficient intermediate storage layer optimized for:
 **No Dependencies**: This feature can be implemented independently of hot storage (T01) and runs in parallel.
 
 **Enables After Implementation:**
+
 - **Feature T06**: Tiered Storage Management requires warm storage for backup lifecycle operations
 
 ## Testing Plan
@@ -257,12 +264,14 @@ INDEPENDENT IMPLEMENTATION:
 ## Notes
 
 ### Parallel Implementation Benefits
+
 - **Independent Execution**: Can run simultaneously with hot storage setup
 - **Immediate Value**: Provides log and backup capabilities immediately
 - **Low Risk**: SATA configuration has minimal impact on existing systems
 - **Quick Validation**: Simple testing and verification procedures
 
 ### Operational Benefits
+
 - **Space Efficiency**: Btrfs compression significantly reduces storage requirements
 - **Backup Performance**: Optimized for sequential backup operations
 - **Log Management**: Centralized log storage with automated rotation

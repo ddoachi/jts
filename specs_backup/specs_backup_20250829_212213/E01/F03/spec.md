@@ -11,12 +11,12 @@ type: feature
 # === HIERARCHY ===
 parent: E01
 children:
-- T01
-- T02
-- T03
-- T04
-- T05
-- T06
+  - T01
+  - T02
+  - T03
+  - T04
+  - T05
+  - T06
 epic: E01
 domain: infrastructure
 
@@ -33,43 +33,42 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F02
+  - F02
 blocks:
-- F04
-- F05
-- F06
-- F07
+  - F04
+  - F05
+  - F06
+  - F07
 related:
-- F01
+  - F01
 
 # === IMPLEMENTATION ===
 pull_requests: []
 commits: []
 context_file: context.md
 files:
-- nx.json
-- package.json
-- tsconfig.base.json
-- project.json
-- libs/
-- apps/
-- tools/
-- .eslintrc.json
-- jest.config.ts
+  - nx.json
+  - package.json
+  - tsconfig.base.json
+  - project.json
+  - libs/
+  - apps/
+  - tools/
+  - .eslintrc.json
+  - jest.config.ts
 
 # === METADATA ===
 tags:
-- monorepo
-- nx
-- tooling
-- workspace
-- typescript
-- build
-- testing
+  - monorepo
+  - nx
+  - tooling
+  - workspace
+  - typescript
+  - build
+  - testing
 effort: medium
 risk: medium
 unique_id: aa68c75c # Unique identifier (never changes)
-
 ---
 
 # Monorepo Structure and Tooling
@@ -152,6 +151,7 @@ Establish a comprehensive monorepo structure using Nx workspace to manage all JT
 #### Workspace Structure
 
 **Note**: The workspace follows Nx conventions where:
+
 - `apps/` contains standalone microservices and applications
 - `libs/` contains shared libraries and reusable modules
 - Each service in `apps/` can import libraries from `libs/`
@@ -210,6 +210,7 @@ jts/
 ```
 
 #### Nx Configuration (`nx.json`)
+
 ```json
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
@@ -218,13 +219,7 @@ jts/
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "lint",
-          "test",
-          "e2e",
-          "type-check"
-        ],
+        "cacheableOperations": ["build", "lint", "test", "e2e", "type-check"],
         "parallel": 4,
         "maxParallel": 6
       }
@@ -331,6 +326,7 @@ jts/
 ### Package.json Configuration
 
 #### Root Package.json
+
 ```json
 {
   "name": "@jts/trading-system",
@@ -486,13 +482,8 @@ jts/
     "wait-on": "^7.2.0"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,yaml,yml}": [
-      "prettier --write"
-    ]
+    "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,yaml,yml}": ["prettier --write"]
   },
   "husky": {
     "hooks": {
@@ -506,6 +497,7 @@ jts/
 ### TypeScript Configuration
 
 #### Base TypeScript Config (`tsconfig.base.json`)
+
 ```json
 {
   "compileOnSave": false,
@@ -568,6 +560,7 @@ jts/
 #### Core Shared Libraries
 
 **Shared DTOs Library** (`libs/shared/dto/src/index.ts`):
+
 ```typescript
 export * from './lib/market-data.dto';
 export * from './lib/order.dto';
@@ -613,6 +606,7 @@ export interface TradeDto {
 ```
 
 **Shared Interfaces Library** (`libs/shared/interfaces/src/index.ts`):
+
 ```typescript
 export * from './lib/broker.interface';
 export * from './lib/strategy.interface';
@@ -626,17 +620,17 @@ export interface IBrokerService {
   connect(): Promise<void>;
   disconnect(): Promise<void>;
   isConnected(): boolean;
-  
+
   // Market Data
   subscribeToMarketData(symbols: string[]): Promise<void>;
   unsubscribeFromMarketData(symbols: string[]): Promise<void>;
   getMarketData(symbol: string): Promise<MarketDataDto>;
-  
+
   // Orders
   submitOrder(order: OrderDto): Promise<OrderResult>;
   cancelOrder(orderId: string): Promise<boolean>;
   getOrderStatus(orderId: string): Promise<OrderStatus>;
-  
+
   // Account
   getAccountInfo(): Promise<AccountInfo>;
   getPositions(): Promise<Position[]>;
@@ -651,6 +645,7 @@ export interface IStrategyEngine {
 ```
 
 **Shared Utilities Library** (`libs/shared/utils/src/index.ts`):
+
 ```typescript
 export * from './lib/date.utils';
 export * from './lib/math.utils';
@@ -663,7 +658,7 @@ export class MathUtils {
   static calculateReturn(currentPrice: number, previousPrice: number): number {
     return (currentPrice - previousPrice) / previousPrice;
   }
-  
+
   static calculateSMA(prices: number[], period: number): number[] {
     const sma: number[] = [];
     for (let i = period - 1; i < prices.length; i++) {
@@ -672,20 +667,21 @@ export class MathUtils {
     }
     return sma;
   }
-  
+
   static calculateEMA(prices: number[], period: number): number[] {
     const multiplier = 2 / (period + 1);
     const ema: number[] = [prices[0]];
-    
+
     for (let i = 1; i < prices.length; i++) {
       ema.push((prices[i] - ema[i - 1]) * multiplier + ema[i - 1]);
     }
     return ema;
   }
-  
+
   static calculateVolatility(returns: number[]): number {
     const mean = returns.reduce((acc, val) => acc + val, 0) / returns.length;
-    const variance = returns.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / returns.length;
+    const variance =
+      returns.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / returns.length;
     return Math.sqrt(variance);
   }
 }
@@ -700,18 +696,21 @@ The JTS frontend follows a PWA-first strategy with progressive enhancement for d
 #### Platform Strategy
 
 ##### PWA Foundation (Primary)
+
 - **Technology**: Next.js 14 with App Router
 - **Deployment**: Single codebase for web, desktop PWA, and mobile PWA
 - **Offline**: Service Workers for offline trading data access
 - **Installation**: Installable on all platforms via browser
 
 ##### Desktop Enhancement (Optional)
+
 - **Electron Wrapper**: For native OS integration and multi-window support
 - **Features**: System tray, native notifications, global shortcuts
 - **Auto-updates**: Electron-updater for seamless updates
 - **Multi-monitor**: Support for detached trading panels
 
 ##### Mobile Native (Future)
+
 - **React Native**: For performance-critical mobile experience
 - **Code Sharing**: 70% shared code with PWA via monorepo structure
 - **Native Features**: Biometric auth, push notifications
@@ -831,6 +830,7 @@ apps/web-app/
 #### State Management Architecture
 
 ##### Store Structure (Zustand)
+
 ```typescript
 // Market Store
 interface MarketStore {
@@ -839,7 +839,7 @@ interface MarketStore {
   orderBooks: Map<string, OrderBook>;
   trades: Map<string, Trade[]>;
   tickers: Map<string, Ticker>;
-  
+
   // Actions
   subscribeSymbol: (symbol: string) => void;
   unsubscribeSymbol: (symbol: string) => void;
@@ -855,7 +855,7 @@ interface PortfolioStore {
   openOrders: Order[];
   orderHistory: Order[];
   pnl: PnLData;
-  
+
   // Actions
   refreshPortfolio: () => Promise<void>;
   updatePosition: (position: Position) => void;
@@ -869,18 +869,18 @@ interface RealtimeSyncStrategy {
   marketDataSocket: Socket;
   orderStatusSocket: Socket;
   portfolioSocket: Socket;
-  
+
   // Reconnection logic
   reconnectionStrategy: 'exponential-backoff';
   maxReconnectAttempts: 10;
-  
+
   // Offline queue
   offlineQueue: {
     storage: 'IndexedDB';
     maxSize: E01;
     syncOnReconnect: true;
   };
-  
+
   // Conflict resolution
   conflictResolution: 'server-wins' | 'client-wins' | 'merge';
 }
@@ -889,6 +889,7 @@ interface RealtimeSyncStrategy {
 #### Component Architecture
 
 ##### Trading Components
+
 ```typescript
 // Order Entry Component
 interface OrderEntryProps {
@@ -925,16 +926,17 @@ interface ChartComponentProps {
 #### Responsive Design Strategy
 
 ##### Breakpoints
+
 ```scss
 // Breakpoint definitions
-$mobile-small: 320px;   // Small phones
-$mobile: 375px;         // Standard phones
-$mobile-large: 414px;   // Large phones
-$tablet: 768px;         // Tablets
-$desktop: 1024px;       // Small desktop
+$mobile-small: 320px; // Small phones
+$mobile: 375px; // Standard phones
+$mobile-large: 414px; // Large phones
+$tablet: 768px; // Tablets
+$desktop: 1024px; // Small desktop
 $desktop-large: 1440px; // Standard desktop
-$desktop-xl: 1920px;    // Large desktop
-$trading-desk: 2560px;  // Multi-monitor setup
+$desktop-xl: 1920px; // Large desktop
+$trading-desk: 2560px; // Multi-monitor setup
 
 // Layout strategies
 @media (max-width: $tablet - 1px) {
@@ -966,6 +968,7 @@ $trading-desk: 2560px;  // Multi-monitor setup
 ```
 
 ##### Mobile-First Components
+
 ```typescript
 // Responsive component example
 const TradingDashboard = () => {
@@ -973,15 +976,15 @@ const TradingDashboard = () => {
   const isMobile = breakpoint === 'mobile';
   const isTablet = breakpoint === 'tablet';
   const isDesktop = breakpoint === 'desktop';
-  
+
   if (isMobile) {
     return <MobileTradingView />;  // Simplified, touch-optimized
   }
-  
+
   if (isTablet) {
     return <TabletTradingView />;  // 2-column layout
   }
-  
+
   return <DesktopTradingView />;   // Full dashboard
 };
 ```
@@ -989,6 +992,7 @@ const TradingDashboard = () => {
 #### PWA Implementation
 
 ##### Service Worker Configuration
+
 ```javascript
 // service-worker.js
 const CACHE_NAME = 'jts-v1';
@@ -1004,10 +1008,10 @@ const MAX_DYNAMIC_AGE = 60 * 60 * E01; // 1 hour
 
 // Caching strategies
 const CACHE_STRATEGIES = {
-  '/api/market-data': 'network-first',  // Always try live data
-  '/api/portfolio': 'network-first',    // Current positions
-  '/api/historical': 'cache-first',     // Historical data
-  '/static': 'cache-first',             // Static assets
+  '/api/market-data': 'network-first', // Always try live data
+  '/api/portfolio': 'network-first', // Current positions
+  '/api/historical': 'cache-first', // Historical data
+  '/static': 'cache-first', // Static assets
 };
 
 // Background sync for orders
@@ -1030,6 +1034,7 @@ self.addEventListener('push', (event) => {
 ```
 
 ##### PWA Manifest
+
 ```json
 {
   "name": "JTS Trading System",
@@ -1077,6 +1082,7 @@ self.addEventListener('push', (event) => {
 #### Performance Requirements
 
 ##### Core Web Vitals Targets
+
 - **LCP (Largest Contentful Paint)**: < 2.5s
 - **FID (First Input Delay)**: < 100ms
 - **CLS (Cumulative Layout Shift)**: < 0.1
@@ -1084,6 +1090,7 @@ self.addEventListener('push', (event) => {
 - **Chart Update Rate**: 60fps minimum
 
 ##### Optimization Strategies
+
 ```typescript
 // Code splitting by route
 const TradingDashboard = lazy(() => import('./features/trading/Dashboard'));
@@ -1097,9 +1104,9 @@ import Image from 'next/image';
 const { data, isLoading } = useQuery({
   queryKey: ['portfolio'],
   queryFn: fetchPortfolio,
-  staleTime: E05,        // Consider stale after 5s
-  cacheTime: 10 * 60000,  // Keep in cache for 10min
-  refetchInterval: E05,  // Refetch every 5s
+  staleTime: E05, // Consider stale after 5s
+  cacheTime: 10 * 60000, // Keep in cache for 10min
+  refetchInterval: E05, // Refetch every 5s
 });
 
 // Virtual scrolling for large lists
@@ -1113,16 +1120,17 @@ worker.postMessage({ type: 'CALCULATE_INDICATORS', data: prices });
 #### Security Considerations
 
 ##### Frontend Security
+
 ```typescript
 // Secure storage
 class SecureStorage {
   private encryptionKey: CryptoKey;
-  
+
   async store(key: string, value: any): Promise<void> {
     const encrypted = await this.encrypt(JSON.stringify(value));
     localStorage.setItem(key, encrypted);
   }
-  
+
   async retrieve(key: string): Promise<any> {
     const encrypted = localStorage.getItem(key);
     if (!encrypted) return null;
@@ -1152,15 +1160,15 @@ apiClient.interceptors.request.use((config) => {
 // Input validation
 const validateOrderInput = (order: OrderRequest): ValidationResult => {
   const errors: string[] = [];
-  
+
   if (order.quantity <= 0) {
     errors.push('Quantity must be positive');
   }
-  
+
   if (order.type === 'limit' && !order.price) {
     errors.push('Limit order requires price');
   }
-  
+
   // Additional validation rules
   return { valid: errors.length === 0, errors };
 };
@@ -1169,13 +1177,14 @@ const validateOrderInput = (order: OrderRequest): ValidationResult => {
 #### Testing Strategy
 
 ##### Testing Pyramid
+
 ```typescript
 // Unit Tests (70%)
 describe('OrderEntry Component', () => {
   it('should validate order input', () => {
     const { getByRole, getByText } = render(<OrderEntry />);
     const submitButton = getByRole('button', { name: 'Submit Order' });
-    
+
     fireEvent.click(submitButton);
     expect(getByText('Quantity is required')).toBeInTheDocument();
   });
@@ -1185,11 +1194,11 @@ describe('OrderEntry Component', () => {
 describe('Trading Flow', () => {
   it('should place order and update portfolio', async () => {
     const { result } = renderHook(() => useTradingFlow());
-    
+
     await act(async () => {
       await result.current.placeOrder(mockOrder);
     });
-    
+
     expect(result.current.portfolio.openOrders).toContainEqual(
       expect.objectContaining({ id: mockOrder.id })
     );
@@ -1203,7 +1212,7 @@ test('Complete trading workflow', async ({ page }) => {
   await page.fill('[name="symbol"]', 'AAPL');
   await page.fill('[name="quantity"]', '100');
   await page.click('[type="submit"]');
-  
+
   await expect(page.locator('.order-confirmation')).toBeVisible();
 });
 ```
@@ -1211,6 +1220,7 @@ test('Complete trading workflow', async ({ page }) => {
 ### Build and Testing Configuration
 
 #### Jest Configuration (`jest.config.ts`)
+
 ```typescript
 import { getJestProjects } from '@nx/jest';
 
@@ -1226,52 +1236,52 @@ export default {
     '!**/dist/**',
     '!**/*.d.ts',
     '!**/main.ts',
-    '!**/test-setup.ts'
+    '!**/test-setup.ts',
   ],
   coverageThreshold: {
     global: {
       branches: 80,
       functions: 80,
       lines: 80,
-      statements: 80
-    }
+      statements: 80,
+    },
   },
-  testMatch: [
-    '<rootDir>/{apps,libs}/**/*(*.)@(spec|test).[jt]s?(x)'
-  ],
+  testMatch: ['<rootDir>/{apps,libs}/**/*(*.)@(spec|test).[jt]s?(x)'],
   transform: {
-    '^.+\\.[jt]s$': ['@swc/jest', {
-      jsc: {
-        parser: {
-          syntax: 'typescript',
-          decorators: true
+    '^.+\\.[jt]s$': [
+      '@swc/jest',
+      {
+        jsc: {
+          parser: {
+            syntax: 'typescript',
+            decorators: true,
+          },
+          transform: {
+            legacyDecorator: true,
+            decoratorMetadata: true,
+          },
         },
-        transform: {
-          legacyDecorator: true,
-          decoratorMetadata: true
-        }
-      }
-    }]
+      },
+    ],
   },
   moduleNameMapping: {
-    '^@jts/(.*)$': '<rootDir>/libs/$1/src'
+    '^@jts/(.*)$': '<rootDir>/libs/$1/src',
   },
   setupFilesAfterEnv: ['<rootDir>/tools/test-setup.ts'],
   testEnvironment: 'node',
   maxWorkers: '50%',
-  verbose: true
+  verbose: true,
 };
 ```
 
 #### ESLint Configuration (`.eslintrc.json`)
+
 ```json
 {
   "root": true,
   "ignorePatterns": ["**/*"],
   "plugins": ["@nx"],
-  "extends": [
-    "@nx/eslint-plugin"
-  ],
+  "extends": ["@nx/eslint-plugin"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
@@ -1337,6 +1347,7 @@ export default {
 ### Custom Nx Generators
 
 #### Service Generator (`tools/generators/nestjs-service/index.ts`)
+
 ```typescript
 import {
   Tree,
@@ -1360,7 +1371,7 @@ interface Schema {
 
 export default async function (tree: Tree, options: Schema) {
   const normalizedOptions = normalizeOptions(tree, options);
-  
+
   // Generate NestJS application
   await applicationGenerator(tree, {
     name: normalizedOptions.projectName,
@@ -1372,17 +1383,12 @@ export default async function (tree: Tree, options: Schema) {
   });
 
   // Add custom templates
-  generateFiles(
-    tree,
-    joinPathFragments(__dirname, 'files'),
-    normalizedOptions.projectRoot,
-    {
-      ...normalizedOptions,
-      ...names(options.name),
-      offsetFromRoot: offsetFromRoot(normalizedOptions.projectRoot),
-      template: '',
-    }
-  );
+  generateFiles(tree, joinPathFragments(__dirname, 'files'), normalizedOptions.projectRoot, {
+    ...normalizedOptions,
+    ...names(options.name),
+    offsetFromRoot: offsetFromRoot(normalizedOptions.projectRoot),
+    template: '',
+  });
 
   await formatFiles(tree);
   return () => {
@@ -1392,7 +1398,9 @@ export default async function (tree: Tree, options: Schema) {
 
 function normalizeOptions(tree: Tree, options: Schema) {
   const name = names(options.name).fileName;
-  const projectDirectory = options.directory ? `${names(options.directory).fileName}/${name}` : name;
+  const projectDirectory = options.directory
+    ? `${names(options.directory).fileName}/${name}`
+    : name;
   const projectName = projectDirectory.replace(new RegExp('/', 'g'), '-');
   const projectRoot = `apps/${projectDirectory}`;
   const parsedTags = options.tags ? options.tags.split(',').map((s) => s.trim()) : [];
@@ -1410,6 +1418,7 @@ function normalizeOptions(tree: Tree, options: Schema) {
 ### CI/CD Integration
 
 #### GitHub Actions Workflow (`.github/workflows/ci.yml`)
+
 ```yaml
 name: CI/CD Pipeline
 
@@ -1611,6 +1620,7 @@ jobs:
 ## Configuration Files Summary
 
 Key configuration files created by this feature:
+
 - `nx.json` - Nx workspace configuration
 - `package.json` - Root package management
 - `tsconfig.base.json` - TypeScript base configuration
@@ -1622,6 +1632,7 @@ Key configuration files created by this feature:
 ## Architecture References
 
 For comprehensive system architecture and implementation details, see:
+
 - `/architecture/INTEGRATED_ARCHITECTURE.md` - Complete integrated system architecture with DDD
 - `/architecture/IMPLEMENTATION_ROADMAP.md` - Phase-based implementation strategy
 - `/plan/jts_improved_architecture.md` - Rate limiter and PWA notification patterns

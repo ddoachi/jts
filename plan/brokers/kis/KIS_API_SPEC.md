@@ -9,6 +9,7 @@ Korea Investment Securities provides comprehensive REST and WebSocket APIs for s
 ### Total APIs: 337
 
 #### Main Categories:
+
 1. **Authentication & Token Management** (5 APIs)
    - Token issuance and management
    - Hashkey generation
@@ -81,36 +82,43 @@ Korea Investment Securities provides comprehensive REST and WebSocket APIs for s
 ## Key Trading APIs
 
 ### 1. Stock Order (Cash)
+
 - **Endpoint**: `/uapi/domestic-stock/v1/trading/order-cash`
 - **Method**: POST
 - **Purpose**: Place buy/sell orders with cash account
 
 ### 2. Stock Order Modification/Cancellation
+
 - **Endpoint**: `/uapi/domestic-stock/v1/trading/order-rvsecncl`
 - **Method**: POST
 - **Purpose**: Modify or cancel existing orders
 
 ### 3. Stock Balance Inquiry
+
 - **Endpoint**: `/uapi/domestic-stock/v1/trading/inquire-balance`
 - **Method**: GET
 - **Purpose**: Query current stock holdings
 
 ### 4. Current Stock Price
+
 - **Endpoint**: `/uapi/domestic-stock/v1/quotations/inquire-price`
 - **Method**: GET
 - **Purpose**: Get real-time stock prices
 
 ### 5. Orderbook & Expected Execution
+
 - **Endpoint**: `/uapi/domestic-stock/v1/quotations/inquire-asking-price-exp-ccn`
 - **Method**: GET
 - **Purpose**: Get orderbook depth and expected execution prices
 
 ### 6. Buyable Amount Inquiry
+
 - **Endpoint**: `/uapi/domestic-stock/v1/trading/inquire-psbl-order`
 - **Method**: GET
 - **Purpose**: Calculate maximum buyable quantity
 
 ### 7. Daily Order Execution History
+
 - **Endpoint**: `/uapi/domestic-stock/v1/trading/inquire-daily-ccld`
 - **Method**: GET
 - **Purpose**: Query daily trade executions
@@ -118,6 +126,7 @@ Korea Investment Securities provides comprehensive REST and WebSocket APIs for s
 ## Authentication
 
 ### OAuth2 Flow
+
 1. **Get Access Token**
    - Endpoint: `/oauth2/tokenP`
    - Method: POST
@@ -136,15 +145,18 @@ Korea Investment Securities provides comprehensive REST and WebSocket APIs for s
 ## Rate Limits
 
 ### REST API Limits
+
 - **Per Second**: 20 requests
 - **Per Minute**: 1,000 requests
 - **Per Hour**: 50,000 requests
 
 ### WebSocket Limits
+
 - **Concurrent Connections**: 5
 - **Subscriptions per Connection**: 40 symbols
 
 ### Rate Limit Headers
+
 - `X-RateLimit-Limit`: Maximum requests
 - `X-RateLimit-Remaining`: Remaining requests
 - `X-RateLimit-Reset`: Reset timestamp
@@ -152,16 +164,19 @@ Korea Investment Securities provides comprehensive REST and WebSocket APIs for s
 ## Domains
 
 ### Production
+
 - **REST API**: `https://openapi.koreainvestment.com:9443`
 - **WebSocket**: `ws://ops.koreainvestment.com:21000`
 
 ### Sandbox (Paper Trading)
+
 - **REST API**: `https://openapivts.koreainvestment.com:29443`
 - **WebSocket**: `ws://ops.koreainvestment.com:31000`
 
 ## Order Types
 
 ### Basic Order Types
+
 - **00**: Market order (시장가)
 - **01**: Limit order (지정가)
 - **02**: Conditional order (조건부지정가)
@@ -173,6 +188,7 @@ Korea Investment Securities provides comprehensive REST and WebSocket APIs for s
 - **08**: Market on close (시장가 종가)
 
 ### Time in Force
+
 - **IOC**: Immediate or Cancel
 - **FOK**: Fill or Kill
 - **GTD**: Good Till Date
@@ -181,6 +197,7 @@ Korea Investment Securities provides comprehensive REST and WebSocket APIs for s
 ## Error Codes
 
 ### Common Error Codes
+
 - `OPSQ0001`: Invalid request parameter
 - `OPSQ0002`: Authentication failed
 - `OPSQ0003`: Insufficient permissions
@@ -195,6 +212,7 @@ Korea Investment Securities provides comprehensive REST and WebSocket APIs for s
 ## WebSocket Message Format
 
 ### Subscribe Request
+
 ```json
 {
   "header": {
@@ -213,6 +231,7 @@ Korea Investment Securities provides comprehensive REST and WebSocket APIs for s
 ```
 
 ### Real-time Price Response
+
 ```json
 {
   "header": {
@@ -237,18 +256,21 @@ Korea Investment Securities provides comprehensive REST and WebSocket APIs for s
 ## Implementation Notes
 
 ### Connection Management
+
 1. Maintain connection pool for REST APIs
 2. Implement exponential backoff for retries
 3. Use circuit breaker pattern for failures
 4. Keep WebSocket connections alive with ping/pong
 
 ### Data Normalization
+
 1. Convert KRW amounts to numbers (remove commas)
 2. Parse dates in YYYYMMDD format
 3. Handle null values appropriately
 4. Normalize stock codes (6-digit format)
 
 ### Security Best Practices
+
 1. Store API keys in environment variables
 2. Rotate access tokens before expiry
 3. Implement request signing with hashkey
@@ -258,21 +280,26 @@ Korea Investment Securities provides comprehensive REST and WebSocket APIs for s
 ## KIS-Specific Features
 
 ### 1. Scheduled Orders (예약주문)
+
 - Place orders to execute at specific times
 - Useful for market open/close strategies
 
 ### 2. Credit Trading (신용거래)
+
 - Margin trading with leverage
 - Separate API endpoints for credit orders
 
 ### 3. Retirement Accounts (퇴직연금)
+
 - Special handling for pension accounts
 - Different tax treatment
 
 ### 4. Fractional Shares (소수점 매매)
+
 - Support for fractional share trading
 - Available for select stocks
 
 ### 5. Block Trading (대량매매)
+
 - Special endpoints for large orders
 - Negotiated pricing available

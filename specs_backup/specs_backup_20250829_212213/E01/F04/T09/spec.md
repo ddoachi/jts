@@ -27,30 +27,29 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
+  - T01
 blocks: []
 related:
-- T04
+  - T04
 
 # === IMPLEMENTATION ===
 pull_requests: []
 commits: []
 context_file: 1049.context.md
 files:
-- .github/workflows/release.yml
-- .releaserc.json
-- CHANGELOG.md
+  - .github/workflows/release.yml
+  - .releaserc.json
+  - CHANGELOG.md
 
 # === METADATA ===
 tags:
-- release
-- versioning
-- changelog
-- semantic-release
+  - release
+  - versioning
+  - changelog
+  - semantic-release
 effort: small
 risk: low
 unique_id: 58c54802 # Unique identifier (never changes)
-
 ---
 
 # Release Management and Semantic Versioning

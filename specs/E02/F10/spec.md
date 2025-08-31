@@ -27,29 +27,28 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F01
+  - F01
 blocks: []
 related:
-- F02
-- F04
-- F07
+  - F02
+  - F04
+  - F07
 branch: ''
 files:
-- apps/brokers/mock/
-- libs/testing/broker-mocks/
-- test/fixtures/market-data/
+  - apps/brokers/mock/
+  - libs/testing/broker-mocks/
+  - test/fixtures/market-data/
 
 # === METADATA ===
 tags:
-- testing
-- mock
-- simulation
-- development
-- fixtures
+  - testing
+  - mock
+  - simulation
+  - development
+  - fixtures
 effort: medium
 risk: low
 ---
-
 
 # Broker Testing Framework and Mock Services
 
@@ -164,45 +163,49 @@ Build a fully-featured mock broker that accurately simulates real broker behavio
 ## Mock Service Specifications
 
 ### Market Simulation Models
+
 ```typescript
 interface MarketSimulation {
   model: 'random_walk' | 'mean_reversion' | 'momentum' | 'historical';
-  volatility: number;        // Daily volatility percentage
-  drift: number;             // Trend direction
-  spread: number;            // Bid-ask spread
-  liquidity: number;         // Available volume
-  updateFrequency: number;   // Milliseconds between updates
+  volatility: number; // Daily volatility percentage
+  drift: number; // Trend direction
+  spread: number; // Bid-ask spread
+  liquidity: number; // Available volume
+  updateFrequency: number; // Milliseconds between updates
 }
 ```
 
 ### Order Execution Configuration
+
 ```typescript
 interface ExecutionConfig {
-  fillProbability: number;    // 0-1 probability of fill
-  partialFillRatio: number;   // Percentage filled if partial
-  latencyMin: number;         // Minimum execution time (ms)
-  latencyMax: number;         // Maximum execution time (ms)
-  slippageBps: number;        // Basis points of slippage
-  rejectionRate: number;      // Probability of rejection
+  fillProbability: number; // 0-1 probability of fill
+  partialFillRatio: number; // Percentage filled if partial
+  latencyMin: number; // Minimum execution time (ms)
+  latencyMax: number; // Maximum execution time (ms)
+  slippageBps: number; // Basis points of slippage
+  rejectionRate: number; // Probability of rejection
 }
 ```
 
 ### Test Scenarios
+
 ```typescript
 enum TestScenario {
-  NORMAL_MARKET = 'normal',          // Regular trading
-  HIGH_VOLATILITY = 'volatile',      // Increased volatility
-  TRENDING = 'trending',              // Strong trend
-  RANGE_BOUND = 'range',              // Sideways market
-  FLASH_CRASH = 'flash_crash',       // Sudden drop
+  NORMAL_MARKET = 'normal', // Regular trading
+  HIGH_VOLATILITY = 'volatile', // Increased volatility
+  TRENDING = 'trending', // Strong trend
+  RANGE_BOUND = 'range', // Sideways market
+  FLASH_CRASH = 'flash_crash', // Sudden drop
   LIQUIDITY_CRISIS = 'no_liquidity', // No buyers/sellers
-  SYSTEM_FAILURE = 'failure'         // Connection issues
+  SYSTEM_FAILURE = 'failure', // Connection issues
 }
 ```
 
 ## Testing Features
 
 ### Data Generation
+
 - Random market data with configurable parameters
 - Historical pattern replay from real data
 - Synthetic orderbook generation
@@ -210,6 +213,7 @@ enum TestScenario {
 - Corporate action simulation
 
 ### Order Behavior
+
 - Configurable fill rates and delays
 - Partial fill simulation
 - Order rejection scenarios
@@ -217,6 +221,7 @@ enum TestScenario {
 - Market impact modeling
 
 ### Error Injection
+
 - Connection failures
 - Authentication errors
 - Rate limit violations
@@ -224,6 +229,7 @@ enum TestScenario {
 - Timeout simulation
 
 ### State Management
+
 - Save and restore test state
 - Time travel capabilities
 - Snapshot comparison
@@ -233,6 +239,7 @@ enum TestScenario {
 ## Performance Testing
 
 ### Load Testing
+
 - Concurrent order submission
 - Market data streaming load
 - Account query stress testing
@@ -240,6 +247,7 @@ enum TestScenario {
 - Memory leak detection
 
 ### Latency Testing
+
 - Order roundtrip measurement
 - Market data delay simulation
 - Network latency injection
@@ -247,6 +255,7 @@ enum TestScenario {
 - Bottleneck identification
 
 ### Reliability Testing
+
 - Long-running stability tests
 - Resource exhaustion tests
 - Failover scenario validation
@@ -293,6 +302,7 @@ When implementing this feature:
 ## Mock Service API
 
 ### Configuration Endpoint
+
 ```typescript
 POST /mock/configure
 {
@@ -306,15 +316,17 @@ POST /mock/configure
 ```
 
 ### Control Endpoints
+
 ```typescript
-POST /mock/reset        // Reset to initial state
-POST /mock/advance      // Advance time
-GET /mock/state         // Get current state
-POST /mock/inject       // Inject events
-POST /mock/snapshot     // Create state snapshot
+POST / mock / reset; // Reset to initial state
+POST / mock / advance; // Advance time
+GET / mock / state; // Get current state
+POST / mock / inject; // Inject events
+POST / mock / snapshot; // Create state snapshot
 ```
 
 ### Test Helpers
+
 ```typescript
 class MockBrokerTestHelper {
   async setupScenario(scenario: TestScenario);
@@ -328,6 +340,7 @@ class MockBrokerTestHelper {
 ## Documentation
 
 ### Usage Examples
+
 - Basic mock broker setup
 - Custom scenario configuration
 - Integration test examples
@@ -335,6 +348,7 @@ class MockBrokerTestHelper {
 - Continuous testing in CI/CD
 
 ### Best Practices
+
 - Use deterministic seeds for reproducibility
 - Reset state between tests
 - Validate mock behavior against real brokers

@@ -27,8 +27,8 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
-- T02
+  - T01
+  - T02
 blocks: []
 related: []
 
@@ -37,20 +37,19 @@ pull_requests: []
 commits: []
 context_file: 1048.context.md
 files:
-- .github/workflows/performance.yml
-- tools/performance/k6-tests.js
-- lighthouse.config.js
+  - .github/workflows/performance.yml
+  - tools/performance/k6-tests.js
+  - lighthouse.config.js
 
 # === METADATA ===
 tags:
-- performance
-- load-testing
-- k6
-- lighthouse
+  - performance
+  - load-testing
+  - k6
+  - lighthouse
 effort: small
 risk: low
 unique_id: 7cce53cf # Unique identifier (never changes)
-
 ---
 
 # Performance Testing Workflow

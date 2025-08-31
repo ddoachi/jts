@@ -23,19 +23,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'yarn'
           
-      - name: Configure yarn for CI
+      - name: Enable Corepack and setup Yarn
         run: |
-          # Remove any existing yarn configuration
-          rm -f .yarnrc .yarnrc.yml
-          # Set registry explicitly for CI environment
-          echo 'registry "https://registry.npmjs.org/"' > .yarnrc
-          # Clear yarn cache to avoid local registry artifacts
-          yarn cache clean
+          corepack enable
+          corepack prepare yarn@4.9.4 --activate
+          yarn --version
           
-      - name: Install dependencies (bypass local registry)
-        run: yarn install --frozen-lockfile --registry https://registry.npmjs.org
+      - name: Install dependencies
+        run: yarn install --immutable
         
       - name: Parse all spec files
         id: parse

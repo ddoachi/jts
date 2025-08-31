@@ -7,6 +7,7 @@ The JTS (JooHan Trading System) is a comprehensive automated trading platform bu
 ## Architecture Principles
 
 ### Core Design Principles
+
 1. **Layered Architecture**: Strict hierarchy with unidirectional dependencies (upper → lower)
 2. **Domain-Driven Design**: Bounded contexts for each business domain
 3. **Event-Driven Architecture**: Asynchronous communication via Kafka for scalability
@@ -321,13 +322,13 @@ jts-trading-platform/
 
 ### Communication Protocols by Use Case
 
-| Pattern | Protocol | Use Case | Example |
-|---------|----------|----------|---------|
-| **Request-Response** | HTTP/REST | External APIs, Simple queries | Web App → API Gateway |
-| **RPC** | gRPC | Low-latency internal calls | Strategy Engine → Risk Management |
-| **Event Streaming** | Kafka | Asynchronous events, Data distribution | Order Execution → Portfolio Tracker |
-| **Pub/Sub** | Redis | Real-time updates, Cache invalidation | Price updates → All services |
-| **WebSocket** | WS/WSS | Real-time bidirectional | Market data streaming |
+| Pattern              | Protocol  | Use Case                               | Example                             |
+| -------------------- | --------- | -------------------------------------- | ----------------------------------- |
+| **Request-Response** | HTTP/REST | External APIs, Simple queries          | Web App → API Gateway               |
+| **RPC**              | gRPC      | Low-latency internal calls             | Strategy Engine → Risk Management   |
+| **Event Streaming**  | Kafka     | Asynchronous events, Data distribution | Order Execution → Portfolio Tracker |
+| **Pub/Sub**          | Redis     | Real-time updates, Cache invalidation  | Price updates → All services        |
+| **WebSocket**        | WS/WSS    | Real-time bidirectional                | Market data streaming               |
 
 ### Service Communication Matrix
 
@@ -338,7 +339,7 @@ graph TB
         OE[Order Execution] -->|Portfolio Query| PT[Portfolio Tracker]
         GW[API Gateway] -->|Direct Call| SE
     end
-    
+
     subgraph "Asynchronous (Kafka)"
         SE -->|Trading Signal| K1[Kafka]
         K1 --> OE
@@ -347,7 +348,7 @@ graph TB
         MDC[Market Data] -->|Price Event| K3[Kafka]
         K3 --> SE
     end
-    
+
     subgraph "Caching (Redis)"
         SE -->|Get Price| R1[Redis]
         OE -->|Rate Limit| R2[Redis]
@@ -393,13 +394,13 @@ interface RateLimitConfig {
   broker: string;
   limits: {
     requests: number;
-    window: number;  // in milliseconds
+    window: number; // in milliseconds
     strategy: 'sliding' | 'fixed' | 'token-bucket';
   };
   priority: {
-    high: string[];    // Order execution
-    medium: string[];  // Real-time data
-    low: string[];     // Historical data
+    high: string[]; // Order execution
+    medium: string[]; // Real-time data
+    low: string[]; // Historical data
   };
 }
 
@@ -410,8 +411,8 @@ const rateLimitConfigs: RateLimitConfig[] = [
     priority: {
       high: ['submitOrder', 'cancelOrder'],
       medium: ['getRealtimePrice'],
-      low: ['getHistoricalData']
-    }
+      low: ['getHistoricalData'],
+    },
   },
   {
     broker: 'kis',
@@ -419,9 +420,9 @@ const rateLimitConfigs: RateLimitConfig[] = [
     priority: {
       high: ['placeOrder', 'modifyOrder'],
       medium: ['getCurrentPrice'],
-      low: ['getAccountInfo']
-    }
-  }
+      low: ['getAccountInfo'],
+    },
+  },
 ];
 ```
 
@@ -439,11 +440,11 @@ sequenceDiagram
     participant OE as Order Execution
     participant B as Broker (Creon/KIS)
     participant PT as Portfolio Tracker
-    
+
     UI->>GW: Create Strategy
     GW->>SE: Parse DSL Strategy
     SE->>K: Subscribe to market.data.*
-    
+
     loop Market Hours
         K->>SE: Price Event
         SE->>SE: Evaluate Conditions
@@ -655,25 +656,25 @@ main                # Production-ready code
 ```yaml
 Pipeline Stages:
   1. Code Quality:
-     - Linting (ESLint)
-     - Type checking (TypeScript)
-     - Unit tests (Jest)
-  
+    - Linting (ESLint)
+    - Type checking (TypeScript)
+    - Unit tests (Jest)
+
   2. Build:
-     - Nx affected builds
-     - Docker image creation
-     - Artifact storage
-  
+    - Nx affected builds
+    - Docker image creation
+    - Artifact storage
+
   3. Test:
-     - Integration tests
-     - E2E tests
-     - Performance tests
-  
+    - Integration tests
+    - E2E tests
+    - Performance tests
+
   4. Deploy:
-     - Staging deployment
-     - Smoke tests
-     - Production deployment
-     - Health verification
+    - Staging deployment
+    - Smoke tests
+    - Production deployment
+    - Health verification
 ```
 
 ## Conclusion
