@@ -3,6 +3,7 @@
 ## Technical Architecture Details
 
 ### Project Structure
+
 ```
 jts/
 ├── apps/
@@ -52,30 +53,38 @@ jts/
 ## Interface Implementations
 
 ### Unified Broker Interface
+
 ```typescript
 interface IBroker {
   // Market Data
   getRealtimeQuote(symbols: string[]): Observable<Quote>;
   getHistoricalCandles(symbol: string, period: Period): Promise<Candle[]>;
   getOrderbook(symbol: string): Promise<Orderbook>;
-  
+
   // Trading
   placeOrder(order: Order): Promise<OrderResult>;
   cancelOrder(orderId: string): Promise<CancelResult>;
   getPositions(): Promise<Position[]>;
   getBalance(): Promise<Balance>;
-  
+
   // Account Management
   getAccountInfo(): Promise<AccountInfo>;
   getRateLimitStatus(): RateLimitStatus;
 }
 
-class CreonBroker implements IBroker { /* Creon implementation */ }
-class KISBroker implements IBroker { /* KIS implementation */ }
-class BinanceBroker implements IBroker { /* Binance implementation */ }
+class CreonBroker implements IBroker {
+  /* Creon implementation */
+}
+class KISBroker implements IBroker {
+  /* KIS implementation */
+}
+class BinanceBroker implements IBroker {
+  /* Binance implementation */
+}
 ```
 
 ### Common Endpoints Implementation
+
 ```typescript
 // Both brokers implement these endpoints
 POST /api/v1/market-data/quotes      // Get real-time quotes
@@ -87,14 +96,15 @@ GET /api/v1/account/balance          // Get balance
 ```
 
 ### Rate Limiter Implementation
+
 ```typescript
 interface BrokerApiRequest {
   requestId: string;
   correlationId: string;
-  brokerType: "creon" | "kis" | "binance" | "upbit";
+  brokerType: 'creon' | 'kis' | 'binance' | 'upbit';
   apiMethod: string;
   params: Record<string, any>;
-  priority: "high" | "medium" | "low";
+  priority: 'high' | 'medium' | 'low';
   timestamp: number;
 }
 
@@ -122,38 +132,40 @@ class BrokerRateLimiter {
 ```
 
 ### Account Pool Implementation
+
 ```typescript
 class BrokerAccountPool {
   private accounts: Map<string, IBroker> = new Map();
-  
+
   // Add multiple KIS accounts
   addKISAccount(credentials: KISCredentials): void;
-  
+
   // Add Creon account
   addCreonAccount(credentials: CreonCredentials): void;
-  
+
   // Distribute symbols optimally
   distributeSymbols(symbols: string[]): void;
-  
+
   // Get best account for order
   selectAccountForOrder(): IBroker;
 }
 ```
 
 ### Smart Order Router Implementation
+
 ```typescript
 class SmartOrderRouter {
   async routeOrder(order: Order): Promise<OrderResult> {
     // 1. Check which broker has the symbol
     const availableBrokers = this.getAvailableBrokers(order.symbol);
-    
+
     // 2. Select best broker based on:
     //    - Current rate limit status
     //    - Account balance
     //    - Historical execution quality
     //    - Current positions
     const selectedBroker = this.selectOptimalBroker(availableBrokers, order);
-    
+
     // 3. Execute order
     return await selectedBroker.placeOrder(order);
   }
@@ -163,6 +175,7 @@ class SmartOrderRouter {
 ## Database Schemas
 
 ### ClickHouse Schema
+
 ```sql
 CREATE TABLE candles (
     timestamp DateTime64(3),
@@ -194,6 +207,7 @@ ORDER BY (timestamp, symbol);
 ## DSL Implementation Examples
 
 ### Basic Strategy
+
 ```typescript
 strategy("SMA_Crossover") {
   indicators {
@@ -216,6 +230,7 @@ strategy("SMA_Crossover") {
 ```
 
 ### Multi-Timeframe Strategy
+
 ```typescript
 strategy("MultiTimeframe_Momentum") {
   timeframes {
@@ -252,6 +267,7 @@ strategy("MultiTimeframe_Momentum") {
 ```
 
 ### Surge Detection Strategy
+
 ```typescript
 strategy("UnifiedSurgeScanner") {
   sources {
@@ -259,7 +275,7 @@ strategy("UnifiedSurgeScanner") {
     kis_account_1: symbols[601..1200]  // Next 600 from KIS Account 1
     kis_account_2: symbols[1201..1800] // Next 600 from KIS Account 2
   }
-  
+
   surge_detection {
     when (
       price_change(5m) > 3% AND
@@ -279,23 +295,23 @@ strategy("UnifiedSurgeScanner") {
 
 ```typescript
 // Service Worker Implementation
-self.addEventListener("push", (event) => {
+self.addEventListener('push', (event) => {
   const data = event.data.json();
   const options = {
     body: data.message,
-    icon: "/icons/jts-icon-192.png",
-    badge: "/icons/jts-badge-72.png",
+    icon: '/icons/jts-icon-192.png',
+    badge: '/icons/jts-badge-72.png',
     data: {
       correlationId: data.correlationId,
       tradeType: data.tradeType,
       url: data.url,
     },
     actions: [
-      { action: "view-trade", title: "View Trade" },
-      { action: "close", title: "Close" },
+      { action: 'view-trade', title: 'View Trade' },
+      { action: 'close', title: 'Close' },
     ],
-    requireInteraction: data.priority === "high",
-    vibrate: data.priority === "high" ? [200, 100, 200] : [100],
+    requireInteraction: data.priority === 'high',
+    vibrate: data.priority === 'high' ? [200, 100, 200] : [100],
   };
 
   event.waitUntil(self.registration.showNotification(data.title, options));
@@ -307,19 +323,19 @@ self.addEventListener("push", (event) => {
 ```typescript
 interface UnifiedDashboard {
   // Real-time metrics
-  totalSymbolsCovered: number;        // e.g., 1,800
-  activeBrokers: BrokerStatus[];      // Creon + KIS accounts
-  dataLatency: Map<string, number>;   // Per broker latency
-  
+  totalSymbolsCovered: number; // e.g., 1,800
+  activeBrokers: BrokerStatus[]; // Creon + KIS accounts
+  dataLatency: Map<string, number>; // Per broker latency
+
   // Trading metrics
-  surgesDetected: number;              // Today's surge count
-  positionsOpen: Position[];           // Across all accounts
-  orderSuccessRate: number;            // Execution success %
-  
+  surgesDetected: number; // Today's surge count
+  positionsOpen: Position[]; // Across all accounts
+  orderSuccessRate: number; // Execution success %
+
   // Performance
-  dailyPnL: number;                    // Aggregated P&L
-  winRate: number;                     // Success rate
-  sharpeRatio: number;                 // Risk-adjusted returns
+  dailyPnL: number; // Aggregated P&L
+  winRate: number; // Success rate
+  sharpeRatio: number; // Risk-adjusted returns
 }
 ```
 
@@ -361,22 +377,22 @@ backtest.results       # Backtest results (30 day retention)
 
 ```yaml
 Account Distribution:
-  KIS_Account_1: 
+  KIS_Account_1:
     symbols: 600 (KOSPI large-cap)
     focus: Blue chips, high liquidity
-    
+
   KIS_Account_2:
     symbols: 600 (KOSDAQ tech)
     focus: Tech stocks, high volatility
-    
+
   KIS_Account_3:
     symbols: 600 (Small-cap momentum)
     focus: Penny stocks, new listings
-    
+
   KIS_Account_4: (Optional)
     symbols: 600 (Sector rotation)
     focus: Thematic plays
-    
+
   KIS_Account_5: (Optional)
     symbols: 600 (Reserve/Backup)
     focus: Failover, overflow handling
@@ -385,6 +401,7 @@ Account Distribution:
 ## Hardware Specifications
 
 ### Linux Server (Primary)
+
 - CPU: Intel i7-13700K (16 cores/24 threads)
 - RAM: 128GB DDR5
 - Storage: 1TB NVMe (OS) + 4TB Samsung 990 PRO (Data)
@@ -392,6 +409,7 @@ Account Distribution:
 - Services: All business logic, Kafka, Redis, databases
 
 ### Windows Server (Creon)
+
 - CPU: AMD Ryzen 5600 (6 cores/12 threads)
 - RAM: 32GB DDR4
 - Storage: 1TB NVMe
@@ -399,6 +417,7 @@ Account Distribution:
 - Services: Creon API FastAPI wrapper only
 
 ### NAS (Backup)
+
 - Model: Synology DS1821+
 - RAM: 32GB
 - Available: 16.4TB
@@ -406,12 +425,12 @@ Account Distribution:
 
 ## Rate Limit Specifications
 
-| Broker | Rate Limit | Window | Strategy |
-|--------|------------|--------|----------|
-| Creon | 60 requests | 15 seconds | Queue with sliding window |
-| KIS | 20 requests/sec | Per account | Multiple accounts for scaling |
-| Binance | 1200 requests | 1 minute | Weight-based limiting |
-| Upbit | 10 requests | 1 second | Simple rate limiting |
+| Broker  | Rate Limit      | Window      | Strategy                      |
+| ------- | --------------- | ----------- | ----------------------------- |
+| Creon   | 60 requests     | 15 seconds  | Queue with sliding window     |
+| KIS     | 20 requests/sec | Per account | Multiple accounts for scaling |
+| Binance | 1200 requests   | 1 minute    | Weight-based limiting         |
+| Upbit   | 10 requests     | 1 second    | Simple rate limiting          |
 
 ## Redis Cache Configuration
 
@@ -437,12 +456,12 @@ Account Distribution:
 
 ## Communication Protocols
 
-| Communication Type | Protocol | Use Case | JTS Example |
-|--------------------|----------|----------|-------------|
-| Real-time sync request | gRPC | Low latency, type safety | Strategy Engine → Risk Management |
-| Simple REST API | HTTP | Developer convenience | Web App → API Gateway |
-| Event-based async | Kafka | Scalability, fault tolerance | Order Execution → Portfolio Tracker |
-| External API | HTTP | Standard compatibility | KIS, Binance, Upbit APIs |
+| Communication Type     | Protocol | Use Case                     | JTS Example                         |
+| ---------------------- | -------- | ---------------------------- | ----------------------------------- |
+| Real-time sync request | gRPC     | Low latency, type safety     | Strategy Engine → Risk Management   |
+| Simple REST API        | HTTP     | Developer convenience        | Web App → API Gateway               |
+| Event-based async      | Kafka    | Scalability, fault tolerance | Order Execution → Portfolio Tracker |
+| External API           | HTTP     | Standard compatibility       | KIS, Binance, Upbit APIs            |
 
 ## Layer Communication Rules
 

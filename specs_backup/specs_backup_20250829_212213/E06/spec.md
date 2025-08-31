@@ -27,33 +27,32 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01
-- E02
-- E03
-- E04
-- E05
+  - E01
+  - E02
+  - E03
+  - E04
+  - E05
 blocks: []
 related:
-- E07
-- E08
+  - E07
+  - E08
 branch: ''
 files:
-- apps/core/order-execution/
-- apps/core/portfolio-manager/
-- libs/shared/order-types/
+  - apps/core/order-execution/
+  - apps/core/portfolio-manager/
+  - libs/shared/order-types/
 
 # === METADATA ===
 tags:
-- orders
-- execution
-- portfolio
-- smart-routing
-- slippage
-- fill-management
+  - orders
+  - execution
+  - portfolio
+  - smart-routing
+  - slippage
+  - fill-management
 effort: epic
 risk: medium
 unique_id: a8c6dd98 # Unique identifier (never changes)
-
 ---
 
 # Order Execution & Portfolio Management
@@ -78,6 +77,7 @@ Build a sophisticated order execution and portfolio management system that handl
 ## Technical Approach
 
 ### Order Execution Architecture
+
 Implement a centralized order management system that coordinates execution across multiple brokers while maintaining real-time visibility into order status, execution quality, and portfolio state.
 
 ### Key Components

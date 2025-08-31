@@ -3,19 +3,20 @@
 ## Basic Strategy Patterns
 
 ### 1. Simple Moving Average Crossover
+
 ```typescript
 strategy("SMA_Crossover") {
   indicators {
     sma20 = SMA(period: 20)
     sma50 = SMA(period: 50)
   }
-  
+
   entry.long {
     when (sma20 crosses above sma50) {
       buy(quantity: "5%", type: "market")
     }
   }
-  
+
   exit.long {
     when (sma20 crosses below sma50) {
       sell(quantity: "all", type: "market")
@@ -25,6 +26,7 @@ strategy("SMA_Crossover") {
 ```
 
 ### 2. RSI Mean Reversion
+
 ```typescript
 strategy("RSI_MeanReversion") {
   parameters {
@@ -32,11 +34,11 @@ strategy("RSI_MeanReversion") {
     overbought_level = 70
     position_size = "10%"
   }
-  
+
   indicators {
     rsi = RSI(period: 14)
   }
-  
+
   entry.long {
     when (rsi < oversold_level AND price > SMA(200)) {
       buy(
@@ -48,7 +50,7 @@ strategy("RSI_MeanReversion") {
       )
     }
   }
-  
+
   entry.short {
     when (rsi > overbought_level AND price < SMA(200)) {
       sell_short(
@@ -62,20 +64,21 @@ strategy("RSI_MeanReversion") {
 ```
 
 ### 3. Bollinger Bands Breakout
+
 ```typescript
 strategy("BB_Breakout") {
   timeframe = "15m"
-  
+
   indicators {
     bb = BollingerBands(period: 20, std_dev: 2)
     volume_sma = SMA(source: volume, period: 20)
   }
-  
+
   filters {
     high_volume = volume > volume_sma * 1.5
     trend_up = close > SMA(50)
   }
-  
+
   entry.long {
     when (close crosses above bb.upper AND high_volume AND trend_up) {
       buy(
@@ -85,7 +88,7 @@ strategy("BB_Breakout") {
       )
     }
   }
-  
+
   risk_management {
     max_position_size = "20%"
     trailing_stop = "3%"
@@ -97,6 +100,7 @@ strategy("BB_Breakout") {
 ## Advanced Strategy Patterns
 
 ### 4. Multi-Timeframe Strategy
+
 ```typescript
 strategy("MultiTimeframe_Momentum") {
   timeframes {
@@ -104,23 +108,23 @@ strategy("MultiTimeframe_Momentum") {
     hourly = "1h"
     minute15 = "15m"
   }
-  
+
   indicators {
     on daily {
       trend = SMA(period: 50)
       momentum = MACD(fast: 12, slow: 26, signal: 9)
     }
-    
+
     on hourly {
       rsi = RSI(period: 14)
       stoch = Stochastic(k: 14, d: 3)
     }
-    
+
     on minute15 {
       entry_signal = MACD(fast: 5, slow: 13, signal: 5)
     }
   }
-  
+
   entry.long {
     when (
       daily.close > daily.trend AND
@@ -135,31 +139,32 @@ strategy("MultiTimeframe_Momentum") {
 ```
 
 ### 5. Pair Trading Strategy
+
 ```typescript
 strategy("PairTrading_Cointegration") {
   symbols = ["005930", "000660"]  // Samsung Electronics, SK Hynix
-  
+
   indicators {
     spread = price[symbols[0]] / price[symbols[1]]
     spread_mean = SMA(source: spread, period: 20)
     spread_std = STD(source: spread, period: 20)
     z_score = (spread - spread_mean) / spread_std
   }
-  
+
   entry.pair_long {
     when (z_score < -2) {
       buy(symbol: symbols[0], quantity: "50%")
       sell_short(symbol: symbols[1], quantity: "50%")
     }
   }
-  
+
   entry.pair_short {
     when (z_score > 2) {
       sell_short(symbol: symbols[0], quantity: "50%")
       buy(symbol: symbols[1], quantity: "50%")
     }
   }
-  
+
   exit.all {
     when (abs(z_score) < 0.5) {
       close_all_positions()
@@ -169,18 +174,19 @@ strategy("PairTrading_Cointegration") {
 ```
 
 ### 6. Event-Driven Strategy
+
 ```typescript
 strategy("Earnings_Momentum") {
   events {
     earnings_release = corporate_calendar.earnings
     dividend_ex_date = corporate_calendar.dividend
   }
-  
+
   indicators {
     price_momentum = ROC(period: 20)
     volume_surge = volume / SMA(volume, 20)
   }
-  
+
   entry.long {
     when (
       days_until(earnings_release) between [1, 5] AND
@@ -194,7 +200,7 @@ strategy("Earnings_Momentum") {
       )
     }
   }
-  
+
   risk_management {
     event_risk {
       reduce_position_before(earnings_release, by: "50%")
@@ -206,13 +212,14 @@ strategy("Earnings_Momentum") {
 ## Complex Strategy Patterns
 
 ### 7. Machine Learning Integration
+
 ```typescript
 strategy("ML_Signal_Integration") {
   models {
     price_prediction = load_model("./models/price_predictor.pkl")
     sentiment_score = external_api("sentiment_analysis")
   }
-  
+
   indicators {
     technical_score = weighted_average(
       RSI(14): 0.3,
@@ -220,14 +227,14 @@ strategy("ML_Signal_Integration") {
       BB.position: 0.4
     )
   }
-  
+
   signals {
     ml_signal = price_prediction.predict(
       features: [close, volume, technical_score]
     )
     sentiment = sentiment_score.get(symbol)
   }
-  
+
   entry.long {
     when (
       ml_signal > 0.7 AND
@@ -244,10 +251,11 @@ strategy("ML_Signal_Integration") {
 ```
 
 ### 8. Portfolio-Level Strategy
+
 ```typescript
 strategy("Sector_Rotation") {
   universe = KOSPI200.filter(market_cap > 1_000_000_000_000)
-  
+
   portfolio {
     max_positions = 10
     rebalance_frequency = "monthly"
@@ -257,19 +265,19 @@ strategy("Sector_Rotation") {
       "Healthcare": "15%"
     }
   }
-  
+
   ranking {
     momentum_score = ROC(period: 60)
     quality_score = ROE * (1 - debt_ratio)
     combined_score = momentum_score * 0.6 + quality_score * 0.4
   }
-  
+
   rebalance {
     when (is_first_trading_day_of_month()) {
       top_stocks = universe
         .sort_by(combined_score, descending: true)
         .take(max_positions)
-      
+
       adjust_portfolio(top_stocks, equal_weight: true)
     }
   }
@@ -279,6 +287,7 @@ strategy("Sector_Rotation") {
 ## DSL Architecture Components
 
 ### Core Language Features
+
 ```typescript
 // Variable declarations
 let threshold = 0.5
@@ -310,6 +319,7 @@ state {
 ```
 
 ### Built-in Functions
+
 ```typescript
 // Market data
 current_price()
@@ -337,6 +347,7 @@ time_since(event)
 ```
 
 ### Execution Modes
+
 ```typescript
 strategy("Adaptive_Strategy") {
   mode {
@@ -347,12 +358,12 @@ strategy("Adaptive_Strategy") {
       commission = 0.00015
       slippage = 0.0001
     }
-    
+
     paper_trading {
       enabled = true
       capital = 10_000_000
     }
-    
+
     live_trading {
       enabled = false
       max_capital = 50_000_000

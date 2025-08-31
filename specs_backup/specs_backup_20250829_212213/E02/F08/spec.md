@@ -27,30 +27,29 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F01
-- F07
+  - F01
+  - F07
 blocks:
-- F09
+  - F09
 related:
-- F02
-- F04
+  - F02
+  - F04
 branch: ''
 files:
-- apps/api-gateway/broker/
-- libs/shared/grpc/broker.proto
-- libs/shared/swagger/broker-api.yaml
+  - apps/api-gateway/broker/
+  - libs/shared/grpc/broker.proto
+  - libs/shared/swagger/broker-api.yaml
 
 # === METADATA ===
 tags:
-- api
-- rest
-- grpc
-- gateway
-- standardization
+  - api
+  - rest
+  - grpc
+  - gateway
+  - standardization
 effort: medium
 risk: low
 unique_id: 9185f3ec # Unique identifier (never changes)
-
 ---
 
 # Standardized Broker Service Endpoints
@@ -166,36 +165,38 @@ Implement a comprehensive API gateway that provides standardized endpoints while
 ## API Specifications
 
 ### REST Endpoints
+
 ```yaml
 /api/v1/brokers:
   GET: List available brokers
-  
+
 /api/v1/brokers/{brokerId}/accounts:
   GET: List accounts for broker
-  
+
 /api/v1/orders:
   POST: Place new order
   GET: List orders
-  
+
 /api/v1/orders/{orderId}:
   GET: Get order details
   PUT: Modify order
   DELETE: Cancel order
-  
+
 /api/v1/positions:
   GET: Get current positions
-  
+
 /api/v1/balances:
   GET: Get account balances
-  
+
 /api/v1/market-data/quotes/{symbol}:
   GET: Get real-time quote
-  
+
 /api/v1/market-data/orderbook/{symbol}:
   GET: Get order book
 ```
 
 ### gRPC Services
+
 ```protobuf
 service BrokerService {
   rpc PlaceOrder(OrderRequest) returns (OrderResponse);
@@ -210,6 +211,7 @@ service BrokerService {
 ```
 
 ### Response Format
+
 ```typescript
 interface StandardResponse<T> {
   success: boolean;
@@ -235,6 +237,7 @@ interface StandardResponse<T> {
 ## Standardization Requirements
 
 ### Data Normalization
+
 - Unified date/time format (ISO 8601)
 - Consistent decimal precision
 - Standard currency codes (ISO 4217)
@@ -242,6 +245,7 @@ interface StandardResponse<T> {
 - Common error codes
 
 ### API Conventions
+
 - RESTful resource naming
 - HTTP status code standards
 - Pagination format
@@ -249,6 +253,7 @@ interface StandardResponse<T> {
 - Sorting parameters
 
 ### Security Standards
+
 - OAuth 2.0 / JWT authentication
 - API key management
 - Request signing (HMAC)
@@ -258,6 +263,7 @@ interface StandardResponse<T> {
 ## Performance Requirements
 
 ### Latency Targets
+
 - REST endpoint: <100ms
 - gRPC call: <50ms
 - WebSocket message: <10ms
@@ -265,6 +271,7 @@ interface StandardResponse<T> {
 - Cache hit: <5ms
 
 ### Throughput
+
 - 10,000+ requests/second
 - 1,000+ concurrent connections
 - 100+ WebSocket connections
@@ -312,6 +319,7 @@ When implementing this feature:
 ## API Gateway Features
 
 ### Core Functionality
+
 - Request routing and load balancing
 - Authentication and authorization
 - Rate limiting and throttling
@@ -319,6 +327,7 @@ When implementing this feature:
 - Caching and compression
 
 ### Advanced Features
+
 - Circuit breaker implementation
 - Request retry with backoff
 - Response aggregation
@@ -326,6 +335,7 @@ When implementing this feature:
 - WebSocket proxying
 
 ### Monitoring & Analytics
+
 - Request/response logging
 - Performance metrics
 - Error tracking
@@ -335,6 +345,7 @@ When implementing this feature:
 ## SDK Support
 
 ### Target Languages
+
 - TypeScript/JavaScript
 - Python
 - Java
@@ -342,6 +353,7 @@ When implementing this feature:
 - C#
 
 ### SDK Features
+
 - Auto-generated from specs
 - Type-safe interfaces
 - Retry logic built-in

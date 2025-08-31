@@ -27,10 +27,10 @@ actual_hours: 1
 
 # === DEPENDENCIES ===
 dependencies:
-- T03
+  - T03
 blocks:
-- T05
-- T06
+  - T05
+  - T06
 related: []
 pull_requests: []
 commits: 
@@ -39,25 +39,24 @@ commits:
   link: "https://github.com/ddoachi/jts/commit/8d06b99"
 context_file: context.md
 files:
-- .env.example
-- .gitignore
-- scripts/setup-env.sh
-- scripts/validate-env.js
-- scripts/creon-launcher.bat
-- scripts/encrypt-credentials.ps1
-- scripts/decrypt-and-run.ps1
-- docs/ENVIRONMENT.md
+  - .env.example
+  - .gitignore
+  - scripts/setup-env.sh
+  - scripts/validate-env.js
+  - scripts/creon-launcher.bat
+  - scripts/encrypt-credentials.ps1
+  - scripts/decrypt-and-run.ps1
+  - docs/ENVIRONMENT.md
 
 # === METADATA ===
 tags:
-- environment
-- secrets
-- configuration
-- security
+  - environment
+  - secrets
+  - configuration
+  - security
 effort: small
 risk: medium
 ---
-
 
 # Environment Configuration and Secrets Management
 
@@ -188,10 +187,10 @@ fi
 if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
     echo "🔒 Setting up secure Creon directories..."
     mkdir -p /secure/creon/{credentials,scripts,logs}
-    
+
     # Set restricted permissions
     chmod 700 /secure/creon/credentials
-    
+
     echo "📋 Creon directories created. Add your credentials to /secure/creon/credentials/"
 fi
 
@@ -210,31 +209,31 @@ const path = require('path');
 
 function validateEnv() {
   const envPath = path.join(__dirname, '..', '.env.local');
-  
+
   if (!fs.existsSync(envPath)) {
     console.error('❌ .env.local not found. Run: cp .env.example .env.local');
     process.exit(1);
   }
-  
+
   // Check for placeholder values
   const content = fs.readFileSync(envPath, 'utf8');
   const warnings = [];
-  
+
   if (content.includes('your_kis_appkey_1_here')) {
     warnings.push('KIS Account 1 credentials not configured');
   }
-  
+
   if (content.includes('your_kis_appkey_2_here')) {
     warnings.push('KIS Account 2 credentials not configured');
   }
-  
+
   if (content.includes('your-dev-jwt-secret-key-change-this')) {
     warnings.push('JWT secret not changed from default');
   }
-  
+
   if (warnings.length > 0) {
     console.log('⚠️  Environment warnings:');
-    warnings.forEach(w => console.log(`   - ${w}`));
+    warnings.forEach((w) => console.log(`   - ${w}`));
   } else {
     console.log('✅ Environment configuration looks good!');
   }

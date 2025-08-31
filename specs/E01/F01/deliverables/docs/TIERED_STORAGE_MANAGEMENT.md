@@ -12,7 +12,7 @@ The JTS Tiered Storage Management system provides automated management for the t
 ### Storage Tiers
 
 1. **Hot Tier (NVMe)**: `/var/lib` - High-performance storage for active data
-2. **Warm Tier (SATA)**: `/data/warm-storage` - Medium-performance for recent data  
+2. **Warm Tier (SATA)**: `/data/warm-storage` - Medium-performance for recent data
 3. **Cold Tier (NAS)**: `/mnt/synology/jts` - Long-term archival storage
 
 ## Components
@@ -20,47 +20,59 @@ The JTS Tiered Storage Management system provides automated management for the t
 ### Scripts
 
 #### `storage-health.sh`
+
 Multi-tier health monitoring script that checks:
+
 - Hot tier (LVM) status and usage
 - Warm tier (SATA) filesystem status
 - Cold tier (NAS) connectivity and usage
 - Usage alerts with configurable thresholds
 
 **Usage:**
+
 ```bash
 ./storage-health.sh
 ```
 
 #### `tiered-storage.sh`
+
 Automated data movement and cleanup script supporting:
+
 - Log migration from hot to warm storage (7+ days old)
 - Backup migration from warm to cold storage (30+ days old)
 - Temporary file cleanup across all tiers
 - Docker system cleanup
 
 **Usage:**
+
 ```bash
 ./tiered-storage.sh {migrate|cleanup|all}
 ```
 
 #### `nas-archival.sh`
+
 NAS-specific backup and archival management:
+
 - Development data synchronization (notebooks, datasets)
 - System configuration backups with timestamps
 - Rsync-based incremental updates
 
 **Usage:**
+
 ```bash
 ./nas-archival.sh {development|configs|all}
 ```
 
 #### `lvm-backup.sh`
+
 LVM snapshot management for database backups:
+
 - Creates snapshots for PostgreSQL, ClickHouse, MongoDB
 - Automated cleanup of snapshots older than 7 days
 - Handles LVM unavailability gracefully
 
 **Usage:**
+
 ```bash
 ./lvm-backup.sh {create|cleanup}
 ```
@@ -68,11 +80,13 @@ LVM snapshot management for database backups:
 ### Systemd Integration
 
 #### Service: `tiered-storage.service`
+
 - **Type**: oneshot
 - **Execution**: Runs `tiered-storage.sh all`
 - **Logging**: Journal output for monitoring
 
 #### Timer: `tiered-storage.timer`
+
 - **Schedule**: Daily execution
 - **Persistence**: Maintains schedule across reboots
 - **Target**: `timers.target`
@@ -80,12 +94,14 @@ LVM snapshot management for database backups:
 ### Installation
 
 1. **Copy Scripts**:
+
    ```bash
    sudo cp specs/E01/F01/deliverables/scripts/* /usr/local/bin/
    sudo chmod +x /usr/local/bin/{storage-health,tiered-storage,nas-archival,lvm-backup}.sh
    ```
 
 2. **Install Systemd Units**:
+
    ```bash
    sudo cp specs/E01/F01/deliverables/config/tiered-storage.{service,timer} /etc/systemd/system/
    sudo systemctl daemon-reload
@@ -103,11 +119,13 @@ LVM snapshot management for database backups:
 ### Health Checks
 
 Run regular health checks:
+
 ```bash
 storage-health.sh
 ```
 
 Expected output shows status for all three tiers:
+
 - ✅ Tier operational
 - ⚠️ Tier unavailable (graceful degradation)
 - 🚨 Critical usage alerts (>90%)
@@ -116,6 +134,7 @@ Expected output shows status for all three tiers:
 ### Log Monitoring
 
 Monitor automated execution:
+
 ```bash
 journalctl -u tiered-storage.service -f
 ```
@@ -132,16 +151,19 @@ journalctl -u tiered-storage.service -f
 ### Manual Operations
 
 Force immediate data movement:
+
 ```bash
 sudo tiered-storage.sh migrate
 ```
 
 Emergency cleanup:
+
 ```bash
 sudo tiered-storage.sh cleanup
 ```
 
 Create manual snapshots:
+
 ```bash
 sudo lvm-backup.sh create
 ```
@@ -149,7 +171,7 @@ sudo lvm-backup.sh create
 ## Performance Impact
 
 - **Scheduled Operations**: Run during low-activity periods (daily)
-- **Resource Usage**: Minimal CPU/memory impact during normal operation  
+- **Resource Usage**: Minimal CPU/memory impact during normal operation
 - **Network Impact**: NAS operations may use significant bandwidth during sync
 - **Storage Impact**: Temporary space requirements during data movement
 
@@ -172,6 +194,7 @@ sudo lvm-backup.sh create
 ### Configuration Updates
 
 Modify systemd timer schedule:
+
 ```bash
 sudo systemctl edit tiered-storage.timer
 ```
@@ -189,6 +212,7 @@ Update script parameters by editing the scripts directly in `/usr/local/bin/`.
 ### System Recovery
 
 Use configuration backups from NAS:
+
 ```bash
 ls /mnt/synology/jts/archives/configs/
 ```

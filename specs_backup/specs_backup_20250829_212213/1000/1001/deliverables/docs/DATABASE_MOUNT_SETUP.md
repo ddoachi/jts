@@ -100,6 +100,7 @@ sudo ./validate-database-mounts.sh
 ```
 
 Expected output:
+
 ```
 ✅ All critical checks passed!
 Database mount integration is properly configured.
@@ -116,6 +117,7 @@ sudo ./setup-database-users.sh
 ```
 
 This script:
+
 - Creates system users (UID < 1000) for each database service
 - Sets `/bin/false` as shell to prevent login
 - Locks accounts to disable password authentication
@@ -123,6 +125,7 @@ This script:
 - Configures resource limits in `/etc/security/limits.d/`
 
 **Manual equivalent:**
+
 ```bash
 # Create service users
 sudo useradd -r -s /bin/false -d /var/lib/postgresql -M postgres
@@ -147,12 +150,14 @@ sudo ./setup-mount-points.sh
 ```
 
 This script:
+
 - Creates mount point directories under `/var/lib/`
 - Sets up subdirectory structure for each database
 - Configures `/etc/fstab` entries with optimized mount options
 - Mounts the filesystems
 
 **Directory Structure Created:**
+
 ```
 /var/lib/
 ├── postgresql/
@@ -197,12 +202,14 @@ sudo ./configure-permissions.sh
 ```
 
 This script:
+
 - Sets ownership to service users
 - Applies restrictive 750 permissions
 - Configures ACLs for operational access
 - Verifies service isolation
 
 **Permission Model:**
+
 ```bash
 # Base permissions
 drwxr-x--- postgres:postgres   /var/lib/postgresql
@@ -227,6 +234,7 @@ sudo ./validate-database-mounts.sh
 ```
 
 Validation checks:
+
 - ✓ Service users exist with correct properties
 - ✓ Operational groups are created
 - ✓ Mount directories exist with proper ownership
@@ -273,13 +281,13 @@ Validation checks:
 
 Each database has mount options tuned for its I/O patterns:
 
-| Database | Mount Options | Rationale |
-|----------|--------------|-----------|
+| Database   | Mount Options                    | Rationale                            |
+| ---------- | -------------------------------- | ------------------------------------ |
 | PostgreSQL | `noatime,nodiratime,rw,relatime` | Write-heavy with transaction logging |
-| ClickHouse | `noatime,nodiratime,rw,largeio` | Large sequential reads for analytics |
-| Kafka | `noatime,nodiratime,rw,largeio` | Sequential writes for log segments |
-| MongoDB | `noatime,nodiratime,rw,relatime` | Mixed workload with documents |
-| Redis | `noatime,nodiratime,rw,relatime` | Small files with frequent updates |
+| ClickHouse | `noatime,nodiratime,rw,largeio`  | Large sequential reads for analytics |
+| Kafka      | `noatime,nodiratime,rw,largeio`  | Sequential writes for log segments   |
+| MongoDB    | `noatime,nodiratime,rw,relatime` | Mixed workload with documents        |
+| Redis      | `noatime,nodiratime,rw,relatime` | Small files with frequent updates    |
 
 ## Security Model
 
@@ -335,6 +343,7 @@ The implementation uses multiple security layers:
 ### Common Issues
 
 #### Issue: User creation fails
+
 ```bash
 # Error: useradd: user 'postgres' already exists
 # Solution: User already exists, verify properties:
@@ -343,6 +352,7 @@ getent passwd postgres
 ```
 
 #### Issue: Mount point not accessible
+
 ```bash
 # Error: Permission denied when accessing mount point
 # Solution: Check ownership and permissions:
@@ -355,6 +365,7 @@ sudo chmod 750 /var/lib/postgresql
 ```
 
 #### Issue: Cannot write to database directory
+
 ```bash
 # Test write access:
 sudo -u postgres touch /var/lib/postgresql/test
@@ -369,6 +380,7 @@ aa-status   # For AppArmor
 ```
 
 #### Issue: LVM volumes not found
+
 ```bash
 # Check volume group:
 sudo vgdisplay vg_jts
@@ -411,6 +423,7 @@ done
 ### Regular Tasks
 
 #### Weekly Validation
+
 ```bash
 # Run validation script weekly
 sudo /path/to/validate-database-mounts.sh
@@ -424,6 +437,7 @@ journalctl -xe | grep -E "(postgres|clickhouse|kafka|mongodb|redis)"
 ```
 
 #### Monthly Reviews
+
 ```bash
 # Check for permission drift
 find /var/lib/postgresql -type d -not -perm 750 -ls
@@ -459,12 +473,14 @@ setfacl --restore=/backup/acls_20250827.txt
 To add a new database service:
 
 1. Create service user:
+
 ```bash
 sudo useradd -r -s /bin/false -d /var/lib/newdb -M newdb
 sudo passwd -l newdb
 ```
 
 2. Create mount point:
+
 ```bash
 sudo mkdir -p /var/lib/newdb/{data,logs,config}
 sudo chown -R newdb:newdb /var/lib/newdb
@@ -472,6 +488,7 @@ sudo chmod 750 /var/lib/newdb
 ```
 
 3. Configure ACLs:
+
 ```bash
 sudo setfacl -m g:db-backup:rx /var/lib/newdb
 sudo setfacl -m g:db-monitor:rx /var/lib/newdb
@@ -483,12 +500,12 @@ sudo setfacl -m g:db-monitor:rx /var/lib/newdb
 
 ### File Locations
 
-| File | Purpose |
-|------|---------|
-| `/etc/fstab` | Mount configuration |
-| `/etc/security/limits.d/90-database-users.conf` | Resource limits |
-| `/var/log/syslog` | System logs |
-| `/var/lib/{service}/` | Database mount points |
+| File                                            | Purpose               |
+| ----------------------------------------------- | --------------------- |
+| `/etc/fstab`                                    | Mount configuration   |
+| `/etc/security/limits.d/90-database-users.conf` | Resource limits       |
+| `/var/log/syslog`                               | System logs           |
+| `/var/lib/{service}/`                           | Database mount points |
 
 ### Related Documentation
 
@@ -498,16 +515,17 @@ sudo setfacl -m g:db-monitor:rx /var/lib/newdb
 
 ### Script Reference
 
-| Script | Purpose | Run As |
-|--------|---------|--------|
-| `setup-database-users.sh` | Create service users and groups | root |
-| `setup-mount-points.sh` | Create mount directories and configure fstab | root |
-| `configure-permissions.sh` | Set ownership, permissions, and ACLs | root |
-| `validate-database-mounts.sh` | Comprehensive validation of setup | root |
+| Script                        | Purpose                                      | Run As |
+| ----------------------------- | -------------------------------------------- | ------ |
+| `setup-database-users.sh`     | Create service users and groups              | root   |
+| `setup-mount-points.sh`       | Create mount directories and configure fstab | root   |
+| `configure-permissions.sh`    | Set ownership, permissions, and ACLs         | root   |
+| `validate-database-mounts.sh` | Comprehensive validation of setup            | root   |
 
 ### Support
 
 For issues or questions:
+
 1. Check validation script output
 2. Review troubleshooting section
 3. Consult system logs
@@ -515,5 +533,5 @@ For issues or questions:
 
 ---
 
-*This document is part of the JTS Infrastructure Implementation*  
-*Last Updated: 2025-08-27*
+_This document is part of the JTS Infrastructure Implementation_  
+_Last Updated: 2025-08-27_

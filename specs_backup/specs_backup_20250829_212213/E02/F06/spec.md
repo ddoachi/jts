@@ -27,29 +27,28 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- F01
-- F05
+  - F01
+  - F05
 blocks:
-- F07
+  - F07
 related:
-- F02
-- F08
+  - F02
+  - F08
 branch: ''
 files:
-- libs/shared/services/account-pool.service.ts
-- apps/brokers/common/account-manager/
-- libs/shared/models/account.model.ts
+  - libs/shared/services/account-pool.service.ts
+  - apps/brokers/common/account-manager/
+  - libs/shared/models/account.model.ts
 
 # === METADATA ===
 tags:
-- account-pool
-- multi-account
-- load-balancing
-- trading
+  - account-pool
+  - multi-account
+  - load-balancing
+  - trading
 effort: large
 risk: medium
 unique_id: 24f0d2c9 # Unique identifier (never changes)
-
 ---
 
 # Multi-Account Pool Management System
@@ -165,41 +164,45 @@ Design a sophisticated account management system that treats multiple trading ac
 ## Account Management Specifications
 
 ### Account Types
+
 ```typescript
 enum AccountType {
-  REGULAR = 'regular',        // Standard trading account
-  MARGIN = 'margin',          // Margin trading enabled
-  PENSION = 'pension',        // Retirement account
-  INSTITUTIONAL = 'institutional',  // High-limit account
-  PAPER = 'paper'            // Testing account
+  REGULAR = 'regular', // Standard trading account
+  MARGIN = 'margin', // Margin trading enabled
+  PENSION = 'pension', // Retirement account
+  INSTITUTIONAL = 'institutional', // High-limit account
+  PAPER = 'paper', // Testing account
 }
 ```
 
 ### Distribution Strategies
+
 ```typescript
 enum DistributionStrategy {
-  HASH_BASED = 'hash',        // Consistent hash by symbol
+  HASH_BASED = 'hash', // Consistent hash by symbol
   ROUND_ROBIN = 'round_robin', // Equal distribution
-  WEIGHTED = 'weighted',       // Based on account capacity
-  MANUAL = 'manual',          // Explicit assignment
-  DYNAMIC = 'dynamic'         // ML-based optimization
+  WEIGHTED = 'weighted', // Based on account capacity
+  MANUAL = 'manual', // Explicit assignment
+  DYNAMIC = 'dynamic', // ML-based optimization
 }
 ```
 
 ### Account Health States
+
 ```typescript
 enum AccountHealth {
-  HEALTHY = 'healthy',        // Fully operational
-  DEGRADED = 'degraded',      // Partial issues
+  HEALTHY = 'healthy', // Fully operational
+  DEGRADED = 'degraded', // Partial issues
   QUARANTINED = 'quarantined', // Temporarily disabled
-  FAILED = 'failed',          // Connection lost
-  MAINTENANCE = 'maintenance'  // Scheduled downtime
+  FAILED = 'failed', // Connection lost
+  MAINTENANCE = 'maintenance', // Scheduled downtime
 }
 ```
 
 ## Trading-Specific Requirements
 
 ### Symbol Distribution
+
 - Maximum 200 symbols per account (KIS limit)
 - Even distribution for load balancing
 - Hot symbol isolation to dedicated accounts
@@ -207,6 +210,7 @@ enum AccountHealth {
 - Sticky sessions for active positions
 
 ### Balance Management
+
 - Real-time cash tracking
 - Margin requirement calculation
 - Position exposure limits
@@ -214,6 +218,7 @@ enum AccountHealth {
 - Settlement tracking (T+2)
 
 ### Risk Controls
+
 - Per-account position limits
 - Aggregate exposure monitoring
 - Concentration risk detection
@@ -221,6 +226,7 @@ enum AccountHealth {
 - Circuit breaker per account
 
 ### Regulatory Compliance
+
 - Account segregation maintenance
 - Beneficial ownership tracking
 - Tax lot accounting per account
@@ -230,6 +236,7 @@ enum AccountHealth {
 ## Performance Requirements
 
 ### Latency Targets
+
 - Account selection: <10ms
 - Balance aggregation: <50ms
 - Health check: <100ms
@@ -237,6 +244,7 @@ enum AccountHealth {
 - Failover detection: <5s
 
 ### Scalability
+
 - Support 100+ accounts
 - 10,000+ symbols total
 - 1,000+ operations/second
@@ -285,6 +293,7 @@ When implementing this feature:
 ## Data Models
 
 ### Account Entity
+
 ```typescript
 interface Account {
   id: string;
@@ -300,6 +309,7 @@ interface Account {
 ```
 
 ### Symbol Assignment
+
 ```typescript
 interface SymbolAssignment {
   symbol: string;
@@ -312,6 +322,7 @@ interface SymbolAssignment {
 ```
 
 ### Aggregated Portfolio
+
 ```typescript
 interface Portfolio {
   totalCash: number;
@@ -325,6 +336,7 @@ interface Portfolio {
 ## Monitoring & Alerting
 
 ### Key Metrics
+
 - Accounts active/total
 - Symbol distribution balance
 - Account utilization rates
@@ -333,6 +345,7 @@ interface Portfolio {
 - Error rates per account
 
 ### Alerts
+
 - Account connection failure
 - High error rate (>5%)
 - Imbalanced distribution (>20% skew)

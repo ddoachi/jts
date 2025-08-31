@@ -1,6 +1,7 @@
 # Context: E01-F01-T06 (Tiered Storage Management)
 
 ## Spec Information
+
 - **ID**: 08fe2621
 - **Title**: Tiered Storage Management
 - **Epic**: E01
@@ -12,6 +13,7 @@
 The JTS trading system requires a sophisticated three-tier storage architecture to handle different data lifecycle stages efficiently. This implementation provides automated management for the entire storage ecosystem, ensuring optimal performance, cost-effectiveness, and operational reliability.
 
 ### Business Problem Solved
+
 - **Performance**: Active trading data needs ultra-fast access (Hot tier - NVMe)
 - **Cost Optimization**: Historical data can use cheaper storage (Warm/Cold tiers)
 - **Operational Efficiency**: Manual storage management is error-prone and time-consuming
@@ -19,11 +21,13 @@ The JTS trading system requires a sophisticated three-tier storage architecture 
 - **Compliance**: Automated archival helps meet data retention requirements
 
 ### Storage Tier Strategy
+
 1. **Hot Tier (NVMe)**: Real-time trading data, active databases, current logs
 2. **Warm Tier (SATA)**: Recent backups, processed data, compressed logs
 3. **Cold Tier (NAS)**: Long-term archives, historical data, configuration backups
 
 ### Why Automation is Critical
+
 - **24/7 Operation**: Trading systems can't afford manual maintenance windows
 - **Data Growth**: Market data grows exponentially, requiring constant management
 - **Human Error Prevention**: Automated policies eliminate manual mistakes
@@ -33,9 +37,11 @@ The JTS trading system requires a sophisticated three-tier storage architecture 
 ## Implementation Sessions
 
 ### Session 1: 2025-08-30
+
 **Started**: Implementation of tiered storage management system
 
 #### Implementation Steps
+
 1. ✅ **Directory Setup**: Created deliverables directory structure
    - Created `specs/E01/F01/deliverables/{config,docs,scripts}`
    - Created `context.md` for process logging
@@ -67,12 +73,14 @@ The JTS trading system requires a sophisticated three-tier storage architecture 
 **Purpose**: Provides unified visibility into the health and capacity of all three storage tiers.
 
 **Why Needed**:
+
 - **Proactive Monitoring**: Detect capacity issues before they cause outages
-- **Unified View**: Single command shows status of all tiers instead of checking each manually  
+- **Unified View**: Single command shows status of all tiers instead of checking each manually
 - **Alert Generation**: Automated warnings at 80% and critical alerts at 90% usage
 - **Network Validation**: Ensures NAS connectivity is working for archival operations
 
 **Key Functionality**:
+
 - LVM status checking for hot tier (if available)
 - Filesystem usage monitoring for warm tier
 - NAS connectivity validation with ping tests
@@ -86,14 +94,16 @@ The JTS trading system requires a sophisticated three-tier storage architecture 
 **Purpose**: Implements intelligent data lifecycle management by automatically moving data between tiers based on age and access patterns.
 
 **Why Needed**:
+
 - **Cost Optimization**: Keeps fast storage free for active data
 - **Performance Maintenance**: Prevents hot tier from filling up and slowing down
 - **Automated Hygiene**: Removes old temporary files and unused Docker resources
 - **Operational Efficiency**: Eliminates manual data movement tasks
 
 **Data Movement Logic**:
+
 - **Logs**: Move files older than 7 days from `/var/log` to warm storage with compression
-- **Backups**: Archive backups older than 30 days from warm to cold storage  
+- **Backups**: Archive backups older than 30 days from warm to cold storage
 - **Temp Files**: Clean up processing files older than 3 days
 - **Docker Cleanup**: Remove unused containers, images, and build cache
 
@@ -104,29 +114,33 @@ The JTS trading system requires a sophisticated three-tier storage architecture 
 **Purpose**: Manages long-term archival of development resources and system configurations to NAS storage.
 
 **Why Needed**:
+
 - **Disaster Recovery**: Critical configurations backed up off-site
 - **Development Continuity**: Jupyter notebooks and datasets preserved
 - **Compliance**: Historical data retained according to policies
 - **Knowledge Preservation**: Development work protected from local failures
 
 **Archival Strategy**:
+
 - **Incremental Sync**: Uses rsync for efficient bandwidth usage
 - **Timestamped Backups**: Configuration snapshots with date stamps for versioning
 - **Selective Sync**: Only backs up relevant directories to avoid clutter
 
 **Business Continuity**: Enables rapid recovery of development environment and critical system configurations.
 
-### Script 4: `lvm-backup.sh` - Database Snapshot Management  
+### Script 4: `lvm-backup.sh` - Database Snapshot Management
 
 **Purpose**: Creates and manages LVM snapshots for database consistency and point-in-time recovery.
 
 **Why Needed**:
+
 - **Data Integrity**: Consistent snapshots of running databases
 - **Point-in-Time Recovery**: Ability to restore to specific moments
 - **Low Impact**: Snapshots create minimal disruption to trading operations
 - **Space Management**: Automatic cleanup prevents snapshot accumulation
 
 **Database Coverage**:
+
 - **PostgreSQL** (5GB snapshots): User accounts, orders, trading records
 - **ClickHouse** (10GB snapshots): Market data, trading analytics
 - **MongoDB** (2GB snapshots): Configuration data, strategies
@@ -138,12 +152,14 @@ The JTS trading system requires a sophisticated three-tier storage architecture 
 **Purpose**: Ensures reliable daily execution of storage management tasks without manual intervention.
 
 **Why Needed**:
+
 - **Consistency**: Same operations run every day at optimal times
 - **Reliability**: systemd ensures execution even after reboots
 - **Logging**: Journal captures all operations for audit and troubleshooting
 - **Resource Management**: Runs as oneshot service to avoid resource conflicts
 
-**Operational Benefits**: 
+**Operational Benefits**:
+
 - Runs during low-activity periods (typically early morning)
 - Persistent scheduling survives system restarts
 - Easy monitoring via `journalctl`
@@ -189,31 +205,35 @@ This tiered storage management integrates with the broader JTS infrastructure:
 ### Performance Considerations
 
 - **I/O Optimization**: Use rsync for efficient data transfer
-- **Scheduling**: Run during low-activity periods to minimize trading impact  
+- **Scheduling**: Run during low-activity periods to minimize trading impact
 - **Resource Management**: oneshot systemd services prevent resource conflicts
 - **Compression**: Automatic gzip compression reduces storage requirements
 
 ## Lessons Learned During Implementation
 
 ### Technical Insights
+
 - **LVM Availability**: Not all environments have LVM configured - graceful handling essential
 - **NAS Reliability**: Network storage requires connectivity validation before operations
 - **Docker Cleanup Impact**: Aggressive cleanup can reclaim significant space (44GB in testing)
 - **Error Handling Complexity**: More time spent on error cases than happy path
 
 ### Operational Insights
+
 - **Testing Importance**: Real-world testing revealed edge cases not considered in design
 - **Documentation Value**: Comprehensive docs essential for operations team adoption
 - **Monitoring Integration**: Health checks provide valuable data for broader monitoring systems
 - **Maintenance Windows**: Even automated systems need occasional manual intervention
 
 ### Future Improvements
+
 - **Metrics Integration**: Add Prometheus metrics for advanced monitoring
 - **Configuration Management**: External config files for easier policy adjustments
 - **Alerting Integration**: Direct integration with alerting systems (Slack, email)
 - **Performance Monitoring**: Track data movement speeds and identify bottlenecks
 
 #### Files Created/Modified
+
 - `specs/E01/F01/deliverables/context.md` - This context file
 - `specs/E01/F01/deliverables/scripts/storage-health.sh` - Multi-tier health monitoring script
 - `specs/E01/F01/deliverables/scripts/tiered-storage.sh` - Data movement automation script
@@ -224,12 +244,14 @@ This tiered storage management integrates with the broader JTS infrastructure:
 - `specs/E01/F01/deliverables/docs/TIERED_STORAGE_MANAGEMENT.md` - Comprehensive documentation
 
 #### Commit Messages
+
 1. `feat: create deliverables directory structure and context tracking`
 2. `feat: implement multi-tier storage health monitoring script`
 3. `feat: implement automated data tiering and cleanup script`
 4. `feat: implement NAS archival management script`
 5. `feat: implement LVM snapshot management script`
-6. `feat: add systemd service and timer configuration`  
+6. `feat: add systemd service and timer configuration`
+
 - Implement nas-archival.sh script
 - Implement lvm-backup.sh script
 - Create systemd configuration files
@@ -237,10 +259,12 @@ This tiered storage management integrates with the broader JTS infrastructure:
 - Create documentation
 
 #### Issues Encountered
+
 - LVM not available in test environment - scripts handle this gracefully
 - All scripts tested successfully with proper error handling
 
 ## Metrics
+
 - **Progress**: 100%
 - **Status**: completed
 - **Hours**: 2.0

@@ -35,7 +35,17 @@ related: ['1001'] # Related but not blocking (spec IDs)
 # === IMPLEMENTATION ===
 branch: '' # Git branch name
 worktree: '' # Worktree path (optional)
-files: ['nx.json', 'package.json', 'tsconfig.base.json', 'project.json', 'libs/', 'apps/', 'tools/', '.eslintrc.json', 'jest.config.ts'] # Key files to modify
+files: [
+    'nx.json',
+    'package.json',
+    'tsconfig.base.json',
+    'project.json',
+    'libs/',
+    'apps/',
+    'tools/',
+    '.eslintrc.json',
+    'jest.config.ts',
+  ] # Key files to modify
 
 # === METADATA ===
 tags: ['monorepo', 'nx', 'tooling', 'workspace', 'typescript', 'build', 'testing'] # Searchable tags
@@ -69,6 +79,7 @@ Establish a comprehensive monorepo structure using Nx workspace to manage all JT
 ### Nx Workspace Architecture
 
 #### Workspace Structure
+
 ```
 jts/
 ├── apps/                           # Applications
@@ -122,6 +133,7 @@ jts/
 ```
 
 #### Nx Configuration (`nx.json`)
+
 ```json
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
@@ -130,13 +142,7 @@ jts/
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": [
-          "build",
-          "lint",
-          "test",
-          "e2e",
-          "type-check"
-        ],
+        "cacheableOperations": ["build", "lint", "test", "e2e", "type-check"],
         "parallel": 4,
         "maxParallel": 6
       }
@@ -243,6 +249,7 @@ jts/
 ### Package.json Configuration
 
 #### Root Package.json
+
 ```json
 {
   "name": "@jts/trading-system",
@@ -398,13 +405,8 @@ jts/
     "wait-on": "^7.2.0"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.{json,md,yaml,yml}": [
-      "prettier --write"
-    ]
+    "*.{ts,tsx,js,jsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,yaml,yml}": ["prettier --write"]
   },
   "husky": {
     "hooks": {
@@ -418,6 +420,7 @@ jts/
 ### TypeScript Configuration
 
 #### Base TypeScript Config (`tsconfig.base.json`)
+
 ```json
 {
   "compileOnSave": false,
@@ -480,6 +483,7 @@ jts/
 #### Core Shared Libraries
 
 **Shared DTOs Library** (`libs/shared/dto/src/index.ts`):
+
 ```typescript
 export * from './lib/market-data.dto';
 export * from './lib/order.dto';
@@ -525,6 +529,7 @@ export interface TradeDto {
 ```
 
 **Shared Interfaces Library** (`libs/shared/interfaces/src/index.ts`):
+
 ```typescript
 export * from './lib/broker.interface';
 export * from './lib/strategy.interface';
@@ -538,17 +543,17 @@ export interface IBrokerService {
   connect(): Promise<void>;
   disconnect(): Promise<void>;
   isConnected(): boolean;
-  
+
   // Market Data
   subscribeToMarketData(symbols: string[]): Promise<void>;
   unsubscribeFromMarketData(symbols: string[]): Promise<void>;
   getMarketData(symbol: string): Promise<MarketDataDto>;
-  
+
   // Orders
   submitOrder(order: OrderDto): Promise<OrderResult>;
   cancelOrder(orderId: string): Promise<boolean>;
   getOrderStatus(orderId: string): Promise<OrderStatus>;
-  
+
   // Account
   getAccountInfo(): Promise<AccountInfo>;
   getPositions(): Promise<Position[]>;
@@ -563,6 +568,7 @@ export interface IStrategyEngine {
 ```
 
 **Shared Utilities Library** (`libs/shared/utils/src/index.ts`):
+
 ```typescript
 export * from './lib/date.utils';
 export * from './lib/math.utils';
@@ -575,7 +581,7 @@ export class MathUtils {
   static calculateReturn(currentPrice: number, previousPrice: number): number {
     return (currentPrice - previousPrice) / previousPrice;
   }
-  
+
   static calculateSMA(prices: number[], period: number): number[] {
     const sma: number[] = [];
     for (let i = period - 1; i < prices.length; i++) {
@@ -584,20 +590,21 @@ export class MathUtils {
     }
     return sma;
   }
-  
+
   static calculateEMA(prices: number[], period: number): number[] {
     const multiplier = 2 / (period + 1);
     const ema: number[] = [prices[0]];
-    
+
     for (let i = 1; i < prices.length; i++) {
       ema.push((prices[i] - ema[i - 1]) * multiplier + ema[i - 1]);
     }
     return ema;
   }
-  
+
   static calculateVolatility(returns: number[]): number {
     const mean = returns.reduce((acc, val) => acc + val, 0) / returns.length;
-    const variance = returns.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / returns.length;
+    const variance =
+      returns.reduce((acc, val) => acc + Math.pow(val - mean, 2), 0) / returns.length;
     return Math.sqrt(variance);
   }
 }
@@ -606,6 +613,7 @@ export class MathUtils {
 ### Build and Testing Configuration
 
 #### Jest Configuration (`jest.config.ts`)
+
 ```typescript
 import { getJestProjects } from '@nx/jest';
 
@@ -621,52 +629,52 @@ export default {
     '!**/dist/**',
     '!**/*.d.ts',
     '!**/main.ts',
-    '!**/test-setup.ts'
+    '!**/test-setup.ts',
   ],
   coverageThreshold: {
     global: {
       branches: 80,
       functions: 80,
       lines: 80,
-      statements: 80
-    }
+      statements: 80,
+    },
   },
-  testMatch: [
-    '<rootDir>/{apps,libs}/**/*(*.)@(spec|test).[jt]s?(x)'
-  ],
+  testMatch: ['<rootDir>/{apps,libs}/**/*(*.)@(spec|test).[jt]s?(x)'],
   transform: {
-    '^.+\\.[jt]s$': ['@swc/jest', {
-      jsc: {
-        parser: {
-          syntax: 'typescript',
-          decorators: true
+    '^.+\\.[jt]s$': [
+      '@swc/jest',
+      {
+        jsc: {
+          parser: {
+            syntax: 'typescript',
+            decorators: true,
+          },
+          transform: {
+            legacyDecorator: true,
+            decoratorMetadata: true,
+          },
         },
-        transform: {
-          legacyDecorator: true,
-          decoratorMetadata: true
-        }
-      }
-    }]
+      },
+    ],
   },
   moduleNameMapping: {
-    '^@jts/(.*)$': '<rootDir>/libs/$1/src'
+    '^@jts/(.*)$': '<rootDir>/libs/$1/src',
   },
   setupFilesAfterEnv: ['<rootDir>/tools/test-setup.ts'],
   testEnvironment: 'node',
   maxWorkers: '50%',
-  verbose: true
+  verbose: true,
 };
 ```
 
 #### ESLint Configuration (`.eslintrc.json`)
+
 ```json
 {
   "root": true,
   "ignorePatterns": ["**/*"],
   "plugins": ["@nx"],
-  "extends": [
-    "@nx/eslint-plugin"
-  ],
+  "extends": ["@nx/eslint-plugin"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
@@ -732,6 +740,7 @@ export default {
 ### Custom Nx Generators
 
 #### Service Generator (`tools/generators/nestjs-service/index.ts`)
+
 ```typescript
 import {
   Tree,
@@ -755,7 +764,7 @@ interface Schema {
 
 export default async function (tree: Tree, options: Schema) {
   const normalizedOptions = normalizeOptions(tree, options);
-  
+
   // Generate NestJS application
   await applicationGenerator(tree, {
     name: normalizedOptions.projectName,
@@ -767,17 +776,12 @@ export default async function (tree: Tree, options: Schema) {
   });
 
   // Add custom templates
-  generateFiles(
-    tree,
-    joinPathFragments(__dirname, 'files'),
-    normalizedOptions.projectRoot,
-    {
-      ...normalizedOptions,
-      ...names(options.name),
-      offsetFromRoot: offsetFromRoot(normalizedOptions.projectRoot),
-      template: '',
-    }
-  );
+  generateFiles(tree, joinPathFragments(__dirname, 'files'), normalizedOptions.projectRoot, {
+    ...normalizedOptions,
+    ...names(options.name),
+    offsetFromRoot: offsetFromRoot(normalizedOptions.projectRoot),
+    template: '',
+  });
 
   await formatFiles(tree);
   return () => {
@@ -787,7 +791,9 @@ export default async function (tree: Tree, options: Schema) {
 
 function normalizeOptions(tree: Tree, options: Schema) {
   const name = names(options.name).fileName;
-  const projectDirectory = options.directory ? `${names(options.directory).fileName}/${name}` : name;
+  const projectDirectory = options.directory
+    ? `${names(options.directory).fileName}/${name}`
+    : name;
   const projectName = projectDirectory.replace(new RegExp('/', 'g'), '-');
   const projectRoot = `apps/${projectDirectory}`;
   const parsedTags = options.tags ? options.tags.split(',').map((s) => s.trim()) : [];
@@ -805,6 +811,7 @@ function normalizeOptions(tree: Tree, options: Schema) {
 ### CI/CD Integration
 
 #### GitHub Actions Workflow (`.github/workflows/ci.yml`)
+
 ```yaml
 name: CI/CD Pipeline
 
@@ -1006,6 +1013,7 @@ jobs:
 ## Configuration Files Summary
 
 Key configuration files created by this feature:
+
 - `nx.json` - Nx workspace configuration
 - `package.json` - Root package management
 - `tsconfig.base.json` - TypeScript base configuration

@@ -1,12 +1,14 @@
 # CLAUDE.md - Optimized for Token Efficiency
 
 ## Quick Context
+
 **Project**: JTS - Automated trading system (NestJS/TypeScript)
 **Architecture**: Microservices, Docker, Nx monorepo
 **DBs**: PostgreSQL, ClickHouse, MongoDB, Redis
 **Queue**: Kafka | **APIs**: REST, gRPC, WebSocket
 
 ## Critical Rules
+
 1. **NEVER** create files unless explicitly needed
 2. **ALWAYS** edit existing files over creating new
 3. **NO** documentation files unless requested
@@ -14,6 +16,7 @@
 5. **USE** existing patterns and libraries
 
 ## Commands Reference
+
 ```bash
 npm install          # Install deps
 npm run dev          # Start dev
@@ -25,12 +28,13 @@ npx nx serve <svc>   # Run specific service
 ```
 
 ## Spec Work Flow
+
 ```bash
 # Capture discussions BEFORE implementation
 /spec_work {id} --discussion "what was discussed"
 
 # Track spec changes
-/spec_work {id} --revision "what changed"  
+/spec_work {id} --revision "what changed"
 
 # Start implementation
 /spec_work {id}
@@ -40,6 +44,7 @@ npx nx serve <svc>   # Run specific service
 ```
 
 ## Service Structure
+
 ```
 apps/
   {service}/
@@ -53,36 +58,42 @@ libs/
 ```
 
 ## Database Guidelines
+
 - PostgreSQL: Business data (users, orders)
 - ClickHouse: Time-series market data
 - MongoDB: Config/strategy params
 - Redis: Cache, sessions, rate limiting
 
 ## Testing Standards
+
 - 95% coverage for trading logic
 - Mock external APIs
 - Use existing test utilities
 - Integration tests for service communication
 
 ## Security
+
 - Env vars for secrets only
 - TLS for all service comms
 - Multi-factor for trading orders
 - Never log sensitive data
 
 ## Performance
+
 - Stream market data
 - Cache in Redis
 - Connection pooling
 - Optimize time-series queries
 
 ## Broker Integration
+
 - Creon (Windows/COM): Korean markets
 - Rate limits: 200/min, 20/sec
 - Implement circuit breaker
 - Retry with exponential backoff
 
 ## Git Commits
+
 ```bash
 # Format
 type(scope): description
@@ -98,6 +109,7 @@ chore: Maintenance
 ```
 
 ## File Context Rules
+
 1. Read existing code patterns first
 2. Check package.json for available libs
 3. Follow existing naming conventions
@@ -105,6 +117,7 @@ chore: Maintenance
 5. Implement proper error handling
 
 ## Token Saving Tips
+
 - Use `@file` references instead of explaining
 - Batch related operations
 - Skip obvious confirmations

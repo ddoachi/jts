@@ -27,31 +27,30 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01
-- E02
+  - E01
+  - E02
 blocks:
-- E04
-- E05
-- E09
+  - E04
+  - E05
+  - E09
 related:
-- E06
+  - E06
 branch: ''
 files:
-- apps/integration/market-data-collector/
-- libs/shared/models/market-data.ts
+  - apps/integration/market-data-collector/
+  - libs/shared/models/market-data.ts
 
 # === METADATA ===
 tags:
-- market-data
-- real-time
-- websocket
-- streaming
-- surge-detection
-- clickhouse
+  - market-data
+  - real-time
+  - websocket
+  - streaming
+  - surge-detection
+  - clickhouse
 effort: epic
 risk: medium
 ---
-
 
 # Market Data Collection & Processing
 
@@ -75,6 +74,7 @@ Build a comprehensive market data collection and processing system that ingests 
 ## Technical Approach
 
 ### Market Data Architecture
+
 Implement a scalable data pipeline that can handle high-frequency market updates from multiple sources, perform real-time analysis, and distribute processed data to various consumers with minimal latency.
 
 ### Key Components

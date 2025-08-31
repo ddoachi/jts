@@ -27,31 +27,30 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01
-- E03
-- E04
+  - E01
+  - E03
+  - E04
 blocks:
-- E05
-- E06
+  - E05
+  - E06
 related:
-- E07
+  - E07
 branch: ''
 files:
-- apps/analytics/backtesting-engine/
-- libs/shared/backtesting/
-- libs/shared/performance-metrics/
+  - apps/analytics/backtesting-engine/
+  - libs/shared/backtesting/
+  - libs/shared/performance-metrics/
 
 # === METADATA ===
 tags:
-- backtesting
-- simulation
-- performance-analysis
-- parameter-optimization
-- validation
+  - backtesting
+  - simulation
+  - performance-analysis
+  - parameter-optimization
+  - validation
 effort: epic
 risk: medium
 ---
-
 
 # Backtesting Framework
 
@@ -77,6 +76,7 @@ Build a comprehensive backtesting framework that enables rigorous strategy valid
 ## Technical Approach
 
 ### Backtesting Architecture
+
 Implement a high-performance simulation engine that can accurately model trading conditions while maintaining computational efficiency for rapid strategy iteration and optimization.
 
 ### Key Components
@@ -196,36 +196,42 @@ When implementing this epic:
 ## Key Features
 
 ### Historical Simulation Engine
+
 - **Event-Driven Architecture**: Process market events chronologically to maintain realistic simulation flow
 - **Multi-Asset Support**: Backtest strategies across equities, cryptocurrencies, and mixed portfolios
 - **Time Resolution Flexibility**: Support multiple timeframes from 1-minute to daily bars
 - **Memory Optimization**: Stream large datasets without loading entire history into memory
 
 ### Realistic Market Modeling
+
 - **Slippage Calculation**: Model execution slippage based on historical spread and volume data
 - **Commission Modeling**: Accurate fee calculations for all supported brokers
 - **Market Impact**: Simulate price impact for large orders based on average daily volume
 - **Liquidity Constraints**: Prevent unrealistic executions during low-volume periods
 
 ### Performance Analysis
+
 - **Risk Metrics**: Calculate Sharpe ratio, Sortino ratio, Calmar ratio, and maximum drawdown
 - **Trade Analysis**: Analyze win rate, average win/loss, profit factor, and expectancy
 - **Portfolio Metrics**: Track correlation, diversification benefits, and portfolio-level risk
 - **Benchmark Comparison**: Compare strategy performance against market indices
 
 ### Parameter Optimization
+
 - **Multi-Objective Optimization**: Optimize for multiple criteria (return, risk, stability)
 - **Genetic Algorithms**: Evolve parameter sets through natural selection principles
 - **Walk-Forward Analysis**: Test parameter stability over different time periods
 - **Overfitting Protection**: Detect and prevent curve-fitting through statistical tests
 
 ### Strategy Validation
+
 - **Out-of-Sample Testing**: Reserve data portions for unbiased performance validation
 - **Monte Carlo Analysis**: Generate confidence intervals for performance metrics
 - **Bootstrap Testing**: Assess statistical significance of performance differences
 - **Regime Testing**: Validate strategy performance across different market conditions
 
 ### Integration Features
+
 - **DSL Integration**: Seamlessly backtest strategies defined in the custom DSL
 - **Multi-Broker Support**: Use historical data from all integrated brokers
 - **Real-Time Comparison**: Compare backtest results with live trading performance
@@ -241,18 +247,21 @@ When implementing this epic:
 ## Validation Framework
 
 ### Statistical Rigor
+
 - Implement proper statistical testing for performance comparisons
 - Use bootstrap methods for confidence interval estimation
 - Apply multiple testing corrections for parameter optimization
 - Validate results against known benchmarks and academic literature
 
 ### Data Quality Assurance
+
 - Detect and handle missing data appropriately
 - Identify and flag suspicious price movements
 - Validate data consistency across different sources
 - Ensure proper handling of corporate actions
 
 ### Simulation Accuracy
+
 - Compare simulated vs. actual execution prices where possible
 - Validate slippage models against real trading data
 - Ensure realistic position sizing constraints

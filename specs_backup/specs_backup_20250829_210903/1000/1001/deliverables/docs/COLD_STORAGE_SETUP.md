@@ -9,22 +9,24 @@ This document provides setup instructions for the JTS Cold Storage tier using a 
 ### Network Optimization
 
 1. **Apply Network Buffer Settings**:
+
    ```bash
    # Add to /etc/sysctl.conf
    net.core.rmem_default = 262144
    net.core.rmem_max = 16777216
    net.core.wmem_default = 262144
    net.core.wmem_max = 16777216
-   
+
    # Apply settings
    sudo sysctl -p
    ```
 
 2. **Enhanced NFS Mount**:
+
    ```bash
    # Update /etc/fstab with optimized mount
    192.168.1.101:/volume1/cocodev /mnt/synology nfs rw,hard,intr,rsize=1048576,wsize=1048576,timeo=600,retrans=2,_netdev 0 0
-   
+
    # Remount
    sudo umount /mnt/synology
    sudo mount /mnt/synology
@@ -76,6 +78,7 @@ Use the provided health check script:
 ```
 
 The script monitors:
+
 - NAS connectivity (ping test)
 - Mount status verification
 - Storage space usage
@@ -85,16 +88,19 @@ The script monitors:
 ## Integration Points
 
 ### Archival Scripts
+
 - Directory structure ready for automated archival processes
 - Proper permissions (755) set for all directories
 - Integration points available in all data type categories
 
 ### Development Workflow
+
 - `development/notebooks/` for Jupyter notebook storage
 - `development/datasets/` for shared development data
 - `development/experiments/` for experimental code and results
 
 ### Data Pipeline Integration
+
 - `market-data/raw/` for original tick data storage
 - `market-data/processed/` for aggregated data
 - `market-data/indicators/` for technical indicators
@@ -102,16 +108,19 @@ The script monitors:
 ## Troubleshooting
 
 ### Connection Issues
+
 1. Check NAS connectivity: `ping 192.168.1.101`
 2. Verify mount status: `mount | grep synology`
 3. Test permissions: `ls -la /mnt/synology/jts/`
 
 ### Performance Issues
+
 1. Check network buffers: `sysctl net.core.rmem_max`
 2. Verify mount options: `mount | grep synology`
 3. Run performance test: `./scripts/nas-health-check.sh`
 
 ### Space Management
+
 1. Check usage: `df -h /mnt/synology`
 2. Monitor directory sizes: `du -sh /mnt/synology/jts/*`
 

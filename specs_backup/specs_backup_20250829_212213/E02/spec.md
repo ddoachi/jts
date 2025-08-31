@@ -11,17 +11,17 @@ type: epic
 # === HIERARCHY ===
 parent: ''
 children:
-- F01
-- F02
-- F03
-- F04
-- F05
-- F06
-- F07
-- F08
-- F09
-- F10
-- F11
+  - F01
+  - F02
+  - F03
+  - F04
+  - F05
+  - F06
+  - F07
+  - F08
+  - F09
+  - F10
+  - F11
 epic: E02
 domain: broker-integration
 
@@ -38,30 +38,29 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- E01
+  - E01
 blocks:
-- E04
-- E05
-- E06
+  - E04
+  - E05
+  - E06
 related:
-- E03
+  - E03
 branch: ''
 files:
-- apps/brokers/
-- libs/shared/interfaces/broker.interface.ts
+  - apps/brokers/
+  - libs/shared/interfaces/broker.interface.ts
 
 # === METADATA ===
 tags:
-- broker
-- integration
-- kis
-- creon
-- api
-- rate-limiting
+  - broker
+  - integration
+  - kis
+  - creon
+  - api
+  - rate-limiting
 effort: epic
 risk: high
 unique_id: 08f90c1a # Unique identifier (never changes)
-
 ---
 
 # Multi-Broker Integration Layer
@@ -74,19 +73,19 @@ Implement a unified broker integration layer that provides seamless connectivity
 
 This epic has been decomposed into 11 features totaling 340 hours of estimated effort:
 
-| ID | Feature | Hours | Priority |
-|----|---------|-------|----------|
-| F01 | Unified Broker Interface Foundation | 25 | Critical |
-| F02 | KIS REST API Integration | 40 | High |
-| F03 | KIS WebSocket Real-time Data | 30 | High |
-| F04 | Creon Windows COM Integration | 35 | High |
-| F05 | Distributed Rate Limiting System | 30 | Critical |
-| F06 | Multi-Account Pool Management | 35 | Medium |
-| F07 | Smart Order Routing Engine | 35 | Medium |
-| F08 | Standardized Service Endpoints | 25 | Medium |
-| F09 | Error Handling & Recovery | 30 | High |
-| F10 | Broker Testing & Mock Services | 25 | Low |
-| F11 | Broker Monitoring & Observability | 30 | Medium |
+| ID  | Feature                             | Hours | Priority |
+| --- | ----------------------------------- | ----- | -------- |
+| F01 | Unified Broker Interface Foundation | 25    | Critical |
+| F02 | KIS REST API Integration            | 40    | High     |
+| F03 | KIS WebSocket Real-time Data        | 30    | High     |
+| F04 | Creon Windows COM Integration       | 35    | High     |
+| F05 | Distributed Rate Limiting System    | 30    | Critical |
+| F06 | Multi-Account Pool Management       | 35    | Medium   |
+| F07 | Smart Order Routing Engine          | 35    | Medium   |
+| F08 | Standardized Service Endpoints      | 25    | Medium   |
+| F09 | Error Handling & Recovery           | 30    | High     |
+| F10 | Broker Testing & Mock Services      | 25    | Low      |
+| F11 | Broker Monitoring & Observability   | 30    | Medium   |
 
 ## Mobile-Friendly Dependency Flow
 
@@ -153,27 +152,33 @@ Parallel Tracks:
 ### Implementation Phases
 
 **Phase 1: Foundation (25 hrs)**
+
 - F01: Unified Broker Interface ── Must complete first
 
 **Phase 2: Core Integrations (105 hrs)**
+
 - F02: KIS REST API ────────────┐
 - F04: Creon COM Integration ───┼── Can run in parallel
 - F05: Rate Limiting System ────┘
 
 **Phase 3: Advanced Features (95 hrs)**
+
 - F03: KIS WebSocket ───────────┐
 - F06: Account Pool Management ─┼── Can run in parallel
 - F10: Testing & Mocks ─────────┘
 
 **Phase 4: Routing & Standards (60 hrs)**
+
 - F07: Smart Order Routing ─────┐
 - F08: Standard Endpoints ──────┴── Sequential
 
 **Phase 5: Operations (60 hrs)**
+
 - F09: Error Handling ──────────┐
 - F11: Monitoring ──────────────┴── Can run in parallel
 
 ### Critical Path
+
 ```
 F01 → F02 → F05 → F06 → F07 → F08
      ↘ F04 ↗
@@ -195,6 +200,7 @@ F01 → F02 → F05 → F06 → F07 → F08
 ## Technical Approach
 
 ### Unified Broker Architecture
+
 Create a broker-agnostic interface that standardizes all broker operations, allowing the system to interact with any broker through the same API. Implement adapter pattern for each specific broker integration.
 
 ### Key Components
@@ -275,6 +281,7 @@ Create a broker-agnostic interface that standardizes all broker operations, allo
 ## API Resources
 
 ### KIS (Korea Investment Securities)
+
 - **API Documentation**: `brokers/kis/KIS_API_SPEC.md`
 - **Complete Specification**: `brokers/kis/reference/KIS_API_20250817_030000.xlsx`
 - **Total APIs**: 337 endpoints
@@ -286,6 +293,7 @@ Create a broker-agnostic interface that standardizes all broker operations, allo
   - WebSocket: `ws://ops.koreainvestment.com:21000` (prod) / `:31000` (sandbox)
 
 ### Creon
+
 - **Platform**: Windows-only (COM objects)
 - **Rate Limits**: 15 requests per 60 seconds
 - **Deployment**: Dedicated Windows PC (bare metal)
@@ -341,21 +349,25 @@ When implementing this epic:
 ## Epic Position in Overall Project
 
 ### Impact Analysis
+
 This epic is the **second most critical** in the entire JTS project:
+
 - **Blocks**: 3 major epics (E04: Strategy, E05: Risk, E06: Execution)
 - **Blocked by**: 1 epic (E01: Foundation)
 - **Related to**: 1 epic (E03: Market Data)
 - **Criticality**: HIGH - No trading possible without broker connectivity
 
 ### Timeline Context
+
 - **Prerequisites**: Foundation (Epic E01) must be 100% complete
-- **Can run parallel with**: 
-  - Epic E08 (Monitoring) 
+- **Can run parallel with**:
+  - Epic E08 (Monitoring)
   - Epic E10 (Crypto Integration)
 - **Optimal team size**: 2-3 developers
 - **Estimated duration**: 8-10 weeks with 2 developers
 
 ### Risk Factors
+
 1. **External API Dependencies** (HIGH)
    - KIS API changes or outages
    - Creon platform updates
@@ -371,6 +383,7 @@ This epic is the **second most critical** in the entire JTS project:
    - Cross-platform communication (Linux ↔ Windows)
 
 ### Success Metrics
+
 - All 11 features completed and tested
 - <100ms order placement latency
 - 99.9% uptime during market hours

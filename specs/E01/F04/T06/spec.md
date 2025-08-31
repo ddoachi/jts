@@ -27,28 +27,27 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T05
+  - T05
 blocks:
-- T07
+  - T07
 related:
-- T03
+  - T03
 pull_requests: []
 commits: []
 context_file: 1046.context.md
 files:
-- docker-compose.ci.yml
-- scripts/ci-services.sh
+  - docker-compose.ci.yml
+  - scripts/ci-services.sh
 
 # === METADATA ===
 tags:
-- docker-compose
-- testing
-- ci
-- integration
+  - docker-compose
+  - testing
+  - ci
+  - integration
 effort: small
 risk: low
 ---
-
 
 # Docker Compose CI Testing Environment
 

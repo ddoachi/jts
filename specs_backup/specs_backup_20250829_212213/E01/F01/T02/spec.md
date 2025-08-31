@@ -27,38 +27,37 @@ actual_hours: 2.5
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
+  - T01
 blocks:
-- F02
-- F05
+  - F02
+  - F05
 related:
-- T05
-- T06
+  - T05
+  - T06
 
 # === IMPLEMENTATION ===
 pull_requests: []
 commits: []
 context_file: ''
 files:
-- scripts/setup-database-mounts.sh
-- scripts/validate-database-permissions.sh
-- docs/DATABASE_MOUNT_SETUP.md
+  - scripts/setup-database-mounts.sh
+  - scripts/validate-database-permissions.sh
+  - docs/DATABASE_MOUNT_SETUP.md
 
 # === METADATA ===
 tags:
-- database
-- mount-points
-- permissions
-- postgresql
-- clickhouse
-- mongodb
-- redis
-- kafka
-- security
+  - database
+  - mount-points
+  - permissions
+  - postgresql
+  - clickhouse
+  - mongodb
+  - redis
+  - kafka
+  - security
 effort: small
 risk: medium
 unique_id: f33ba15e # Unique identifier (never changes)
-
 ---
 
 # Database Mount Integration
@@ -99,6 +98,7 @@ Provide secure, optimized mount point integration between LVM logical volumes an
    - Group membership for operational access
 
 2. **Mount Point Structure**
+
    ```
    /var/lib/postgresql/    # PostgreSQL data directory (postgres:postgres, 750)
    /var/lib/clickhouse/    # ClickHouse data directory (clickhouse:clickhouse, 750)
@@ -117,6 +117,7 @@ Provide secure, optimized mount point integration between LVM logical volumes an
 ### Implementation Steps
 
 1. **Database Service User Creation**
+
    ```bash
    # Create system users for database services
    useradd -r -s /bin/false -d /var/lib/postgresql postgres || true
@@ -124,27 +125,29 @@ Provide secure, optimized mount point integration between LVM logical volumes an
    useradd -r -s /bin/false -d /var/lib/kafka kafka || true
    useradd -r -s /bin/false -d /var/lib/mongodb mongodb || true
    useradd -r -s /bin/false -d /var/lib/redis redis || true
-   
+
    # Create operational groups
    groupadd docker || true
    groupadd backup || true
-   
+
    # Verify user creation
    id postgres && id clickhouse && id kafka && id mongodb && id redis
    ```
 
 2. **Mount Point Directory Creation**
+
    ```bash
    # Create all mount directories
    mkdir -p /var/lib/postgresql /var/lib/clickhouse /var/lib/kafka
    mkdir -p /var/lib/mongodb /var/lib/redis /var/lib/docker-jts /data/local-backup
-   
+
    # Verify directory creation
    ls -la /var/lib/ | grep -E "(postgresql|clickhouse|kafka|mongodb|redis|docker)"
    ls -la /data/
    ```
 
 3. **Ownership and Permission Configuration**
+
    ```bash
    # Set proper ownership for each database
    chown postgres:postgres /var/lib/postgresql
@@ -154,24 +157,25 @@ Provide secure, optimized mount point integration between LVM logical volumes an
    chown redis:redis /var/lib/redis
    chown root:docker /var/lib/docker-jts
    chown root:backup /data/local-backup
-   
+
    # Set secure permissions
    chmod 750 /var/lib/postgresql /var/lib/clickhouse /var/lib/kafka
    chmod 750 /var/lib/mongodb /var/lib/redis /var/lib/docker-jts
    chmod 755 /data/local-backup
-   
+
    # Verify permissions
    ls -la /var/lib/ | grep -E "(postgresql|clickhouse|kafka|mongodb|redis|docker)"
    ```
 
 4. **Mount Integration Testing**
+
    ```bash
    # Test mounting all filesystems
    mount -a
-   
+
    # Verify all hot storage mounts
    df -h | grep vg_jts
-   
+
    # Test write access for each service
    sudo -u postgres touch /var/lib/postgresql/test_write && rm /var/lib/postgresql/test_write
    sudo -u clickhouse touch /var/lib/clickhouse/test_write && rm /var/lib/clickhouse/test_write
@@ -181,22 +185,23 @@ Provide secure, optimized mount point integration between LVM logical volumes an
    ```
 
 5. **Database Service Integration Validation**
+
    ```bash
    # Verify database services can access their storage
    # (Database services must be installed for this test)
-   
+
    # PostgreSQL
    sudo -u postgres initdb --pgdata=/var/lib/postgresql/data --auth-local=trust || echo "PostgreSQL not installed"
-   
-   # ClickHouse  
+
+   # ClickHouse
    sudo -u clickhouse test -w /var/lib/clickhouse || echo "Write test failed"
-   
+
    # Kafka
    sudo -u kafka test -w /var/lib/kafka || echo "Write test failed"
-   
+
    # MongoDB
    sudo -u mongodb test -w /var/lib/mongodb || echo "Write test failed"
-   
+
    # Redis
    sudo -u redis test -w /var/lib/redis || echo "Write test failed"
    ```
@@ -204,9 +209,11 @@ Provide secure, optimized mount point integration between LVM logical volumes an
 ## Dependencies
 
 **Required Before Implementation:**
+
 - **Feature T01**: Hot Storage (NVMe) Foundation must be completed with all logical volumes created and formatted
 
 **Enables After Implementation:**
+
 - **Feature F02**: Database services can be deployed and configured
 - **Feature F05**: Database-dependent services can utilize optimized storage
 
@@ -253,12 +260,14 @@ ERROR HANDLING:
 ## Notes
 
 ### Integration Considerations
+
 - **Service Compatibility**: Must work with standard database package installations
 - **Operational Access**: Backup and monitoring tools need appropriate access
 - **Security Boundaries**: Prevent cross-service data access while enabling operations
 - **Future Expansion**: Structure supports additional database services
 
 ### Dependencies Impact
+
 - **Blocks Critical Services**: Database services (F02, F05) cannot deploy until this completes
 - **Enables Performance**: Proper mount integration required for optimal database performance
 - **Foundation for Monitoring**: Proper permissions enable storage monitoring and health checks
@@ -266,12 +275,14 @@ ERROR HANDLING:
 ## Deliverables
 
 ### Scripts
+
 - [setup-database-users.sh](deliverables/scripts/setup-database-users.sh) - Create database service users with secure configuration
 - [setup-mount-points.sh](deliverables/scripts/setup-mount-points.sh) - Create mount points and directory structure
 - [configure-permissions.sh](deliverables/scripts/configure-permissions.sh) - Configure ownership, permissions, and ACLs
 - [validate-database-mounts.sh](deliverables/scripts/validate-database-mounts.sh) - Comprehensive validation script
 
 ### Documentation
+
 - [DATABASE_MOUNT_SETUP.md](deliverables/docs/DATABASE_MOUNT_SETUP.md) - Complete setup and maintenance guide
 
 ## Status Updates

@@ -27,34 +27,33 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-- T01
+  - T01
 blocks:
-- T04
-- T05
-- T06
+  - T04
+  - T05
+  - T06
 related: []
 pull_requests: []
 commits: []
 context_file: 1023.context.md
 files:
-- docker-compose.dev.yml
-- scripts/docker-setup.sh
-- configs/redis.conf
-- configs/postgres-init.sql
+  - docker-compose.dev.yml
+  - scripts/docker-setup.sh
+  - configs/redis.conf
+  - configs/postgres-init.sql
 
 # === METADATA ===
 tags:
-- docker
-- database
-- postgres
-- mongodb
-- redis
-- clickhouse
-- kafka
+  - docker
+  - database
+  - postgres
+  - mongodb
+  - redis
+  - clickhouse
+  - kafka
 effort: medium
 risk: medium
 ---
-
 
 # Docker and Database Services Setup
 
@@ -89,7 +88,7 @@ services:
     container_name: jts-postgres-dev
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_DB: jts_trading_dev
       POSTGRES_USER: jts_admin
@@ -98,7 +97,7 @@ services:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./scripts/init-postgres.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U jts_admin -d jts_trading_dev"]
+      test: ['CMD-SHELL', 'pg_isready -U jts_admin -d jts_trading_dev']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -109,8 +108,8 @@ services:
     container_name: jts-clickhouse-dev
     restart: unless-stopped
     ports:
-      - "8123:8123"
-      - "E09:E09"
+      - '8123:8123'
+      - 'E09:E09'
     environment:
       CLICKHOUSE_DB: jts_market_data_dev
       CLICKHOUSE_USER: jts_ch
@@ -129,7 +128,7 @@ services:
     container_name: jts-mongodb-dev
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - '27017:27017'
     environment:
       MONGO_INITDB_ROOT_USERNAME: jts_mongo
       MONGO_INITDB_ROOT_PASSWORD: dev_password
@@ -144,7 +143,7 @@ services:
     container_name: jts-redis-dev
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - '6379:6379'
     command: redis-server /usr/local/etc/redis/redis.conf
     volumes:
       - redis_dev_data:/data
@@ -164,7 +163,7 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
+      - '9092:9092'
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -176,7 +175,7 @@ services:
     image: grafana/grafana:latest
     container_name: jts-grafana-dev
     ports:
-      - "3100:E03"
+      - '3100:E03'
     environment:
       GF_SECURITY_ADMIN_PASSWORD: dev_password
     volumes:
@@ -220,6 +219,7 @@ appendfsync everysec
 ### Database Initialization Scripts
 
 **PostgreSQL** (`scripts/init-postgres.sql`):
+
 ```sql
 -- Create schemas
 CREATE SCHEMA IF NOT EXISTS trading;
