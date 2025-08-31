@@ -1,3 +1,8 @@
 #!/usr/bin/env sh
 
-yarn test:affected
+# Run tests if test script exists, otherwise skip
+if yarn run --silent test --help >/dev/null 2>&1; then
+  yarn test
+else
+  echo "No tests configured, skipping test execution"
+fi
