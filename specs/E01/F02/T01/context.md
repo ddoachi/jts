@@ -33,12 +33,12 @@
   - Preserved plugin and release directories
 
 ## Files Created/Modified
-1. `scripts/install-node-yarn.sh` - Main installation entry point
-2. `scripts/install-node-yarn-linux.sh` - Linux installer
-3. `scripts/install-node-yarn-windows.ps1` - Windows installer
-4. `.yarnrc.yml` - Yarn 4 configuration
-5. `package.json` - Updated with workspace and Yarn 4 settings
-6. `.gitignore` - Added Yarn 4 specific patterns
+1. `specs/E01/F02/deliverables/scripts/install-node-yarn.sh` - Main installation entry point
+2. `specs/E01/F02/deliverables/scripts/install-node-yarn-linux.sh` - Linux installer
+3. `specs/E01/F02/deliverables/scripts/install-node-yarn-windows.ps1` - Windows installer
+4. `specs/E01/F02/deliverables/config/.yarnrc.yml` - Yarn 4 configuration
+5. `specs/E01/F02/deliverables/config/package.json.template` - Workspace-enabled package.json template
+6. `specs/E01/F02/deliverables/config/gitignore.template` - Git ignore patterns for Yarn 4
 
 ## Deliverables Completed
 ✅ Node.js 20 LTS installation scripts for Linux and Windows

@@ -1,0 +1,60 @@
+{
+  "name": "jts-monorepo",
+  "version": "1.0.0",
+  "description": "Joohan Trading System - Automated Trading Platform with Multi-Broker Integration",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "libs/*"
+  ],
+  "packageManager": "yarn@4.0.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "yarn": ">=4.0.0"
+  },
+  "scripts": {
+    "setup": "yarn install && yarn prepare",
+    "prepare": "husky install",
+    "parse:specs": "yarn exec ts-node scripts/parse-specs.ts",
+    "generate:index": "yarn exec ts-node scripts/generate-index.ts",
+    "sync:database": "yarn exec ts-node scripts/sync-database.ts",
+    "sync:all": "yarn run parse:specs && yarn run generate:index && yarn run sync:database",
+    "dev": "nx run-many --target=serve --all",
+    "build": "nx run-many --target=build --all",
+    "test": "nx run-many --target=test --all",
+    "lint": "nx run-many --target=lint --all",
+    "type-check": "nx run-many --target=typecheck --all",
+    "clean": "nx reset && rm -rf node_modules apps/*/node_modules libs/*/node_modules",
+    "workspace:info": "yarn workspaces list",
+    "deps:check": "yarn dlx npm-check-updates -u",
+    "deps:upgrade": "yarn up -i"
+  },
+  "devDependencies": {
+    "@nx/workspace": "^17.0.0",
+    "@types/glob": "^8.1.0",
+    "@types/node": "^20.0.0",
+    "axios": "^1.11.0",
+    "glob": "^11.0.3",
+    "gray-matter": "^4.0.3",
+    "handlebars": "^4.7.8",
+    "husky": "^9.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "yaml": "^2.8.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ddoachi/jts-monorepo.git"
+  },
+  "keywords": [
+    "trading",
+    "microservices",
+    "nestjs",
+    "typescript",
+    "monorepo"
+  ],
+  "author": "JTS Team",
+  "license": "PRIVATE"
+}
