@@ -79,6 +79,21 @@ destroy_services() {
 # Function to show service status
 show_status() {
     print_message $BLUE "=== JTS Development Services Status ==="
+    
+    # Load port configuration from .env if exists
+    if [ -f .env ]; then
+        source .env
+    fi
+    
+    print_message $GREEN "Service Ports Configuration:"
+    echo "  PostgreSQL:    localhost:${POSTGRES_PORT:-5442}"
+    echo "  MongoDB:       localhost:${MONGODB_PORT:-27017}"
+    echo "  Redis:         localhost:${REDIS_PORT:-6379}"
+    echo "  ClickHouse:    localhost:${CLICKHOUSE_HTTP_PORT:-8123} (HTTP), localhost:${CLICKHOUSE_NATIVE_PORT:-9000} (Native)"
+    echo "  Kafka:         localhost:${KAFKA_PORT:-9092}"
+    echo "  Grafana:       http://localhost:${GRAFANA_PORT:-3100}"
+    echo ""
+    
     docker compose -f $COMPOSE_FILE -p $PROJECT_NAME ps
 }
 
@@ -207,6 +222,41 @@ restore_databases() {
     print_message $GREEN "Databases restored from: $backup_dir"
 }
 
+# Function to show ports configuration
+show_ports() {
+    print_message $BLUE "=== JTS Service Ports Configuration ==="
+    
+    # Load port configuration from .env if exists
+    if [ -f .env ]; then
+        source .env
+        print_message $GREEN "Loaded from .env file"
+    else
+        print_message $YELLOW "Using default ports (.env file not found)"
+    fi
+    
+    echo ""
+    print_message $GREEN "Database Services:"
+    echo "  PostgreSQL:    localhost:${POSTGRES_PORT:-5442}     - Core business data"
+    echo "  MongoDB:       localhost:${MONGODB_PORT:-27017}     - Configuration storage"
+    echo "  Redis:         localhost:${REDIS_PORT:-6379}       - Cache & rate limiting"
+    echo "  ClickHouse:    localhost:${CLICKHOUSE_HTTP_PORT:-8123}     - Time-series data (HTTP)"
+    echo "                 localhost:${CLICKHOUSE_NATIVE_PORT:-9000}     - Time-series data (Native)"
+    
+    echo ""
+    print_message $GREEN "Messaging & Monitoring:"
+    echo "  Kafka:         localhost:${KAFKA_PORT:-9092}       - Message broker"
+    echo "  Zookeeper:     localhost:${ZOOKEEPER_PORT:-2181}       - Kafka coordination"
+    echo "  Grafana:       http://localhost:${GRAFANA_PORT:-3100}  - Monitoring dashboard"
+    
+    echo ""
+    print_message $YELLOW "Connection Examples:"
+    echo "  psql -h localhost -p ${POSTGRES_PORT:-5442} -U ${POSTGRES_USER:-jts_admin} -d ${POSTGRES_DB:-jts_trading_dev}"
+    echo "  redis-cli -p ${REDIS_PORT:-6379}"
+    echo "  mongosh mongodb://${MONGODB_USER:-jts_mongo}:${DEV_PASSWORD:-dev_password}@localhost:${MONGODB_PORT:-27017}/${MONGODB_DB:-jts_config_dev}"
+    echo ""
+    print_message $YELLOW "To customize ports, edit the .env file"
+}
+
 # Function to show help
 show_help() {
     echo "JTS Development Services Management Script"
@@ -217,7 +267,8 @@ show_help() {
     echo "  start       Start all services"
     echo "  stop        Stop all services"
     echo "  restart     Restart all services"
-    echo "  status      Show service status"
+    echo "  status      Show service status and ports"
+    echo "  ports       Show detailed port configuration"
     echo "  logs [svc]  Show logs (optionally for specific service)"
     echo "  test        Test database connections"
     echo "  exec <svc>  Execute command in a service"
@@ -260,6 +311,9 @@ main() {
             ;;
         status)
             show_status
+            ;;
+        ports)
+            show_ports
             ;;
         logs)
             show_logs $2
