@@ -14,18 +14,18 @@ Successfully implemented comprehensive storage performance optimization for the 
 
 ### Deliverables Created
 
-#### Configuration Files (`specs/E01/F01/deliverables/config/`)
+#### Configuration Files (`./config/`)
 
 - ✅ `60-ssd-scheduler.rules` - NVMe I/O scheduler optimization (udev rules)
 - ✅ `fstrim-all.service` - TRIM service for SSD maintenance
 - ✅ `fstrim-all.timer` - Weekly automated TRIM scheduling
 
-#### Scripts (`specs/E01/F01/deliverables/scripts/`)
+#### Scripts (`./scripts/`)
 
 - ✅ `performance-benchmark.sh` - Comprehensive I/O performance testing with validation
 - ✅ `ssd-optimization.sh` - Real-time optimization monitoring and status checking
 
-#### Documentation (`specs/E01/F01/deliverables/docs/`)
+#### Documentation (`./docs/`)
 
 - ✅ `PERFORMANCE_OPTIMIZATION.md` - Complete implementation and maintenance guide
 

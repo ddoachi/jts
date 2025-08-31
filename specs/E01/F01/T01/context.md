@@ -27,19 +27,19 @@ Successfully implemented hot storage NVMe directory setup with comprehensive dir
 
 #### Deliverables Created
 
-- [Hot Storage Setup Script](deliverables/scripts/setup-hot-directories.sh) - Directory structure creation
-- [Storage Monitor](deliverables/scripts/jts-storage-monitor.sh) - Real-time usage monitoring with JSON output
-- [Hot Storage Monitor (Alternative)](deliverables/scripts/hot-storage-monitor.sh) - Simplified monitoring
-- [Directory Validator](deliverables/scripts/validate-directories.sh) - Structure validation
+- [Hot Storage Setup Script](../../../../scripts/setup-hot-directories.sh) - Directory structure creation
+- [Storage Monitor](../../../../scripts/jts-storage-monitor.sh) - Real-time usage monitoring with JSON output
+- [Hot Storage Monitor (Alternative)](../../../../scripts/hot-storage-monitor.sh) - Simplified monitoring
+- [Directory Validator](../../../../scripts/validate-directories.sh) - Structure validation
 
 ## Deliverables
 
 ### Scripts
 
-- [Hot Storage Setup Script](deliverables/scripts/setup-hot-directories.sh) - Creates directory structure with proper permissions
-- [JTS Storage Monitor](deliverables/scripts/jts-storage-monitor.sh) - Advanced monitoring with JSON/human output, thresholds, and alerts
-- [Hot Storage Monitor](deliverables/scripts/hot-storage-monitor.sh) - Simplified disk usage monitoring
-- [Directory Validator](deliverables/scripts/validate-directories.sh) - Validates structure and permissions
+- [Hot Storage Setup Script](../../../../scripts/setup-hot-directories.sh) - Creates directory structure with proper permissions
+- [JTS Storage Monitor](../../../../scripts/jts-storage-monitor.sh) - Advanced monitoring with JSON/human output, thresholds, and alerts
+- [Hot Storage Monitor](../../../../scripts/hot-storage-monitor.sh) - Simplified disk usage monitoring
+- [Directory Validator](../../../../scripts/validate-directories.sh) - Validates structure and permissions
 
 ### Integration Points
 

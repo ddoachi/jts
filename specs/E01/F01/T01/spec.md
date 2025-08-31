@@ -44,9 +44,9 @@ files:
   - /usr/local/bin/jts-storage-monitor.sh
   - docs/HOT_STORAGE_SETUP.md
 deliverables:
-  - specs/1000/1001/deliverables/scripts/setup-hot-directories.sh
-  - specs/1000/1001/deliverables/scripts/validate-directories.sh
-  - specs/1000/1001/deliverables/docs/HOT_STORAGE_SETUP.md
+  - scripts/setup-hot-directories.sh
+  - scripts/validate-directories.sh
+  - docs/HOT_STORAGE_SETUP.md
 
 # === METADATA ===
 tags:

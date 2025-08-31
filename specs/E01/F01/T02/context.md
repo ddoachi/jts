@@ -61,14 +61,14 @@ Implementation of secure database mount integration for JTS trading system. Conf
 
 ### Scripts
 
-- [x] [setup-database-users.sh](deliverables/scripts/setup-database-users.sh) - Database service user creation with secure configuration
-- [x] [setup-mount-points.sh](deliverables/scripts/setup-mount-points.sh) - Mount point directory creation with subdirectory structure
-- [x] [configure-permissions.sh](deliverables/scripts/configure-permissions.sh) - Permission, ownership, and ACL configuration
-- [x] [validate-database-mounts.sh](deliverables/scripts/validate-database-mounts.sh) - Comprehensive validation script with detailed reporting
+- [x] [setup-database-users.sh](../../../../scripts/setup-database-users.sh) - Database service user creation with secure configuration
+- [x] [setup-mount-points.sh](../../../../scripts/setup-mount-points.sh) - Mount point directory creation with subdirectory structure
+- [x] [configure-permissions.sh](../../../../scripts/configure-permissions.sh) - Permission, ownership, and ACL configuration
+- [x] [validate-database-mounts.sh](../../../../scripts/validate-database-mounts.sh) - Comprehensive validation script with detailed reporting
 
 ### Documentation
 
-- [x] [DATABASE_MOUNT_SETUP.md](deliverables/docs/DATABASE_MOUNT_SETUP.md) - Comprehensive setup and maintenance guide
+- [x] [DATABASE_MOUNT_SETUP.md](../../../../docs/DATABASE_MOUNT_SETUP.md) - Comprehensive setup and maintenance guide
 
 ## Testing Results
 
