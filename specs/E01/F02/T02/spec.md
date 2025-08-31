@@ -33,13 +33,17 @@ blocks:
 - T06
 related: []
 pull_requests: []
-commits: []
+commits: 
+- text: "feat(E01-F02-T02): configure VS Code IDE environment"
+  hash: "9db8326"
+  link: "https://github.com/ddoachi/jts/commit/9db8326"
 context_file: context.md
 files:
 - .vscode/settings.json
 - .vscode/extensions.json
 - .vscode/launch.json
 - .vscode/tasks.json
+- specs/E01/F02/deliverables/docs/IDE-SETUP.md
 
 # === METADATA ===
 tags:
@@ -60,14 +64,14 @@ Configure Visual Studio Code as the primary development environment with project
 
 ## Acceptance Criteria
 
-- [ ] Workspace settings optimized for TypeScript/NestJS
-- [ ] Essential extensions defined and documented
-- [ ] Debug configurations for all microservices
-- [ ] Task definitions for common operations
-- [ ] Code formatting rules configured
-- [ ] Git integration settings
-- [ ] Search and file exclusion patterns
-- [ ] Snippet definitions for common patterns
+- [x] Workspace settings optimized for TypeScript/NestJS
+- [x] Essential extensions defined and documented
+- [x] Debug configurations for all microservices
+- [x] Task definitions for common operations
+- [x] Code formatting rules configured
+- [x] Git integration settings
+- [x] Search and file exclusion patterns
+- [x] Snippet definitions for common patterns
 
 ## Technical Approach
 
