@@ -110,7 +110,7 @@ services:
     restart: unless-stopped
     ports:
       - "8123:8123"
-      - "E09:E09"
+      - "9000:9000"
     environment:
       CLICKHOUSE_DB: jts_market_data_dev
       CLICKHOUSE_USER: jts_ch
@@ -156,7 +156,7 @@ services:
     container_name: jts-zookeeper-dev
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: E02
+      ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
@@ -176,7 +176,7 @@ services:
     image: grafana/grafana:latest
     container_name: jts-grafana-dev
     ports:
-      - "3100:E03"
+      - "3100:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: dev_password
     volumes:
@@ -200,18 +200,21 @@ networks:
 # Redis configuration for multi-account support
 databases 16
 
-# Database allocation:
-# 0: Session cache
-# 1: KIS account 1 rate limits
-# 2: KIS account 2 rate limits
-# 3: Surge detection cache
-# 4: Order queue
-# 5: Account metrics
-# 6-15: Reserved for future use
+# Database allocation with naming convention:
+# 0: session:cache - Session and auth cache
+# 1: kis:account:1:ratelimit - KIS account 1 rate limiting
+# 2: kis:account:2:ratelimit - KIS account 2 rate limiting
+# 3: kis:account:3:ratelimit - KIS account 3 rate limiting
+# 4: kis:account:4:ratelimit - KIS account 4 rate limiting
+# 5: kis:account:5:ratelimit - KIS account 5 rate limiting
+# 6: surge:detection - Surge detection cache
+# 7: order:queue - Order processing queue
+# 8: metrics:account - Account metrics and analytics
+# 9-15: Reserved for future expansion
 
 save 900 1
 save 300 10
-save 60 E10
+save 60 10000
 
 appendonly yes
 appendfsync everysec
@@ -285,6 +288,7 @@ CREATE INDEX idx_orders_created ON trading.orders(created_at);
 
 ## Notes
 
-- Redis databases are pre-allocated for multi-account rate limiting
+- Redis databases are pre-allocated for multi-account rate limiting (supports up to 5 KIS accounts)
+- Redis DB naming convention: `service:purpose:identifier` for clarity and maintainability
 - Grafana is optional but recommended for monitoring
 - All services use dev_password for local development only
