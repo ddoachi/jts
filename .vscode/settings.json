@@ -5,13 +5,18 @@
   "terminal.integrated.fontFamily": "Hack Nerd Font Mono, Cascadia Code, monospace",
   "editor.fontLigatures": true,
   "editor.minimap.enabled": false,
-  "files.exclude": {},
   "vim.useSystemClipboard": true,
   "terminal.integrated.copyOnSelection": true,
   "terminal.integrated.defaultProfile.linux": "zsh",
 
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.tsdk": "node_modules/typescript/lib",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true, // 저장 시 자동 포맷
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -21,6 +26,31 @@
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.nx": true,
+    "**/.yarn": true,
+    "**/coverage": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.yarn": true,
+    "**/coverage": true
+  },
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "tailwindCSS.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  },
+  "jest.jestCommandLine": "yarn test",
+  "nx.enableTelemetry": false,
   "prettier.ignorePath": ".prettierignore",
   "claudeWorkflow.specs.documentsPath": ".claude-workflow/specs",
   "claudeWorkflow.specs.showHiddenFiles": false,
