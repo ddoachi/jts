@@ -10,9 +10,9 @@ type: task
 category: infrastructure
 
 # === HIERARCHY ===
-parent: F03
+parent: [F03](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -30,15 +30,15 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - T02
+  - [T02](../T02/spec.md)
 blocks:
-  - T05
-  - T06
+  - [T05](../T05/spec.md)
+  - [T06](../T06/spec.md)
 related:
-  - T04
+  - [T04](../T04/spec.md)
 pull_requests: []
 commits: []
-context_file: 1003.context.md
+context_file: [context.md](./context.md)
 worktree: ''
 files:
   - jest.config.ts

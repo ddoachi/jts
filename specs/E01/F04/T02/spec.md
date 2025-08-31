@@ -9,9 +9,9 @@ title: Main CI Pipeline Configuration
 type: task
 
 # === HIERARCHY ===
-parent: F04
+parent: [F04](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,15 +27,15 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - T01
+  - [T01](../T01/spec.md)
 blocks:
-  - T07
-  - T08
+  - [T07](../T07/spec.md)
+  - [T08](../T08/spec.md)
 related:
-  - F03
+  - [F03](../../F03/spec.md)
 pull_requests: []
 commits: []
-context_file: 1042.context.md
+context_file: [context.md](./context.md)
 files:
   - .github/workflows/ci.yml
   - nx.json

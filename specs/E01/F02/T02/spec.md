@@ -9,9 +9,9 @@ title: VS Code IDE Configuration
 type: task
 
 # === HIERARCHY ===
-parent: F02
+parent: [F02](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,17 +27,17 @@ actual_hours: 2
 
 # === DEPENDENCIES ===
 dependencies:
-  - T01
+  - [T01](../T01/spec.md)
 blocks:
-  - T05
-  - T06
+  - [T05](../T05/spec.md)
+  - [T06](../T06/spec.md)
 related: []
 pull_requests: []
 commits:
   - text: 'feat(E01-F02-T02): configure VS Code IDE environment'
     hash: '9db8326'
     link: 'https://github.com/ddoachi/jts/commit/9db8326'
-context_file: context.md
+context_file: [context.md](./context.md)
 files:
   - .vscode/settings.json
   - .vscode/extensions.json

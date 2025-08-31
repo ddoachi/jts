@@ -196,8 +196,8 @@ Build a specialized cryptocurrency trading infrastructure that handles the uniqu
 
 ## Dependencies
 
-- **E01**: Foundation & Infrastructure Setup - Requires monorepo, Redis, Kafka, and database infrastructure
-- **E02**: Multi-Broker Integration Layer - Requires unified broker interface and rate limiting framework
+- **[E01](../E01/spec.md)**: Foundation & Infrastructure Setup - Requires monorepo, Redis, Kafka, and database infrastructure
+- **[E02](../E02/spec.md)**: Multi-Broker Integration Layer - Requires unified broker interface and rate limiting framework
 
 ## Testing Plan
 

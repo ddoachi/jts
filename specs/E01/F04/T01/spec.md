@@ -9,9 +9,9 @@ title: GitHub Actions Workflow Structure Setup
 type: task
 
 # === HIERARCHY ===
-parent: F04
+parent: [F04](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -28,17 +28,17 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-  - T02
-  - T03
-  - T04
-  - T07
-  - T08
-  - T09
+  - [T02](../T02/spec.md)
+  - [T03](../T03/spec.md)
+  - [T04](../T04/spec.md)
+  - [T07](../T07/spec.md)
+  - [T08](../T08/spec.md)
+  - [T09](../T09/spec.md)
 related:
-  - F03
+  - [F03](../../F03/spec.md)
 pull_requests: []
 commits: []
-context_file: 1041.context.md
+context_file: [context.md](./context.md)
 files:
   - .github/workflows/
   - .github/dependabot.yml

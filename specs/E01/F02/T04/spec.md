@@ -9,9 +9,9 @@ title: Environment Configuration and Secrets Management
 type: task
 
 # === HIERARCHY ===
-parent: F02
+parent: [F02](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,17 +27,17 @@ actual_hours: 1
 
 # === DEPENDENCIES ===
 dependencies:
-  - T03
+  - [T03](../T03/spec.md)
 blocks:
-  - T05
-  - T06
+  - [T05](../T05/spec.md)
+  - [T06](../T06/spec.md)
 related: []
 pull_requests: []
 commits: 
 - text: "feat(E01-F02-T04): implement environment configuration and secrets management"
   hash: "8d06b99"
   link: "https://github.com/ddoachi/jts/commit/8d06b99"
-context_file: context.md
+context_file: [context.md](./context.md)
 files:
   - .env.example
   - .gitignore

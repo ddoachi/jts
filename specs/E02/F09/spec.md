@@ -9,9 +9,9 @@ title: Comprehensive Error Handling and Recovery System
 type: feature
 
 # === HIERARCHY ===
-parent: E02
+parent: [E02](../spec.md)
 children: []
-epic: E02
+epic: [E02](../spec.md)
 domain: reliability-recovery
 
 # === WORKFLOW ===
@@ -27,13 +27,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - F08
+  - [F08](../F08/spec.md)
 blocks:
-  - F11
+  - [F11](../F11/spec.md)
 related:
-  - F02
-  - F04
-  - F07
+  - [F02](../F02/spec.md)
+  - [F04](../F04/spec.md)
+  - [F07](../F07/spec.md)
 branch: ''
 files:
   - libs/shared/errors/broker-errors.ts

@@ -9,9 +9,9 @@ title: Unified Broker Interface Foundation
 type: feature
 
 # === HIERARCHY ===
-parent: E02
+parent: [E02](../spec.md)
 children: []
-epic: E02
+epic: [E02](../spec.md)
 domain: broker-interface
 
 # === WORKFLOW ===
@@ -27,15 +27,15 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - E01
+  - [E01](../../E01/spec.md)
 blocks:
-  - F02
-  - F03
-  - F04
-  - F06
-  - F07
-  - F08
-  - F10
+  - [F02](../F02/spec.md)
+  - [F03](../F03/spec.md)
+  - [F04](../F04/spec.md)
+  - [F06](../F06/spec.md)
+  - [F07](../F07/spec.md)
+  - [F08](../F08/spec.md)
+  - [F10](../F10/spec.md)
 related: []
 branch: ''
 files:
@@ -174,7 +174,7 @@ Implement a broker abstraction layer using TypeScript interfaces and the Adapter
 
 ## Dependencies
 
-- **E01**: Foundation & Infrastructure Setup - Requires TypeScript configuration, monorepo structure
+- **[E01](../../E01/spec.md)**: Foundation & Infrastructure Setup - Requires TypeScript configuration, monorepo structure
 
 ## Testing Plan
 

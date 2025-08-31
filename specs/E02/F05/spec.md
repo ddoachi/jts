@@ -9,9 +9,9 @@ title: Redis-based Distributed Rate Limiting System
 type: feature
 
 # === HIERARCHY ===
-parent: E02
+parent: [E02](../spec.md)
 children: []
-epic: E02
+epic: [E02](../spec.md)
 domain: infrastructure-rate-limiting
 
 # === WORKFLOW ===
@@ -27,14 +27,14 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - E01
+  - [E01](../../E01/spec.md)
 blocks:
-  - F06
-  - F07
+  - [F06](../F06/spec.md)
+  - [F07](../F07/spec.md)
 related:
-  - F02
-  - F03
-  - F04
+  - [F02](../F02/spec.md)
+  - [F03](../F03/spec.md)
+  - [F04](../F04/spec.md)
 branch: ''
 files:
   - libs/shared/services/rate-limiter.service.ts

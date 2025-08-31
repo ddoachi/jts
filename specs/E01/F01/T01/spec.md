@@ -9,9 +9,9 @@ title: Hot Storage (NVMe) Directory Setup
 type: task
 
 # === HIERARCHY ===
-parent: F01
+parent: [F01](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -28,16 +28,16 @@ actual_hours: 3
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-  - T02
-  - T05
+  - [T02](../T02/spec.md)
+  - [T05](../T05/spec.md)
 related:
-  - T03
-  - T04
+  - [T03](../T03/spec.md)
+  - [T04](../T04/spec.md)
 pull_requests: []
 commits:
   - 2da9f8d
   - 08e4cc5
-context_file: 1011.context.md
+context_file: [context.md](./context.md)
 files:
   - scripts/setup-hot-directories.sh
   - scripts/validate-directories.sh

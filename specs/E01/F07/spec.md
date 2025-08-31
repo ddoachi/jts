@@ -9,7 +9,7 @@ title: Service Communication Patterns
 type: feature
 
 # === HIERARCHY ===
-parent: E01
+parent: [E01](../spec.md)
 children: []
 epic: E01
 domain: infrastructure
@@ -27,17 +27,17 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - F05
-  - F06
+  - [F05](../F05/spec.md)
+  - [F06](../F06/spec.md)
 blocks:
-  - E02
-  - E03
-  - E04
-  - E05
-  - E06
+  - [E02](../../E02/spec.md)
+  - [E03](../../E03/spec.md)
+  - [E04](../../E04/spec.md)
+  - [E05](../../E05/spec.md)
+  - [E06](../../E06/spec.md)
 related:
-  - F02
-  - F08
+  - [F02](../F02/spec.md)
+  - [F08](../F08/spec.md)
 branch: feature/1007-service-communication
 files:
   - apps/api-gateway/

@@ -177,7 +177,7 @@ Design a multi-layered observability stack that captures metrics, logs, and trac
 
 ## Dependencies
 
-- **E01**: Foundation & Infrastructure Setup - Requires Redis for real-time metrics caching and basic infrastructure
+- **[E01](../E01/spec.md)**: Foundation & Infrastructure Setup - Requires Redis for real-time metrics caching and basic infrastructure
 
 ## Testing Plan
 

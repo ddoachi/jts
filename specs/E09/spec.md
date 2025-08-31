@@ -163,9 +163,9 @@ Implement a high-performance simulation engine that can accurately model trading
 
 ## Dependencies
 
-- **E01**: Foundation & Infrastructure Setup - Requires database and messaging infrastructure
-- **E03**: Market Data Collection & Processing - Needs historical data sources and storage
-- **E04**: Trading Strategy Engine & DSL - Requires strategy definitions and execution engine
+- **[E01](../E01/spec.md)**: Foundation & Infrastructure Setup - Requires database and messaging infrastructure
+- **[E03](../E03/spec.md)**: Market Data Collection & Processing - Needs historical data sources and storage
+- **[E04](../E04/spec.md)**: Trading Strategy Engine & DSL - Requires strategy definitions and execution engine
 
 ## Testing Plan
 

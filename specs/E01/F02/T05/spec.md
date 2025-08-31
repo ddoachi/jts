@@ -9,9 +9,9 @@ title: Code Quality Tools and Git Hooks
 type: task
 
 # === HIERARCHY ===
-parent: F02
+parent: [F02](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,16 +27,16 @@ actual_hours: 1
 
 # === DEPENDENCIES ===
 dependencies:
-  - T01
-  - T02
+  - [T01](../T01/spec.md)
+  - [T02](../T02/spec.md)
 blocks:
-  - T06
+  - [T06](../T06/spec.md)
 related: []
 pull_requests: []
 commits:
   - text: 'feat(E01-F02-T05): configure comprehensive code quality tools'
     hash: '8f1521e'
-context_file: context.md
+context_file: [context.md](./context.md)
 files:
   - .eslintrc.js
   - .prettierrc

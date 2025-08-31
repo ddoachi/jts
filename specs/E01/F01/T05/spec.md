@@ -9,9 +9,9 @@ title: Storage Performance Optimization
 type: task
 
 # === HIERARCHY ===
-parent: F01
+parent: [F01](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,14 +27,14 @@ actual_hours: 2.5
 
 # === DEPENDENCIES ===
 dependencies:
-  - T01
+  - [T01](../T01/spec.md)
 blocks: []
 related:
-  - T03
-  - T04
+  - [T03](../T03/spec.md)
+  - [T04](../T04/spec.md)
 pull_requests: []
 commits: []
-context_file: 'context.md'
+context_file: [context.md](./context.md)
 files:
   - specs/E01/F01/deliverables/config/60-ssd-scheduler.rules
   - specs/E01/F01/deliverables/config/fstrim-all.service

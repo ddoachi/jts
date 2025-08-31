@@ -9,9 +9,9 @@ title: Deployment Pipeline Workflows
 type: task
 
 # === HIERARCHY ===
-parent: F04
+parent: [F04](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,15 +27,15 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - T01
-  - T05
+  - [T01](../T01/spec.md)
+  - [T05](../T05/spec.md)
 blocks: []
 related:
-  - T02
-  - T03
+  - [T02](../T02/spec.md)
+  - [T03](../T03/spec.md)
 pull_requests: []
 commits: []
-context_file: 1044.context.md
+context_file: [context.md](./context.md)
 files:
   - .github/workflows/deploy-dev.yml
   - .github/workflows/deploy-staging.yml

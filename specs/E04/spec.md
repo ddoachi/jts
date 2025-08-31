@@ -27,15 +27,15 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - E01
-  - E02
-  - E03
+  - [E01](../E01/spec.md)
+  - [E02](../E02/spec.md)
+  - [E03](../E03/spec.md)
 blocks:
-  - E05
-  - E06
-  - E09
+  - [E05](../E05/spec.md)
+  - [E06](../E06/spec.md)
+  - [E09](../E09/spec.md)
 related:
-  - E07
+  - [E07](../E07/spec.md)
 branch: ''
 files:
   - apps/core/strategy-engine/
@@ -155,9 +155,9 @@ Implement a high-performance strategy execution engine that can process real-tim
 
 ## Dependencies
 
-- **E01**: Foundation & Infrastructure Setup - Requires monorepo structure and messaging infrastructure
-- **E02**: Multi-Broker Integration Layer - Needs broker connections for order execution
-- **E03**: Market Data Collection & Processing - Requires real-time market data for strategy evaluation
+- **[E01](../E01/spec.md)**: Foundation & Infrastructure Setup - Requires monorepo structure and messaging infrastructure
+- **[E02](../E02/spec.md)**: Multi-Broker Integration Layer - Needs broker connections for order execution
+- **[E03](../E03/spec.md)**: Market Data Collection & Processing - Requires real-time market data for strategy evaluation
 
 ## Testing Plan
 

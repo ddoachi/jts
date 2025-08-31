@@ -10,9 +10,9 @@ type: task
 category: infrastructure
 
 # === HIERARCHY ===
-parent: F03
+parent: [F03](../spec.md)
 children: []
-epic: E01
+epic: [E01](../../spec.md)
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -30,15 +30,15 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - T01
+  - [T01](../T01/spec.md)
 blocks:
-  - T03
-  - T04
-  - T05
+  - [T03](../T03/spec.md)
+  - [T04](../T04/spec.md)
+  - [T05](../T05/spec.md)
 related: []
 pull_requests: []
 commits: []
-context_file: 1003.context.md
+context_file: [context.md](./context.md)
 worktree: ''
 files:
   - tsconfig.base.json
