@@ -2,8 +2,8 @@
 # ============================================================================
 # JTS Storage Monitoring Script
 # ============================================================================
-# Generated from: specs/1000/1001/1011.md
-# Context: specs/1000/1001/1011.context.md
+# Generated from: specs/E01/F01/spec.md (Storage Infrastructure Coordination)
+# Original location: specs/E01/F01/deliverables/scripts/jts-storage-monitor.sh
 # Created: 2025-08-24
 # Purpose: Monitor hot storage (NVMe) health and performance
 #

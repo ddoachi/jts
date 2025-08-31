@@ -1,5 +1,8 @@
 # 📊 Spec Dashboard
 
+<!-- This file moved from: specs/index.md -->
+<!-- All deliverables have been migrated to their natural locations -->
+
 > Auto-generated from spec files on 2025-08-30
 
 ## 🎯 Quick Stats

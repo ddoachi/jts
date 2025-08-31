@@ -1,5 +1,8 @@
 # JTS Hot Storage (NVMe) Setup Guide
 
+<!-- Generated from: specs/E01/F01/spec.md (Storage Infrastructure Coordination) -->
+<!-- Original location: specs/E01/F01/deliverables/docs/HOT_STORAGE_SETUP.md -->
+
 ## Overview
 
 This guide covers the setup and management of the JTS hot storage tier using NVMe SSD technology. The hot storage tier provides ultra-fast access for real-time trading operations, active databases, and high-frequency data processing.

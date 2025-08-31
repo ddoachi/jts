@@ -49,6 +49,18 @@ files:
 - .env.example
 - docker-compose.dev.yml
 - docs/DEVELOPMENT.md
+deliverables:
+  scripts:
+    - scripts/setup/install-node-yarn.sh
+    - scripts/setup/install-node-yarn-linux.sh
+    - scripts/setup/install-node-yarn-windows.ps1
+  docs:
+    - docs/development/IDE-SETUP.md
+    - docs/development/usage-guide.md
+  configs:
+    - configs/development/.yarnrc.yml
+    - configs/development/gitignore.template
+    - configs/development/package.json.template
 
 # === METADATA ===
 tags:

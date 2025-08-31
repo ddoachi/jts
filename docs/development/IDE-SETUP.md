@@ -1,5 +1,5 @@
-# Generated from spec: E01-F02-T02 (VS Code IDE Configuration)
-# Spec ID: 93d65641
+# Generated from: specs/E01/F02/spec.md (Development Environment Setup)
+# Original location: specs/E01/F02/deliverables/docs/IDE-SETUP.md
 
 # VS Code IDE Setup Guide
 

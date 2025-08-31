@@ -81,13 +81,13 @@ LVM snapshot management for database backups:
 
 1. **Copy Scripts**:
    ```bash
-   sudo cp specs/E01/F01/deliverables/scripts/* /usr/local/bin/
+   sudo cp scripts/storage/* /usr/local/bin/
    sudo chmod +x /usr/local/bin/{storage-health,tiered-storage,nas-archival,lvm-backup}.sh
    ```
 
 2. **Install Systemd Units**:
    ```bash
-   sudo cp specs/E01/F01/deliverables/config/tiered-storage.{service,timer} /etc/systemd/system/
+   sudo cp configs/storage/tiered-storage.{service,timer} /etc/systemd/system/
    sudo systemctl daemon-reload
    sudo systemctl enable tiered-storage.timer
    sudo systemctl start tiered-storage.timer

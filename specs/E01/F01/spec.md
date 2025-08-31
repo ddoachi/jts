@@ -49,12 +49,46 @@ commits:
 context_file: context.md
 files:
 - /etc/fstab
-- scripts/setup-lvm.sh
-- scripts/storage-health.sh
-- scripts/lvm-backup.sh
-- scripts/nas-archival.sh
-- scripts/tiered-storage.sh
-- docs/STORAGE_SETUP.md
+deliverables:
+  scripts:
+    - scripts/storage/configure-permissions.sh
+    - scripts/storage/fix-test-issues.sh  
+    - scripts/storage/hot-storage-monitor.sh
+    - scripts/storage/jts-storage-monitor.sh
+    - scripts/storage/lvm-backup.sh
+    - scripts/storage/nas-archival.sh
+    - scripts/storage/nas-health-check.sh
+    - scripts/storage/performance-benchmark.sh
+    - scripts/storage/sata-health-check.sh
+    - scripts/storage/setup-database-users.sh
+    - scripts/storage/setup-hot-directories.sh
+    - scripts/storage/setup-mount-points.sh
+    - scripts/storage/setup-sata-storage.sh
+    - scripts/storage/ssd-optimization.sh
+    - scripts/storage/storage-health.sh
+    - scripts/storage/test-database-mounts.sh
+    - scripts/storage/test-summary.sh
+    - scripts/storage/tiered-storage.sh
+    - scripts/storage/validate-database-mounts.sh
+    - scripts/storage/validate-directories.sh
+  docs:
+    - docs/infrastructure/COLD_STORAGE_SETUP.md
+    - docs/infrastructure/DATABASE_MOUNT_SETUP.md
+    - docs/infrastructure/HOT_STORAGE_SETUP.md
+    - docs/infrastructure/PERFORMANCE_OPTIMIZATION.md
+    - docs/infrastructure/TIERED_STORAGE_MANAGEMENT.md
+    - docs/infrastructure/WARM_STORAGE_SETUP.md
+  configs:
+    - configs/storage/rollback_migration.sh
+    - configs/storage/migration_log.json
+    - configs/storage/fstab-nas-mount.conf
+    - configs/storage/sysctl-nas-optimization.conf
+    - configs/storage/60-ssd-scheduler.rules
+    - configs/storage/fstrim-all.service
+    - configs/storage/fstrim-all.timer
+    - configs/storage/tiered-storage.service
+    - configs/storage/tiered-storage.timer
+    - configs/storage/fstab.backup.20250826_000534
 
 # === METADATA ===
 tags:

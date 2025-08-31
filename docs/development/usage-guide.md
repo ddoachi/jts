@@ -25,12 +25,12 @@ This guide provides step-by-step instructions for setting up Node.js 20 LTS and 
 
 1. **Make the script executable:**
    ```bash
-   chmod +x specs/E01/F02/deliverables/scripts/install-node-yarn.sh
+   chmod +x scripts/setup/install-node-yarn.sh
    ```
 
 2. **Run the unified installer:**
    ```bash
-   ./specs/E01/F02/deliverables/scripts/install-node-yarn.sh
+   ./scripts/setup/install-node-yarn.sh
    ```
 
    This script will:
@@ -44,12 +44,12 @@ This guide provides step-by-step instructions for setting up Node.js 20 LTS and 
 
 1. **Make the script executable:**
    ```bash
-   chmod +x specs/E01/F02/deliverables/scripts/install-node-yarn-linux.sh
+   chmod +x scripts/setup/install-node-yarn-linux.sh
    ```
 
 2. **Run the Linux installer:**
    ```bash
-   ./specs/E01/F02/deliverables/scripts/install-node-yarn-linux.sh
+   ./scripts/setup/install-node-yarn-linux.sh
    ```
 
 #### Windows
@@ -74,13 +74,13 @@ After installation, copy the configuration templates to the root directory:
 
 ```bash
 # Copy Yarn configuration
-cp specs/E01/F02/deliverables/config/.yarnrc.yml .yarnrc.yml
+cp configs/development/.yarnrc.yml .yarnrc.yml
 
 # Copy package.json template
-cp specs/E01/F02/deliverables/config/package.json.template package.json
+cp configs/development/package.json.template package.json
 
 # Update .gitignore with Yarn 4 patterns
-cat specs/E01/F02/deliverables/config/gitignore.template >> .gitignore
+cat configs/development/gitignore.template >> .gitignore
 ```
 
 ### 2. Initialize Yarn Workspace
@@ -139,7 +139,7 @@ The template provides:
 #### 1. Permission Denied (Linux)
 ```bash
 # If you get permission errors, ensure scripts are executable
-chmod +x specs/E01/F02/deliverables/scripts/*.sh
+chmod +x scripts/setup/*.sh
 ```
 
 #### 2. Corepack Not Found
