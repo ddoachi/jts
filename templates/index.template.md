@@ -23,19 +23,19 @@ Completed: {{stats.completed.length}}/{{calculated.totalSpecs}}
 
 {{#each hierarchy}}
 
-### {{statusIcon status}} [{{@key}} - {{title}}]({{@key}}/spec.md)
+### {{statusIcon status}} [{{@key}} - {{{title}}}]({{@key}}/spec.md)
 
 > Status: `{{status}}` | Priority: `{{priority}}`
 
 {{#if children}}
 {{#each children}}
 
-- {{statusIcon status}} [{{@key}} - {{title}}]({{../@key}}/{{@key}}/spec.md) `{{status}}`
+- {{statusIcon status}} [{{@key}} - {{{title}}}]({{../@key}}/{{@key}}/spec.md) `{{status}}`
   {{#if children}}
   {{#each children}}
-  - {{statusIcon status}} [{{@key}} - {{title}}]({{../../@key}}/{{../@key}}/{{@key}}/spec.md) `{{status}}`
+  - {{statusIcon status}} [{{@key}} - {{{title}}}]({{../../@key}}/{{../@key}}/{{@key}}/spec.md) `{{status}}`
     {{#if children}}
-    {{#each children}} - {{statusIcon status}} [{{@key}} - {{title}}]({{../../../@key}}/{{../../@key}}/{{../@key}}/{{@key}}/spec.md) `{{status}}`
+    {{#each children}} - {{statusIcon status}} [{{@key}} - {{{title}}}]({{../../../@key}}/{{../../@key}}/{{../@key}}/{{@key}}/spec.md) `{{status}}`
     {{/each}}
     {{/if}}
     {{/each}}
