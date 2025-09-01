@@ -9,14 +9,14 @@ title: Storage Infrastructure Coordination
 type: feature
 
 # === HIERARCHY ===
-parent: "[E01](../spec.md)"
+parent: "E01"
 children:
-  - "[T01](./T01/spec.md)"
-  - "[T02](./T02/spec.md)"
-  - "[T03](./T03/spec.md)"
-  - "[T04](./T04/spec.md)"
-  - "[T05](./T05/spec.md)"
-  - "[T06](./T06/spec.md)"
+  - "E01-F01-T01"
+  - "E01-F01-T02"
+  - "E01-F01-T03"
+  - "E01-F01-T04"
+  - "E01-F01-T05"
+  - "E01-F01-T06"
 epic: E01
 domain: infrastructure
 
@@ -34,12 +34,12 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-  - "[F02](../F02/spec.md)"
-  - "[F04](../F04/spec.md)"
-  - "[F05](../F05/spec.md)"
+  - "E01-F02"
+  - "E01-F04"
+  - "E01-F05"
 related:
-  - "[F06](../F06/spec.md)"
-  - "[F08](../F08/spec.md)"
+  - "E01-F06"
+  - "E01-F08"
 pull_requests:
   - '#18'
   - '#19'

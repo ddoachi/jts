@@ -9,14 +9,14 @@ title: Monorepo Structure and Tooling
 type: feature
 
 # === HIERARCHY ===
-parent: "[E01](../spec.md)"
+parent: "E01"
 children:
-  - "[T01](./T01/spec.md)"
-  - "[T02](./T02/spec.md)"
-  - "[T03](./T03/spec.md)"
-  - "[T04](./T04/spec.md)"
-  - "[T05](./T05/spec.md)"
-  - "[T06](./T06/spec.md)"
+  - "E01-F03-T01"
+  - "E01-F03-T02"
+  - "E01-F03-T03"
+  - "E01-F03-T04"
+  - "E01-F03-T05"
+  - "E01-F03-T06"
 epic: E01
 domain: infrastructure
 
@@ -33,14 +33,14 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[F02](../F02/spec.md)"
+  - "E01-F02"
 blocks:
-  - "[F04](../F04/spec.md)"
-  - "[F05](../F05/spec.md)"
-  - "[F06](../F06/spec.md)"
-  - "[F07](../F07/spec.md)"
+  - "E01-F04"
+  - "E01-F05"
+  - "E01-F06"
+  - "E01-F07"
 related:
-  - "[F01](../F01/spec.md)"
+  - "E01-F01"
 pull_requests: []
 commits: []
 context_file: "[context.md](./context.md)"

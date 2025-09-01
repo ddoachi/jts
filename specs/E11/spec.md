@@ -276,18 +276,18 @@ Optimize network communication to reduce latency and improve overall system resp
 
 ## Dependencies
 
-This epic depends on all core epics ([E01](../E01/spec.md)-[E10](../E10/spec.md)) being completed as it requires:
+This epic depends on all core epics (E01-E10) being completed as it requires:
 
-- Infrastructure foundation ([E01](../E01/spec.md))
-- Market data systems ([E02](../E02/spec.md))
-- Strategy engine ([E03](../E03/spec.md))
-- Order execution ([E04](../E04/spec.md))
-- Risk management ([E05](../E05/spec.md))
-- Broker integration ([E06](../E06/spec.md))
-- Portfolio tracking ([E07](../E07/spec.md))
-- User interface ([E08](../E08/spec.md))
-- Notification system ([E09](../E09/spec.md))
-- Data analytics ([E10](../E10/spec.md))
+- Infrastructure foundation (E01)
+- Market data systems (E02)
+- Strategy engine (E03)
+- Order execution (E04)
+- Risk management (E05)
+- Broker integration (E06)
+- Portfolio tracking (E07)
+- User interface (E08)
+- Notification system (E09)
+- Data analytics (E10)
 
 ## Testing Plan
 

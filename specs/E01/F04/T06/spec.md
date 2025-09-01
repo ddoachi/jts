@@ -9,9 +9,9 @@ title: Docker Compose CI Testing Environment
 type: task
 
 # === HIERARCHY ===
-parent: "[F04](../spec.md)"
+parent: "E01-F04"
 children: []
-epic: "[E01](../../spec.md)"
+epic: "E01"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,11 +27,11 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[T05](../T05/spec.md)"
+  - "E01-F04-T05"
 blocks:
-  - "[T07](../T07/spec.md)"
+  - "E01-F04-T07"
 related:
-  - "[T03](../T03/spec.md)"
+  - "E01-F04-T03"
 pull_requests: []
 commits: []
 context_file: "[context.md](./context.md)"

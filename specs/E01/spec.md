@@ -11,16 +11,16 @@ type: epic
 # === HIERARCHY ===
 parent: ''
 children:
-  - "[F01](./F01/spec.md)"
-  - "[F02](./F02/spec.md)"
-  - "[F03](./F03/spec.md)"
-  - "[F04](./F04/spec.md)"
-  - "[F05](./F05/spec.md)"
-  - "[F06](./F06/spec.md)"
-  - "[F07](./F07/spec.md)"
-  - "[F08](./F08/spec.md)"
-  - "[F09](./F09/spec.md)"
-  - "[F10](./F10/spec.md)"
+  - "E01-F01"
+  - "E01-F02"
+  - "E01-F03"
+  - "E01-F04"
+  - "E01-F05"
+  - "E01-F06"
+  - "E01-F07"
+  - "E01-F08"
+  - "E01-F09"
+  - "E01-F10"
 epic: E01
 domain: infrastructure
 
@@ -38,16 +38,16 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-  - "[E02](../../E02/spec.md)"
-  - "[E03](../../E03/spec.md)"
-  - "[E04](../../E04/spec.md)"
-  - "[E05](../../E05/spec.md)"
-  - "[E06](../../E06/spec.md)"
-  - "[E07](../../E07/spec.md)"
-  - "[E08](../../E08/spec.md)"
-  - "[E09](../../E09/spec.md)"
-  - "[E10](../../E10/spec.md)"
-  - "[E11](../../E11/spec.md)"
+  - "E02"
+  - "E03"
+  - "E04"
+  - "E05"
+  - "E06"
+  - "E07"
+  - "E08"
+  - "E09"
+  - "E10"
+  - "E11"
 related: []
 pull_requests:
   - '#18'

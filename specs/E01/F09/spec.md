@@ -9,7 +9,7 @@ title: Security Foundation
 type: feature
 
 # === HIERARCHY ===
-parent: "[E01](../spec.md)"
+parent: "E01"
 children: []
 epic: E01
 domain: infrastructure
@@ -27,17 +27,17 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[F03](../F03/spec.md)"
-  - "[F05](../F05/spec.md)"
-  - "[F07](../F07/spec.md)"
+  - "E01-F03"
+  - "E01-F05"
+  - "E01-F07"
 blocks:
-  - "[E02](../../E02/spec.md)"
-  - "[E03](../../E03/spec.md)"
-  - "[E04](../../E04/spec.md)"
-  - "[E05](../../E05/spec.md)"
-  - "[E06](../../E06/spec.md)"
+  - "E02"
+  - "E03"
+  - "E04"
+  - "E05"
+  - "E06"
 related:
-  - "[F08](../F08/spec.md)"
+  - "E01-F08"
 branch: feature/1009-security-foundation
 files:
   - infrastructure/security/

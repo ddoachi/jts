@@ -9,7 +9,7 @@ title: Testing Framework Setup
 type: feature
 
 # === HIERARCHY ===
-parent: "[E01](../spec.md)"
+parent: "E01"
 children: []
 epic: E01
 domain: infrastructure
@@ -27,13 +27,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[F02](../F02/spec.md)"
-  - "[F03](../F03/spec.md)"
+  - "E01-F02"
+  - "E01-F03"
 blocks:
-  - "[F04](../F04/spec.md)"
+  - "E01-F04"
 related:
-  - "[F08](../F08/spec.md)"
-  - "[F09](../F09/spec.md)"
+  - "E01-F08"
+  - "E01-F09"
 branch: feature/1010-testing-framework
 files:
   - jest.config.js

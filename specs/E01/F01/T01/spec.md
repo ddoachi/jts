@@ -9,9 +9,9 @@ title: Hot Storage (NVMe) Directory Setup
 type: task
 
 # === HIERARCHY ===
-parent: "[F01](../spec.md)"
+parent: "E01-F01"
 children: []
-epic: "[E01](../../spec.md)"
+epic: "E01"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -28,11 +28,11 @@ actual_hours: 3
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-  - "[T02](../T02/spec.md)"
-  - "[T05](../T05/spec.md)"
+  - "E01-F01-T02"
+  - "E01-F01-T05"
 related:
-  - "[T03](../T03/spec.md)"
-  - "[T04](../T04/spec.md)"
+  - "E01-F01-T03"
+  - "E01-F01-T04"
 pull_requests: []
 commits:
   - 2da9f8d

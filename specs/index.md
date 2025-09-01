@@ -1,6 +1,6 @@
 # 📊 Spec Dashboard
 
-> Auto-generated from spec files on 2025-08-31
+> Auto-generated from spec files on 2025-09-01
 
 ## 🎯 Quick Stats
 
@@ -27,11 +27,53 @@ Completed: 11/62
 > Status: `draft` | Priority: `high`
 
 
+- 📋 [F01 - Storage Infrastructure Coordination](E01/F01/spec.md) `draft`
+
+- 📋 [F02 - Development Environment Setup](E01/F02/spec.md) `draft`
+
+- 📋 [F03 - Monorepo Structure and Tooling](E01/F03/spec.md) `draft`
+
+- 📋 [F04 - CI/CD Pipeline Foundation](E01/F04/spec.md) `draft`
+
+- 📋 [F05 - Database Infrastructure](E01/F05/spec.md) `draft`
+
+- 📋 [F06 - Message Queue Setup](E01/F06/spec.md) `draft`
+
+- 📋 [F07 - Service Communication Patterns](E01/F07/spec.md) `draft`
+
+- 📋 [F08 - Monitoring and Logging Foundation](E01/F08/spec.md) `draft`
+
+- 📋 [F09 - Security Foundation](E01/F09/spec.md) `draft`
+
+- 📋 [F10 - Testing Framework Setup](E01/F10/spec.md) `draft`
+
 
 ### 📋 [E02 - Multi-Broker Integration Layer](E02/spec.md)
 
 > Status: `draft` | Priority: `high`
 
+
+- 📋 [F01 - Unified Broker Interface Foundation](E02/F01/spec.md) `draft`
+
+- 📋 [F02 - KIS REST API Integration](E02/F02/spec.md) `draft`
+
+- 📋 [F03 - KIS WebSocket Real-time Data Integration](E02/F03/spec.md) `draft`
+
+- 📋 [F04 - Creon Windows COM Integration Service](E02/F04/spec.md) `draft`
+
+- 📋 [F05 - Redis-based Distributed Rate Limiting System](E02/F05/spec.md) `draft`
+
+- 📋 [F06 - Multi-Account Pool Management System](E02/F06/spec.md) `draft`
+
+- 📋 [F07 - Smart Order Routing and Execution Engine](E02/F07/spec.md) `draft`
+
+- 📋 [F08 - Standardized Broker Service Endpoints](E02/F08/spec.md) `draft`
+
+- 📋 [F09 - Comprehensive Error Handling and Recovery System](E02/F09/spec.md) `draft`
+
+- 📋 [F10 - Broker Testing Framework and Mock Services](E02/F10/spec.md) `draft`
+
+- 📋 [F11 - Real-time Broker Monitoring and Observability](E02/F11/spec.md) `draft`
 
 
 ### 📋 [E03 - Market Data Collection &amp; Processing](E03/spec.md)
@@ -92,60 +134,6 @@ Completed: 11/62
 
 > Status: `draft` | Priority: `high`
 
-
-
-### 📋 [[E02](../spec.md) - ]([E02](../spec.md)/spec.md)
-
-> Status: `draft` | Priority: ``
-
-
-- 📋 [F01 - Unified Broker Interface Foundation]([E02](../spec.md)/F01/spec.md) `draft`
-
-- 📋 [F02 - KIS REST API Integration]([E02](../spec.md)/F02/spec.md) `draft`
-
-- 📋 [F03 - KIS WebSocket Real-time Data Integration]([E02](../spec.md)/F03/spec.md) `draft`
-
-- 📋 [F04 - Creon Windows COM Integration Service]([E02](../spec.md)/F04/spec.md) `draft`
-
-- 📋 [F05 - Redis-based Distributed Rate Limiting System]([E02](../spec.md)/F05/spec.md) `draft`
-
-- 📋 [F06 - Multi-Account Pool Management System]([E02](../spec.md)/F06/spec.md) `draft`
-
-- 📋 [F07 - Smart Order Routing and Execution Engine]([E02](../spec.md)/F07/spec.md) `draft`
-
-- 📋 [F08 - Standardized Broker Service Endpoints]([E02](../spec.md)/F08/spec.md) `draft`
-
-- 📋 [F09 - Comprehensive Error Handling and Recovery System]([E02](../spec.md)/F09/spec.md) `draft`
-
-- 📋 [F10 - Broker Testing Framework and Mock Services]([E02](../spec.md)/F10/spec.md) `draft`
-
-- 📋 [F11 - Real-time Broker Monitoring and Observability]([E02](../spec.md)/F11/spec.md) `draft`
-
-
-### 📋 [[E01](../spec.md) - ]([E01](../spec.md)/spec.md)
-
-> Status: `draft` | Priority: ``
-
-
-- 📋 [F01 - Storage Infrastructure Coordination]([E01](../spec.md)/F01/spec.md) `draft`
-
-- 📋 [F02 - Development Environment Setup]([E01](../spec.md)/F02/spec.md) `draft`
-
-- 📋 [F03 - Monorepo Structure and Tooling]([E01](../spec.md)/F03/spec.md) `draft`
-
-- 📋 [F04 - CI/CD Pipeline Foundation]([E01](../spec.md)/F04/spec.md) `draft`
-
-- 📋 [F05 - Database Infrastructure]([E01](../spec.md)/F05/spec.md) `draft`
-
-- 📋 [F06 - Message Queue Setup]([E01](../spec.md)/F06/spec.md) `draft`
-
-- 📋 [F07 - Service Communication Patterns]([E01](../spec.md)/F07/spec.md) `draft`
-
-- 📋 [F08 - Monitoring and Logging Foundation]([E01](../spec.md)/F08/spec.md) `draft`
-
-- 📋 [F09 - Security Foundation]([E01](../spec.md)/F09/spec.md) `draft`
-
-- 📋 [F10 - Testing Framework Setup]([E01](../spec.md)/F10/spec.md) `draft`
 
 
 ---

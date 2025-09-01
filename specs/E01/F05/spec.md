@@ -9,7 +9,7 @@ title: Database Infrastructure
 type: feature
 
 # === HIERARCHY ===
-parent: "[E01](../spec.md)"
+parent: "E01"
 children: []
 epic: E01
 domain: infrastructure
@@ -29,12 +29,12 @@ actual_hours: 0
 dependencies:
   - "[T02](../F01/T02/spec.md)"
 blocks:
-  - "[F07](../F07/spec.md)"
-  - "[E02](../../E02/spec.md)"
-  - "[E03](../../E03/spec.md)"
+  - "E01-F07"
+  - "E02"
+  - "E03"
 related:
-  - "[F03](../F03/spec.md)"
-  - "[F06](../F06/spec.md)"
+  - "E01-F03"
+  - "E01-F06"
 pull_requests: []
 commits: []
 context_file: "[context.md](./context.md)"

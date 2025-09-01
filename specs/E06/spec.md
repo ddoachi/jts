@@ -27,15 +27,15 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[E01](../E01/spec.md)"
-  - "[E02](../E02/spec.md)"
-  - "[E03](../E03/spec.md)"
-  - "[E04](../E04/spec.md)"
-  - "[E05](../E05/spec.md)"
+  - "E01"
+  - "E02"
+  - "E03"
+  - "E04"
+  - "E05"
 blocks: []
 related:
-  - "[E07](../E07/spec.md)"
-  - "[E08](../E08/spec.md)"
+  - "E07"
+  - "E08"
 branch: ''
 files:
   - apps/core/order-execution/
@@ -156,11 +156,11 @@ Implement a centralized order management system that coordinates execution acros
 
 ## Dependencies
 
-- **[E01](../E01/spec.md)**: Foundation & Infrastructure Setup - Requires messaging and database infrastructure
-- **[E02](../E02/spec.md)**: Multi-Broker Integration Layer - Needs broker connections for order execution
-- **[E03](../E03/spec.md)**: Market Data Collection & Processing - Requires real-time pricing for order decisions
-- **[E04](../E04/spec.md)**: Trading Strategy Engine & DSL - Needs strategy signals to generate orders
-- **[E05](../E05/spec.md)**: Risk Management System - Requires position sizing and risk validation
+- **E01**: Foundation & Infrastructure Setup - Requires messaging and database infrastructure
+- **E02**: Multi-Broker Integration Layer - Needs broker connections for order execution
+- **E03**: Market Data Collection & Processing - Requires real-time pricing for order decisions
+- **E04**: Trading Strategy Engine & DSL - Needs strategy signals to generate orders
+- **E05**: Risk Management System - Requires position sizing and risk validation
 
 ## Testing Plan
 

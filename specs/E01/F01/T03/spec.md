@@ -9,9 +9,9 @@ title: Warm Storage (SATA) Setup
 type: task
 
 # === HIERARCHY ===
-parent: "[F01](../spec.md)"
+parent: "E01-F01"
 children: []
-epic: "[E01](../../spec.md)"
+epic: "E01"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -28,10 +28,10 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-  - "[T06](../T06/spec.md)"
+  - "E01-F01-T06"
 related:
-  - "[T01](../T01/spec.md)"
-  - "[T04](../T04/spec.md)"
+  - "E01-F01-T01"
+  - "E01-F01-T04"
 pull_requests: []
 commits: []
 context_file: ''

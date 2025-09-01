@@ -9,9 +9,9 @@ title: Deployment Pipeline Workflows
 type: task
 
 # === HIERARCHY ===
-parent: "[F04](../spec.md)"
+parent: "E01-F04"
 children: []
-epic: "[E01](../../spec.md)"
+epic: "E01"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,12 +27,12 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[T01](../T01/spec.md)"
-  - "[T05](../T05/spec.md)"
+  - "E01-F04-T01"
+  - "E01-F04-T05"
 blocks: []
 related:
-  - "[T02](../T02/spec.md)"
-  - "[T03](../T03/spec.md)"
+  - "E01-F04-T02"
+  - "E01-F04-T03"
 pull_requests: []
 commits: []
 context_file: "[context.md](./context.md)"
