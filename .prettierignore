@@ -1,6 +1,11 @@
+# Generated from spec: E01-F03-T04 (TypeScript Configuration and Linting)
 dist/
 node_modules/
 coverage/
 *.log
 .yarn/
 .pnp.*
+tmp/
+*.min.js
+specs_backup/
+.obsidian/
