@@ -1,1 +1,1 @@
-export * from './lib/domain-trading';
+export * from './lib/trading-domain.service';
