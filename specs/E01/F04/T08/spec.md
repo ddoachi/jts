@@ -9,9 +9,9 @@ title: Performance Testing Workflow
 type: task
 
 # === HIERARCHY ===
-parent: "[F04](../spec.md)"
+parent: "E01-F04"
 children: []
-epic: "[E01](../../spec.md)"
+epic: "E01"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,8 +27,8 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[T01](../T01/spec.md)"
-  - "[T02](../T02/spec.md)"
+  - "E01-F04-T01"
+  - "E01-F04-T02"
 blocks: []
 related: []
 pull_requests: []

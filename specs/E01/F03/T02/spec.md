@@ -10,9 +10,9 @@ type: task
 category: infrastructure
 
 # === HIERARCHY ===
-parent: "[F03](../spec.md)"
+parent: "E01-F03"
 children: []
-epic: "[E01](../../spec.md)"
+epic: "E01"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -30,11 +30,11 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[T01](../T01/spec.md)"
+  - "E01-F03-T01"
 blocks:
-  - "[T03](../T03/spec.md)"
-  - "[T04](../T04/spec.md)"
-  - "[T05](../T05/spec.md)"
+  - "E01-F03-T03"
+  - "E01-F03-T04"
+  - "E01-F03-T05"
 related: []
 pull_requests: []
 commits: []

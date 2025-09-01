@@ -9,9 +9,9 @@ title: Storage Performance Optimization
 type: task
 
 # === HIERARCHY ===
-parent: '[F01](../spec.md)'
+parent: 'E01-F01'
 children: []
-epic: '[E01](../../spec.md)'
+epic: 'E01'
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,11 +27,11 @@ actual_hours: 2.5
 
 # === DEPENDENCIES ===
 dependencies:
-  - '[T01](../T01/spec.md)'
+  - 'E01-F01-T01'
 blocks: []
 related:
-  - '[T03](../T03/spec.md)'
-  - '[T04](../T04/spec.md)'
+  - 'E01-F01-T03'
+  - 'E01-F01-T04'
 pull_requests: []
 commits: []
 context_file: '[context.md](./context.md)'

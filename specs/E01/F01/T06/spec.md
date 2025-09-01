@@ -9,9 +9,9 @@ title: Tiered Storage Management
 type: task
 
 # === HIERARCHY ===
-parent: '[F01](../spec.md)'
+parent: 'E01-F01'
 children: []
-epic: '[E01](../../spec.md)'
+epic: 'E01'
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,13 +27,13 @@ actual_hours: 2
 
 # === DEPENDENCIES ===
 dependencies:
-  - '[T03](../T03/spec.md)'
-  - '[T04](../T04/spec.md)'
+  - 'E01-F01-T03'
+  - 'E01-F01-T04'
 blocks: []
 related:
-  - '[T01](../T01/spec.md)'
-  - '[T02](../T02/spec.md)'
-  - '[T05](../T05/spec.md)'
+  - 'E01-F01-T01'
+  - 'E01-F01-T02'
+  - 'E01-F01-T05'
 pull_requests: []
 commits:
   - 65d4b03

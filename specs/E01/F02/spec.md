@@ -9,14 +9,14 @@ title: Development Environment Setup
 type: feature
 
 # === HIERARCHY ===
-parent: "[E01](../spec.md)"
+parent: "E01"
 children:
-  - "[T01](./T01/spec.md)"
-  - "[T02](./T02/spec.md)"
-  - "[T03](./T03/spec.md)"
-  - "[T04](./T04/spec.md)"
-  - "[T05](./T05/spec.md)"
-  - "[T06](./T06/spec.md)"
+  - "E01-F02-T01"
+  - "E01-F02-T02"
+  - "E01-F02-T03"
+  - "E01-F02-T04"
+  - "E01-F02-T05"
+  - "E01-F02-T06"
 epic: E01
 domain: infrastructure
 
@@ -34,11 +34,11 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-  - "[F03](../F03/spec.md)"
-  - "[F04](../F04/spec.md)"
-  - "[F05](../F05/spec.md)"
+  - "E01-F03"
+  - "E01-F04"
+  - "E01-F05"
 related:
-  - "[F01](../F01/spec.md)"
+  - "E01-F01"
 pull_requests: []
 commits: []
 context_file: "[context.md](./context.md)"

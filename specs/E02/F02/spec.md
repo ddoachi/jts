@@ -9,9 +9,9 @@ title: KIS REST API Integration
 type: feature
 
 # === HIERARCHY ===
-parent: "[E02](../spec.md)"
+parent: "E02"
 children: []
-epic: "[E02](../spec.md)"
+epic: "E02"
 domain: broker-kis
 
 # === WORKFLOW ===
@@ -27,12 +27,12 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[F01](../F01/spec.md)"
+  - "E01-F01"
 blocks:
-  - "[F03](../F03/spec.md)"
+  - "E01-F03"
 related:
-  - "[F05](../F05/spec.md)"
-  - "[F06](../F06/spec.md)"
+  - "E01-F05"
+  - "E01-F06"
 branch: ''
 files:
   - apps/brokers/kis/
@@ -206,9 +206,9 @@ Implement a comprehensive KIS service using NestJS that wraps all 337 KIS REST A
 
 ## Dependencies
 
-- **[F01](../F01/spec.md)**: Unified Broker Interface Foundation - Must implement IBroker interface
-- **[F05](../F05/spec.md)**: Rate Limiting System - Will integrate for request throttling
-- **[F06](../F06/spec.md)**: Account Pool Management - Will support multi-account operations
+- **E01-F01**: Unified Broker Interface Foundation - Must implement IBroker interface
+- **E01-F05**: Rate Limiting System - Will integrate for request throttling
+- **E01-F06**: Account Pool Management - Will support multi-account operations
 
 ## Testing Plan
 

@@ -9,19 +9,19 @@ title: CI/CD Pipeline Foundation
 type: feature
 
 # === HIERARCHY ===
-parent: "[E01](../spec.md)"
+parent: "E01"
 children:
-  - "[T01](./T01/spec.md)"
-  - "[T02](./T02/spec.md)"
-  - "[T03](./T03/spec.md)"
-  - "[T04](./T04/spec.md)"
-  - "[T05](./T05/spec.md)"
-  - "[T06](./T06/spec.md)"
-  - "[T07](./T07/spec.md)"
-  - "[T08](./T08/spec.md)"
-  - "[T09](./T09/spec.md)"
-  - "[T10](./T10/spec.md)"
-  - "[T11](./T11/spec.md)"
+  - "E01-F04-T01"
+  - "E01-F04-T02"
+  - "E01-F04-T03"
+  - "E01-F04-T04"
+  - "E01-F04-T05"
+  - "E01-F04-T06"
+  - "E01-F04-T07"
+  - "E01-F04-T08"
+  - "E01-F04-T09"
+  - "E01-F04-T10"
+  - "E01-F04-T11"
 epic: E01
 domain: infrastructure
 
@@ -38,14 +38,14 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[F03](../F03/spec.md)"
+  - "E01-F03"
 blocks:
-  - "[F05](../F05/spec.md)"
-  - "[F06](../F06/spec.md)"
-  - "[F07](../F07/spec.md)"
-  - "[F08](../F08/spec.md)"
+  - "E01-F05"
+  - "E01-F06"
+  - "E01-F07"
+  - "E01-F08"
 related:
-  - "[F02](../F02/spec.md)"
+  - "E01-F02"
 pull_requests: []
 commits: []
 context_file: "[context.md](./context.md)"

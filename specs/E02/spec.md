@@ -11,17 +11,17 @@ type: epic
 # === HIERARCHY ===
 parent: ''
 children:
-  - "[F01](./F01/spec.md)"
-  - "[F02](./F02/spec.md)"
-  - "[F03](./F03/spec.md)"
-  - "[F04](./F04/spec.md)"
-  - "[F05](./F05/spec.md)"
-  - "[F06](./F06/spec.md)"
-  - "[F07](./F07/spec.md)"
-  - "[F08](./F08/spec.md)"
-  - "[F09](./F09/spec.md)"
-  - "[F10](./F10/spec.md)"
-  - "[F11](./F11/spec.md)"
+  - "E01-F01"
+  - "E01-F02"
+  - "E01-F03"
+  - "E01-F04"
+  - "E01-F05"
+  - "E01-F06"
+  - "E01-F07"
+  - "E01-F08"
+  - "E01-F09"
+  - "E01-F10"
+  - "E02-F11"
 epic: E02
 domain: broker-integration
 
@@ -38,13 +38,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[E01](../E01/spec.md)"
+  - "E01"
 blocks:
-  - "[E04](../E04/spec.md)"
-  - "[E05](../E05/spec.md)"
-  - "[E06](../E06/spec.md)"
+  - "E04"
+  - "E05"
+  - "E06"
 related:
-  - "[E03](../E03/spec.md)"
+  - "E03"
 branch: ''
 files:
   - apps/brokers/
@@ -299,7 +299,7 @@ Create a broker-agnostic interface that standardizes all broker operations, allo
 
 ## Dependencies
 
-- **[E01](../E01/spec.md)**: Foundation & Infrastructure Setup - Requires monorepo structure, Redis, and Docker infrastructure
+- **E01**: Foundation & Infrastructure Setup - Requires monorepo structure, Redis, and Docker infrastructure
 
 ## Testing Plan
 
@@ -351,14 +351,14 @@ When implementing this epic:
 
 This epic is the **second most critical** in the entire JTS project:
 
-- **Blocks**: 3 major epics ([E04](../E04/spec.md): Strategy, [E05](../E05/spec.md): Risk, [E06](../E06/spec.md): Execution)
-- **Blocked by**: 1 epic ([E01](../E01/spec.md): Foundation)
-- **Related to**: 1 epic ([E03](../E03/spec.md): Market Data)
+- **Blocks**: 3 major epics (E04: Strategy, E05: Risk, E06: Execution)
+- **Blocked by**: 1 epic (E01: Foundation)
+- **Related to**: 1 epic (E03: Market Data)
 - **Criticality**: HIGH - No trading possible without broker connectivity
 
 ### Timeline Context
 
-- **Prerequisites**: Foundation (Epic [E01](../E01/spec.md)) must be 100% complete
+- **Prerequisites**: Foundation (Epic E01) must be 100% complete
 - **Can run parallel with**:
   - Epic E08 (Monitoring)
   - Epic E10 (Crypto Integration)

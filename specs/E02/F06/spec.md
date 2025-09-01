@@ -9,9 +9,9 @@ title: Multi-Account Pool Management System
 type: feature
 
 # === HIERARCHY ===
-parent: "[E02](../spec.md)"
+parent: "E02"
 children: []
-epic: "[E02](../spec.md)"
+epic: "E02"
 domain: account-management
 
 # === WORKFLOW ===
@@ -27,13 +27,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[F01](../F01/spec.md)"
-  - "[F05](../F05/spec.md)"
+  - "E01-F01"
+  - "E01-F05"
 blocks:
-  - "[F07](../F07/spec.md)"
+  - "E01-F07"
 related:
-  - "[F02](../F02/spec.md)"
-  - "[F08](../F08/spec.md)"
+  - "E01-F02"
+  - "E01-F08"
 branch: ''
 files:
   - libs/shared/services/account-pool.service.ts

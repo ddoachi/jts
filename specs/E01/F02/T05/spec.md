@@ -9,9 +9,9 @@ title: Code Quality Tools and Git Hooks
 type: task
 
 # === HIERARCHY ===
-parent: "[F02](../spec.md)"
+parent: "E01-F02"
 children: []
-epic: "[E01](../../spec.md)"
+epic: "E01"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,10 +27,10 @@ actual_hours: 1
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[T01](../T01/spec.md)"
-  - "[T02](../T02/spec.md)"
+  - "E01-F02-T01"
+  - "E01-F02-T02"
 blocks:
-  - "[T06](../T06/spec.md)"
+  - "E01-F02-T06"
 related: []
 pull_requests: []
 commits:

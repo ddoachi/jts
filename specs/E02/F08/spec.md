@@ -9,9 +9,9 @@ title: Standardized Broker Service Endpoints
 type: feature
 
 # === HIERARCHY ===
-parent: "[E02](../spec.md)"
+parent: "E02"
 children: []
-epic: "[E02](../spec.md)"
+epic: "E02"
 domain: api-gateway
 
 # === WORKFLOW ===
@@ -27,13 +27,13 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[F01](../F01/spec.md)"
-  - "[F07](../F07/spec.md)"
+  - "E01-F01"
+  - "E01-F07"
 blocks:
-  - "[F09](../F09/spec.md)"
+  - "E01-F09"
 related:
-  - "[F02](../F02/spec.md)"
-  - "[F04](../F04/spec.md)"
+  - "E01-F02"
+  - "E01-F04"
 branch: ''
 files:
   - apps/api-gateway/broker/

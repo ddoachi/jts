@@ -9,9 +9,9 @@ title: Docker and Database Services Setup
 type: task
 
 # === HIERARCHY ===
-parent: "[F02](../spec.md)"
+parent: "E01-F02"
 children: []
-epic: "[E01](../../spec.md)"
+epic: "E01"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,11 +27,11 @@ actual_hours: 4
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[T01](../T01/spec.md)"
+  - "E01-F02-T01"
 blocks:
-  - "[T04](../T04/spec.md)"
-  - "[T05](../T05/spec.md)"
-  - "[T06](../T06/spec.md)"
+  - "E01-F02-T04"
+  - "E01-F02-T05"
+  - "E01-F02-T06"
 related: []
 pull_requests: []
 commits: []

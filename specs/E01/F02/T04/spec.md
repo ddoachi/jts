@@ -9,9 +9,9 @@ title: Environment Configuration and Secrets Management
 type: task
 
 # === HIERARCHY ===
-parent: "[F02](../spec.md)"
+parent: "E01-F02"
 children: []
-epic: "[E01](../../spec.md)"
+epic: "E01"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,10 +27,10 @@ actual_hours: 1
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[T03](../T03/spec.md)"
+  - "E01-F02-T03"
 blocks:
-  - "[T05](../T05/spec.md)"
-  - "[T06](../T06/spec.md)"
+  - "E01-F02-T05"
+  - "E01-F02-T06"
 related: []
 pull_requests: []
 commits: 

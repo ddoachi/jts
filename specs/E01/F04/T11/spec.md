@@ -9,9 +9,9 @@ title: CI/CD Monitoring and Notifications
 type: task
 
 # === HIERARCHY ===
-parent: "[F04](../spec.md)"
+parent: "E01-F04"
 children: []
-epic: "[E01](../../spec.md)"
+epic: "E01"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,10 +27,10 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[T01](../T01/spec.md)"
+  - "E01-F04-T01"
 blocks: []
 related:
-  - "[T04](../T04/spec.md)"
+  - "E01-F04-T04"
 pull_requests: []
 commits: []
 context_file: "[context.md](./context.md)"

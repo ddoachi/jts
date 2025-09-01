@@ -9,9 +9,9 @@ title: Broker Testing Framework and Mock Services
 type: feature
 
 # === HIERARCHY ===
-parent: "[E02](../spec.md)"
+parent: "E02"
 children: []
-epic: "[E02](../spec.md)"
+epic: "E02"
 domain: testing-mocks
 
 # === WORKFLOW ===
@@ -27,12 +27,12 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[F01](../F01/spec.md)"
+  - "E01-F01"
 blocks: []
 related:
-  - "[F02](../F02/spec.md)"
-  - "[F04](../F04/spec.md)"
-  - "[F07](../F07/spec.md)"
+  - "E01-F02"
+  - "E01-F04"
+  - "E01-F07"
 branch: ''
 files:
   - apps/brokers/mock/

@@ -9,9 +9,9 @@ title: Node.js and Yarn Environment Setup
 type: task
 
 # === HIERARCHY ===
-parent: "[F02](../spec.md)"
+parent: "E01-F02"
 children: []
-epic: "[E01](../../spec.md)"
+epic: "E01"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -28,11 +28,11 @@ actual_hours: 0
 # === DEPENDENCIES ===
 dependencies: []
 blocks:
-  - "[T02](../T02/spec.md)"
-  - "[T03](../T03/spec.md)"
-  - "[T04](../T04/spec.md)"
-  - "[T05](../T05/spec.md)"
-  - "[T06](../T06/spec.md)"
+  - "E01-F02-T02"
+  - "E01-F02-T03"
+  - "E01-F02-T04"
+  - "E01-F02-T05"
+  - "E01-F02-T06"
 related: []
 pull_requests: []
 commits: []

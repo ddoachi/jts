@@ -9,9 +9,9 @@ title: Docker Multi-stage Build Configuration
 type: task
 
 # === HIERARCHY ===
-parent: "[F04](../spec.md)"
+parent: "E01-F04"
 children: []
-epic: "[E01](../../spec.md)"
+epic: "E01"
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -27,10 +27,10 @@ actual_hours: 0
 
 # === DEPENDENCIES ===
 dependencies:
-  - "[F03](../../F03/spec.md)"
+  - "E01-F03"
 blocks:
-  - "[T04](../T04/spec.md)"
-  - "[T06](../T06/spec.md)"
+  - "E01-F04-T04"
+  - "E01-F04-T06"
 related: []
 pull_requests: []
 commits: []
