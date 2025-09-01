@@ -20,7 +20,8 @@ priority: high
 
 # === TRACKING ===
 created: '2025-08-27'
-updated: '2025-08-31'
+updated: '2025-09-01'
+completed: '2025-09-01'
 due_date: '2025-08-31'
 estimated_hours: 3
 actual_hours: 4

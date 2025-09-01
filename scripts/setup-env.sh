@@ -83,21 +83,23 @@ echo ""
 echo "🔍 Checking KIS account configuration..."
 kis_configured=0
 
-if grep -q "your_kis_appkey_1_here" .env.local 2>/dev/null; then
-    echo "   ⚠️  KIS Account 1: Not configured (update KIS_ACCOUNT_1_* variables)"
-else
-    echo "   ✅ KIS Account 1: Configured"
-    ((kis_configured++))
+# Get total accounts from .env.local or default to 2
+if [ -f .env.local ]; then
+    kis_total_accounts=$(grep "^KIS_TOTAL_ACCOUNTS=" .env.local | cut -d'=' -f2 | tr -d ' ')
 fi
+kis_total_accounts=${kis_total_accounts:-2}
 
-if grep -q "your_kis_appkey_2_here" .env.local 2>/dev/null; then
-    echo "   ⚠️  KIS Account 2: Not configured (update KIS_ACCOUNT_2_* variables)"
-else
-    echo "   ✅ KIS Account 2: Configured"
-    ((kis_configured++))
-fi
+# Iterate over KIS accounts based on KIS_TOTAL_ACCOUNTS
+for i in $(seq 1 $kis_total_accounts); do
+    if grep -q "your_kis_appkey_${i}_here" .env.local 2>/dev/null; then
+        echo "   ⚠️  KIS Account ${i}: Not configured (update KIS_ACCOUNT_${i}_* variables)"
+    else
+        echo "   ✅ KIS Account ${i}: Configured"
+        kis_configured=$((kis_configured + 1))
+    fi
+done
 
-echo "   📊 Total KIS accounts configured: $kis_configured/2"
+echo "   📊 Total KIS accounts configured: $kis_configured/$kis_total_accounts"
 
 # Check Node.js installation
 echo ""
