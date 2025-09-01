@@ -34,7 +34,12 @@
               },
               {
                 "sourceTag": "type:app",
-                "onlyDependOnLibsWithTags": ["type:lib", "type:util", "type:domain", "type:infrastructure"]
+                "onlyDependOnLibsWithTags": [
+                  "type:lib",
+                  "type:util",
+                  "type:domain",
+                  "type:infrastructure"
+                ]
               },
               {
                 "sourceTag": "type:lib",

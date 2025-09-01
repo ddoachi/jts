@@ -10,9 +10,9 @@ type: task
 category: infrastructure
 
 # === HIERARCHY ===
-parent: "E01-F03"
+parent: 'E01-F03'
 children: []
-epic: "E01"
+epic: 'E01'
 domain: infrastructure
 
 # === WORKFLOW ===
@@ -30,30 +30,30 @@ actual_hours: 2.5
 
 # === DEPENDENCIES ===
 dependencies:
-  - "E01-F03-T02"
+  - 'E01-F03-T02'
 blocks:
-  - "E01-F03-T05"
-  - "E01-F03-T06"
+  - 'E01-F03-T05'
+  - 'E01-F03-T06'
 related:
-  - "E01-F03-T04"
+  - 'E01-F03-T04'
 pull_requests: []
 commits:
-  - text: "feat(testing): configure Jest with 95% coverage threshold"
-    hash: "07faef1"
-  - text: "feat(testing): create comprehensive test utilities and setup"
-    hash: "9f117df"
-  - text: "feat(build): optimize Nx build configuration with caching"
-    hash: "72363cc"
-  - text: "feat(quality): implement dependency boundary enforcement"
-    hash: "9f879cc"
-  - text: "feat(testing): install SWC for faster Jest TypeScript compilation"
-    hash: "7dca3a1"
-context_file: "[context.md](./context.md)"
+  - text: 'feat(testing): configure Jest with 95% coverage threshold'
+    hash: '07faef1'
+  - text: 'feat(testing): create comprehensive test utilities and setup'
+    hash: '9f117df'
+  - text: 'feat(build): optimize Nx build configuration with caching'
+    hash: '72363cc'
+  - text: 'feat(quality): implement dependency boundary enforcement'
+    hash: '9f879cc'
+  - text: 'feat(testing): install SWC for faster Jest TypeScript compilation'
+    hash: '7dca3a1'
+context_file: '[context.md](./context.md)'
 worktree: 'E01-F03-T03'
 github_issue:
   number: 69
-  link: "https://github.com/ddoachi/jts/issues/69"
-  status: "open"
+  link: 'https://github.com/ddoachi/jts/issues/69'
+  status: 'open'
 files:
   - jest.config.ts
   - jest.preset.js

@@ -5,7 +5,7 @@
     "default": {
       "runner": "nx/tasks-runners/default",
       "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"],
+        "cacheableOperations": ["build", "lint", "test", "e2e", "type-check"],
         "parallel": 4,
         "maxParallel": 6
       }
@@ -43,6 +43,16 @@
     },
     "e2e": {
       "inputs": ["default", "^production"],
+      "cache": true
+    },
+    "type-check": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "tsConfig": "{projectRoot}/tsconfig.lib.json",
+        "noEmit": true
+      },
+      "dependsOn": ["^type-check"],
+      "inputs": ["default"],
       "cache": true
     },
     "@nx/jest:jest": {

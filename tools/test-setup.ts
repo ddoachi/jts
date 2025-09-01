@@ -169,7 +169,11 @@ export const createTestModule = async (moduleOptions: any) => {
   return module;
 };
 
-export const waitFor = (condition: () => boolean, timeout = 5000, interval = 100): Promise<void> => {
+export const waitFor = (
+  condition: () => boolean,
+  timeout = 5000,
+  interval = 100,
+): Promise<void> => {
   return new Promise((resolve, reject) => {
     const startTime = Date.now();
     const checkInterval = setInterval(() => {
