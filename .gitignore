@@ -44,6 +44,10 @@ dist/
 build/
 *.egg-info/
 
+# Nx
+.nx/
+.nx/cache
+
 # Testing
 .coverage
 .pytest_cache/
