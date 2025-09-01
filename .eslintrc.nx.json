@@ -1,0 +1,67 @@
+{
+  "root": true,
+  "ignorePatterns": ["**/*"],
+  "plugins": ["@nx"],
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+      "rules": {
+        "@nx/enforce-module-boundaries": [
+          "error",
+          {
+            "enforceBuildableLibDependency": true,
+            "allow": [],
+            "depConstraints": [
+              {
+                "sourceTag": "scope:shared",
+                "onlyDependOnLibsWithTags": ["scope:shared"]
+              },
+              {
+                "sourceTag": "scope:domain",
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:domain"]
+              },
+              {
+                "sourceTag": "scope:infrastructure",
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:domain", "scope:infrastructure"]
+              },
+              {
+                "sourceTag": "scope:brokers",
+                "onlyDependOnLibsWithTags": ["scope:shared", "scope:domain", "scope:infrastructure"]
+              },
+              {
+                "sourceTag": "scope:apps",
+                "onlyDependOnLibsWithTags": ["*"]
+              },
+              {
+                "sourceTag": "type:app",
+                "onlyDependOnLibsWithTags": ["type:lib", "type:util", "type:domain", "type:infrastructure"]
+              },
+              {
+                "sourceTag": "type:lib",
+                "onlyDependOnLibsWithTags": ["type:lib", "type:util"]
+              },
+              {
+                "sourceTag": "type:util",
+                "onlyDependOnLibsWithTags": ["type:util"]
+              },
+              {
+                "sourceTag": "type:e2e",
+                "onlyDependOnLibsWithTags": ["type:lib", "type:util", "type:app"]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["*.ts", "*.tsx"],
+      "extends": ["plugin:@nx/typescript"],
+      "rules": {}
+    },
+    {
+      "files": ["*.js", "*.jsx"],
+      "extends": ["plugin:@nx/javascript"],
+      "rules": {}
+    }
+  ]
+}
