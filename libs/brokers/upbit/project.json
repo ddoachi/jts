@@ -1,0 +1,30 @@
+{
+  "name": "brokers-upbit",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/brokers/upbit/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/brokers/upbit",
+        "main": "libs/brokers/upbit/src/index.ts",
+        "tsConfig": "libs/brokers/upbit/tsconfig.lib.json",
+        "assets": ["libs/brokers/upbit/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/brokers/upbit/jest.config.ts"
+      }
+    }
+  },
+  "tags": ["scope:brokers"]
+}

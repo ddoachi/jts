@@ -1,0 +1,30 @@
+{
+  "name": "brokers-creon",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/brokers/creon/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/brokers/creon",
+        "main": "libs/brokers/creon/src/index.ts",
+        "tsConfig": "libs/brokers/creon/tsconfig.lib.json",
+        "assets": ["libs/brokers/creon/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/brokers/creon/jest.config.ts"
+      }
+    }
+  },
+  "tags": ["scope:brokers"]
+}

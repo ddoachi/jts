@@ -1,0 +1,30 @@
+{
+  "name": "infrastructure-monitoring",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/infrastructure/monitoring/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/infrastructure/monitoring",
+        "main": "libs/infrastructure/monitoring/src/index.ts",
+        "tsConfig": "libs/infrastructure/monitoring/tsconfig.lib.json",
+        "assets": ["libs/infrastructure/monitoring/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/infrastructure/monitoring/jest.config.ts"
+      }
+    }
+  },
+  "tags": ["scope:infrastructure"]
+}

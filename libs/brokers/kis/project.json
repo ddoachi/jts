@@ -1,0 +1,30 @@
+{
+  "name": "brokers-kis",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/brokers/kis/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/brokers/kis",
+        "main": "libs/brokers/kis/src/index.ts",
+        "tsConfig": "libs/brokers/kis/tsconfig.lib.json",
+        "assets": ["libs/brokers/kis/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/brokers/kis/jest.config.ts"
+      }
+    }
+  },
+  "tags": ["scope:brokers"]
+}
