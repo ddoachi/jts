@@ -27,9 +27,9 @@ Successfully completed Warm Storage (SATA) setup with automated scripts, health 
 
 #### Deliverables Created
 
-- [SATA Setup Script](../../../../scripts/setup-sata-storage.sh) - 262 lines
-- [Health Monitor](../../../../scripts/sata-health-check.sh) - 397 lines
-- [Setup Documentation](../../../../docs/WARM_STORAGE_SETUP.md) - 383 lines
+- [SATA Setup Script](../../../../scripts/utilities/setup-sata-storage.sh) - 262 lines
+- [Health Monitor](../../../../scripts/monitoring/sata-health-check.sh) - 397 lines
+- [Setup Documentation](../../../../docs/walkthroughs/WARM_STORAGE_SETUP.md) - 383 lines
 
 #### Testing
 
@@ -41,12 +41,12 @@ Successfully completed Warm Storage (SATA) setup with automated scripts, health 
 
 ### Scripts
 
-- [SATA Setup Script](../../../../scripts/setup-sata-storage.sh) - Automated warm storage configuration
-- [Health Check Script](../../../../scripts/sata-health-check.sh) - Monitor SATA health and performance
+- [SATA Setup Script](../../../../scripts/utilities/setup-sata-storage.sh) - Automated warm storage configuration
+- [Health Check Script](../../../../scripts/monitoring/sata-health-check.sh) - Monitor SATA health and performance
 
 ### Documentation
 
-- [Warm Storage Setup Guide](../../../../docs/WARM_STORAGE_SETUP.md) - Complete setup and maintenance guide
+- [Warm Storage Setup Guide](../../../../docs/walkthroughs/WARM_STORAGE_SETUP.md) - Complete setup and maintenance guide
 
 ### Integration Points
 

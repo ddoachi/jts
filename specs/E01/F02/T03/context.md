@@ -58,12 +58,12 @@
 ### Implementation Completed: 2025-08-31
 **Files Created:**
 1. `docker-compose.dev.yml` - Complete Docker Compose configuration with all services
-2. `configs/redis.conf` - Redis configuration with multi-account support (5 KIS accounts)
+2. `configs/database/redis.conf` - Redis configuration with multi-account support (5 KIS accounts)
 3. `configs/clickhouse-config.xml` - ClickHouse configuration for time-series data
 4. `scripts/init-postgres.sql` - PostgreSQL initialization with trading schema
-5. `scripts/init-mongo.js` - MongoDB initialization with configuration collections
-6. `scripts/docker-setup.sh` - Docker installation script for Linux/Windows/macOS
-7. `scripts/dev-services.sh` - Service management script with start/stop/test/backup functions
+5. `scripts/database/init-mongo.js` - MongoDB initialization with configuration collections
+6. `scripts/build/docker-setup.sh` - Docker installation script for Linux/Windows/macOS
+7. `scripts/development/dev-services.sh` - Service management script with start/stop/test/backup functions
 
 **Key Features Implemented:**
 - PostgreSQL with trading, analytics, and audit schemas
@@ -96,8 +96,8 @@
 
 **Next Steps:**
 1. Run `./scripts/docker-setup.sh` to install Docker if needed
-2. Run `./scripts/dev-services.sh start` to start all services
-3. Run `./scripts/dev-services.sh test` to verify connections
+2. Run `./scripts/development/dev-services.sh start` to start all services
+3. Run `./scripts/development/dev-services.sh test` to verify connections
 4. Services will be available at:
    - PostgreSQL: localhost:5442 (changed from 5432 to avoid conflicts)
    - ClickHouse: localhost:8123 (HTTP), localhost:9000 (Native)

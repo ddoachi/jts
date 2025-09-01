@@ -43,7 +43,7 @@ files:
   - .vscode/extensions.json
   - .vscode/launch.json
   - .vscode/tasks.json
-  - specs/E01/F02/deliverables/docs/IDE-SETUP.md
+  - specs/E01/F02/deliverables/docs/learning/concepts/IDE-SETUP.md
 
 # === METADATA ===
 tags:
@@ -229,7 +229,7 @@ Configure Visual Studio Code as the primary development environment with project
 - `.vscode/extensions.json` - Recommended extensions
 - `.vscode/launch.json` - Debug configurations
 - `.vscode/tasks.json` - Task automation
-- `docs/IDE-SETUP.md` - IDE setup guide
+- `docs/learning/concepts/IDE-SETUP.md` - IDE setup guide
 
 ## Testing Plan
 

@@ -38,12 +38,12 @@ pull_requests: []
 commits: []
 context_file: "[context.md](./context.md)"
 files:
-  - scripts/install-node-yarn.sh
-  - scripts/install-node-yarn-linux.sh
-  - scripts/install-node-yarn-windows.ps1
-  - configs/package.json.template
-  - configs/.yarnrc.yml
-  - configs/gitignore.template
+  - scripts/build/install-node-yarn.sh
+  - scripts/build/install-node-yarn-linux.sh
+  - scripts/build/install-node-yarn-windows.ps1
+  - configs/environment/package.json.template
+  - configs/environment/.yarnrc.yml
+  - configs/environment/gitignore.template
 
 # === METADATA ===
 tags:
@@ -76,7 +76,7 @@ Install and configure Node.js 20 LTS and Yarn 4 (Berry) as the foundation for th
 
 ### Installation Scripts
 
-**Linux Installation** (`scripts/install-node-yarn-linux.sh`):
+**Linux Installation** (`scripts/build/install-node-yarn-linux.sh`):
 
 ```bash
 #!/bin/bash
@@ -95,7 +95,7 @@ node --version
 yarn --version
 ```
 
-**Windows Installation** (`scripts/install-node-yarn-windows.ps1`):
+**Windows Installation** (`scripts/build/install-node-yarn-windows.ps1`):
 
 ```powershell
 # Install Node.js via Chocolatey
@@ -175,12 +175,12 @@ plugins:
 
 ## Deliverables
 
-- `scripts/install-node-yarn.sh` - Unified installation script
-- `scripts/install-node-yarn-linux.sh` - Linux-specific installer
-- `scripts/install-node-yarn-windows.ps1` - Windows PowerShell installer
-- `configs/.yarnrc.yml` - Yarn configuration
-- `configs/package.json.template` - Root package configuration template
-- `configs/gitignore.template` - Git ignore patterns for Yarn 4
+- `scripts/build/install-node-yarn.sh` - Unified installation script
+- `scripts/build/install-node-yarn-linux.sh` - Linux-specific installer
+- `scripts/build/install-node-yarn-windows.ps1` - Windows PowerShell installer
+- `configs/environment/.yarnrc.yml` - Yarn configuration
+- `configs/environment/package.json.template` - Root package configuration template
+- `configs/environment/gitignore.template` - Git ignore patterns for Yarn 4
 - Installation verification checklist
 
 ## Testing Plan

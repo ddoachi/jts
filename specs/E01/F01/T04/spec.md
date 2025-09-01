@@ -41,10 +41,10 @@ files:
   - /etc/fstab
   - /etc/sysctl.conf
   - scripts/setup-nas-integration.sh
-  - scripts/nas-health-check.sh
-  - docs/COLD_STORAGE_SETUP.md
+  - scripts/monitoring/nas-health-check.sh
+  - docs/walkthroughs/COLD_STORAGE_SETUP.md
 deliverables:
-  - ../../../../docs/COLD_STORAGE_SETUP.md
+  - ../../../../docs/walkthroughs/COLD_STORAGE_SETUP.md
 
 # === METADATA ===
 tags:
@@ -236,7 +236,7 @@ Design efficient network storage integration optimized for:
 
    ```bash
    # Create NAS health check script
-   cat > scripts/nas-health-check.sh << 'EOF'
+   cat > scripts/monitoring/nas-health-check.sh << 'EOF'
    #!/bin/bash
 
    echo "🧊 JTS Cold Storage (NAS) Health Check - $(date)"
@@ -264,7 +264,7 @@ Design efficient network storage integration optimized for:
    rm -f /mnt/synology/jts/development/speed_test
    EOF
 
-   chmod +x scripts/nas-health-check.sh
+   chmod +x scripts/monitoring/nas-health-check.sh
    ```
 
 ## Dependencies
@@ -347,6 +347,6 @@ PERFORMANCE CONSIDERATIONS:
   - ✅ Complete 21-directory structure created for organized data management
   - ✅ Network optimizations prepared (sysctl and fstab configurations)
   - ✅ Health monitoring script created and tested
-  - ✅ Complete documentation provided in `docs/COLD_STORAGE_SETUP.md`
+  - ✅ Complete documentation provided in `docs/walkthroughs/COLD_STORAGE_SETUP.md`
   - ✅ GitHub Issue #12 created and tracked
   - ✅ All 8 acceptance criteria met and validated

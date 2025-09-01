@@ -8,9 +8,9 @@
 
 ### 1. Created Installation Scripts
 
-- Created `scripts/install-node-yarn.sh` - Unified installation script with OS detection
-- Created `scripts/install-node-yarn-linux.sh` - Linux-specific installer for Node.js 20 LTS and Yarn 4
-- Created `scripts/install-node-yarn-windows.ps1` - Windows PowerShell installer with Chocolatey support
+- Created `scripts/build/install-node-yarn.sh` - Unified installation script with OS detection
+- Created `scripts/build/install-node-yarn-linux.sh` - Linux-specific installer for Node.js 20 LTS and Yarn 4
+- Created `scripts/build/install-node-yarn-windows.ps1` - Windows PowerShell installer with Chocolatey support
 
 ### 2. Configured Yarn 4 (Berry)
 
@@ -39,12 +39,12 @@
 
 ## Files Created/Modified
 
-1. `scripts/install-node-yarn.sh` - Main installation entry point
-2. `scripts/install-node-yarn-linux.sh` - Linux installer  
-3. `scripts/install-node-yarn-windows.ps1` - Windows installer
-4. `configs/.yarnrc.yml` - Yarn 4 configuration
-5. `configs/package.json.template` - Workspace-enabled package.json template
-6. `configs/gitignore.template` - Git ignore patterns for Yarn 4
+1. `scripts/build/install-node-yarn.sh` - Main installation entry point
+2. `scripts/build/install-node-yarn-linux.sh` - Linux installer  
+3. `scripts/build/install-node-yarn-windows.ps1` - Windows installer
+4. `configs/environment/.yarnrc.yml` - Yarn 4 configuration
+5. `configs/environment/package.json.template` - Workspace-enabled package.json template
+6. `configs/environment/gitignore.template` - Git ignore patterns for Yarn 4
 
 **Note**: Files moved from `specs/E01/F02/deliverables/` to proper project locations on 2025-08-31 for better maintainability.
 
