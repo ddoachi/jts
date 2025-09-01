@@ -1,0 +1,30 @@
+{
+  "name": "domain-strategy",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/domain/strategy/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/domain/strategy",
+        "main": "libs/domain/strategy/src/index.ts",
+        "tsConfig": "libs/domain/strategy/tsconfig.lib.json",
+        "assets": ["libs/domain/strategy/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/domain/strategy/jest.config.ts"
+      }
+    }
+  },
+  "tags": ["scope:domain"]
+}

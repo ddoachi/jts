@@ -1,0 +1,30 @@
+{
+  "name": "infrastructure-logging",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/infrastructure/logging/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/infrastructure/logging",
+        "main": "libs/infrastructure/logging/src/index.ts",
+        "tsConfig": "libs/infrastructure/logging/tsconfig.lib.json",
+        "assets": ["libs/infrastructure/logging/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/infrastructure/logging/jest.config.ts"
+      }
+    }
+  },
+  "tags": ["scope:infrastructure"]
+}
