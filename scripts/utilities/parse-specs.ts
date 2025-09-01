@@ -168,30 +168,36 @@ async function parseAllSpecs(): Promise<SpecData> {
       };
     } else if (data.type === 'task' && data.parent) {
       // Find parent feature in hierarchy within the same epic
-      const taskEpic = data.epic || data.parent.split('/')[0]; // Use explicit epic or derive from parent
+      // Parent is in hierarchical format (e.g., "E01-F02"), extract the feature part
+      const parentParts = data.parent.split('-');
+      const epicId = parentParts[0]; // E01
+      const featureId = parentParts[1]; // F02
+      
       if (
-        hierarchy[taskEpic] &&
-        hierarchy[taskEpic].children &&
-        hierarchy[taskEpic].children[data.parent]
+        hierarchy[epicId] &&
+        hierarchy[epicId].children &&
+        hierarchy[epicId].children[featureId]
       ) {
-        hierarchy[taskEpic].children[data.parent].children[dirId] = {
+        hierarchy[epicId].children[featureId].children[dirId] = {
           ...specs[hierarchicalId],
           children: {},
         };
       }
     } else if (data.type === 'subtask' && data.parent) {
       // Find parent task in hierarchy within the same epic
-      const subtaskEpic = data.epic || data.parent.split('/')[0]; // Use explicit epic or derive from parent
-      if (hierarchy[subtaskEpic] && hierarchy[subtaskEpic].children) {
-        for (const featureId in hierarchy[subtaskEpic].children) {
-          const feature = hierarchy[subtaskEpic].children[featureId];
-          if (feature.children && feature.children[data.parent]) {
-            feature.children[data.parent].children[dirId] = {
-              ...specs[hierarchicalId],
-              children: {},
-            };
-            break;
-          }
+      // Parent is in hierarchical format (e.g., "E01-F02-T01"), extract the parts
+      const parentParts = data.parent.split('-');
+      const epicId = parentParts[0]; // E01
+      const featureId = parentParts[1]; // F02
+      const taskId = parentParts[2]; // T01
+      
+      if (hierarchy[epicId] && hierarchy[epicId].children) {
+        const feature = hierarchy[epicId].children[featureId];
+        if (feature && feature.children && feature.children[taskId]) {
+          feature.children[taskId].children[dirId] = {
+            ...specs[hierarchicalId],
+            children: {},
+          };
         }
       }
     }
