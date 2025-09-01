@@ -15,11 +15,27 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"],
-      "cache": true
+      "cache": true,
+      "options": {
+        "outputPath": "dist/{projectRoot}",
+        "main": "{projectRoot}/src/main.ts",
+        "tsConfig": "{projectRoot}/tsconfig.app.json"
+      }
     },
     "test": {
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
-      "cache": true
+      "cache": true,
+      "options": {
+        "passWithNoTests": true,
+        "jestConfig": "{projectRoot}/jest.config.ts"
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "coverage": true,
+          "coverageReporters": ["text", "cobertura"]
+        }
+      }
     },
     "lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
@@ -62,9 +78,14 @@
       "!{projectRoot}/jest.config.[jt]s",
       "!{projectRoot}/.eslintrc.json",
       "!{projectRoot}/src/test-setup.[jt]s",
-      "!{projectRoot}/test-setup.[jt]s"
+      "!{projectRoot}/test-setup.[jt]s",
+      "!{projectRoot}/**/*.stories.@(js|jsx|ts|tsx|mdx)"
     ],
-    "sharedGlobals": []
+    "sharedGlobals": [
+      "{workspaceRoot}/jest.preset.js",
+      "{workspaceRoot}/jest.config.ts",
+      "{workspaceRoot}/tsconfig.base.json"
+    ]
   },
   "generators": {
     "@nx/nest": {
