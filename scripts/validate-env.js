@@ -177,7 +177,7 @@ function validateEnv() {
   }
   
   // Summary
-  log('\n━'.repeat(50), 'cyan');
+  log('\n' + '━'.repeat(50), 'cyan');
   log('📊 Validation Summary:', 'cyan');
   log('━'.repeat(50), 'cyan');
   
@@ -197,7 +197,7 @@ function validateEnv() {
   }
   
   // Final status
-  log('\n━'.repeat(50), 'cyan');
+  log('\n' + '━'.repeat(50), 'cyan');
   if (errors.length === 0) {
     if (warnings.length === 0) {
       log('✅ Environment validation passed!', 'green');
