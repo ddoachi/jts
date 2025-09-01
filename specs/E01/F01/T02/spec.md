@@ -40,7 +40,7 @@ context_file: ''
 files:
   - scripts/setup-database-mounts.sh
   - scripts/validate-database-permissions.sh
-  - docs/DATABASE_MOUNT_SETUP.md
+  - docs/walkthroughs/DATABASE_MOUNT_SETUP.md
 
 # === METADATA ===
 tags:
@@ -273,14 +273,14 @@ ERROR HANDLING:
 
 ### Scripts
 
-- [setup-database-users.sh](deliverables/scripts/setup-database-users.sh) - Create database service users with secure configuration
+- [setup-database-users.sh](deliverables/scripts/database/setup-database-users.sh) - Create database service users with secure configuration
 - [setup-mount-points.sh](deliverables/scripts/setup-mount-points.sh) - Create mount points and directory structure
 - [configure-permissions.sh](deliverables/scripts/configure-permissions.sh) - Configure ownership, permissions, and ACLs
 - [validate-database-mounts.sh](deliverables/scripts/validate-database-mounts.sh) - Comprehensive validation script
 
 ### Documentation
 
-- [DATABASE_MOUNT_SETUP.md](deliverables/docs/DATABASE_MOUNT_SETUP.md) - Complete setup and maintenance guide
+- [DATABASE_MOUNT_SETUP.md](deliverables/docs/walkthroughs/DATABASE_MOUNT_SETUP.md) - Complete setup and maintenance guide
 
 ## Status Updates
 

@@ -39,9 +39,9 @@ files:
   - ./config/60-ssd-scheduler.rules
   - ./config/fstrim-all.service
   - ./config/fstrim-all.timer
-  - ./scripts/performance-benchmark.sh
+  - ./scripts/monitoring/performance-benchmark.sh
   - ./scripts/ssd-optimization.sh
-  - ./docs/PERFORMANCE_OPTIMIZATION.md
+  - ./docs/learning/patterns/PERFORMANCE_OPTIMIZATION.md
 
 # === METADATA ===
 tags:
@@ -158,7 +158,7 @@ Implement tier-specific optimizations to maximize performance across the entire 
 
    ```bash
    # Create comprehensive performance benchmark script
-   cat > scripts/performance-benchmark.sh << 'EOF'
+   cat > scripts/monitoring/performance-benchmark.sh << 'EOF'
    #!/bin/bash
 
    echo "🚀 JTS Storage Performance Benchmarking"
@@ -222,7 +222,7 @@ Implement tier-specific optimizations to maximize performance across the entire 
    fi
    EOF
 
-   chmod +x scripts/performance-benchmark.sh
+   chmod +x scripts/monitoring/performance-benchmark.sh
    ```
 
 4. **Optimization Validation and Monitoring**

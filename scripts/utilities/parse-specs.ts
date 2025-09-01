@@ -49,9 +49,9 @@ function normalizeStatus(status: string): string {
 }
 
 // Calculate parent status based on children
-function calculateParentStatus(children: any): string {
+function calculateParentStatus(children: any, originalStatus: string): string {
   if (!children || Object.keys(children).length === 0) {
-    return 'draft'; // No children, keep original status
+    return originalStatus; // No children, keep original status
   }
 
   const childStatuses = Object.values(children).map((child: any) => normalizeStatus(child.status));
@@ -86,7 +86,7 @@ function processHierarchy(hierarchy: any, specs: Record<string, SpecMetadata>): 
       processedItem.children = processHierarchy(processedItem.children, specs);
 
       // Calculate parent status based on processed children
-      const calculatedStatus = calculateParentStatus(processedItem.children);
+      const calculatedStatus = calculateParentStatus(processedItem.children, processedItem.status);
       processedItem.status = calculatedStatus;
 
       // Update the specs record with the calculated status

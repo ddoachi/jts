@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-COMPOSE_FILE="docker-compose.dev.yml"
+COMPOSE_FILE="configs/docker/docker-compose.dev.yml"
 PROJECT_NAME="jts"
 
 # Function to print colored output

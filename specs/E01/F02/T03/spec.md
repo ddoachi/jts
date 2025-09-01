@@ -41,12 +41,12 @@ files:
   - docker-compose.dev.yml
   - .env
   - .env.example
-  - configs/redis.conf
+  - configs/database/redis.conf
   - configs/clickhouse-config.xml
   - scripts/init-postgres.sql
-  - scripts/init-mongo.js
-  - scripts/docker-setup.sh
-  - scripts/dev-services.sh
+  - scripts/database/init-mongo.js
+  - scripts/build/docker-setup.sh
+  - scripts/development/dev-services.sh
 
 # === METADATA ===
 tags:
@@ -200,7 +200,7 @@ networks:
     name: jts-dev-network
 ```
 
-### Redis Configuration for Multi-Account (`configs/redis.conf`)
+### Redis Configuration for Multi-Account (`configs/database/redis.conf`)
 
 ```conf
 # Redis configuration for multi-account support
@@ -280,12 +280,12 @@ CREATE INDEX idx_orders_created ON trading.orders(created_at);
 - `docker-compose.dev.yml` - Complete Docker configuration with environment variables
 - `.env` - Centralized port and credential configuration
 - `.env.example` - Documentation and default configuration template
-- `configs/redis.conf` - Redis configuration for multi-account (5 KIS accounts)
+- `configs/database/redis.conf` - Redis configuration for multi-account (5 KIS accounts)
 - `configs/clickhouse-config.xml` - ClickHouse configuration
 - `scripts/init-postgres.sql` - PostgreSQL initialization with trading schemas
-- `scripts/init-mongo.js` - MongoDB initialization with validated collections
-- `scripts/docker-setup.sh` - Cross-platform Docker installation script
-- `scripts/dev-services.sh` - Service management with ports, backup, and test commands
+- `scripts/database/init-mongo.js` - MongoDB initialization with validated collections
+- `scripts/build/docker-setup.sh` - Cross-platform Docker installation script
+- `scripts/development/dev-services.sh` - Service management with ports, backup, and test commands
 
 ## Testing Plan
 

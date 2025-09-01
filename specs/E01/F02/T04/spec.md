@@ -41,12 +41,12 @@ context_file: "[context.md](./context.md)"
 files:
   - .env.example
   - .gitignore
-  - scripts/setup-env.sh
-  - scripts/validate-env.js
+  - scripts/development/setup-env.sh
+  - scripts/development/validate-env.js
   - scripts/creon-launcher.bat
   - scripts/encrypt-credentials.ps1
   - scripts/decrypt-and-run.ps1
-  - docs/ENVIRONMENT.md
+  - docs/learning/concepts/ENVIRONMENT.md
 
 # === METADATA ===
 tags:
@@ -166,7 +166,7 @@ UPBIT_SECRET_KEY=your_upbit_secret_here
     └── .gitkeep
 ```
 
-### Environment Setup Script (`scripts/setup-env.sh`)
+### Environment Setup Script (`scripts/development/setup-env.sh`)
 
 ```bash
 #!/bin/bash
@@ -196,12 +196,12 @@ fi
 
 # Validate environment
 echo "🔍 Validating environment configuration..."
-node scripts/validate-env.js
+node scripts/development/validate-env.js
 
 echo "✅ Environment setup complete!"
 ```
 
-### Environment Validation (`scripts/validate-env.js`)
+### Environment Validation (`scripts/development/validate-env.js`)
 
 ```javascript
 const fs = require('fs');
@@ -285,10 +285,10 @@ validateEnv();
 ## Deliverables
 
 - `.env.example` - Complete environment template
-- `scripts/setup-env.sh` - Environment setup script
-- `scripts/validate-env.js` - Validation utility
+- `scripts/development/setup-env.sh` - Environment setup script
+- `scripts/development/validate-env.js` - Validation utility
 - `/secure/creon/` - Secure credential structure
-- `docs/ENVIRONMENT.md` - Environment documentation
+- `docs/learning/concepts/ENVIRONMENT.md` - Environment documentation
 - Updated `.gitignore` - Security patterns
 
 ## Testing Plan

@@ -44,7 +44,7 @@ Successfully integrated 28TB Synology NAS as cold storage tier with optimized NF
 ### Scripts
 
 - [NAS Setup Script](../../../../scripts/nas-setup.sh) - Automated NFS mount configuration
-- [NAS Health Check](../../../../scripts/nas-health-check.sh) - Connectivity and performance monitoring
+- [NAS Health Check](../../../../scripts/monitoring/nas-health-check.sh) - Connectivity and performance monitoring
 - [Performance Benchmark](../../../../scripts/nas-benchmark.sh) - Speed testing tools
 
 ### Documentation

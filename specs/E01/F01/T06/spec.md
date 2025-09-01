@@ -48,7 +48,7 @@ context_file: '[context.md](./context.md)'
 files:
   - ../../../../scripts/tiered-storage.sh
   - ../../../../scripts/nas-archival.sh
-  - ../../../../scripts/storage-health.sh
+  - ../../../../scripts/monitoring/storage-health.sh
   - ../../../../scripts/lvm-backup.sh
   - ../../../../config/tiered-storage.service
   - ../../../../config/tiered-storage.timer
@@ -125,7 +125,7 @@ Design intelligent automation that optimizes data placement and storage utilizat
 
    ```bash
    # Create comprehensive health monitoring
-   cat > scripts/storage-health.sh << 'EOF'
+   cat > scripts/monitoring/storage-health.sh << 'EOF'
    #!/bin/bash
 
    echo "🔍 JTS Tiered Storage Health Check - $(date)"
@@ -168,7 +168,7 @@ Design intelligent automation that optimizes data placement and storage utilizat
    }'
    EOF
 
-   chmod +x scripts/storage-health.sh
+   chmod +x scripts/monitoring/storage-health.sh
    ```
 
 2. **Automated Data Tiering Script**

@@ -50,7 +50,7 @@ context_file: "[context.md](./context.md)"
 files:
   - /etc/fstab
   - scripts/setup-lvm.sh
-  - scripts/storage-health.sh
+  - scripts/monitoring/storage-health.sh
   - scripts/lvm-backup.sh
   - scripts/nas-archival.sh
   - scripts/tiered-storage.sh
@@ -699,8 +699,8 @@ This coordination feature manages:
     echo "✅ LVM setup completed successfully"
     EOF
 
-    # scripts/storage-health.sh - Multi-tier storage monitoring script
-    cat > scripts/storage-health.sh << 'EOF'
+    # scripts/monitoring/storage-health.sh - Multi-tier storage monitoring script
+    cat > scripts/monitoring/storage-health.sh << 'EOF'
     #!/bin/bash
 
     echo "🔍 JTS Tiered Storage Health Check - $(date)"
@@ -1008,7 +1008,7 @@ This coordination feature manages:
     EOF
 
     # Make all scripts executable
-    chmod +x scripts/setup-lvm.sh scripts/storage-health.sh scripts/lvm-backup.sh
+    chmod +x scripts/setup-lvm.sh scripts/monitoring/storage-health.sh scripts/lvm-backup.sh
     chmod +x scripts/nas-archival.sh scripts/tiered-storage.sh
     ```
 

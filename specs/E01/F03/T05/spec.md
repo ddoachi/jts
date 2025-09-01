@@ -349,7 +349,7 @@ volumes:
 ### 5. Health Check Utilities
 
 ```typescript
-// tools/scripts/check-services-health.js
+// tools/scripts/development/check-services-health.js
 const axios = require('axios');
 
 const services = [

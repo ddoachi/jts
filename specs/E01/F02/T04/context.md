@@ -27,18 +27,18 @@
 - Created validate-env.js for thorough configuration validation
 - Added Creon integration scripts (launcher, encrypt/decrypt credentials)
 - Updated .gitignore with security patterns
-- Created detailed environment documentation in docs/ENVIRONMENT.md
+- Created detailed environment documentation in docs/learning/concepts/ENVIRONMENT.md
 - All deliverables moved to natural project locations with spec tracking comments
 - Committed with hash: 8d06b99
 
 ### Files Created
 1. `.env.example` - Environment template with KIS/Creon/Crypto placeholders
-2. `scripts/setup-env.sh` - Automated setup script
-3. `scripts/validate-env.js` - Configuration validator
+2. `scripts/development/setup-env.sh` - Automated setup script
+3. `scripts/development/validate-env.js` - Configuration validator
 4. `scripts/creon-launcher.bat` - Creon wrapper script
 5. `scripts/encrypt-credentials.ps1` - Credential encryption utility
 6. `scripts/decrypt-and-run.ps1` - Secure Creon launcher
-7. `docs/ENVIRONMENT.md` - Complete environment documentation
+7. `docs/learning/concepts/ENVIRONMENT.md` - Complete environment documentation
 8. Updated `.gitignore` - Added security patterns
 
 ### Implementation Notes

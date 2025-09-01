@@ -39,10 +39,10 @@ pull_requests: []
 commits: []
 context_file: '[context.md](./context.md)'
 files:
-  - scripts/setup-dev-env.sh
+  - scripts/development/setup-dev-env.sh
   - scripts/health-check.js
   - package.json
-  - docs/DEVELOPMENT.md
+  - docs/learning/patterns/DEVELOPMENT.md
 
 # === METADATA ===
 tags:
@@ -73,7 +73,7 @@ Create comprehensive automation scripts and documentation to streamline the deve
 
 ## Technical Approach
 
-### Master Setup Script (`scripts/setup-dev-env.sh`)
+### Master Setup Script (`scripts/development/setup-dev-env.sh`)
 
 ```bash
 #!/bin/bash
@@ -163,7 +163,7 @@ setup_environment() {
     fi
 
     # Validate environment
-    node scripts/validate-env.js
+    node scripts/development/validate-env.js
 }
 
 # Start Docker services
@@ -175,7 +175,7 @@ start_services() {
     sleep 10
 
     # Check service health
-    node scripts/check-services-health.js
+    node scripts/development/check-services-health.js
     echo -e "${GREEN}✅ All services are running${NC}"
 }
 
@@ -273,7 +273,7 @@ main() {
 main
 ```
 
-### Service Health Check (`scripts/check-services-health.js`)
+### Service Health Check (`scripts/development/check-services-health.js`)
 
 ```javascript
 const { exec } = require('child_process');
@@ -415,12 +415,12 @@ checkAllServices().catch(console.error);
 
 ## Deliverables
 
-- `scripts/setup-dev-env.sh` - Master setup script
-- `scripts/check-services-health.js` - Health monitoring
-- `scripts/validate-env.js` - Environment validator
+- `scripts/development/setup-dev-env.sh` - Master setup script
+- `scripts/development/check-services-health.js` - Health monitoring
+- `scripts/development/validate-env.js` - Environment validator
 - Updated `package.json` - All workflow scripts
-- [`docs/DEVELOPMENT.md`](`docs/DEVELOPMENT.md`) - Complete developer guide
-- [`docs/QUICKSTART.md`](`docs/QUICKSTART.md`) - 5-minute setup guide
+- [`docs/learning/patterns/DEVELOPMENT.md`](`docs/learning/patterns/DEVELOPMENT.md`) - Complete developer guide
+- [`docs/learning/patterns/QUICKSTART.md`](`docs/learning/patterns/QUICKSTART.md`) - 5-minute setup guide
 
 ## Testing Plan
 

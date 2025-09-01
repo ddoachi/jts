@@ -48,7 +48,7 @@ files:
   - package.json
   - .env.example
   - docker-compose.dev.yml
-  - docs/DEVELOPMENT.md
+  - docs/learning/patterns/DEVELOPMENT.md
 
 # === METADATA ===
 tags:
@@ -734,7 +734,7 @@ Redis DB Allocation:
 }
 ```
 
-**Setup Script** (`scripts/setup-dev-env.sh`):
+**Setup Script** (`scripts/development/setup-dev-env.sh`):
 
 ```bash
 #!/bin/bash
@@ -933,7 +933,7 @@ The feature will create these key configuration files:
 - `.env.local` - Local credentials (gitignored)
 - `docker-compose.dev.yml` - Local development services
 - `.pre-commit-config.yaml` - Code quality hooks
-- `scripts/setup-dev-env.sh` - Automated setup script
+- `scripts/development/setup-dev-env.sh` - Automated setup script
 
 ## Notes
 

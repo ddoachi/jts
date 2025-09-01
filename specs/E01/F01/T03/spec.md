@@ -37,9 +37,9 @@ commits: []
 context_file: ''
 files:
   - /etc/fstab
-  - scripts/setup-sata-storage.sh
-  - scripts/sata-health-check.sh
-  - docs/WARM_STORAGE_SETUP.md
+  - scripts/utilities/setup-sata-storage.sh
+  - scripts/monitoring/sata-health-check.sh
+  - docs/walkthroughs/WARM_STORAGE_SETUP.md
 
 # === METADATA ===
 tags:
