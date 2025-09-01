@@ -35,13 +35,14 @@ Completed: {{stats.completed.length}}/{{calculated.totalSpecs}}
   {{#each feature.children as |task taskKey|}}
   - {{statusIcon task.status}} [{{taskKey}} - {{{task.title}}}]({{specPath epicKey featureKey taskKey}}/spec.md) `{{task.status}}`
     {{#if task.children}}
-    {{#each task.children as |subtask subtaskKey|}} - {{statusIcon subtask.status}} [{{subtaskKey}} - {{{subtask.title}}}]({{specPath epicKey featureKey taskKey subtaskKey}}/spec.md) `{{subtask.status}}`
+    {{#each task.children as |subtask subtaskKey|}}
+    - {{statusIcon subtask.status}} [{{subtaskKey}} - {{{subtask.title}}}]({{specPath epicKey featureKey taskKey subtaskKey}}/spec.md) `{{subtask.status}}`
     {{/each}}
     {{/if}}
-    {{/each}}
-    {{/if}}
-    {{/each}}
-    {{/if}}
+  {{/each}}
+  {{/if}}
+{{/each}}
+{{/if}}
 
 {{/each}}
 
