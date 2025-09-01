@@ -59,6 +59,13 @@ handlebars.registerHelper('statusIcon', (status: string) => {
   return icons[normalizedStatus] || '';
 });
 
+// Helper to build correct spec file paths
+handlebars.registerHelper('specPath', (...args: any[]) => {
+  // Remove the last argument (Handlebars options object)
+  const keys = args.slice(0, -1).filter(k => k);
+  return keys.join('/');
+});
+
 // Process hierarchy to normalize statuses and calculate parent statuses
 function processHierarchy(hierarchy: any): any {
   if (!hierarchy || typeof hierarchy !== 'object') {
