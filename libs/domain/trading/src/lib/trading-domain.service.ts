@@ -1,7 +1,10 @@
 // Generated from spec: E01-F03-T02 (Configure Shared Libraries Infrastructure)
 // Spec ID: 995e1fda
 
-import { Position, PositionSide } from '@jts/shared/interfaces';
+export enum PositionSide {
+  LONG = 'LONG',
+  SHORT = 'SHORT',
+}
 
 export interface PositionCalculation {
   quantity: number;
