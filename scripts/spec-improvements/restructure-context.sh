@@ -141,11 +141,11 @@ This document tracks the implementation progress of ${spec_title}.
 ## Implementation Timeline
 "
     
-    # Add current date if starting fresh
+    # Add current datetime with hours and minutes if starting fresh
     if ! echo "$content" | grep -qE "^###.*[0-9]{4}-[0-9]{2}-[0-9]{2}"; then
-        local current_date=$(date +%Y-%m-%d)
+        local current_datetime=$(date '+%Y-%m-%d %H:%M')
         new_content+="
-### ${current_date}: Initial Implementation
+### ${current_datetime}: Initial Implementation
 "
     fi
     
