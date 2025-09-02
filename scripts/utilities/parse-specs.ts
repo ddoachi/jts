@@ -105,7 +105,7 @@ function processHierarchy(hierarchy: any, specs: Record<string, SpecMetadata>): 
 }
 
 async function parseAllSpecs(): Promise<SpecData> {
-  const specFiles = await glob('specs/**/spec.md');
+  const specFiles = await glob('specs/**/*.spec.md');
   const specs: Record<string, SpecMetadata> = {};
   const hierarchy: Record<string, any> = {};
 
