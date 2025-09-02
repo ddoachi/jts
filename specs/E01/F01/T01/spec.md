@@ -26,18 +26,6 @@ estimated_hours: 2
 actual_hours: 3
 
 # === DEPENDENCIES ===
-dependencies: []
-blocks:
-  - "E01-F01-T02"
-  - "E01-F01-T05"
-related:
-  - "E01-F01-T03"
-  - "E01-F01-T04"
-pull_requests: []
-commits:
-  - 2da9f8d
-  - 08e4cc5
-context_file: "[context.md](./context.md)"
 files:
   - scripts/utilities/setup-hot-directories.sh
   - scripts/utilities/validate-directories.sh
@@ -83,6 +71,23 @@ This task serves as a safe, flexible foundation for the JTS trading system's sto
 - [x] **Validation Scripts**: Simple scripts to verify directory structure and permissions
 - [x] **Documentation**: Clear documentation of directory organization and usage guidelines
 - [x] **Monitoring Setup**: Basic directory space monitoring and alerting configuration
+
+## Related Specs
+
+**Blocks:**
+- [E01-F01-T02](../E01-F01-T02/spec.md)
+- [E01-F01-T05](../E01-F01-T05/spec.md)
+
+**Related:**
+- [E01-F01-T03](../E01-F01-T03/spec.md)
+- [E01-F01-T04](../E01-F01-T04/spec.md)
+
+## Files
+
+- [setup-hot-directories.sh](../../scripts/utilities/setup-hot-directories.sh)
+- [validate-directories.sh](../../scripts/utilities/validate-directories.sh)
+- [jts-storage-monitor.sh](../..//usr/local/bin/jts-storage-monitor.sh)
+- [HOT_STORAGE_SETUP.md](../../docs/walkthroughs/HOT_STORAGE_SETUP.md)
 
 ## Technical Approach
 
