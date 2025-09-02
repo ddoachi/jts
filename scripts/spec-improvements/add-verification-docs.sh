@@ -3,7 +3,7 @@
 # Generated from improvement request for spec_work command
 # Purpose: Add verification documentation to existing context files
 
-set -e
+# Removed set -e to handle errors more gracefully
 
 # Colors for output
 RED='\033[0;31m'

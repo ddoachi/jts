@@ -3,7 +3,7 @@
 # Generated from improvement request for spec_work command
 # Purpose: Rename spec.md and context.md files to include hierarchy string
 
-set -e
+# Removed set -e to handle errors more gracefully
 
 # Colors for output
 RED='\033[0;31m'
@@ -78,7 +78,9 @@ rename_file() {
         echo "Would rename: $old_path -> $new_path"
     else
         mv "$old_path" "$new_path"
-        git add "$old_path" "$new_path"
+        # Add the new file, remove the old file from git
+        git add "$new_path"
+        git rm --cached "$old_path" 2>/dev/null || true
         log_info "Renamed: $old_path -> $new_path"
     fi
     
@@ -151,6 +153,13 @@ main() {
         log_warn "This was a dry run. To apply changes, run:"
         echo "  DRY_RUN=false $0"
     fi
+    
+    # Exit with error code if there were errors
+    if [[ $error_count -gt 0 ]]; then
+        exit 1
+    fi
+    
+    exit 0
 }
 
 # Parse command line arguments

@@ -8,7 +8,8 @@
 # 3. Keep files in YAML but also add them to "## Files" section as markdown links
 # 4. Support dry-run mode and proper git commits
 
-set -euo pipefail
+# Removed set -euo pipefail to handle errors more gracefully
+set -u
 
 # Global variables
 DRY_RUN=false
@@ -100,8 +101,8 @@ parse_args() {
 
 # Find all spec files
 find_spec_files() {
-    find "$PROJECT_ROOT" -name "*.spec.md" -o -name "spec.md" | \
-        grep -v specs_backup | \
+    find specs -name "*.spec.md" -o -name "spec.md" 2>/dev/null | \
+        grep -v backup | \
         sort
 }
 

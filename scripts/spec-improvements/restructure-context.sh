@@ -3,7 +3,7 @@
 # Generated from improvement request for spec_work command
 # Purpose: Restructure context.md files to follow E01-F03-T03 format with proper Markdown links
 
-set -e
+# Removed set -e to handle errors more gracefully
 
 # Colors for output
 RED='\033[0;31m'
@@ -69,13 +69,18 @@ extract_spec_info() {
 # Function to format GitHub issue as Markdown link
 format_github_issue() {
     local issue_text="$1"
+    # Strip newlines and whitespace
+    issue_text=$(echo "$issue_text" | tr -d '\n\r' | xargs)
+    
+    # Skip empty or multiline content
+    [[ -z "$issue_text" ]] && return
     
     # Extract issue number
     if [[ "$issue_text" =~ Issue\ #([0-9]+):\ (.+) ]]; then
         local issue_num="${BASH_REMATCH[1]}"
         local issue_title="${BASH_REMATCH[2]}"
         echo "[Issue #${issue_num}: ${issue_title}](${REPO_URL}/issues/${issue_num})"
-    elif [[ "$issue_text" =~ #([0-9]+) ]]; then
+    elif [[ "$issue_text" =~ \#([0-9]+) ]]; then
         local issue_num="${BASH_REMATCH[1]}"
         # Try to get title from GitHub
         if command -v gh &> /dev/null; then

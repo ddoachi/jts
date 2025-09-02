@@ -3,7 +3,7 @@
 # Generated from improvement request for spec_work command
 # Purpose: Convert commits, PRs, and file paths to Markdown links in spec files
 
-set -e
+# Removed set -e to handle errors more gracefully
 
 # Colors for output
 RED='\033[0;31m'
@@ -50,8 +50,8 @@ convert_commits() {
     local modified=false
     
     # Pattern 1: Commit hash with message (e.g., "abc1234 - feat: description")
-    if echo "$content" | grep -qE '\b[a-f0-9]{7,40}\b\s*-\s*[^]]+'; then
-        content=$(echo "$content" | sed -E "s/\b([a-f0-9]{7,40})\b\s*-\s*([^]]+)/[\`\1\` - \2]($REPO_URL\/commit\/\1)/g")
+    if echo "$content" | grep -qE '\b[a-f0-9]{7,40}\b\s*-\s*.+'; then
+        content=$(echo "$content" | sed -E "s/\b([a-f0-9]{7,40})\b\s*-\s*(.+)/[\`\1\` - \2]($REPO_URL\/commit\/\1)/g")
         modified=true
     fi
     
