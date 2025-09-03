@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "JTSLibraryGenerator",
+  "title": "JTS Library Generator",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the library",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the library?"
+    },
+    "directory": {
+      "type": "string",
+      "description": "A subdirectory within the scope where the library should be placed"
+    },
+    "scope": {
+      "type": "string",
+      "description": "The scope of the library",
+      "enum": ["shared", "domain", "infrastructure", "brokers"],
+      "x-prompt": {
+        "message": "Which scope does this library belong to?",
+        "type": "list",
+        "items": [
+          {
+            "value": "shared",
+            "label": "shared - Cross-cutting utilities and types"
+          },
+          {
+            "value": "domain",
+            "label": "domain - Business logic and domain models"
+          },
+          {
+            "value": "infrastructure",
+            "label": "infrastructure - External service interfaces"
+          },
+          {
+            "value": "brokers",
+            "label": "brokers - Broker-specific implementations"
+          }
+        ]
+      }
+    },
+    "buildable": {
+      "type": "boolean",
+      "description": "Should the library be buildable?",
+      "default": true
+    },
+    "publishable": {
+      "type": "boolean",
+      "description": "Should the library be publishable to npm?",
+      "default": false
+    },
+    "strict": {
+      "type": "boolean",
+      "description": "Enable TypeScript strict mode?",
+      "default": true
+    },
+    "tags": {
+      "type": "string",
+      "description": "Add additional tags to the library (comma-separated)"
+    }
+  },
+  "required": ["name", "scope"]
+}
