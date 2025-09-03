@@ -84,20 +84,6 @@
       "estimated_hours": "160",
       "actual_hours": "0"
     },
-    "E06": {
-      "id": "a8c6dd98",
-      "hierarchical_id": "E06",
-      "title": "Order Execution & Portfolio Management",
-      "type": "epic",
-      "parent": "",
-      "status": "draft",
-      "priority": "high",
-      "created": "2025-08-24",
-      "updated": "2025-08-24",
-      "children": [],
-      "estimated_hours": "140",
-      "actual_hours": "0"
-    },
     "E05": {
       "id": "a35fe7f7",
       "hierarchical_id": "E05",
@@ -110,6 +96,20 @@
       "updated": "2025-08-24",
       "children": [],
       "estimated_hours": "120",
+      "actual_hours": "0"
+    },
+    "E06": {
+      "id": "a8c6dd98",
+      "hierarchical_id": "E06",
+      "title": "Order Execution & Portfolio Management",
+      "type": "epic",
+      "parent": "",
+      "status": "draft",
+      "priority": "high",
+      "created": "2025-08-24",
+      "updated": "2025-08-24",
+      "children": [],
+      "estimated_hours": "140",
       "actual_hours": "0"
     },
     "E04": {
@@ -167,7 +167,7 @@
       "actual_hours": "0"
     },
     "E01": {
-      "id": "a9b7ba70",
+      "id": "E01",
       "hierarchical_id": "E01",
       "title": "Foundation & Infrastructure Setup",
       "type": "epic",
@@ -256,10 +256,10 @@
       "estimated_hours": "25",
       "actual_hours": "0"
     },
-    "E02-F07": {
-      "id": "c6335734",
-      "hierarchical_id": "E02-F07",
-      "title": "Smart Order Routing and Execution Engine",
+    "E02-F06": {
+      "id": "24f0d2c9",
+      "hierarchical_id": "E02-F06",
+      "title": "Multi-Account Pool Management System",
       "type": "feature",
       "parent": "E02",
       "status": "draft",
@@ -270,10 +270,10 @@
       "estimated_hours": "35",
       "actual_hours": "0"
     },
-    "E02-F06": {
-      "id": "24f0d2c9",
-      "hierarchical_id": "E02-F06",
-      "title": "Multi-Account Pool Management System",
+    "E02-F07": {
+      "id": "c6335734",
+      "hierarchical_id": "E02-F07",
+      "title": "Smart Order Routing and Execution Engine",
       "type": "feature",
       "parent": "E02",
       "status": "draft",
@@ -326,20 +326,6 @@
       "estimated_hours": "30",
       "actual_hours": "0"
     },
-    "E02-F01": {
-      "id": "2cad8fa4",
-      "hierarchical_id": "E02-F01",
-      "title": "Unified Broker Interface Foundation",
-      "type": "feature",
-      "parent": "E02",
-      "status": "draft",
-      "priority": "high",
-      "created": "2025-08-25",
-      "updated": "2025-08-25",
-      "children": [],
-      "estimated_hours": "25",
-      "actual_hours": "0"
-    },
     "E02-F02": {
       "id": "c5866e93",
       "hierarchical_id": "E02-F02",
@@ -352,6 +338,20 @@
       "updated": "2025-08-25",
       "children": [],
       "estimated_hours": "40",
+      "actual_hours": "0"
+    },
+    "E02-F01": {
+      "id": "2cad8fa4",
+      "hierarchical_id": "E02-F01",
+      "title": "Unified Broker Interface Foundation",
+      "type": "feature",
+      "parent": "E02",
+      "status": "draft",
+      "priority": "high",
+      "created": "2025-08-25",
+      "updated": "2025-08-25",
+      "children": [],
+      "estimated_hours": "25",
       "actual_hours": "0"
     },
     "E01-F10": {
@@ -436,9 +436,7 @@
       "updated": "2025-08-24",
       "children": [],
       "estimated_hours": "20",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F04": {
       "id": "fed33392",
@@ -464,9 +462,7 @@
         "E01-F04-T11"
       ],
       "estimated_hours": "21",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F03": {
       "id": "aa68c75c",
@@ -491,6 +487,27 @@
       "pull_requests": [],
       "commits": []
     },
+    "E01-F01": {
+      "id": "b8c37e33",
+      "hierarchical_id": "E01-F01",
+      "title": "Storage Infrastructure Coordination",
+      "type": "feature",
+      "parent": "E01",
+      "status": "completed",
+      "priority": "high",
+      "created": "2025-08-24",
+      "updated": "2025-08-24",
+      "children": [
+        "E01-F01-T01",
+        "E01-F01-T02",
+        "E01-F01-T03",
+        "E01-F01-T04",
+        "E01-F01-T05",
+        "E01-F01-T06"
+      ],
+      "estimated_hours": "1",
+      "actual_hours": "0"
+    },
     "E01-F02": {
       "id": "fba9d881",
       "hierarchical_id": "E01-F02",
@@ -514,35 +531,6 @@
       "pull_requests": [],
       "commits": []
     },
-    "E01-F01": {
-      "id": "b8c37e33",
-      "hierarchical_id": "E01-F01",
-      "title": "Storage Infrastructure Coordination",
-      "type": "feature",
-      "parent": "E01",
-      "status": "completed",
-      "priority": "high",
-      "created": "2025-08-24",
-      "updated": "2025-08-24",
-      "children": [
-        "E01-F01-T01",
-        "E01-F01-T02",
-        "E01-F01-T03",
-        "E01-F01-T04",
-        "E01-F01-T05",
-        "E01-F01-T06"
-      ],
-      "estimated_hours": "1",
-      "actual_hours": "0",
-      "pull_requests": [
-        "#18",
-        "#19"
-      ],
-      "commits": [
-        "08e4cc5",
-        "e5381ea"
-      ]
-    },
     "E01-F04-T11": {
       "id": "456ac9b0",
       "hierarchical_id": "E01-F04-T11",
@@ -555,9 +543,7 @@
       "updated": "2025-08-28",
       "children": [],
       "estimated_hours": "2",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F04-T10": {
       "id": "5055cbf4",
@@ -571,25 +557,7 @@
       "updated": "2025-08-28",
       "children": [],
       "estimated_hours": "1",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
-    },
-    "E01-F04-T08": {
-      "id": "7cce53cf",
-      "hierarchical_id": "E01-F04-T08",
-      "title": "Performance Testing Workflow",
-      "type": "task",
-      "parent": "E01-F04",
-      "status": "draft",
-      "priority": "medium",
-      "created": "2025-08-28",
-      "updated": "2025-08-28",
-      "children": [],
-      "estimated_hours": "2",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F04-T09": {
       "id": "58c54802",
@@ -603,9 +571,21 @@
       "updated": "2025-08-28",
       "children": [],
       "estimated_hours": "1",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
+    },
+    "E01-F04-T08": {
+      "id": "7cce53cf",
+      "hierarchical_id": "E01-F04-T08",
+      "title": "Performance Testing Workflow",
+      "type": "task",
+      "parent": "E01-F04",
+      "status": "draft",
+      "priority": "medium",
+      "created": "2025-08-28",
+      "updated": "2025-08-28",
+      "children": [],
+      "estimated_hours": "2",
+      "actual_hours": "0"
     },
     "E01-F04-T07": {
       "id": "20b5e1cf",
@@ -619,9 +599,7 @@
       "updated": "2025-08-28",
       "children": [],
       "estimated_hours": "3",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F04-T06": {
       "id": "1579779b",
@@ -635,9 +613,7 @@
       "updated": "2025-08-28",
       "children": [],
       "estimated_hours": "2",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F04-T05": {
       "id": "a0e2a2c5",
@@ -651,9 +627,7 @@
       "updated": "2025-08-28",
       "children": [],
       "estimated_hours": "2",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F04-T04": {
       "id": "1019c809",
@@ -667,9 +641,7 @@
       "updated": "2025-08-28",
       "children": [],
       "estimated_hours": "3",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F04-T03": {
       "id": "b9141aff",
@@ -683,9 +655,7 @@
       "updated": "2025-08-28",
       "children": [],
       "estimated_hours": "2",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F04-T02": {
       "id": "9ac403da",
@@ -699,9 +669,7 @@
       "updated": "2025-08-28",
       "children": [],
       "estimated_hours": "3",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F04-T01": {
       "id": "d736bb10",
@@ -715,9 +683,7 @@
       "updated": "2025-08-28",
       "children": [],
       "estimated_hours": "2",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F03-T06": {
       "id": "83fa5a43",
@@ -731,9 +697,7 @@
       "updated": "2025-08-28",
       "children": [],
       "estimated_hours": "2",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F03-T05": {
       "id": "a34bacf8",
@@ -747,9 +711,7 @@
       "updated": "2025-08-28",
       "children": [],
       "estimated_hours": "2.5",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F03-T04": {
       "id": "bdb106a0",
@@ -757,15 +719,13 @@
       "title": "Implement TypeScript Configuration and Linting",
       "type": "task",
       "parent": "E01-F03",
-      "status": "draft",
+      "status": "completed",
       "priority": "high",
       "created": "2025-08-28",
-      "updated": "2025-08-28",
+      "updated": "2025-09-01",
       "children": [],
       "estimated_hours": "2",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "2"
     },
     "E01-F03-T03": {
       "id": "e17184bc",
@@ -773,15 +733,13 @@
       "title": "Set Up Build and Testing Infrastructure",
       "type": "task",
       "parent": "E01-F03",
-      "status": "draft",
+      "status": "completed",
       "priority": "high",
       "created": "2025-08-28",
-      "updated": "2025-08-28",
+      "updated": "2025-09-01",
       "children": [],
       "estimated_hours": "2.5",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "2.5"
     },
     "E01-F03-T02": {
       "id": "995e1fda",
@@ -789,15 +747,13 @@
       "title": "Configure Shared Libraries Infrastructure",
       "type": "task",
       "parent": "E01-F03",
-      "status": "draft",
+      "status": "completed",
       "priority": "high",
       "created": "2025-08-28",
-      "updated": "2025-08-28",
+      "updated": "2025-09-01",
       "children": [],
       "estimated_hours": "3",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "2"
     },
     "E01-F03-T01": {
       "id": "afdec700",
@@ -811,128 +767,7 @@
       "updated": "2025-09-01",
       "children": [],
       "estimated_hours": "2",
-      "actual_hours": "1",
-      "pull_requests": [],
-      "commits": [
-        {
-          "text": "feat(infrastructure): initialize Nx workspace with base configuration",
-          "hash": "0706436",
-          "link": "https://github.com/ddoachi/jts/commit/0706436"
-        }
-      ]
-    },
-    "E01-F02-T06": {
-      "id": "24146db4",
-      "hierarchical_id": "E01-F02-T06",
-      "title": "Development Scripts and Automation",
-      "type": "task",
-      "parent": "E01-F02",
-      "status": "completed",
-      "priority": "medium",
-      "created": "2025-08-27",
-      "updated": "2025-09-01",
-      "children": [],
-      "estimated_hours": "3",
-      "actual_hours": "3",
-      "pull_requests": [],
-      "commits": []
-    },
-    "E01-F02-T05": {
-      "id": "82b8a343",
-      "hierarchical_id": "E01-F02-T05",
-      "title": "Code Quality Tools and Git Hooks",
-      "type": "task",
-      "parent": "E01-F02",
-      "status": "completed",
-      "priority": "medium",
-      "created": "2025-08-27",
-      "updated": "2025-08-31",
-      "children": [],
-      "estimated_hours": "2",
-      "actual_hours": "1",
-      "pull_requests": [],
-      "commits": [
-        {
-          "text": "feat(E01-F02-T05): configure comprehensive code quality tools",
-          "hash": "8f1521e"
-        }
-      ]
-    },
-    "E01-F02-T04": {
-      "id": "021bbc7e",
-      "hierarchical_id": "E01-F02-T04",
-      "title": "Environment Configuration and Secrets Management",
-      "type": "task",
-      "parent": "E01-F02",
-      "status": "completed",
-      "priority": "high",
-      "created": "2025-08-27",
-      "updated": "2025-08-31",
-      "children": [],
-      "estimated_hours": "2",
-      "actual_hours": "1",
-      "pull_requests": [],
-      "commits": [
-        {
-          "text": "feat(E01-F02-T04): implement environment configuration and secrets management",
-          "hash": "8d06b99",
-          "link": "https://github.com/ddoachi/jts/commit/8d06b99"
-        }
-      ]
-    },
-    "E01-F02-T03": {
-      "id": "ce5140df",
-      "hierarchical_id": "E01-F02-T03",
-      "title": "Docker and Database Services Setup",
-      "type": "task",
-      "parent": "E01-F02",
-      "status": "completed",
-      "priority": "high",
-      "created": "2025-08-27",
-      "updated": "2025-09-01",
-      "children": [],
-      "estimated_hours": "3",
-      "actual_hours": "4",
-      "pull_requests": [],
-      "commits": []
-    },
-    "E01-F02-T02": {
-      "id": "93d65641",
-      "hierarchical_id": "E01-F02-T02",
-      "title": "VS Code IDE Configuration",
-      "type": "task",
-      "parent": "E01-F02",
-      "status": "completed",
-      "priority": "high",
-      "created": "2025-08-27",
-      "updated": "2025-08-31",
-      "children": [],
-      "estimated_hours": "2",
-      "actual_hours": "2",
-      "pull_requests": [],
-      "commits": [
-        {
-          "text": "feat(E01-F02-T02): configure VS Code IDE environment",
-          "hash": "9db8326",
-          "link": "https://github.com/ddoachi/jts/commit/9db8326"
-        }
-      ]
-    },
-    "E01-F02-T01": {
-      "id": "0768281a",
-      "hierarchical_id": "E01-F02-T01",
-      "title": "Node.js and Yarn Environment Setup",
-      "type": "task",
-      "parent": "E01-F02",
-      "status": "completed",
-      "priority": "high",
-      "created": "2025-08-27",
-      "updated": "2025-08-27",
-      "children": [],
-      "estimated_hours": "2",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "1"
     },
     "E01-F01-T06": {
       "id": "08fe2621",
@@ -971,9 +806,7 @@
       "updated": "2025-08-30",
       "children": [],
       "estimated_hours": "2",
-      "actual_hours": "2.5",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "2.5"
     },
     "E01-F01-T04": {
       "id": "766d856e",
@@ -1007,9 +840,7 @@
       "updated": "2025-08-24",
       "children": [],
       "estimated_hours": "3",
-      "actual_hours": "0",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "0"
     },
     "E01-F01-T02": {
       "id": "f33ba15e",
@@ -1023,9 +854,7 @@
       "updated": "2025-08-27",
       "children": [],
       "estimated_hours": "4",
-      "actual_hours": "2.5",
-      "pull_requests": [],
-      "commits": []
+      "actual_hours": "2.5"
     },
     "E01-F01-T01": {
       "id": "7f975a56",
@@ -1039,12 +868,91 @@
       "updated": "2025-08-24",
       "children": [],
       "estimated_hours": "2",
-      "actual_hours": "3",
-      "pull_requests": [],
-      "commits": [
-        "2da9f8d",
-        "08e4cc5"
-      ]
+      "actual_hours": "3"
+    },
+    "E01-F02-T06": {
+      "id": "24146db4",
+      "hierarchical_id": "E01-F02-T06",
+      "title": "Development Scripts and Automation",
+      "type": "task",
+      "parent": "E01-F02",
+      "status": "completed",
+      "priority": "medium",
+      "created": "2025-08-27",
+      "updated": "2025-09-01",
+      "children": [],
+      "estimated_hours": "3",
+      "actual_hours": "3"
+    },
+    "E01-F02-T05": {
+      "id": "82b8a343",
+      "hierarchical_id": "E01-F02-T05",
+      "title": "Code Quality Tools and Git Hooks",
+      "type": "task",
+      "parent": "E01-F02",
+      "status": "completed",
+      "priority": "medium",
+      "created": "2025-08-27",
+      "updated": "2025-08-31",
+      "children": [],
+      "estimated_hours": "2",
+      "actual_hours": "1"
+    },
+    "E01-F02-T04": {
+      "id": "021bbc7e",
+      "hierarchical_id": "E01-F02-T04",
+      "title": "Environment Configuration and Secrets Management",
+      "type": "task",
+      "parent": "E01-F02",
+      "status": "completed",
+      "priority": "high",
+      "created": "2025-08-27",
+      "updated": "2025-08-31",
+      "children": [],
+      "estimated_hours": "2",
+      "actual_hours": "1"
+    },
+    "E01-F02-T03": {
+      "id": "ce5140df",
+      "hierarchical_id": "E01-F02-T03",
+      "title": "Docker and Database Services Setup",
+      "type": "task",
+      "parent": "E01-F02",
+      "status": "completed",
+      "priority": "high",
+      "created": "2025-08-27",
+      "updated": "2025-09-01",
+      "children": [],
+      "estimated_hours": "3",
+      "actual_hours": "4"
+    },
+    "E01-F02-T02": {
+      "id": "93d65641",
+      "hierarchical_id": "E01-F02-T02",
+      "title": "VS Code IDE Configuration",
+      "type": "task",
+      "parent": "E01-F02",
+      "status": "completed",
+      "priority": "high",
+      "created": "2025-08-27",
+      "updated": "2025-08-31",
+      "children": [],
+      "estimated_hours": "2",
+      "actual_hours": "2"
+    },
+    "E01-F02-T01": {
+      "id": "0768281a",
+      "hierarchical_id": "E01-F02-T01",
+      "title": "Node.js and Yarn Environment Setup",
+      "type": "task",
+      "parent": "E01-F02",
+      "status": "completed",
+      "priority": "high",
+      "created": "2025-08-27",
+      "updated": "2025-08-27",
+      "children": [],
+      "estimated_hours": "2",
+      "actual_hours": "0"
     }
   },
   "stats": {
@@ -1053,21 +961,24 @@
     "total_tasks": 29,
     "total_subtasks": 0,
     "completed": [
-      "E01-F02",
       "E01-F01",
+      "E01-F02",
+      "E01-F03-T04",
+      "E01-F03-T03",
+      "E01-F03-T02",
       "E01-F03-T01",
-      "E01-F02-T06",
-      "E01-F02-T05",
-      "E01-F02-T04",
-      "E01-F02-T03",
-      "E01-F02-T02",
-      "E01-F02-T01",
       "E01-F01-T06",
       "E01-F01-T05",
       "E01-F01-T04",
       "E01-F01-T03",
       "E01-F01-T02",
-      "E01-F01-T01"
+      "E01-F01-T01",
+      "E01-F02-T06",
+      "E01-F02-T05",
+      "E01-F02-T04",
+      "E01-F02-T03",
+      "E01-F02-T02",
+      "E01-F02-T01"
     ],
     "in_progress": [
       "E01",
@@ -1080,8 +991,8 @@
       "E09",
       "E08",
       "E07",
-      "E06",
       "E05",
+      "E06",
       "E04",
       "E03",
       "E02",
@@ -1089,13 +1000,13 @@
       "E02-F10",
       "E02-F09",
       "E02-F08",
-      "E02-F07",
       "E02-F06",
+      "E02-F07",
       "E02-F05",
       "E02-F04",
       "E02-F03",
-      "E02-F01",
       "E02-F02",
+      "E02-F01",
       "E01-F10",
       "E01-F09",
       "E01-F08",
@@ -1105,8 +1016,8 @@
       "E01-F04",
       "E01-F04-T11",
       "E01-F04-T10",
-      "E01-F04-T08",
       "E01-F04-T09",
+      "E01-F04-T08",
       "E01-F04-T07",
       "E01-F04-T06",
       "E01-F04-T05",
@@ -1115,10 +1026,7 @@
       "E01-F04-T02",
       "E01-F04-T01",
       "E01-F03-T06",
-      "E01-F03-T05",
-      "E01-F03-T04",
-      "E01-F03-T03",
-      "E01-F03-T02"
+      "E01-F03-T05"
     ],
     "blocked": []
   },
@@ -1207,20 +1115,6 @@
       "estimated_hours": "160",
       "actual_hours": "0"
     },
-    "E06": {
-      "id": "a8c6dd98",
-      "hierarchical_id": "E06",
-      "title": "Order Execution & Portfolio Management",
-      "type": "epic",
-      "parent": "",
-      "status": "draft",
-      "priority": "high",
-      "created": "2025-08-24",
-      "updated": "2025-08-24",
-      "children": {},
-      "estimated_hours": "140",
-      "actual_hours": "0"
-    },
     "E05": {
       "id": "a35fe7f7",
       "hierarchical_id": "E05",
@@ -1233,6 +1127,20 @@
       "updated": "2025-08-24",
       "children": {},
       "estimated_hours": "120",
+      "actual_hours": "0"
+    },
+    "E06": {
+      "id": "a8c6dd98",
+      "hierarchical_id": "E06",
+      "title": "Order Execution & Portfolio Management",
+      "type": "epic",
+      "parent": "",
+      "status": "draft",
+      "priority": "high",
+      "created": "2025-08-24",
+      "updated": "2025-08-24",
+      "children": {},
+      "estimated_hours": "140",
       "actual_hours": "0"
     },
     "E04": {
@@ -1330,10 +1238,10 @@
           "estimated_hours": "25",
           "actual_hours": "0"
         },
-        "F07": {
-          "id": "c6335734",
-          "hierarchical_id": "E02-F07",
-          "title": "Smart Order Routing and Execution Engine",
+        "F06": {
+          "id": "24f0d2c9",
+          "hierarchical_id": "E02-F06",
+          "title": "Multi-Account Pool Management System",
           "type": "feature",
           "parent": "E02",
           "status": "draft",
@@ -1344,10 +1252,10 @@
           "estimated_hours": "35",
           "actual_hours": "0"
         },
-        "F06": {
-          "id": "24f0d2c9",
-          "hierarchical_id": "E02-F06",
-          "title": "Multi-Account Pool Management System",
+        "F07": {
+          "id": "c6335734",
+          "hierarchical_id": "E02-F07",
+          "title": "Smart Order Routing and Execution Engine",
           "type": "feature",
           "parent": "E02",
           "status": "draft",
@@ -1400,20 +1308,6 @@
           "estimated_hours": "30",
           "actual_hours": "0"
         },
-        "F01": {
-          "id": "2cad8fa4",
-          "hierarchical_id": "E02-F01",
-          "title": "Unified Broker Interface Foundation",
-          "type": "feature",
-          "parent": "E02",
-          "status": "draft",
-          "priority": "high",
-          "created": "2025-08-25",
-          "updated": "2025-08-25",
-          "children": {},
-          "estimated_hours": "25",
-          "actual_hours": "0"
-        },
         "F02": {
           "id": "c5866e93",
           "hierarchical_id": "E02-F02",
@@ -1427,13 +1321,27 @@
           "children": {},
           "estimated_hours": "40",
           "actual_hours": "0"
+        },
+        "F01": {
+          "id": "2cad8fa4",
+          "hierarchical_id": "E02-F01",
+          "title": "Unified Broker Interface Foundation",
+          "type": "feature",
+          "parent": "E02",
+          "status": "draft",
+          "priority": "high",
+          "created": "2025-08-25",
+          "updated": "2025-08-25",
+          "children": {},
+          "estimated_hours": "25",
+          "actual_hours": "0"
         }
       },
       "estimated_hours": "340",
       "actual_hours": "0"
     },
     "E01": {
-      "id": "a9b7ba70",
+      "id": "E01",
       "hierarchical_id": "E01",
       "title": "Foundation & Infrastructure Setup",
       "type": "epic",
@@ -1525,9 +1433,7 @@
           "updated": "2025-08-24",
           "children": {},
           "estimated_hours": "20",
-          "actual_hours": "0",
-          "pull_requests": [],
-          "commits": []
+          "actual_hours": "0"
         },
         "F04": {
           "id": "fed33392",
@@ -1552,9 +1458,7 @@
               "updated": "2025-08-28",
               "children": {},
               "estimated_hours": "2",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
             },
             "T10": {
               "id": "5055cbf4",
@@ -1568,25 +1472,7 @@
               "updated": "2025-08-28",
               "children": {},
               "estimated_hours": "1",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
-            },
-            "T08": {
-              "id": "7cce53cf",
-              "hierarchical_id": "E01-F04-T08",
-              "title": "Performance Testing Workflow",
-              "type": "task",
-              "parent": "E01-F04",
-              "status": "draft",
-              "priority": "medium",
-              "created": "2025-08-28",
-              "updated": "2025-08-28",
-              "children": {},
-              "estimated_hours": "2",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
             },
             "T09": {
               "id": "58c54802",
@@ -1600,9 +1486,21 @@
               "updated": "2025-08-28",
               "children": {},
               "estimated_hours": "1",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
+            },
+            "T08": {
+              "id": "7cce53cf",
+              "hierarchical_id": "E01-F04-T08",
+              "title": "Performance Testing Workflow",
+              "type": "task",
+              "parent": "E01-F04",
+              "status": "draft",
+              "priority": "medium",
+              "created": "2025-08-28",
+              "updated": "2025-08-28",
+              "children": {},
+              "estimated_hours": "2",
+              "actual_hours": "0"
             },
             "T07": {
               "id": "20b5e1cf",
@@ -1616,9 +1514,7 @@
               "updated": "2025-08-28",
               "children": {},
               "estimated_hours": "3",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
             },
             "T06": {
               "id": "1579779b",
@@ -1632,9 +1528,7 @@
               "updated": "2025-08-28",
               "children": {},
               "estimated_hours": "2",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
             },
             "T05": {
               "id": "a0e2a2c5",
@@ -1648,9 +1542,7 @@
               "updated": "2025-08-28",
               "children": {},
               "estimated_hours": "2",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
             },
             "T04": {
               "id": "1019c809",
@@ -1664,9 +1556,7 @@
               "updated": "2025-08-28",
               "children": {},
               "estimated_hours": "3",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
             },
             "T03": {
               "id": "b9141aff",
@@ -1680,9 +1570,7 @@
               "updated": "2025-08-28",
               "children": {},
               "estimated_hours": "2",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
             },
             "T02": {
               "id": "9ac403da",
@@ -1696,9 +1584,7 @@
               "updated": "2025-08-28",
               "children": {},
               "estimated_hours": "3",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
             },
             "T01": {
               "id": "d736bb10",
@@ -1712,15 +1598,11 @@
               "updated": "2025-08-28",
               "children": {},
               "estimated_hours": "2",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
             }
           },
           "estimated_hours": "21",
-          "actual_hours": "0",
-          "pull_requests": [],
-          "commits": []
+          "actual_hours": "0"
         },
         "F03": {
           "id": "aa68c75c",
@@ -1745,9 +1627,7 @@
               "updated": "2025-08-28",
               "children": {},
               "estimated_hours": "2",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
             },
             "T05": {
               "id": "a34bacf8",
@@ -1761,9 +1641,7 @@
               "updated": "2025-08-28",
               "children": {},
               "estimated_hours": "2.5",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
             },
             "T04": {
               "id": "bdb106a0",
@@ -1771,15 +1649,13 @@
               "title": "Implement TypeScript Configuration and Linting",
               "type": "task",
               "parent": "E01-F03",
-              "status": "draft",
+              "status": "completed",
               "priority": "high",
               "created": "2025-08-28",
-              "updated": "2025-08-28",
+              "updated": "2025-09-01",
               "children": {},
               "estimated_hours": "2",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "2"
             },
             "T03": {
               "id": "e17184bc",
@@ -1787,15 +1663,13 @@
               "title": "Set Up Build and Testing Infrastructure",
               "type": "task",
               "parent": "E01-F03",
-              "status": "draft",
+              "status": "completed",
               "priority": "high",
               "created": "2025-08-28",
-              "updated": "2025-08-28",
+              "updated": "2025-09-01",
               "children": {},
               "estimated_hours": "2.5",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "2.5"
             },
             "T02": {
               "id": "995e1fda",
@@ -1803,15 +1677,13 @@
               "title": "Configure Shared Libraries Infrastructure",
               "type": "task",
               "parent": "E01-F03",
-              "status": "draft",
+              "status": "completed",
               "priority": "high",
               "created": "2025-08-28",
-              "updated": "2025-08-28",
+              "updated": "2025-09-01",
               "children": {},
               "estimated_hours": "3",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "2"
             },
             "T01": {
               "id": "afdec700",
@@ -1825,148 +1697,10 @@
               "updated": "2025-09-01",
               "children": {},
               "estimated_hours": "2",
-              "actual_hours": "1",
-              "pull_requests": [],
-              "commits": [
-                {
-                  "text": "feat(infrastructure): initialize Nx workspace with base configuration",
-                  "hash": "0706436",
-                  "link": "https://github.com/ddoachi/jts/commit/0706436"
-                }
-              ]
+              "actual_hours": "1"
             }
           },
           "estimated_hours": "12",
-          "actual_hours": "0",
-          "pull_requests": [],
-          "commits": []
-        },
-        "F02": {
-          "id": "fba9d881",
-          "hierarchical_id": "E01-F02",
-          "title": "Development Environment Setup",
-          "type": "feature",
-          "parent": "E01",
-          "status": "completed",
-          "priority": "high",
-          "created": "2025-08-24",
-          "updated": "2025-08-24",
-          "children": {
-            "T06": {
-              "id": "24146db4",
-              "hierarchical_id": "E01-F02-T06",
-              "title": "Development Scripts and Automation",
-              "type": "task",
-              "parent": "E01-F02",
-              "status": "completed",
-              "priority": "medium",
-              "created": "2025-08-27",
-              "updated": "2025-09-01",
-              "children": {},
-              "estimated_hours": "3",
-              "actual_hours": "3",
-              "pull_requests": [],
-              "commits": []
-            },
-            "T05": {
-              "id": "82b8a343",
-              "hierarchical_id": "E01-F02-T05",
-              "title": "Code Quality Tools and Git Hooks",
-              "type": "task",
-              "parent": "E01-F02",
-              "status": "completed",
-              "priority": "medium",
-              "created": "2025-08-27",
-              "updated": "2025-08-31",
-              "children": {},
-              "estimated_hours": "2",
-              "actual_hours": "1",
-              "pull_requests": [],
-              "commits": [
-                {
-                  "text": "feat(E01-F02-T05): configure comprehensive code quality tools",
-                  "hash": "8f1521e"
-                }
-              ]
-            },
-            "T04": {
-              "id": "021bbc7e",
-              "hierarchical_id": "E01-F02-T04",
-              "title": "Environment Configuration and Secrets Management",
-              "type": "task",
-              "parent": "E01-F02",
-              "status": "completed",
-              "priority": "high",
-              "created": "2025-08-27",
-              "updated": "2025-08-31",
-              "children": {},
-              "estimated_hours": "2",
-              "actual_hours": "1",
-              "pull_requests": [],
-              "commits": [
-                {
-                  "text": "feat(E01-F02-T04): implement environment configuration and secrets management",
-                  "hash": "8d06b99",
-                  "link": "https://github.com/ddoachi/jts/commit/8d06b99"
-                }
-              ]
-            },
-            "T03": {
-              "id": "ce5140df",
-              "hierarchical_id": "E01-F02-T03",
-              "title": "Docker and Database Services Setup",
-              "type": "task",
-              "parent": "E01-F02",
-              "status": "completed",
-              "priority": "high",
-              "created": "2025-08-27",
-              "updated": "2025-09-01",
-              "children": {},
-              "estimated_hours": "3",
-              "actual_hours": "4",
-              "pull_requests": [],
-              "commits": []
-            },
-            "T02": {
-              "id": "93d65641",
-              "hierarchical_id": "E01-F02-T02",
-              "title": "VS Code IDE Configuration",
-              "type": "task",
-              "parent": "E01-F02",
-              "status": "completed",
-              "priority": "high",
-              "created": "2025-08-27",
-              "updated": "2025-08-31",
-              "children": {},
-              "estimated_hours": "2",
-              "actual_hours": "2",
-              "pull_requests": [],
-              "commits": [
-                {
-                  "text": "feat(E01-F02-T02): configure VS Code IDE environment",
-                  "hash": "9db8326",
-                  "link": "https://github.com/ddoachi/jts/commit/9db8326"
-                }
-              ]
-            },
-            "T01": {
-              "id": "0768281a",
-              "hierarchical_id": "E01-F02-T01",
-              "title": "Node.js and Yarn Environment Setup",
-              "type": "task",
-              "parent": "E01-F02",
-              "status": "completed",
-              "priority": "high",
-              "created": "2025-08-27",
-              "updated": "2025-08-27",
-              "children": {},
-              "estimated_hours": "2",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
-            }
-          },
-          "estimated_hours": "8",
           "actual_hours": "0",
           "pull_requests": [],
           "commits": []
@@ -2019,9 +1753,7 @@
               "updated": "2025-08-30",
               "children": {},
               "estimated_hours": "2",
-              "actual_hours": "2.5",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "2.5"
             },
             "T04": {
               "id": "766d856e",
@@ -2055,9 +1787,7 @@
               "updated": "2025-08-24",
               "children": {},
               "estimated_hours": "3",
-              "actual_hours": "0",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "0"
             },
             "T02": {
               "id": "f33ba15e",
@@ -2071,9 +1801,7 @@
               "updated": "2025-08-27",
               "children": {},
               "estimated_hours": "4",
-              "actual_hours": "2.5",
-              "pull_requests": [],
-              "commits": []
+              "actual_hours": "2.5"
             },
             "T01": {
               "id": "7f975a56",
@@ -2087,24 +1815,112 @@
               "updated": "2025-08-24",
               "children": {},
               "estimated_hours": "2",
-              "actual_hours": "3",
-              "pull_requests": [],
-              "commits": [
-                "2da9f8d",
-                "08e4cc5"
-              ]
+              "actual_hours": "3"
             }
           },
           "estimated_hours": "1",
+          "actual_hours": "0"
+        },
+        "F02": {
+          "id": "fba9d881",
+          "hierarchical_id": "E01-F02",
+          "title": "Development Environment Setup",
+          "type": "feature",
+          "parent": "E01",
+          "status": "completed",
+          "priority": "high",
+          "created": "2025-08-24",
+          "updated": "2025-08-24",
+          "children": {
+            "T06": {
+              "id": "24146db4",
+              "hierarchical_id": "E01-F02-T06",
+              "title": "Development Scripts and Automation",
+              "type": "task",
+              "parent": "E01-F02",
+              "status": "completed",
+              "priority": "medium",
+              "created": "2025-08-27",
+              "updated": "2025-09-01",
+              "children": {},
+              "estimated_hours": "3",
+              "actual_hours": "3"
+            },
+            "T05": {
+              "id": "82b8a343",
+              "hierarchical_id": "E01-F02-T05",
+              "title": "Code Quality Tools and Git Hooks",
+              "type": "task",
+              "parent": "E01-F02",
+              "status": "completed",
+              "priority": "medium",
+              "created": "2025-08-27",
+              "updated": "2025-08-31",
+              "children": {},
+              "estimated_hours": "2",
+              "actual_hours": "1"
+            },
+            "T04": {
+              "id": "021bbc7e",
+              "hierarchical_id": "E01-F02-T04",
+              "title": "Environment Configuration and Secrets Management",
+              "type": "task",
+              "parent": "E01-F02",
+              "status": "completed",
+              "priority": "high",
+              "created": "2025-08-27",
+              "updated": "2025-08-31",
+              "children": {},
+              "estimated_hours": "2",
+              "actual_hours": "1"
+            },
+            "T03": {
+              "id": "ce5140df",
+              "hierarchical_id": "E01-F02-T03",
+              "title": "Docker and Database Services Setup",
+              "type": "task",
+              "parent": "E01-F02",
+              "status": "completed",
+              "priority": "high",
+              "created": "2025-08-27",
+              "updated": "2025-09-01",
+              "children": {},
+              "estimated_hours": "3",
+              "actual_hours": "4"
+            },
+            "T02": {
+              "id": "93d65641",
+              "hierarchical_id": "E01-F02-T02",
+              "title": "VS Code IDE Configuration",
+              "type": "task",
+              "parent": "E01-F02",
+              "status": "completed",
+              "priority": "high",
+              "created": "2025-08-27",
+              "updated": "2025-08-31",
+              "children": {},
+              "estimated_hours": "2",
+              "actual_hours": "2"
+            },
+            "T01": {
+              "id": "0768281a",
+              "hierarchical_id": "E01-F02-T01",
+              "title": "Node.js and Yarn Environment Setup",
+              "type": "task",
+              "parent": "E01-F02",
+              "status": "completed",
+              "priority": "high",
+              "created": "2025-08-27",
+              "updated": "2025-08-27",
+              "children": {},
+              "estimated_hours": "2",
+              "actual_hours": "0"
+            }
+          },
+          "estimated_hours": "8",
           "actual_hours": "0",
-          "pull_requests": [
-            "#18",
-            "#19"
-          ],
-          "commits": [
-            "08e4cc5",
-            "e5381ea"
-          ]
+          "pull_requests": [],
+          "commits": []
         }
       },
       "estimated_hours": "80",
