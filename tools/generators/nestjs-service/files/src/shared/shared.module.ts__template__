@@ -1,0 +1,39 @@
+/**
+ * Shared Module
+ *
+ * WHY: Provides cross-cutting concerns used across the service
+ * HOW: Centralizes common utilities, guards, and interceptors
+ * WHAT: Reusable components for consistent behavior
+ *
+ * COMPONENTS:
+ * - Guards: Authentication, authorization, rate limiting
+ * - Interceptors: Logging, transformation, caching
+ * - Filters: Exception handling and error formatting
+ * - Pipes: Validation and transformation
+ * - Utilities: Common helper functions
+ *
+ * USAGE:
+ * Import this module wherever shared functionality is needed
+ */
+
+import { Module, Global } from '@nestjs/common';
+
+// ═══════════════════════════════════════════════════════════════════
+// ███ SECTION: Shared Module Configuration ███
+// ═══════════════════════════════════════════════════════════════════
+
+@Global() // Makes module globally available
+@Module({
+  imports: [],
+  providers: [
+    // Shared services and utilities
+    // Example:
+    // LoggerService,
+    // CryptoService,
+    // DateService,
+  ],
+  exports: [
+    // Export shared services for use in other modules
+  ],
+})
+export class SharedModule {}

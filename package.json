@@ -63,7 +63,16 @@
     "deps:check": "yarn dlx npm-check-updates -u",
     "deps:upgrade": "yarn up -i",
     "env:validate": "node scripts/development/validate-env.js",
-    "env:setup": "./scripts/development/setup-env.sh"
+    "env:setup": "./scripts/development/setup-env.sh",
+    "g:service": "nx g ./tools/generators/nestjs-service",
+    "g:lib": "nx g ./tools/generators/jts-library",
+    "generate:service": "nx g ./tools/generators/nestjs-service",
+    "generate:library": "nx g ./tools/generators/jts-library",
+    "workspace:clean": "nx reset && rm -rf dist tmp coverage .nx",
+    "workspace:setup": "yarn install && yarn build",
+    "workspace:reset": "yarn workspace:clean && yarn install",
+    "analyze:deps": "nx graph",
+    "analyze:affected": "nx affected:graph"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",

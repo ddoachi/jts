@@ -1,0 +1,39 @@
+/**
+ * Domain Module
+ *
+ * WHY: Encapsulates all business logic and domain entities
+ * HOW: Organizes domain services, entities, and use cases
+ * WHAT: Pure business logic without infrastructure concerns
+ *
+ * ARCHITECTURE PRINCIPLES:
+ * - Domain should not depend on infrastructure
+ * - Business rules are independent of frameworks
+ * - Use dependency injection for external services
+ *
+ * STRUCTURE:
+ * - entities/ - Domain models and value objects
+ * - services/ - Business logic and use cases
+ * - repositories/ - Data access interfaces (not implementations)
+ * - events/ - Domain events for event-driven architecture
+ */
+
+import { Module } from '@nestjs/common';
+
+// ═══════════════════════════════════════════════════════════════════
+// ███ SECTION: Domain Module Configuration ███
+// ═══════════════════════════════════════════════════════════════════
+
+@Module({
+  imports: [],
+  providers: [
+    // Domain services will be registered here
+    // Example:
+    // TradingService,
+    // OrderService,
+    // PortfolioService,
+  ],
+  exports: [
+    // Export domain services for use in other modules
+  ],
+})
+export class DomainModule {}

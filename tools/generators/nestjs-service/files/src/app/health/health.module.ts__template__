@@ -1,0 +1,23 @@
+/**
+ * Health Check Module
+ *
+ * WHY: Container orchestrators need to know service health status
+ * HOW: Provides standardized health check endpoints
+ * WHAT: Returns service and dependency health status
+ *
+ * ENDPOINTS:
+ * - GET /health - Basic liveness check
+ * - GET /health/ready - Readiness check with dependencies
+ *
+ * RELATED: health.controller.ts
+ */
+
+import { Module } from '@nestjs/common';
+import { TerminusModule } from '@nestjs/terminus';
+import { HealthController } from './health.controller';
+
+@Module({
+  imports: [TerminusModule],
+  controllers: [HealthController],
+})
+export class HealthModule {}

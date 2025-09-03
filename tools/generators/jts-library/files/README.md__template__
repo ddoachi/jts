@@ -1,0 +1,162 @@
+# <%= className %> Library
+
+## Overview
+
+**Scope**: `<%= scope %>`  
+**Import Path**: `<%= importPath %>`
+
+<% if (scope === 'shared') { %>
+This library contains cross-cutting utilities, types, and constants used across the JTS trading system.
+<% } else if (scope === 'domain') { %>
+This library contains business logic, domain models, and use cases for the JTS trading system.
+<% } else if (scope === 'infrastructure') { %>
+This library provides infrastructure adapters and external service integrations for the JTS trading system.
+<% } else if (scope === 'brokers') { %>
+This library implements broker-specific trading interfaces for the JTS trading system.
+<% } %>
+
+## Installation
+
+This library is part of the JTS monorepo. To use it in another package:
+
+```typescript
+import { /* items */ } from '<%= importPath %>';
+```
+
+## Structure
+
+```
+src/
+<% if (scope === 'shared') { %>├── constants/    # Shared constants
+├── types/        # TypeScript type definitions
+├── utils/        # Utility functions
+└── dto/          # Data transfer objects
+<% } else if (scope === 'domain') { %>├── entities/     # Domain entities
+├── value-objects/# Value objects
+├── services/     # Domain services
+├── events/       # Domain events
+└── repositories/ # Repository interfaces
+<% } else if (scope === 'infrastructure') { %>├── adapters/     # Infrastructure adapters
+├── clients/      # External service clients
+└── config/       # Configuration utilities
+<% } else if (scope === 'brokers') { %>└── adapter.ts    # Broker adapter implementation
+<% } %>
+```
+
+## Development
+
+### Building
+
+```bash
+nx build <%= projectName %>
+```
+
+### Testing
+
+```bash
+# Run tests
+nx test <%= projectName %>
+
+# Run tests with coverage
+nx test <%= projectName %> --coverage
+
+# Run tests in watch mode
+nx test <%= projectName %> --watch
+```
+
+### Linting
+
+```bash
+nx lint <%= projectName %>
+```
+
+### Type Checking
+
+```bash
+nx validate <%= projectName %>
+```
+
+## Usage Examples
+
+<% if (scope === 'shared') { %>
+### Using Shared Utilities
+
+```typescript
+import { formatCurrency, validateEmail } from '<%= importPath %>/utils';
+import { UserDTO } from '<%= importPath %>/dto';
+import { API_ENDPOINTS } from '<%= importPath %>/constants';
+
+const formattedPrice = formatCurrency(1234.56);
+const isValid = validateEmail('user@example.com');
+```
+<% } else if (scope === 'domain') { %>
+### Using Domain Services
+
+```typescript
+import { TradingService } from '<%= importPath %>/services';
+import { Order } from '<%= importPath %>/entities';
+import { OrderCreatedEvent } from '<%= importPath %>/events';
+
+const tradingService = new TradingService();
+const order = await tradingService.createOrder({
+  symbol: 'AAPL',
+  quantity: 100,
+  type: 'MARKET'
+});
+```
+<% } else if (scope === 'infrastructure') { %>
+### Using Infrastructure Adapters
+
+```typescript
+import { DatabaseAdapter } from '<%= importPath %>/adapters';
+import { RedisClient } from '<%= importPath %>/clients';
+
+const db = new DatabaseAdapter(config);
+await db.connect();
+
+const cache = new RedisClient(redisConfig);
+await cache.set('key', 'value');
+```
+<% } else if (scope === 'brokers') { %>
+### Using Broker Adapter
+
+```typescript
+import { <%= className %>Adapter } from '<%= importPath %>';
+
+const broker = new <%= className %>Adapter(config);
+await broker.connect();
+
+const marketData = await broker.getMarketData('AAPL');
+const orderId = await broker.placeOrder({
+  symbol: 'AAPL',
+  quantity: 100,
+  type: 'MARKET'
+});
+```
+<% } %>
+
+## API Documentation
+
+Run the following to generate API documentation:
+
+```bash
+nx run <%= projectName %>:compodoc
+```
+
+## Contributing
+
+1. Make changes in the `src/` directory
+2. Update tests as needed
+3. Ensure all tests pass
+4. Update this README if adding new features
+
+## Dependencies
+
+This library depends on:
+- [@nestjs/common](https://www.npmjs.com/package/@nestjs/common) - NestJS framework
+- [class-validator](https://www.npmjs.com/package/class-validator) - Validation decorators
+- [class-transformer](https://www.npmjs.com/package/class-transformer) - Object transformation
+
+## License
+
+Proprietary - JTS Trading System
