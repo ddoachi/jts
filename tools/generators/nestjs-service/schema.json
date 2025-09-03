@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "$id": "NestJSServiceGenerator",
+  "title": "NestJS Service Generator",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the service",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the service?"
+    },
+    "directory": {
+      "type": "string",
+      "description": "A directory where the service should be placed"
+    },
+    "tags": {
+      "type": "string",
+      "description": "Add tags to the service (comma-separated)"
+    },
+    "port": {
+      "type": "number",
+      "description": "Port number for the service (3000-3999)",
+      "minimum": 3000,
+      "maximum": 3999
+    },
+    "includeKafka": {
+      "type": "boolean",
+      "description": "Include Kafka configuration",
+      "default": false,
+      "x-prompt": "Would you like to include Kafka messaging?"
+    },
+    "includeGrpc": {
+      "type": "boolean",
+      "description": "Include gRPC configuration",
+      "default": false,
+      "x-prompt": "Would you like to include gRPC support?"
+    },
+    "includeWebsocket": {
+      "type": "boolean",
+      "description": "Include WebSocket configuration",
+      "default": false,
+      "x-prompt": "Would you like to include WebSocket support?"
+    }
+  },
+  "required": ["name"]
+}

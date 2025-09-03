@@ -1,0 +1,46 @@
+/**
+ * Infrastructure Module
+ *
+ * WHY: Centralizes all external service integrations
+ * HOW: Provides adapters for databases, message queues, and APIs
+ * WHAT: Infrastructure implementations for domain interfaces
+ *
+ * COMPONENTS:
+ * - Database connections (PostgreSQL, MongoDB, ClickHouse, Redis)
+ * - Message queues (Kafka)
+ * - External APIs (broker integrations)
+ * - Caching layers
+ * - File storage
+ *
+ * PATTERN: Ports and Adapters (Hexagonal Architecture)
+ * - Domain defines interfaces (ports)
+ * - Infrastructure provides implementations (adapters)
+ */
+
+import { Module } from '@nestjs/common';
+
+// ═══════════════════════════════════════════════════════════════════
+// ███ SECTION: Infrastructure Module Configuration ███
+// ═══════════════════════════════════════════════════════════════════
+
+@Module({
+  imports: [
+    // Database modules will be imported here
+    // Example:
+    // DatabaseModule,
+    // CacheModule,
+    // KafkaModule,
+    // GrpcModule,
+  ],
+  providers: [
+    // Infrastructure services and repositories
+    // Example:
+    // PostgresOrderRepository,
+    // RedisCache Service,
+    // KafkaProducerService,
+  ],
+  exports: [
+    // Export infrastructure services for domain use
+  ],
+})
+export class InfraModule {}

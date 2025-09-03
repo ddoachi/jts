@@ -1,0 +1,69 @@
+/**
+ * <%= className %> Application Module
+ *
+ * WHY: Root module that orchestrates all service components
+ * HOW: Imports and configures domain, infrastructure, and shared modules
+ * WHAT: Main dependency injection container for the service
+ *
+ * ARCHITECTURE:
+ * - Domain: Business logic and entities
+ * - Infrastructure: External service integrations
+ * - Shared: Cross-cutting concerns and utilities
+ *
+ * RELATED:
+ * - domain/domain.module.ts
+ * - infra/infra.module.ts
+ * - shared/shared.module.ts
+ */
+
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { HealthModule } from './health/health.module';
+import { DomainModule } from '../domain/domain.module';
+import { InfraModule } from '../infra/infra.module';
+import { SharedModule } from '../shared/shared.module';
+
+// ═══════════════════════════════════════════════════════════════════
+// ███ SECTION: Module Configuration ███
+// ═══════════════════════════════════════════════════════════════════
+
+@Module({
+  imports: [
+    // Step 1: Global configuration module
+    // Loads environment variables and makes them available throughout the app
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env.local', '.env'],
+      cache: true,
+      expandVariables: true,
+    }),
+
+    // Step 2: Health check module
+    // Provides /health endpoint for container orchestration
+    HealthModule,
+
+    // Step 3: Domain module
+    // Contains all business logic and domain entities
+    DomainModule,
+
+    // Step 4: Infrastructure module
+    // External service integrations (databases, message queues, etc.)
+    InfraModule,
+
+    // Step 5: Shared module
+    // Common utilities, interceptors, guards, and filters
+    SharedModule,
+  ],
+  controllers: [],
+  providers: [],
+})
+export class AppModule {}
+
+/**
+ * Module loading order matters:
+ * 1. ConfigModule - Must be first to provide env vars
+ * 2. HealthModule - Independent, no dependencies
+ * 3. DomainModule - Core business logic
+ * 4. InfraModule - May depend on domain
+ * 5. SharedModule - Used by all other modules
+ */

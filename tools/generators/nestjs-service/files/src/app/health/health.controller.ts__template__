@@ -1,0 +1,75 @@
+/**
+ * Health Check Controller
+ *
+ * WHY: Kubernetes/Docker need health endpoints for service management
+ * HOW: Uses Terminus for standardized health checks
+ * WHAT: Provides liveness and readiness probes
+ *
+ * USAGE:
+ * - Liveness: kubectl uses /health to determine if pod should restart
+ * - Readiness: kubectl uses /health/ready to determine traffic routing
+ *
+ * @example
+ * curl http://localhost:<%= port %>/health
+ * // Returns: { status: "ok", info: {...}, error: {}, details: {...} }
+ */
+
+import { Controller, Get } from '@nestjs/common';
+import {
+  HealthCheck,
+  HealthCheckService,
+  MemoryHealthIndicator,
+  DiskHealthIndicator,
+} from '@nestjs/terminus';
+
+// ═══════════════════════════════════════════════════════════════════
+// ███ SECTION: Health Check Endpoints ███
+// ═══════════════════════════════════════════════════════════════════
+
+@Controller('health')
+export class HealthController {
+  constructor(
+    private health: HealthCheckService,
+    private memory: MemoryHealthIndicator,
+    private disk: DiskHealthIndicator,
+  ) {}
+
+  /**
+   * Basic liveness probe
+   *
+   * WHY: Quick check to see if service is responsive
+   * HOW: Returns simple OK status
+   * WHAT: Used by orchestrators for restart decisions
+   */
+  @Get()
+  @HealthCheck()
+  check() {
+    return this.health.check([]);
+  }
+
+  /**
+   * Detailed readiness probe
+   *
+   * WHY: Ensures service and dependencies are ready for traffic
+   * HOW: Checks memory, disk, and external dependencies
+   * WHAT: Used by orchestrators for traffic routing decisions
+   */
+  @Get('ready')
+  @HealthCheck()
+  checkReady() {
+    return this.health.check([
+      // Check heap memory usage (max 300MB)
+      () => this.memory.checkHeap('memory_heap', 300 * 1024 * 1024),
+      
+      // Check RSS memory usage (max 300MB)
+      () => this.memory.checkRSS('memory_rss', 300 * 1024 * 1024),
+      
+      // Check disk space (min 10% free)
+      () =>
+        this.disk.checkStorage('disk_storage', {
+          thresholdPercent: 0.9,
+          path: '/',
+        }),
+    ]);
+  }
+}

@@ -1,0 +1,98 @@
+/**
+ * <%= className %> Service Bootstrap
+ *
+ * WHY: Main entry point for the <%= name %> microservice
+ * HOW: Configures and starts NestJS application with JTS standards
+ * WHAT: HTTP server with health checks and middleware
+ *
+ * FLOW:
+ * 1. Create NestJS application
+ * 2. Configure global middleware and pipes
+ * 3. Setup Swagger documentation
+ * 4. Start HTTP server on configured port
+ *
+ * RELATED: app/app.module.ts
+ */
+
+import { Logger, ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { AppModule } from './app/app.module';
+
+// ═══════════════════════════════════════════════════════════════════
+// ███ SECTION: Application Bootstrap ███
+// ═══════════════════════════════════════════════════════════════════
+
+async function bootstrap() {
+  // Step 1: Create application instance
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
+  });
+
+  // Step 2: Configure global prefix for all routes
+  const globalPrefix = 'api';
+  app.setGlobalPrefix(globalPrefix);
+
+  // Step 3: Configure validation pipe for DTO validation
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Strip properties not in DTO
+      forbidNonWhitelisted: true, // Throw error for unknown properties
+      transform: true, // Auto-transform payloads to DTO types
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    })
+  );
+
+  // Step 4: Configure CORS for development
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN || '*',
+    credentials: true,
+  });
+
+  // Step 5: Setup Swagger documentation
+  const config = new DocumentBuilder()
+    .setTitle('<%= className %> Service')
+    .setDescription('API documentation for <%= name %> service')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .addServer(`http://localhost:${<%= port %>}`)
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api-docs', app, document);
+
+  // Step 6: Start server on configured port
+  const port = process.env.PORT || <%= port %>;
+  await app.listen(port);
+
+  Logger.log(
+    `🚀 <%= className %> service is running on: http://localhost:${port}/${globalPrefix}`
+  );
+  Logger.log(
+    `📚 API Documentation: http://localhost:${port}/api-docs`
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ███ SECTION: Error Handling ███
+// ═══════════════════════════════════════════════════════════════════
+
+// Catch unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  Logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  process.exit(1);
+});
+
+// Catch uncaught exceptions
+process.on('uncaughtException', (error) => {
+  Logger.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+// Bootstrap the application
+bootstrap().catch((error) => {
+  Logger.error('Failed to bootstrap application:', error);
+  process.exit(1);
+});
