@@ -42,15 +42,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: yarn install --immutable
 
       - name: Run Tests with Coverage
         run: |
           # Generate coverage reports for SonarCloud
-          npm run test:coverage || true
+          yarn test:coverage || true
           
           # Find and display coverage summary
           if [ -f "coverage/lcov.info" ]; then
@@ -105,16 +105,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: yarn install --immutable
 
       # CodeQL analyzes the code built by your build system
       - name: Build Code for Analysis
         run: |
           # Build all projects for comprehensive analysis
-          npm run build || true
+          yarn build || true
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
@@ -138,10 +138,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: yarn install --immutable
 
       - name: Check Code Complexity
         run: |
@@ -168,7 +168,7 @@ jobs:
         run: |
           # Run npm audit for known vulnerabilities
           echo "::group::Security Audit"
-          npm audit --audit-level=moderate || true
+          yarn npm audit --audit-level=moderate || true
           echo "::endgroup::"
 
   # ═══════════════════════════════════════════════════════════════════

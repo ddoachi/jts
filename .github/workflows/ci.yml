@@ -49,7 +49,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Cache Nx
         uses: actions/cache@v3
@@ -60,7 +60,7 @@ jobs:
             ${{ runner.os }}-nx-
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: yarn install --immutable
 
       - name: Calculate Affected
         id: affected
@@ -107,7 +107,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Restore Nx Cache
         uses: actions/cache@v3
@@ -118,7 +118,7 @@ jobs:
             ${{ runner.os }}-nx-
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: yarn install --immutable
 
       - name: Run Lint
         run: npx nx affected --target=lint --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3
@@ -138,7 +138,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Restore Nx Cache
         uses: actions/cache@v3
@@ -149,7 +149,7 @@ jobs:
             ${{ runner.os }}-nx-
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: yarn install --immutable
 
       - name: Run Type Check
         run: npx nx affected --target=type-check --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3
@@ -172,7 +172,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Restore Nx Cache
         uses: actions/cache@v3
@@ -183,7 +183,7 @@ jobs:
             ${{ runner.os }}-nx-
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: yarn install --immutable
 
       - name: Run Tests
         run: npx nx affected --target=test --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3 --configuration=ci --coverage
@@ -214,7 +214,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Restore Nx Cache
         uses: actions/cache@v3
@@ -225,7 +225,7 @@ jobs:
             ${{ runner.os }}-nx-
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: yarn install --immutable
 
       - name: Build Affected
         run: npx nx affected --target=build --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3 --configuration=production

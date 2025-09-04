@@ -57,16 +57,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: yarn install --immutable
 
       - name: Build All Projects
         run: |
           # Build all projects for release
           echo "📦 Building all projects for release..."
-          npm run build:all || npm run build || npx nx run-many --target=build --all
+          yarn build:all || yarn build || npx nx run-many --target=build --all
           
           # Verify dist folder exists
           if [ -d "dist" ]; then
@@ -80,7 +80,7 @@ jobs:
         run: |
           # Ensure all tests pass before release
           echo "🧪 Running tests before release..."
-          npm run test:ci || npm test || npx nx run-many --target=test --all --configuration=ci
+          yarn test:ci || yarn test || npx nx run-many --target=test --all --configuration=ci
 
       - name: Semantic Release
         id: semantic
@@ -137,7 +137,7 @@ jobs:
               [
                 "@semantic-release/git",
                 {
-                  "assets": ["CHANGELOG.md", "package.json", "package-lock.json"],
+                  "assets": ["CHANGELOG.md", "package.json", "yarn.lock"],
                   "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
                 }
               ]
@@ -146,8 +146,8 @@ jobs:
           EOF
           
           # Install semantic-release if not present
-          if ! npm ls semantic-release &>/dev/null; then
-            npm install --save-dev semantic-release \
+          if ! yarn list --pattern semantic-release &>/dev/null; then
+            yarn add --dev semantic-release \
               @semantic-release/changelog \
               @semantic-release/git \
               @semantic-release/github \
