@@ -1,6 +1,6 @@
 # 📊 Spec Dashboard
 
-> Auto-generated from spec files on 2025-09-03
+> Auto-generated from spec files on 2025-09-04
 
 ## 🎯 Quick Stats
 
