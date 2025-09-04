@@ -1,0 +1,111 @@
+# ═══════════════════════════════════════════════════════════════════
+# ███ Reusable Cache Configuration Template ███
+# ═══════════════════════════════════════════════════════════════════
+#
+# **Generated from spec**: [[E01-F04-T01] GitHub Actions Workflow Structure Setup](../../../specs/E01/F04/T01/E01-F04-T01.spec.md)
+#
+# WHY: Centralize caching strategies to improve build performance
+# HOW: Provides reusable cache configurations for various build artifacts
+# WHAT: Caches dependencies, build outputs, and test results
+
+name: Reusable Cache Workflow
+
+on:
+  workflow_call:
+    inputs:
+      cache-npm:
+        description: 'Enable NPM dependency caching'
+        required: false
+        type: boolean
+        default: true
+      cache-nx:
+        description: 'Enable Nx build cache'
+        required: false
+        type: boolean
+        default: true
+      cache-docker:
+        description: 'Enable Docker layer caching'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  configure-cache:
+    runs-on: ubuntu-latest
+    steps:
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: NPM Dependencies Cache
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 📦 Setup NPM Cache
+        if: inputs.cache-npm
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            # Cache both global npm cache and local node_modules
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
+            # Progressive cache restoration
+            
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Nx Build Cache
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 🏗️ Setup Nx Cache
+        if: inputs.cache-nx
+        uses: actions/cache@v3
+        with:
+          path: |
+            .nx/cache
+            dist/
+            # Cache Nx computation cache and build outputs
+          key: nx-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            nx-${{ runner.os }}-${{ github.ref }}
+            nx-${{ runner.os }}-
+            # Multi-level cache fallback strategy
+            
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Docker Layer Cache
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 🐳 Setup Docker Buildx
+        if: inputs.cache-docker
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: |
+            network=host
+            # Enable host network for buildx
+            
+      - name: 🐳 Configure Docker Cache
+        if: inputs.cache-docker
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: docker-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            docker-${{ runner.os }}-
+            # Docker layer cache for faster builds
+            
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Cache Statistics
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 📊 Display Cache Statistics
+        run: |
+          echo "═══ Cache Configuration Summary ═══"
+          echo "NPM Cache: ${{ inputs.cache-npm && 'Enabled ✅' || 'Disabled ❌' }}"
+          echo "Nx Cache: ${{ inputs.cache-nx && 'Enabled ✅' || 'Disabled ❌' }}"
+          echo "Docker Cache: ${{ inputs.cache-docker && 'Enabled ✅' || 'Disabled ❌' }}"
+          
+          if [ -d "node_modules" ]; then
+            echo "Node modules size: $(du -sh node_modules | cut -f1)"
+          fi
+          
+          if [ -d ".nx/cache" ]; then
+            echo "Nx cache size: $(du -sh .nx/cache | cut -f1)"
+          fi
+          # Helps monitor cache effectiveness

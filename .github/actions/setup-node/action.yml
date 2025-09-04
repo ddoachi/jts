@@ -1,0 +1,147 @@
+# ═══════════════════════════════════════════════════════════════════
+# ███ Setup Node Environment - Composite Action ███
+# ═══════════════════════════════════════════════════════════════════
+#
+# **Generated from spec**: [[E01-F04-T01] GitHub Actions Workflow Structure Setup](../../../specs/E01/F04/T01/E01-F04-T01.spec.md)
+#
+# WHY: Provide a single action for complete Node.js environment setup
+# HOW: Combines Node.js setup, caching, and dependency installation
+# WHAT: Configures Node.js with Nx monorepo optimizations
+
+name: 'Setup Node Environment'
+description: 'Setup Node.js with caching and Nx configuration for JTS monorepo'
+author: 'JTS Team'
+
+inputs:
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '20.x'
+  install-deps:
+    description: 'Whether to install dependencies'
+    required: false
+    default: 'true'
+  nx-cloud-token:
+    description: 'Nx Cloud access token for distributed caching'
+    required: false
+    default: ''
+
+outputs:
+  cache-hit:
+    description: 'Whether the cache was hit'
+    value: ${{ steps.cache-deps.outputs.cache-hit }}
+  node-version:
+    description: 'Installed Node.js version'
+    value: ${{ steps.node-info.outputs.version }}
+
+runs:
+  using: 'composite'
+  steps:
+    # ═══════════════════════════════════════════════════════════════
+    # SECTION: Node.js Installation
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: Setup Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
+        # Leverage built-in caching for npm registry
+        
+    # ═══════════════════════════════════════════════════════════════
+    # SECTION: Dependency Caching
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: Cache Dependencies
+      id: cache-deps
+      uses: actions/cache@v3
+      with:
+        path: |
+          node_modules
+          ~/.npm
+          .nx/cache
+          # Cache all dependency and build artifacts
+        key: deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('nx.json') }}
+        restore-keys: |
+          deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
+          deps-${{ runner.os }}-
+          # Progressive cache restoration strategy
+          
+    # ═══════════════════════════════════════════════════════════════
+    # SECTION: Dependency Installation
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: Install Dependencies
+      if: inputs.install-deps == 'true' && steps.cache-deps.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        echo "📦 Installing dependencies..."
+        
+        # Use npm ci for reproducible builds
+        npm ci --prefer-offline --no-audit
+        
+        # Reset Nx daemon to ensure clean state
+        npx nx reset
+        
+        echo "✅ Dependencies installed successfully"
+        # Bread crumb: Check package-lock.json for exact versions
+        
+    # ═══════════════════════════════════════════════════════════════
+    # SECTION: Nx Cloud Configuration
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: Configure Nx Cloud
+      if: inputs.nx-cloud-token != ''
+      shell: bash
+      run: |
+        echo "☁️ Configuring Nx Cloud..."
+        
+        # Set Nx Cloud token for distributed caching
+        echo "NX_CLOUD_ACCESS_TOKEN=${{ inputs.nx-cloud-token }}" >> $GITHUB_ENV
+        
+        # Configure Nx branch for proper cache segmentation
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          echo "NX_BRANCH=${{ github.event.number }}" >> $GITHUB_ENV
+        else
+          echo "NX_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+        fi
+        
+        echo "✅ Nx Cloud configured"
+        # GOTCHA: Branch naming affects cache hit rates
+        
+    # ═══════════════════════════════════════════════════════════════
+    # SECTION: Environment Validation
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: Validate Node Environment
+      id: node-info
+      shell: bash
+      run: |
+        echo "🔍 Validating environment..."
+        
+        # Capture version information
+        NODE_VERSION=$(node --version)
+        NPM_VERSION=$(npm --version)
+        NX_VERSION=$(npx nx --version 2>/dev/null || echo "Not installed")
+        
+        echo "version=$NODE_VERSION" >> $GITHUB_OUTPUT
+        
+        # Display environment summary
+        echo "═══ Environment Summary ═══"
+        echo "Node.js: $NODE_VERSION"
+        echo "NPM: $NPM_VERSION"
+        echo "Nx: $NX_VERSION"
+        echo "OS: ${{ runner.os }}"
+        echo "Cache Hit: ${{ steps.cache-deps.outputs.cache-hit == 'true' && '✅ Yes' || '❌ No' }}"
+        
+        # List workspace info if Nx is available
+        if command -v nx &> /dev/null; then
+          echo ""
+          echo "═══ Nx Workspace Info ═══"
+          npx nx report
+        fi
+        # Helps debug version mismatches and configuration issues
+
+branding:
+  icon: 'package'
+  color: 'green'

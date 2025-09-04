@@ -1,0 +1,312 @@
+# ═══════════════════════════════════════════════════════════════════
+# ███ JTS CI/CD Pipeline - Improved Main Workflow ███
+# ═══════════════════════════════════════════════════════════════════
+#
+# **Generated from spec**: [[E01-F04-T01] GitHub Actions Workflow Structure Setup](../../specs/E01/F04/T01/E01-F04-T01.spec.md)
+#
+# WHY: Streamline CI/CD with reusable components for maintainability
+# HOW: Leverages reusable workflows and composite actions
+# WHAT: Complete CI pipeline with testing, linting, and building
+
+name: CI Pipeline (Improved)
+
+on:
+  push:
+    branches: [main, develop, 'release/**']
+  pull_request:
+    branches: [main, develop, 'release/**']
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        description: 'Enable debug mode'
+        required: false
+        type: boolean
+        default: false
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Concurrency Control
+# Prevent duplicate runs and save resources
+# ═══════════════════════════════════════════════════════════════════
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Environment Variables
+# ═══════════════════════════════════════════════════════════════════
+
+env:
+  NODE_VERSION: '20.x'
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_BRANCH: ${{ github.event.number || github.ref_name }}
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Setup Environment
+  # Uses reusable workflow for consistent setup
+  # ═══════════════════════════════════════════════════════════════════
+  
+  setup:
+    name: 🚀 Setup Environment
+    uses: ./.github/workflows/_templates/setup.yml
+    with:
+      node-version: ${{ env.NODE_VERSION }}
+      checkout-depth: 0
+      enable-nx-cloud: true
+    secrets: inherit
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Code Quality Checks
+  # Parallel execution of linting and formatting checks
+  # ═══════════════════════════════════════════════════════════════════
+  
+  code-quality:
+    name: 🎨 Code Quality
+    needs: [setup]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        check: [lint, format, typecheck]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          nx-cloud-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+          
+      - name: Run ${{ matrix.check }}
+        uses: ./.github/actions/nx-affected
+        with:
+          target: ${{ matrix.check }}
+          base: ${{ github.event.pull_request.base.sha || 'HEAD~1' }}
+          head: HEAD
+          parallel: 3
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Test Suite
+  # Comprehensive testing with coverage reporting
+  # ═══════════════════════════════════════════════════════════════════
+  
+  test:
+    name: 🧪 Test Suite
+    needs: [setup]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-type: [unit, integration]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          nx-cloud-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+          
+      - name: Run ${{ matrix.test-type }} Tests
+        uses: ./.github/actions/nx-affected
+        with:
+          target: test:${{ matrix.test-type }}
+          base: ${{ github.event.pull_request.base.sha || 'HEAD~1' }}
+          head: HEAD
+          parallel: 3
+          args: --coverage --coverageReporters=json
+          
+      - name: Upload Coverage
+        if: matrix.test-type == 'unit'
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/coverage-final.json
+          flags: ${{ matrix.test-type }}
+          fail_ci_if_error: false
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Build Applications
+  # Build affected applications with caching
+  # ═══════════════════════════════════════════════════════════════════
+  
+  build:
+    name: 🏗️ Build Applications
+    needs: [code-quality, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          nx-cloud-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+          
+      - name: Build Affected Apps
+        id: build
+        uses: ./.github/actions/nx-affected
+        with:
+          target: build
+          base: ${{ github.event.pull_request.base.sha || 'HEAD~1' }}
+          head: HEAD
+          parallel: 3
+          args: --configuration=production
+          
+      - name: Upload Build Artifacts
+        if: steps.build.outputs.has-affected == 'true'
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts
+          path: dist/
+          retention-days: 7
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Security Scanning
+  # Check for vulnerabilities and license compliance
+  # ═══════════════════════════════════════════════════════════════════
+  
+  security:
+    name: 🔒 Security Scan
+    needs: [setup]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          install-deps: true
+          
+      - name: Run Security Audit
+        run: |
+          echo "🔍 Running npm audit..."
+          npm audit --production --audit-level=moderate || true
+          
+      - name: Run License Check
+        run: |
+          echo "📜 Checking licenses..."
+          npx license-checker --production --onlyAllow 'MIT;Apache-2.0;BSD;ISC' || true
+          
+      - name: Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'JTS'
+          path: '.'
+          format: 'HTML'
+          args: >
+            --enableRetired
+            --enableExperimental
+            
+      - name: Upload Security Reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-reports
+          path: reports/
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: E2E Tests (Optional)
+  # End-to-end testing for critical paths
+  # ═══════════════════════════════════════════════════════════════════
+  
+  e2e:
+    name: 🎭 E2E Tests
+    needs: [build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifacts
+          path: dist/
+          
+      - name: Start Services
+        run: |
+          docker-compose -f docker-compose.test.yml up -d
+          npm run wait-for-services
+          
+      - name: Run E2E Tests
+        run: |
+          npx nx e2e api-gateway-e2e --configuration=ci
+          
+      - name: Stop Services
+        if: always()
+        run: |
+          docker-compose -f docker-compose.test.yml down
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Notification
+  # Send status notifications to team channels
+  # ═══════════════════════════════════════════════════════════════════
+  
+  notify:
+    name: 📢 Send Notifications
+    needs: [build, security, e2e]
+    if: always()
+    uses: ./.github/workflows/_templates/notify.yml
+    with:
+      status: ${{ needs.build.result }}
+      workflow-name: 'CI Pipeline'
+      notify-slack: true
+      notify-discord: false
+      custom-message: |
+        Branch: ${{ github.ref_name }}
+        Commit: ${{ github.sha }}
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Summary
+  # Generate comprehensive job summary
+  # ═══════════════════════════════════════════════════════════════════
+  
+  summary:
+    name: 📊 Pipeline Summary
+    needs: [code-quality, test, build, security]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate Summary
+        run: |
+          echo "## CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 📈 Results" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Quality | ${{ needs.code-quality.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | ${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security | ${{ needs.security.result == 'success' && '✅ Passed' || '⚠️ Review Required' }} |" >> $GITHUB_STEP_SUMMARY
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📝 Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Workflow**: ${{ github.workflow }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Author**: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Run**: [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          
+          # GOTCHA: Job summaries provide quick status overview in UI

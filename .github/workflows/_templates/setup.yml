@@ -1,0 +1,146 @@
+# ═══════════════════════════════════════════════════════════════════
+# ███ Reusable Setup Workflow Template ███
+# ═══════════════════════════════════════════════════════════════════
+#
+# **Generated from spec**: [[E01-F04-T01] GitHub Actions Workflow Structure Setup](../../../specs/E01/F04/T01/E01-F04-T01.spec.md)
+#
+# WHY: Eliminate code duplication across workflows by centralizing common setup tasks
+# HOW: Using GitHub's workflow_call event to create a reusable workflow
+# WHAT: Provides Node.js setup, dependency caching, and installation
+
+name: Reusable Setup Workflow
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: 'Node.js version to use'
+        required: false
+        type: string
+        default: '20.x'
+      checkout-depth:
+        description: 'Number of commits to fetch (0 for all)'
+        required: false
+        type: number
+        default: 0
+      enable-nx-cloud:
+        description: 'Enable Nx Cloud distributed caching'
+        required: false
+        type: boolean
+        default: true
+    outputs:
+      cache-key:
+        description: 'Node modules cache key for downstream jobs'
+        value: ${{ jobs.setup.outputs.cache-key }}
+      nx-head:
+        description: 'Nx head SHA for affected calculations'
+        value: ${{ jobs.setup.outputs.nx-head }}
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }}
+      nx-head: ${{ steps.nx-head.outputs.sha }}
+    
+    steps:
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Repository Checkout
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ inputs.checkout-depth }}
+          # GOTCHA: fetch-depth of 0 fetches all history for Nx affected commands
+          
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Node.js Environment Setup
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'npm'
+          # Built-in caching for npm dependencies
+          
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Cache Key Generation
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 🔑 Generate Cache Key
+        id: cache-key
+        run: |
+          # Generate a deterministic cache key based on OS and lockfile
+          # This ensures cache invalidation when dependencies change
+          echo "key=node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}" >> $GITHUB_OUTPUT
+          
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Dependency Caching
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 💾 Cache Node Modules
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: |
+            node_modules
+            ~/.npm
+          key: ${{ steps.cache-key.outputs.key }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
+            # Fallback to OS-specific cache if exact match not found
+            
+      - name: 🗄️ Cache Nx
+        uses: actions/cache@v3
+        with:
+          path: .nx/cache
+          key: nx-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            nx-${{ runner.os }}-
+            # Nx cache helps with incremental builds
+            
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Dependency Installation
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 📦 Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          # Use ci for faster, reproducible installs
+          npm ci --prefer-offline --no-audit
+          # --prefer-offline: Use cached packages when available
+          # --no-audit: Skip security audit for faster installs (run separately)
+          
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Nx Configuration
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: ⚙️ Configure Nx
+        if: inputs.enable-nx-cloud
+        run: |
+          # Set up Nx Cloud for distributed task execution
+          npx nx reset
+          
+      - name: 🎯 Determine Nx Head
+        id: nx-head
+        run: |
+          # Determine the base SHA for Nx affected commands
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "sha=${{ github.event.pull_request.base.sha }}" >> $GITHUB_OUTPUT
+          else
+            echo "sha=${{ github.event.before || 'HEAD~1' }}" >> $GITHUB_OUTPUT
+          fi
+          # This helps Nx determine which projects are affected by changes
+          
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Environment Validation
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: ✅ Validate Environment
+        run: |
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "Nx version: $(npx nx --version)"
+          # Bread crumb: Helps debug version-related issues

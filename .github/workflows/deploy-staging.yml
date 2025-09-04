@@ -1,0 +1,346 @@
+# ═══════════════════════════════════════════════════════════════════
+# ███ Staging Environment Deployment ███
+# ═══════════════════════════════════════════════════════════════════
+#
+# **Generated from spec**: [[E01-F04-T01] GitHub Actions Workflow Structure Setup](../../specs/E01/F04/T01/E01-F04-T01.spec.md)
+#
+# WHY: Provide production-like environment for final testing
+# HOW: Deploy release candidates with approval gates
+# WHAT: Staging deployment with comprehensive testing
+
+name: Deploy to Staging
+
+on:
+  push:
+    branches: ['release/**']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g., v1.2.3)'
+        required: true
+        type: string
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Concurrency and Environment
+# ═══════════════════════════════════════════════════════════════════
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
+env:
+  ENVIRONMENT: staging
+  NODE_VERSION: '20.x'
+  REGISTRY: ghcr.io
+  NAMESPACE: jts-staging
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Approval Gate
+  # ═══════════════════════════════════════════════════════════════════
+  
+  approval:
+    name: 🚦 Deployment Approval
+    runs-on: ubuntu-latest
+    environment:
+      name: staging-approval
+    steps:
+      - name: Request Approval
+        run: |
+          echo "📋 Deployment Request"
+          echo "Environment: Staging"
+          echo "Version: ${{ github.event.inputs.version || github.ref_name }}"
+          echo "Requested by: @${{ github.actor }}"
+          echo ""
+          echo "⏳ Waiting for approval..."
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Pre-deployment Validation
+  # ═══════════════════════════════════════════════════════════════════
+  
+  validate:
+    name: ✅ Pre-deployment Validation
+    needs: [approval]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+          
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Run Integration Tests
+        run: |
+          echo "🧪 Running integration tests..."
+          npm run test:integration
+          
+      - name: Security Scan
+        run: |
+          echo "🔒 Running security scan..."
+          npm audit --production
+          
+      - name: License Check
+        run: |
+          echo "📜 Checking licenses..."
+          npx license-checker --production --failOn 'GPL;AGPL;LGPL'
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Build and Tag Images
+  # ═══════════════════════════════════════════════════════════════════
+  
+  build-images:
+    name: 🐳 Build Staging Images
+    needs: [validate]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: 
+          - api-gateway
+          - strategy-engine
+          - risk-management
+          - order-execution
+          - market-data
+          - portfolio-service
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+          
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Log in to Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Determine Version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION=${{ github.event.inputs.version }}
+          else
+            VERSION=${GITHUB_REF#refs/heads/release/}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Build and Push Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/${{ matrix.service }}/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}:${{ steps.version.outputs.version }}
+            ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}:staging-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=staging
+            VERSION=${{ steps.version.outputs.version }}
+            SERVICE_NAME=${{ matrix.service }}
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Database Migrations
+  # ═══════════════════════════════════════════════════════════════════
+  
+  migrate-database:
+    name: 🗄️ Database Migrations
+    needs: [validate]
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+          
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Backup Database
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+        run: |
+          echo "💾 Creating database backup..."
+          npm run db:backup:staging
+          
+      - name: Run Migrations
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          CLICKHOUSE_URL: ${{ secrets.STAGING_CLICKHOUSE_URL }}
+        run: |
+          echo "🗄️ Running PostgreSQL migrations..."
+          npm run migration:run:staging
+          
+          echo "📊 Running ClickHouse migrations..."
+          npm run migration:clickhouse:staging
+          
+          echo "✅ Migrations completed"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Blue-Green Deployment
+  # ═══════════════════════════════════════════════════════════════════
+  
+  deploy:
+    name: 🚢 Blue-Green Deployment
+    needs: [build-images, migrate-database]
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://staging.jts.example.com
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.version || github.ref }}
+          
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.STAGING_KUBECONFIG }}" | base64 -d > kubeconfig
+          echo "KUBECONFIG=${PWD}/kubeconfig" >> $GITHUB_ENV
+          
+      - name: Deploy Green Environment
+        run: |
+          echo "🟢 Deploying to green environment..."
+          
+          # Apply configurations
+          kubectl apply -f ./k8s/staging/config/ -n ${{ env.NAMESPACE }}
+          
+          # Deploy to green slots
+          kubectl apply -f ./k8s/staging/services/ -n ${{ env.NAMESPACE }} \
+            --selector="deployment=green"
+          
+          # Wait for green deployment
+          kubectl rollout status deployment -n ${{ env.NAMESPACE }} \
+            --selector="deployment=green" --timeout=10m
+            
+      - name: Run Health Checks
+        run: |
+          echo "🏥 Checking green environment health..."
+          ./scripts/health-check.sh green staging
+          
+      - name: Switch Traffic to Green
+        run: |
+          echo "🔄 Switching traffic to green environment..."
+          kubectl patch service api-gateway -n ${{ env.NAMESPACE }} \
+            -p '{"spec":{"selector":{"deployment":"green"}}}'
+            
+          # Keep blue environment for rollback
+          echo "💙 Blue environment kept for rollback"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Performance Testing
+  # ═══════════════════════════════════════════════════════════════════
+  
+  performance-test:
+    name: ⚡ Performance Testing
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup k6
+        run: |
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+          
+      - name: Run Load Tests
+        env:
+          K6_CLOUD_TOKEN: ${{ secrets.K6_CLOUD_TOKEN }}
+        run: |
+          echo "⚡ Running performance tests..."
+          k6 run --out cloud ./tests/performance/staging.js
+          
+      - name: Analyze Results
+        run: |
+          echo "📊 Analyzing performance results..."
+          npm run perf:analyze:staging
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: E2E Testing
+  # ═══════════════════════════════════════════════════════════════════
+  
+  e2e-test:
+    name: 🎭 E2E Testing
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Run E2E Tests
+        env:
+          API_URL: https://staging.jts.example.com
+          TEST_USER: ${{ secrets.STAGING_TEST_USER }}
+          TEST_PASSWORD: ${{ secrets.STAGING_TEST_PASSWORD }}
+        run: |
+          echo "🎭 Running E2E tests..."
+          npm run test:e2e:staging
+          
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-results
+          path: test-results/
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Rollback on Failure
+  # ═══════════════════════════════════════════════════════════════════
+  
+  rollback:
+    name: 🔄 Rollback if Failed
+    needs: [performance-test, e2e-test]
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.STAGING_KUBECONFIG }}" | base64 -d > kubeconfig
+          echo "KUBECONFIG=${PWD}/kubeconfig" >> $GITHUB_ENV
+          
+      - name: Rollback to Blue
+        run: |
+          echo "⚠️ Tests failed, rolling back to blue environment..."
+          kubectl patch service api-gateway -n ${{ env.NAMESPACE }} \
+            -p '{"spec":{"selector":{"deployment":"blue"}}}'
+          echo "✅ Rolled back to blue environment"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Notification
+  # ═══════════════════════════════════════════════════════════════════
+  
+  notify:
+    name: 📢 Deployment Notification
+    needs: [deploy, performance-test, e2e-test]
+    if: always()
+    uses: ./.github/workflows/_templates/notify.yml
+    with:
+      status: ${{ needs.e2e-test.result }}
+      workflow-name: 'Staging Deployment'
+      notify-slack: true
+      custom-message: |
+        Environment: Staging
+        Version: ${{ github.event.inputs.version || github.ref_name }}
+        URL: https://staging.jts.example.com
+        Status: ${{ needs.e2e-test.result == 'success' && '✅ Deployed' || '❌ Rolled Back' }}
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
