@@ -1,0 +1,304 @@
+# ============================================================================
+# JTS CI/CD Pipeline - Main Workflow
+# ============================================================================
+# Generated from spec: [[E01-F03-T06] Configure CI/CD Pipeline and Automation](../../specs/E01/F03/T06/E01-F03-T06.spec.md)
+#
+# PURPOSE: 
+# Automated continuous integration for the JTS monorepo using Nx affected commands
+# to optimize build times and resource usage.
+#
+# FEATURES:
+# - Nx affected builds for optimal performance
+# - Parallel execution for speed
+# - Comprehensive test coverage reporting
+# - Security vulnerability scanning
+# - Build artifact management
+# ============================================================================
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '20.x'
+  NX_CLOUD_DISTRIBUTED_EXECUTION: false
+  NX_DAEMON: false
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════
+  # ███ SECTION: Setup and Calculate Affected Projects ███
+  # ═══════════════════════════════════════════════════════════════════
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      affected-apps: ${{ steps.affected.outputs.apps }}
+      affected-libs: ${{ steps.affected.outputs.libs }}
+      has-affected: ${{ steps.affected.outputs.has-affected }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Cache Nx
+        uses: actions/cache@v3
+        with:
+          path: .nx
+          key: ${{ runner.os }}-nx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nx-
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Calculate Affected
+        id: affected
+        run: |
+          # Determine the base commit for comparison
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            NX_BASE=${{ github.event.pull_request.base.sha }}
+          else
+            NX_BASE=$(git rev-parse HEAD~1)
+          fi
+
+          # Calculate affected projects
+          AFFECTED_APPS=$(npx nx print-affected --base=$NX_BASE --head=HEAD --select=projects --type=app)
+          AFFECTED_LIBS=$(npx nx print-affected --base=$NX_BASE --head=HEAD --select=projects --type=lib)
+          HAS_AFFECTED=$(npx nx print-affected --base=$NX_BASE --head=HEAD --select=projects | grep -q '.' && echo 'true' || echo 'false')
+
+          # Output results for downstream jobs
+          echo "apps=$AFFECTED_APPS" >> $GITHUB_OUTPUT
+          echo "libs=$AFFECTED_LIBS" >> $GITHUB_OUTPUT
+          echo "has-affected=$HAS_AFFECTED" >> $GITHUB_OUTPUT
+
+          # Display affected projects for debugging
+          echo "::group::Affected Projects"
+          echo "Apps: $AFFECTED_APPS"
+          echo "Libs: $AFFECTED_LIBS"
+          echo "Has Affected: $HAS_AFFECTED"
+          echo "::endgroup::"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ███ SECTION: Code Quality Checks ███
+  # ═══════════════════════════════════════════════════════════════════
+  lint:
+    name: Lint
+    needs: setup
+    if: needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restore Nx Cache
+        uses: actions/cache@v3
+        with:
+          path: .nx
+          key: ${{ runner.os }}-nx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nx-
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run Lint
+        run: npx nx affected --target=lint --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3
+
+  type-check:
+    name: Type Check
+    needs: setup
+    if: needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restore Nx Cache
+        uses: actions/cache@v3
+        with:
+          path: .nx
+          key: ${{ runner.os }}-nx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nx-
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run Type Check
+        run: npx nx affected --target=type-check --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ███ SECTION: Testing and Coverage ███
+  # ═══════════════════════════════════════════════════════════════════
+  test:
+    name: Test
+    needs: setup
+    if: needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restore Nx Cache
+        uses: actions/cache@v3
+        with:
+          path: .nx
+          key: ${{ runner.os }}-nx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nx-
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Run Tests
+        run: npx nx affected --target=test --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3 --configuration=ci --coverage
+
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
+        if: always()
+        with:
+          directory: ./coverage
+          fail_ci_if_error: false
+          verbose: true
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ███ SECTION: Build and Artifacts ███
+  # ═══════════════════════════════════════════════════════════════════
+  build:
+    name: Build
+    needs: [lint, type-check, test]
+    if: always() && needs.setup.outputs.has-affected == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Restore Nx Cache
+        uses: actions/cache@v3
+        with:
+          path: .nx
+          key: ${{ runner.os }}-nx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-nx-
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Build Affected
+        run: npx nx affected --target=build --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3 --configuration=production
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts-${{ github.sha }}
+          path: dist/
+          retention-days: 7
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ███ SECTION: Security Scanning ███
+  # ═══════════════════════════════════════════════════════════════════
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v3
+        with:
+          fail-on-severity: high
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ███ SECTION: Final Status Check ███
+  # ═══════════════════════════════════════════════════════════════════
+  ci-status:
+    name: CI Status
+    runs-on: ubuntu-latest
+    needs: [setup, lint, type-check, test, build, security-scan, dependency-review]
+    if: always()
+    steps:
+      - name: Check CI Status
+        run: |
+          if [ "${{ needs.setup.outputs.has-affected }}" == "false" ]; then
+            echo "✅ No affected projects to test"
+            exit 0
+          fi
+
+          if [ "${{ contains(needs.*.result, 'failure') }}" == "true" ]; then
+            echo "❌ CI Pipeline failed"
+            exit 1
+          fi
+
+          if [ "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]; then
+            echo "⚠️ CI Pipeline was cancelled"
+            exit 1
+          fi
+
+          echo "✅ CI Pipeline passed successfully"

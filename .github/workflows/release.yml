@@ -1,0 +1,309 @@
+# ============================================================================
+# Automated Release Pipeline
+# ============================================================================
+# Generated from spec: [[E01-F03-T06] Configure CI/CD Pipeline and Automation](../../specs/E01/F03/T06/E01-F03-T06.spec.md)
+#
+# PURPOSE: 
+# Automated semantic versioning and release management using conventional commits
+# to generate changelogs and create GitHub releases.
+#
+# FEATURES:
+# - Semantic versioning based on commit messages
+# - Automated changelog generation
+# - GitHub release creation with assets
+# - NPM package publishing (if applicable)
+# - Docker image tagging with version numbers
+# ============================================================================
+
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Perform a dry run without creating releases'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════
+  # ███ SECTION: Release Preparation ███
+  # ═══════════════════════════════════════════════════════════════════
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      packages: write
+    outputs:
+      new_release_published: ${{ steps.semantic.outputs.new_release_published }}
+      new_release_version: ${{ steps.semantic.outputs.new_release_version }}
+      new_release_major_version: ${{ steps.semantic.outputs.new_release_major_version }}
+      new_release_minor_version: ${{ steps.semantic.outputs.new_release_minor_version }}
+      new_release_patch_version: ${{ steps.semantic.outputs.new_release_patch_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Build All Projects
+        run: |
+          # Build all projects for release
+          echo "📦 Building all projects for release..."
+          npm run build:all || npm run build || npx nx run-many --target=build --all
+          
+          # Verify dist folder exists
+          if [ -d "dist" ]; then
+            echo "✅ Build successful"
+            du -sh dist/
+          else
+            echo "⚠️ No dist folder found - skipping artifact creation"
+          fi
+
+      - name: Run Tests
+        run: |
+          # Ensure all tests pass before release
+          echo "🧪 Running tests before release..."
+          npm run test:ci || npm test || npx nx run-many --target=test --all --configuration=ci
+
+      - name: Semantic Release
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          # Configure semantic-release
+          cat > .releaserc.json << 'EOF'
+          {
+            "branches": ["main"],
+            "plugins": [
+              [
+                "@semantic-release/commit-analyzer",
+                {
+                  "preset": "angular",
+                  "releaseRules": [
+                    {"type": "feat", "release": "minor"},
+                    {"type": "fix", "release": "patch"},
+                    {"type": "perf", "release": "patch"},
+                    {"type": "revert", "release": "patch"},
+                    {"breaking": true, "release": "major"}
+                  ]
+                }
+              ],
+              [
+                "@semantic-release/release-notes-generator",
+                {
+                  "preset": "angular",
+                  "writerOpts": {
+                    "commitsSort": ["subject", "scope"]
+                  }
+                }
+              ],
+              "@semantic-release/changelog",
+              [
+                "@semantic-release/npm",
+                {
+                  "npmPublish": false
+                }
+              ],
+              [
+                "@semantic-release/github",
+                {
+                  "assets": [
+                    {
+                      "path": "dist/**/*.tar.gz",
+                      "label": "Distribution archives"
+                    }
+                  ]
+                }
+              ],
+              [
+                "@semantic-release/git",
+                {
+                  "assets": ["CHANGELOG.md", "package.json", "package-lock.json"],
+                  "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+                }
+              ]
+            ]
+          }
+          EOF
+          
+          # Install semantic-release if not present
+          if ! npm ls semantic-release &>/dev/null; then
+            npm install --save-dev semantic-release \
+              @semantic-release/changelog \
+              @semantic-release/git \
+              @semantic-release/github \
+              @semantic-release/npm \
+              @semantic-release/commit-analyzer \
+              @semantic-release/release-notes-generator
+          fi
+          
+          # Run semantic-release
+          if [ "$DRY_RUN" == "true" ]; then
+            echo "🔍 Running in dry-run mode..."
+            npx semantic-release --dry-run
+          else
+            npx semantic-release
+          fi
+
+      - name: Create Release Artifacts
+        if: steps.semantic.outputs.new_release_published == 'true'
+        run: |
+          # Package distribution files
+          VERSION=${{ steps.semantic.outputs.new_release_version }}
+          echo "📦 Creating release artifacts for version $VERSION"
+          
+          # Create archives for each app
+          if [ -d "dist/apps" ]; then
+            for app in dist/apps/*; do
+              if [ -d "$app" ]; then
+                app_name=$(basename "$app")
+                tar -czf "dist/${app_name}-${VERSION}.tar.gz" -C "dist/apps" "$app_name"
+                echo "Created archive: ${app_name}-${VERSION}.tar.gz"
+              fi
+            done
+          fi
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ███ SECTION: Docker Image Tagging ███
+  # ═══════════════════════════════════════════════════════════════════
+  tag-images:
+    name: Tag Docker Images
+    needs: release
+    if: needs.release.outputs.new_release_published == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    strategy:
+      matrix:
+        service:
+          - api-gateway
+          - auth-service
+          - trading-service
+          - market-data-service
+          - order-service
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag Images with Version
+        run: |
+          VERSION=${{ needs.release.outputs.new_release_version }}
+          MAJOR=${{ needs.release.outputs.new_release_major_version }}
+          MINOR=${{ needs.release.outputs.new_release_minor_version }}
+          
+          # Pull the latest image
+          docker pull ghcr.io/${{ github.repository }}/${{ matrix.service }}:main || true
+          
+          # Tag with various version formats
+          docker tag ghcr.io/${{ github.repository }}/${{ matrix.service }}:main \
+                    ghcr.io/${{ github.repository }}/${{ matrix.service }}:$VERSION
+          
+          docker tag ghcr.io/${{ github.repository }}/${{ matrix.service }}:main \
+                    ghcr.io/${{ github.repository }}/${{ matrix.service }}:$MAJOR
+          
+          docker tag ghcr.io/${{ github.repository }}/${{ matrix.service }}:main \
+                    ghcr.io/${{ github.repository }}/${{ matrix.service }}:$MAJOR.$MINOR
+          
+          docker tag ghcr.io/${{ github.repository }}/${{ matrix.service }}:main \
+                    ghcr.io/${{ github.repository }}/${{ matrix.service }}:latest
+          
+          # Push all tags
+          docker push ghcr.io/${{ github.repository }}/${{ matrix.service }}:$VERSION
+          docker push ghcr.io/${{ github.repository }}/${{ matrix.service }}:$MAJOR
+          docker push ghcr.io/${{ github.repository }}/${{ matrix.service }}:$MAJOR.$MINOR
+          docker push ghcr.io/${{ github.repository }}/${{ matrix.service }}:latest
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ███ SECTION: Post-Release Notifications ███
+  # ═══════════════════════════════════════════════════════════════════
+  notify:
+    name: Release Notifications
+    needs: [release, tag-images]
+    if: always() && needs.release.outputs.new_release_published == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release Summary
+        run: |
+          VERSION=${{ needs.release.outputs.new_release_version }}
+          echo "## 🚀 Release $VERSION Published"
+          echo ""
+          echo "### Release Details:"
+          echo "- Version: $VERSION"
+          echo "- Branch: main"
+          echo "- Commit: ${{ github.sha }}"
+          echo "- Released by: ${{ github.actor }}"
+          echo "- Release URL: https://github.com/${{ github.repository }}/releases/tag/v$VERSION"
+          echo ""
+          echo "### Docker Images Tagged:"
+          echo "- ghcr.io/${{ github.repository }}/*:$VERSION"
+          echo "- ghcr.io/${{ github.repository }}/*:latest"
+          echo ""
+          echo "### Next Steps:"
+          echo "1. Review the release notes"
+          echo "2. Deploy to staging environment"
+          echo "3. Run smoke tests"
+          echo "4. Deploy to production (manual approval required)"
+
+      - name: Create GitHub Issue for Release
+        if: needs.release.outputs.new_release_published == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=${{ needs.release.outputs.new_release_version }}
+          gh issue create \
+            --title "📦 Release v$VERSION - Deployment Checklist" \
+            --body "## Release v$VERSION Deployment Checklist
+          
+          ### Pre-Deployment
+          - [ ] Review release notes
+          - [ ] Verify all CI checks passed
+          - [ ] Check for any breaking changes
+          - [ ] Review database migration requirements
+          
+          ### Staging Deployment
+          - [ ] Deploy to staging environment
+          - [ ] Run smoke tests
+          - [ ] Verify monitoring dashboards
+          - [ ] Check application logs
+          
+          ### Production Deployment
+          - [ ] Get approval from stakeholders
+          - [ ] Schedule maintenance window (if needed)
+          - [ ] Deploy to production
+          - [ ] Verify deployment success
+          - [ ] Monitor for issues
+          
+          ### Post-Deployment
+          - [ ] Update documentation
+          - [ ] Notify team of deployment
+          - [ ] Close this issue
+          
+          **Release URL**: https://github.com/${{ github.repository }}/releases/tag/v$VERSION
+          **Commit**: ${{ github.sha }}"
