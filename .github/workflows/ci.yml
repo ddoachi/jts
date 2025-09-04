@@ -51,6 +51,9 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
 
+      - name: Install Yarn
+        run: corepack enable
+
       - name: Cache Nx
         uses: actions/cache@v3
         with:
@@ -109,6 +112,9 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
 
+      - name: Install Yarn
+        run: corepack enable
+
       - name: Restore Nx Cache
         uses: actions/cache@v3
         with:
@@ -139,6 +145,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
+
+      - name: Install Yarn
+        run: corepack enable
 
       - name: Restore Nx Cache
         uses: actions/cache@v3
@@ -173,6 +182,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
+
+      - name: Install Yarn
+        run: corepack enable
 
       - name: Restore Nx Cache
         uses: actions/cache@v3
@@ -215,6 +227,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
+
+      - name: Install Yarn
+        run: corepack enable
 
       - name: Restore Nx Cache
         uses: actions/cache@v3
