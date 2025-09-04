@@ -1,0 +1,255 @@
+# ═══════════════════════════════════════════════════════════════════
+# ███ Development Environment Deployment ███
+# ═══════════════════════════════════════════════════════════════════
+#
+# **Generated from spec**: [[E01-F04-T01] GitHub Actions Workflow Structure Setup](../../specs/E01/F04/T01/E01-F04-T01.spec.md)
+#
+# WHY: Automate deployments to development environment
+# HOW: Build, test, and deploy on every push to develop branch
+# WHAT: Continuous deployment pipeline for development
+
+name: Deploy to Development
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Specific service to deploy (leave empty for all)'
+        required: false
+        type: string
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Concurrency
+# Only one deployment at a time per environment
+# ═══════════════════════════════════════════════════════════════════
+
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
+env:
+  ENVIRONMENT: development
+  NODE_VERSION: '20.x'
+  REGISTRY: ghcr.io
+  NAMESPACE: jts-dev
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Pre-deployment Setup
+  # ═══════════════════════════════════════════════════════════════════
+  
+  setup:
+    name: 🚀 Pre-deployment Setup
+    uses: ./.github/workflows/_templates/setup.yml
+    with:
+      node-version: ${{ env.NODE_VERSION }}
+      checkout-depth: 0
+    secrets: inherit
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Build and Push Images
+  # ═══════════════════════════════════════════════════════════════════
+  
+  build-images:
+    name: 🐳 Build Docker Images
+    needs: [setup]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: 
+          - api-gateway
+          - strategy-engine
+          - risk-management
+          - order-execution
+          - market-data
+          - portfolio-service
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Log in to Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Extract Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=dev-latest
+            
+      - name: Build and Push Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/${{ matrix.service }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NODE_ENV=development
+            SERVICE_NAME=${{ matrix.service }}
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Database Migrations
+  # ═══════════════════════════════════════════════════════════════════
+  
+  migrate-database:
+    name: 🗄️ Run Database Migrations
+    needs: [setup]
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Run Migrations
+        env:
+          DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
+          CLICKHOUSE_URL: ${{ secrets.DEV_CLICKHOUSE_URL }}
+        run: |
+          echo "🗄️ Running PostgreSQL migrations..."
+          npm run migration:run:dev
+          
+          echo "📊 Running ClickHouse migrations..."
+          npm run migration:clickhouse:dev
+          
+          echo "✅ Migrations completed"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Deploy to Kubernetes
+  # ═══════════════════════════════════════════════════════════════════
+  
+  deploy:
+    name: 🚢 Deploy to Kubernetes
+    needs: [build-images, migrate-database]
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+      url: https://dev.jts.example.com
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.DEV_KUBECONFIG }}" | base64 -d > kubeconfig
+          echo "KUBECONFIG=${PWD}/kubeconfig" >> $GITHUB_ENV
+          
+      - name: Deploy Services
+        run: |
+          # Apply namespace if not exists
+          kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+          
+          # Apply configurations
+          kubectl apply -f ./k8s/dev/config/ -n ${{ env.NAMESPACE }}
+          
+          # Deploy services
+          if [ -n "${{ github.event.inputs.service }}" ]; then
+            echo "🚀 Deploying ${{ github.event.inputs.service }}..."
+            kubectl apply -f ./k8s/dev/services/${{ github.event.inputs.service }}.yaml -n ${{ env.NAMESPACE }}
+            kubectl rollout restart deployment/${{ github.event.inputs.service }} -n ${{ env.NAMESPACE }}
+          else
+            echo "🚀 Deploying all services..."
+            kubectl apply -f ./k8s/dev/services/ -n ${{ env.NAMESPACE }}
+            kubectl rollout restart deployment -n ${{ env.NAMESPACE }}
+          fi
+          
+          # Wait for rollout
+          kubectl rollout status deployment -n ${{ env.NAMESPACE }} --timeout=5m
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Health Check
+  # ═══════════════════════════════════════════════════════════════════
+  
+  health-check:
+    name: 🏥 Health Check
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Service Health
+        run: |
+          echo "🏥 Checking service health..."
+          
+          # API Gateway health check
+          curl -f https://dev.jts.example.com/health || exit 1
+          
+          # Individual service health checks
+          for service in api-gateway strategy-engine risk-management order-execution; do
+            echo "Checking $service..."
+            curl -f https://dev.jts.example.com/$service/health || exit 1
+          done
+          
+          echo "✅ All services healthy"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Smoke Tests
+  # ═══════════════════════════════════════════════════════════════════
+  
+  smoke-tests:
+    name: 🔥 Smoke Tests
+    needs: [health-check]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Run Smoke Tests
+        env:
+          API_URL: https://dev.jts.example.com
+        run: |
+          echo "🔥 Running smoke tests..."
+          npm run test:smoke:dev
+          echo "✅ Smoke tests passed"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Notification
+  # ═══════════════════════════════════════════════════════════════════
+  
+  notify:
+    name: 📢 Send Deployment Notification
+    needs: [deploy, health-check, smoke-tests]
+    if: always()
+    uses: ./.github/workflows/_templates/notify.yml
+    with:
+      status: ${{ needs.smoke-tests.result }}
+      workflow-name: 'Development Deployment'
+      notify-slack: true
+      custom-message: |
+        Environment: Development
+        Version: ${{ github.sha }}
+        Deployed by: @${{ github.actor }}
+        URL: https://dev.jts.example.com
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+# ═══════════════════════════════════════════════════════════════════
+# NOTES:
+# - Update URLs and namespaces to match your infrastructure
+# - Ensure secrets are configured in GitHub repository settings
+# - Consider using Helm charts for more complex deployments
+# - Add rollback strategy for failed deployments
+# ═══════════════════════════════════════════════════════════════════

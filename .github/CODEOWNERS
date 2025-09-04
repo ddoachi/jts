@@ -1,0 +1,152 @@
+# ═══════════════════════════════════════════════════════════════════
+# ███ CODEOWNERS - Automated Code Review Assignment ███
+# ═══════════════════════════════════════════════════════════════════
+#
+# **Generated from spec**: [[E01-F04-T01] GitHub Actions Workflow Structure Setup](../../specs/E01/F04/T01/E01-F04-T01.spec.md)
+#
+# WHY: Ensure proper code review by domain experts
+# HOW: GitHub automatically requests reviews based on file patterns
+# WHAT: Maps code ownership to teams and individuals
+#
+# RULES:
+# - Later rules override earlier ones
+# - Use @username for individuals, @org/team for teams
+# - Paths are relative to repository root
+# - * matches everything except /
+# - ** matches everything including /
+# ═══════════════════════════════════════════════════════════════════
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Global Ownership
+# Default owners for everything in the repository
+# ═══════════════════════════════════════════════════════════════════
+
+* @ddoachi/core-team
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: CI/CD and Infrastructure
+# DevOps team owns all pipeline and infrastructure code
+# ═══════════════════════════════════════════════════════════════════
+
+/.github/                     @ddoachi/devops-team
+/Dockerfile                   @ddoachi/devops-team
+/docker-compose*.yml          @ddoachi/devops-team
+/infrastructure/              @ddoachi/devops-team
+/scripts/                     @ddoachi/devops-team
+/.dockerignore               @ddoachi/devops-team
+/nx.json                     @ddoachi/devops-team
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Core Services
+# Service-specific ownership for domain expertise
+# ═══════════════════════════════════════════════════════════════════
+
+# API Gateway - Entry point for all services
+/apps/api-gateway/            @ddoachi/backend-team
+
+# Strategy Engine - Trading algorithms and strategies
+/apps/strategy-engine/        @ddoachi/algo-team
+/libs/strategies/            @ddoachi/algo-team
+
+# Risk Management - Risk controls and monitoring
+/apps/risk-management/        @ddoachi/risk-team
+/libs/risk/                  @ddoachi/risk-team
+
+# Order Execution - Trade execution and routing
+/apps/order-execution/        @ddoachi/trading-team
+/libs/brokers/               @ddoachi/trading-team
+
+# Market Data Service - Real-time and historical data
+/apps/market-data/            @ddoachi/data-team
+/libs/market-data/           @ddoachi/data-team
+
+# Portfolio Service - Position and P&L tracking
+/apps/portfolio-service/      @ddoachi/backend-team
+/libs/portfolio/             @ddoachi/backend-team
+
+# Notification Service - Alerts and messaging
+/apps/notification-service/   @ddoachi/backend-team
+
+# Analytics Service - Performance and reporting
+/apps/analytics-service/      @ddoachi/data-team
+/libs/analytics/             @ddoachi/data-team
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Shared Libraries
+# Common code used across services
+# ═══════════════════════════════════════════════════════════════════
+
+/libs/common/                 @ddoachi/core-team @ddoachi/backend-team
+/libs/database/              @ddoachi/backend-team
+/libs/messaging/             @ddoachi/backend-team
+/libs/auth/                  @ddoachi/security-team @ddoachi/backend-team
+/libs/monitoring/            @ddoachi/devops-team
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Configuration Files
+# Critical configuration requires multiple reviewers
+# ═══════════════════════════════════════════════════════════════════
+
+/configs/                     @ddoachi/core-team @ddoachi/devops-team
+/.env*                       @ddoachi/security-team @ddoachi/devops-team
+/secrets/                    @ddoachi/security-team
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Documentation
+# Technical writers and domain experts review docs
+# ═══════════════════════════════════════════════════════════════════
+
+/docs/                       @ddoachi/tech-writers
+*.md                        @ddoachi/tech-writers
+/README.md                  @ddoachi/core-team @ddoachi/tech-writers
+/CONTRIBUTING.md            @ddoachi/core-team
+/SECURITY.md                @ddoachi/security-team
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Testing
+# QA team reviews test configurations and E2E tests
+# ═══════════════════════════════════════════════════════════════════
+
+/e2e/                        @ddoachi/qa-team
+/tests/                      @ddoachi/qa-team
+*.spec.ts                    @ddoachi/qa-team
+*.test.ts                    @ddoachi/qa-team
+/jest.*.js                   @ddoachi/qa-team @ddoachi/backend-team
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Database and Migrations
+# Database changes require DBA review
+# ═══════════════════════════════════════════════════════════════════
+
+/migrations/                 @ddoachi/dba-team @ddoachi/backend-team
+*.migration.ts              @ddoachi/dba-team
+/schema/                    @ddoachi/dba-team
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Security-Sensitive Files
+# Security team must review all security-related changes
+# ═══════════════════════════════════════════════════════════════════
+
+*.key                       @ddoachi/security-team
+*.pem                       @ddoachi/security-team
+*.cert                      @ddoachi/security-team
+/libs/auth/                 @ddoachi/security-team
+/libs/crypto/               @ddoachi/security-team
+
+# ═══════════════════════════════════════════════════════════════════
+# SECTION: Package Management
+# Core team reviews dependency changes
+# ═══════════════════════════════════════════════════════════════════
+
+package.json                @ddoachi/core-team
+package-lock.json           @ddoachi/core-team
+yarn.lock                   @ddoachi/core-team
+.npmrc                      @ddoachi/core-team @ddoachi/devops-team
+
+# ═══════════════════════════════════════════════════════════════════
+# NOTES:
+# - Teams should be created in GitHub organization settings
+# - Update team names to match your actual GitHub teams
+# - Consider using branch protection rules alongside CODEOWNERS
+# - Review assignments can be bypassed by repository admins
+# ═══════════════════════════════════════════════════════════════════

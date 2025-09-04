@@ -1,7 +1,7 @@
 # ============================================================================
 # Dependabot Configuration for JTS
 # ============================================================================
-# Generated from spec: [[E01-F03-T06] Configure CI/CD Pipeline and Automation](../../specs/E01/F03/T06/E01-F03-T06.spec.md)
+# Generated from spec: [[E01-F04-T01] GitHub Actions Workflow Structure Setup](../../specs/E01/F04/T01/E01-F04-T01.spec.md)
 #
 # PURPOSE: 
 # Automated dependency updates for security patches and version maintenance

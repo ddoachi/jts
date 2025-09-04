@@ -1,0 +1,188 @@
+# ═══════════════════════════════════════════════════════════════════
+# ███ Reusable Notification Template ███
+# ═══════════════════════════════════════════════════════════════════
+#
+# **Generated from spec**: [[E01-F04-T01] GitHub Actions Workflow Structure Setup](../../../specs/E01/F04/T01/E01-F04-T01.spec.md)
+#
+# WHY: Standardize notifications across all workflows
+# HOW: Provides multiple notification channels (Slack, Discord, Email)
+# WHAT: Sends build status, deployment updates, and alerts
+
+name: Reusable Notification Workflow
+
+on:
+  workflow_call:
+    inputs:
+      status:
+        description: 'Workflow status (success, failure, cancelled)'
+        required: true
+        type: string
+      workflow-name:
+        description: 'Name of the calling workflow'
+        required: true
+        type: string
+      notify-slack:
+        description: 'Send notification to Slack'
+        required: false
+        type: boolean
+        default: true
+      notify-discord:
+        description: 'Send notification to Discord'
+        required: false
+        type: boolean
+        default: false
+      notify-email:
+        description: 'Send email notification'
+        required: false
+        type: boolean
+        default: false
+      custom-message:
+        description: 'Optional custom message'
+        required: false
+        type: string
+        default: ''
+    secrets:
+      SLACK_WEBHOOK_URL:
+        required: false
+      DISCORD_WEBHOOK_URL:
+        required: false
+      EMAIL_SERVER_CONFIG:
+        required: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Status Determination
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 🎨 Determine Status Color and Emoji
+        id: status-format
+        run: |
+          # Map status to visual indicators for notifications
+          case "${{ inputs.status }}" in
+            "success")
+              echo "color=#36a64f" >> $GITHUB_OUTPUT
+              echo "emoji=✅" >> $GITHUB_OUTPUT
+              echo "text=succeeded" >> $GITHUB_OUTPUT
+              ;;
+            "failure")
+              echo "color=#ff0000" >> $GITHUB_OUTPUT
+              echo "emoji=❌" >> $GITHUB_OUTPUT
+              echo "text=failed" >> $GITHUB_OUTPUT
+              ;;
+            "cancelled")
+              echo "color=#ffaa00" >> $GITHUB_OUTPUT
+              echo "emoji=⚠️" >> $GITHUB_OUTPUT
+              echo "text=was cancelled" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "color=#808080" >> $GITHUB_OUTPUT
+              echo "emoji=ℹ️" >> $GITHUB_OUTPUT
+              echo "text=completed with unknown status" >> $GITHUB_OUTPUT
+              ;;
+          esac
+          
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Message Construction
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 📝 Build Notification Message
+        id: message
+        run: |
+          # Construct a comprehensive notification message
+          TITLE="${{ steps.status-format.outputs.emoji }} ${{ inputs.workflow-name }} ${{ steps.status-format.outputs.text }}"
+          
+          # Build the base message
+          MESSAGE="*Repository:* ${{ github.repository }}\n"
+          MESSAGE="${MESSAGE}*Branch:* ${{ github.ref_name }}\n"
+          MESSAGE="${MESSAGE}*Commit:* \`${{ github.sha }}\`\n"
+          MESSAGE="${MESSAGE}*Author:* ${{ github.actor }}\n"
+          MESSAGE="${MESSAGE}*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>\n"
+          
+          # Add custom message if provided
+          if [ -n "${{ inputs.custom-message }}" ]; then
+            MESSAGE="${MESSAGE}\n${{ inputs.custom-message }}"
+          fi
+          
+          # Add commit message
+          MESSAGE="${MESSAGE}\n*Commit Message:* ${{ github.event.head_commit.message }}"
+          
+          # Export for use in notification steps
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$MESSAGE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Slack Notification
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 💬 Send Slack Notification
+        if: inputs.notify-slack && secrets.SLACK_WEBHOOK_URL
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "attachments": [{
+                "color": "${{ steps.status-format.outputs.color }}",
+                "title": "${{ steps.message.outputs.title }}",
+                "text": "${{ steps.message.outputs.body }}",
+                "footer": "GitHub Actions",
+                "footer_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+                "ts": "${{ github.event.head_commit.timestamp }}"
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Discord Notification
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 🎮 Send Discord Notification
+        if: inputs.notify-discord && secrets.DISCORD_WEBHOOK_URL
+        run: |
+          # Send notification to Discord using webhook
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d "{
+                 \"embeds\": [{
+                   \"title\": \"${{ steps.message.outputs.title }}\",
+                   \"description\": \"${{ steps.message.outputs.body }}\",
+                   \"color\": $(printf '%d' 0x$(echo "${{ steps.status-format.outputs.color }}" | sed 's/#//')),
+                   \"timestamp\": \"${{ github.event.head_commit.timestamp }}\",
+                   \"footer\": {
+                     \"text\": \"GitHub Actions\",
+                     \"icon_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\"
+                   }
+                 }]
+               }" \
+               "${{ secrets.DISCORD_WEBHOOK_URL }}"
+               
+      # ═══════════════════════════════════════════════════════════════
+      # SECTION: Summary Generation
+      # ═══════════════════════════════════════════════════════════════
+      
+      - name: 📋 Generate Job Summary
+        run: |
+          # Create a summary that appears in the GitHub Actions UI
+          echo "## ${{ steps.message.outputs.title }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ${{ steps.status-format.outputs.emoji }} ${{ inputs.status }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Workflow | ${{ inputs.workflow-name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Repository | ${{ github.repository }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Branch | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Author | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Run | [View Details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -n "${{ inputs.custom-message }}" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Custom Message" >> $GITHUB_STEP_SUMMARY
+            echo "${{ inputs.custom-message }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          # Job summaries provide at-a-glance status in the UI

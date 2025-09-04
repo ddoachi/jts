@@ -1,0 +1,164 @@
+# ═══════════════════════════════════════════════════════════════════
+# ███ Nx Affected - Composite Action ███
+# ═══════════════════════════════════════════════════════════════════
+#
+# **Generated from spec**: [[E01-F04-T01] GitHub Actions Workflow Structure Setup](../../../specs/E01/F04/T01/E01-F04-T01.spec.md)
+#
+# WHY: Run tasks only on affected projects to optimize CI time
+# HOW: Uses Nx affected commands to determine changed projects
+# WHAT: Executes specified commands on affected parts of the monorepo
+
+name: 'Nx Affected Commands'
+description: 'Run Nx commands on affected projects in the monorepo'
+author: 'JTS Team'
+
+inputs:
+  target:
+    description: 'Nx target to run (build, test, lint, etc.)'
+    required: true
+  base:
+    description: 'Base branch/commit for comparison'
+    required: false
+    default: 'origin/main'
+  head:
+    description: 'Head branch/commit for comparison'
+    required: false
+    default: 'HEAD'
+  parallel:
+    description: 'Number of parallel tasks'
+    required: false
+    default: '3'
+  args:
+    description: 'Additional arguments to pass to nx command'
+    required: false
+    default: ''
+  skip-nx-cache:
+    description: 'Skip Nx cache'
+    required: false
+    default: 'false'
+
+outputs:
+  affected-projects:
+    description: 'List of affected projects'
+    value: ${{ steps.affected.outputs.projects }}
+  has-affected:
+    description: 'Whether there are affected projects'
+    value: ${{ steps.check-affected.outputs.has-affected }}
+
+runs:
+  using: 'composite'
+  steps:
+    # ═══════════════════════════════════════════════════════════════
+    # SECTION: Determine Affected Projects
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: Get Affected Projects
+      id: affected
+      shell: bash
+      run: |
+        echo "🔍 Determining affected projects..."
+        
+        # Get list of affected projects
+        AFFECTED=$(npx nx print-affected \
+          --base=${{ inputs.base }} \
+          --head=${{ inputs.head }} \
+          --select=projects \
+          2>/dev/null || echo "")
+        
+        # Store for output
+        echo "projects=$AFFECTED" >> $GITHUB_OUTPUT
+        
+        if [ -z "$AFFECTED" ]; then
+          echo "ℹ️ No affected projects found"
+        else
+          echo "📋 Affected projects:"
+          echo "$AFFECTED" | tr ',' '\n' | sed 's/^/  - /'
+        fi
+        # Helps understand what will be built/tested
+        
+    # ═══════════════════════════════════════════════════════════════
+    # SECTION: Check for Affected Projects
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: Check if Has Affected
+      id: check-affected
+      shell: bash
+      run: |
+        # Determine if there are any affected projects
+        if [ -z "${{ steps.affected.outputs.projects }}" ]; then
+          echo "has-affected=false" >> $GITHUB_OUTPUT
+          echo "⏭️ No affected projects - skipping target: ${{ inputs.target }}"
+        else
+          echo "has-affected=true" >> $GITHUB_OUTPUT
+          echo "✅ Found affected projects - will run target: ${{ inputs.target }}"
+        fi
+        
+    # ═══════════════════════════════════════════════════════════════
+    # SECTION: Run Affected Command
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: Run Nx Affected - ${{ inputs.target }}
+      if: steps.check-affected.outputs.has-affected == 'true'
+      shell: bash
+      run: |
+        echo "🚀 Running nx affected:${{ inputs.target }}..."
+        echo "═══════════════════════════════════════"
+        
+        # Build the command
+        NX_COMMAND="npx nx affected:${{ inputs.target }}"
+        NX_COMMAND="$NX_COMMAND --base=${{ inputs.base }}"
+        NX_COMMAND="$NX_COMMAND --head=${{ inputs.head }}"
+        NX_COMMAND="$NX_COMMAND --parallel=${{ inputs.parallel }}"
+        
+        # Add skip cache flag if requested
+        if [ "${{ inputs.skip-nx-cache }}" == "true" ]; then
+          NX_COMMAND="$NX_COMMAND --skip-nx-cache"
+        fi
+        
+        # Add additional arguments if provided
+        if [ -n "${{ inputs.args }}" ]; then
+          NX_COMMAND="$NX_COMMAND ${{ inputs.args }}"
+        fi
+        
+        echo "Executing: $NX_COMMAND"
+        echo ""
+        
+        # Run the command
+        eval $NX_COMMAND
+        
+        echo ""
+        echo "✅ Nx affected:${{ inputs.target }} completed"
+        # GOTCHA: Exit code is propagated automatically
+        
+    # ═══════════════════════════════════════════════════════════════
+    # SECTION: Generate Summary
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: Generate Affected Summary
+      if: always()
+      shell: bash
+      run: |
+        echo "## Nx Affected Summary - ${{ inputs.target }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ steps.check-affected.outputs.has-affected }}" == "true" ]; then
+          echo "### 📊 Affected Projects" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.affected.outputs.projects }}" | tr ',' '\n' | sed 's/^/- /' >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Base:** \`${{ inputs.base }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Head:** \`${{ inputs.head }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Parallel:** ${{ inputs.parallel }} tasks" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ inputs.skip-nx-cache }}" == "true" ]; then
+            echo "**Cache:** Skipped ⏭️" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Cache:** Enabled ✅" >> $GITHUB_STEP_SUMMARY
+          fi
+        else
+          echo "ℹ️ No projects were affected by the changes between \`${{ inputs.base }}\` and \`${{ inputs.head }}\`" >> $GITHUB_STEP_SUMMARY
+        fi
+        # Provides visibility in GitHub Actions UI
+
+branding:
+  icon: 'git-branch'
+  color: 'blue'
