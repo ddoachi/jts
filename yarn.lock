@@ -7608,6 +7608,8 @@ __metadata:
     "@nestjs/common": "npm:^10.4.20"
     "@nestjs/core": "npm:^10.4.20"
     "@nestjs/platform-express": "npm:^10.4.20"
+    "@nx/devkit": "npm:17.3.2"
+    "@nx/eslint": "npm:17.3.2"
     "@nx/eslint-plugin": "npm:^21.4.1"
     "@nx/jest": "npm:^17.2.8"
     "@nx/js": "npm:^17.2.8"
