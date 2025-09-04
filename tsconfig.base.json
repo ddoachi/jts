@@ -44,6 +44,7 @@
 
     "baseUrl": ".",
     "paths": {
+      "@jts/workspace-generators": ["tools/generators"],
       "@jts/shared/dto": ["libs/shared/dto/src/index.ts"],
       "@jts/shared/interfaces": ["libs/shared/interfaces/src/index.ts"],
       "@jts/shared/types": ["libs/shared/types/src/index.ts"],
