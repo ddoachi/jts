@@ -1,0 +1,152 @@
+# ============================================================================
+# Dependabot Configuration for JTS
+# ============================================================================
+# Generated from spec: [[E01-F03-T06] Configure CI/CD Pipeline and Automation](../../specs/E01/F03/T06/E01-F03-T06.spec.md)
+#
+# PURPOSE: 
+# Automated dependency updates for security patches and version maintenance
+# across NPM packages, GitHub Actions, and Docker base images.
+#
+# FEATURES:
+# - Grouped updates for related dependencies
+# - Weekly schedule to minimize noise
+# - Separate handling for different ecosystems
+# - Smart PR limits to avoid overwhelming the team
+# ============================================================================
+
+version: 2
+updates:
+  # ═══════════════════════════════════════════════════════════════════
+  # ███ NPM Dependencies ███
+  # ═══════════════════════════════════════════════════════════════════
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '03:00'
+    open-pull-requests-limit: 10
+    # Group related dependencies to reduce PR noise
+    groups:
+      # Nx monorepo tools
+      nx:
+        patterns:
+          - '@nx/*'
+          - 'nx'
+        update-types:
+          - 'minor'
+          - 'patch'
+      
+      # NestJS framework
+      nestjs:
+        patterns:
+          - '@nestjs/*'
+        update-types:
+          - 'minor'
+          - 'patch'
+      
+      # Testing tools
+      testing:
+        patterns:
+          - 'jest*'
+          - '@types/jest'
+          - '@swc/*'
+          - 'ts-jest'
+        update-types:
+          - 'minor'
+          - 'patch'
+      
+      # Linting and formatting
+      linting:
+        patterns:
+          - 'eslint*'
+          - '@typescript-eslint/*'
+          - 'prettier'
+        update-types:
+          - 'minor'
+          - 'patch'
+      
+      # TypeScript and types
+      typescript:
+        patterns:
+          - 'typescript'
+          - '@types/*'
+        update-types:
+          - 'minor'
+          - 'patch'
+      
+      # Database drivers
+      database:
+        patterns:
+          - 'typeorm'
+          - 'pg'
+          - 'mongodb'
+          - 'mongoose'
+          - 'redis'
+          - 'ioredis'
+        update-types:
+          - 'minor'
+          - 'patch'
+      
+      # Monitoring and observability
+      observability:
+        patterns:
+          - '@opentelemetry/*'
+          - 'prom-client'
+          - 'winston'
+        update-types:
+          - 'minor'
+          - 'patch'
+    
+    # Commit message configuration
+    commit-message:
+      prefix: 'chore'
+      prefix-development: 'chore'
+      include: 'scope'
+    
+    # Labels for PRs
+    labels:
+      - 'dependencies'
+      - 'javascript'
+    
+    # Ignore certain updates
+    ignore:
+      # Major version updates should be done manually
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ███ GitHub Actions ███
+  # ═══════════════════════════════════════════════════════════════════
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '04:00'
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'ci'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'github-actions'
+
+  # ═══════════════════════════════════════════════════════════════════
+  # ███ Docker Base Images ███
+  # ═══════════════════════════════════════════════════════════════════
+  - package-ecosystem: 'docker'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '05:00'
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: 'build'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'docker'
+    # Check all service Dockerfiles
+    target-branch: 'main'
