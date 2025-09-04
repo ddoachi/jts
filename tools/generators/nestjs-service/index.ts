@@ -37,6 +37,7 @@ import {
   updateProjectConfiguration,
 } from '@nx/devkit';
 import { applicationGenerator } from '@nx/nest';
+import { Linter } from '@nx/eslint';
 import * as path from 'path';
 
 // ═══════════════════════════════════════════════════════════════════
@@ -59,6 +60,7 @@ interface NormalizedOptions extends ServiceGeneratorSchema {
   projectDirectory: string;
   parsedTags: string[];
   port: number;
+  className: string;
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -86,7 +88,7 @@ export default async function serviceGenerator(
     directory: normalizedOptions.projectDirectory,
     tags: normalizedOptions.parsedTags.join(','),
     unitTestRunner: 'jest',
-    linter: 'eslint',
+    linter: Linter.EsLint,
     skipFormat: true, // We'll format at the end
   });
 
@@ -159,6 +161,7 @@ function normalizeOptions(
     projectDirectory,
     parsedTags,
     port,
+    className: names(options.name).className,
   };
 }
 
