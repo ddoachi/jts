@@ -41,12 +41,12 @@ jobs:
       has-affected: ${{ steps.affected.outputs.has-affected }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
@@ -73,9 +73,9 @@ jobs:
           fi
 
           # Calculate affected projects
-          AFFECTED_APPS=$(npx nx print-affected --base=$NX_BASE --head=HEAD --select=projects --type=app)
-          AFFECTED_LIBS=$(npx nx print-affected --base=$NX_BASE --head=HEAD --select=projects --type=lib)
-          HAS_AFFECTED=$(npx nx print-affected --base=$NX_BASE --head=HEAD --select=projects | grep -q '.' && echo 'true' || echo 'false')
+          AFFECTED_APPS=$(yarn nx print-affected --base=$NX_BASE --head=HEAD --select=projects --type=app)
+          AFFECTED_LIBS=$(yarn nx print-affected --base=$NX_BASE --head=HEAD --select=projects --type=lib)
+          HAS_AFFECTED=$(yarn nx print-affected --base=$NX_BASE --head=HEAD --select=projects | grep -q '.' && echo 'true' || echo 'false')
 
           # Output results for downstream jobs
           echo "apps=$AFFECTED_APPS" >> $GITHUB_OUTPUT
@@ -99,12 +99,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
@@ -121,7 +121,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Run Lint
-        run: npx nx affected --target=lint --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3
+        run: yarn nx affected --target=lint --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3
 
   type-check:
     name: Type Check
@@ -130,12 +130,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
@@ -152,7 +152,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Run Type Check
-        run: npx nx affected --target=type-check --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3
+        run: yarn nx affected --target=type-check --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3
 
   # ═══════════════════════════════════════════════════════════════════
   # ███ SECTION: Testing and Coverage ███
@@ -164,12 +164,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
@@ -186,7 +186,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Run Tests
-        run: npx nx affected --target=test --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3 --configuration=ci --coverage
+        run: yarn nx affected --target=test --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3 --configuration=ci --coverage
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v3
@@ -206,12 +206,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'yarn'
@@ -228,10 +228,10 @@ jobs:
         run: yarn install --immutable
 
       - name: Build Affected
-        run: npx nx affected --target=build --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3 --configuration=production
+        run: yarn nx affected --target=build --base=${{ github.event.pull_request.base.sha || 'HEAD~1' }} --parallel=3 --configuration=production
 
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts-${{ github.sha }}
           path: dist/
@@ -246,7 +246,7 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
@@ -257,7 +257,7 @@ jobs:
           output: 'trivy-results.sarif'
 
       - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
@@ -268,10 +268,10 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Dependency Review
-        uses: actions/dependency-review-action@v3
+        uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high
 
