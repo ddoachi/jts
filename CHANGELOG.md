@@ -1,3 +1,11 @@
+## [1.0.6](https://github.com/ddoachi/jts/compare/v1.0.5...v1.0.6) (2025-09-05)
+
+
+### Bug Fixes
+
+* **ci:** enable Corepack before setup-node to prevent Yarn version conflicts ([ccf6822](https://github.com/ddoachi/jts/commit/ccf682291a0274452df43417625c05a68ae117bf))
+* **ci:** update deprecated GitHub Actions to latest versions ([ab861ea](https://github.com/ddoachi/jts/commit/ab861ea401366f4d7bce589adff6959cf1a24a37))
+
 ## [1.0.5](https://github.com/ddoachi/jts/compare/v1.0.4...v1.0.5) (2025-09-05)
 
 
