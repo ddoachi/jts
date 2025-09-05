@@ -269,7 +269,7 @@ jobs:
     with:
       status: ${{ needs.build.result }}
       workflow-name: 'CI Pipeline'
-      notify-slack: ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+      notify-slack: false
       notify-discord: false
       custom-message: |
         Branch: ${{ github.ref_name }}
