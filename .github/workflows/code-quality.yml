@@ -38,13 +38,13 @@ jobs:
           # Shallow clones should be disabled for better analysis
           fetch-depth: 0
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: '20.x'
-
-      - name: Enable Corepack
-        run: corepack enable
 
       - name: Cache Yarn
         uses: actions/cache@v3
@@ -112,13 +112,13 @@ jobs:
           # Customize queries if needed
           queries: security-extended,security-and-quality
           
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Build Environment
         uses: actions/setup-node@v5
         with:
           node-version: '20.x'
-
-      - name: Enable Corepack
-        run: corepack enable
 
       - name: Cache Yarn
         uses: actions/cache@v3
@@ -156,13 +156,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: '20.x'
-
-      - name: Enable Corepack
-        run: corepack enable
 
       - name: Cache Yarn
         uses: actions/cache@v3
