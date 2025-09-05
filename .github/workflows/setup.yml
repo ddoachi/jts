@@ -59,7 +59,7 @@ jobs:
       # ═══════════════════════════════════════════════════════════════
       
       - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ inputs.node-version }}
           # Note: We don't use cache: 'yarn' here because it runs before
