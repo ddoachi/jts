@@ -44,7 +44,7 @@ jobs:
     name: 🚀 Pre-deployment Setup
     uses: ./.github/workflows/_templates/setup.yml
     with:
-      node-version: ${{ env.NODE_VERSION }}
+      node-version: '20.x'
       checkout-depth: 0
     secrets: inherit
 
@@ -119,7 +119,7 @@ jobs:
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '20.x'
           
       - name: Run Migrations
         env:
@@ -215,7 +215,7 @@ jobs:
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '20.x'
           
       - name: Run Smoke Tests
         env:
