@@ -332,7 +332,7 @@ jobs:
     name: 📢 Deployment Notification
     needs: [deploy, performance-test, e2e-test]
     if: always()
-    uses: ./.github/workflows/_templates/notify.yml
+    uses: ./.github/workflows/notify.yml
     with:
       status: ${{ needs.e2e-test.result }}
       workflow-name: 'Staging Deployment'

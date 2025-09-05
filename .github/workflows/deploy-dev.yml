@@ -42,7 +42,7 @@ jobs:
   
   setup:
     name: 🚀 Pre-deployment Setup
-    uses: ./.github/workflows/_templates/setup.yml
+    uses: ./.github/workflows/setup.yml
     with:
       node-version: '20.x'
       checkout-depth: 0
@@ -233,7 +233,7 @@ jobs:
     name: 📢 Send Deployment Notification
     needs: [deploy, health-check, smoke-tests]
     if: always()
-    uses: ./.github/workflows/_templates/notify.yml
+    uses: ./.github/workflows/notify.yml
     with:
       status: ${{ needs.smoke-tests.result }}
       workflow-name: 'Development Deployment'
