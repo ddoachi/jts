@@ -20,15 +20,13 @@ export function calculateMedian(values: number[]): number {
   if (values.length === 0) return 0;
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 !== 0
-    ? sorted[mid]!
-    : (sorted[mid - 1]! + sorted[mid]!) / 2;
+  return sorted.length % 2 !== 0 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
 }
 
 export function calculateStandardDeviation(values: number[]): number {
   if (values.length === 0) return 0;
   const avg = calculateAverage(values);
-  const squareDiffs = values.map(value => Math.pow(value - avg, 2));
+  const squareDiffs = values.map((value) => Math.pow(value - avg, 2));
   const avgSquareDiff = calculateAverage(squareDiffs);
   return Math.sqrt(avgSquareDiff);
 }
@@ -41,18 +39,11 @@ export function lerp(start: number, end: number, amount: number): number {
   return start + (end - start) * clamp(amount, 0, 1);
 }
 
-export function calculateCompoundReturn(
-  principal: number,
-  rate: number,
-  periods: number
-): number {
+export function calculateCompoundReturn(principal: number, rate: number, periods: number): number {
   return principal * Math.pow(1 + rate, periods);
 }
 
-export function calculateSharpeRatio(
-  returns: number[],
-  riskFreeRate: number = 0
-): number {
+export function calculateSharpeRatio(returns: number[], riskFreeRate: number = 0): number {
   if (returns.length === 0) return 0;
   const avgReturn = calculateAverage(returns);
   const stdDev = calculateStandardDeviation(returns);
@@ -64,7 +55,7 @@ export function calculateMaxDrawdown(values: number[]): number {
   if (values.length === 0) return 0;
   let maxDrawdown = 0;
   let peak = values[0]!;
-  
+
   for (const value of values) {
     if (value > peak) {
       peak = value;
@@ -74,29 +65,22 @@ export function calculateMaxDrawdown(values: number[]): number {
       maxDrawdown = drawdown;
     }
   }
-  
+
   return maxDrawdown * 100;
 }
 
-export function isWithinTolerance(
-  value: number,
-  target: number,
-  tolerance: number
-): boolean {
+export function isWithinTolerance(value: number, target: number, tolerance: number): boolean {
   return Math.abs(value - target) <= tolerance;
 }
 
-export function calculateEMA(
-  values: number[],
-  period: number
-): number[] {
+export function calculateEMA(values: number[], period: number): number[] {
   if (values.length === 0) return [];
   const k = 2 / (period + 1);
   const ema: number[] = [values[0]!];
-  
+
   for (let i = 1; i < values.length; i++) {
     ema.push(values[i]! * k + ema[i - 1]! * (1 - k));
   }
-  
+
   return ema;
 }
