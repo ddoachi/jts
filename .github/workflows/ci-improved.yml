@@ -165,7 +165,7 @@ jobs:
           
       - name: Upload Build Artifacts
         if: steps.build.outputs.has-affected == 'true'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: dist/
@@ -212,7 +212,7 @@ jobs:
             
       - name: Upload Security Reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-reports
           path: reports/
@@ -238,7 +238,7 @@ jobs:
           install-deps: true
           
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-artifacts
           path: dist/

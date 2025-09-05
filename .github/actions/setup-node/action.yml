@@ -38,11 +38,20 @@ runs:
   using: 'composite'
   steps:
     # ═══════════════════════════════════════════════════════════════
+    # SECTION: Enable Corepack First
+    # ═══════════════════════════════════════════════════════════════
+    
+    - name: Enable Corepack
+      shell: bash
+      run: corepack enable
+      # IMPORTANT: Must enable Corepack before setup-node to prevent yarn version conflicts
+    
+    # ═══════════════════════════════════════════════════════════════
     # SECTION: Node.js Installation
     # ═══════════════════════════════════════════════════════════════
     
     - name: Setup Node.js ${{ inputs.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v5
       with:
         node-version: ${{ inputs.node-version }}
         # Note: We don't use cache: 'yarn' here because it runs before
@@ -54,7 +63,7 @@ runs:
     
     - name: Cache Dependencies
       id: cache-deps
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           node_modules
@@ -78,8 +87,7 @@ runs:
       run: |
         echo "📦 Installing dependencies..."
         
-        # Enable Yarn 4.x support with corepack
-        corepack enable
+        # Prepare Yarn 4.x (Corepack already enabled earlier)
         corepack prepare yarn@4.9.4 --activate
         
         # Use yarn install for reproducible builds

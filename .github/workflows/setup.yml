@@ -58,8 +58,12 @@ jobs:
       # SECTION: Node.js Environment Setup
       # ═══════════════════════════════════════════════════════════════
       
+      - name: 🔧 Enable Corepack
+        run: corepack enable
+        # IMPORTANT: Must enable Corepack before setup-node to prevent yarn version conflicts
+        
       - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ inputs.node-version }}
           # Note: We don't use cache: 'yarn' here because it runs before
@@ -81,7 +85,7 @@ jobs:
       # ═══════════════════════════════════════════════════════════════
       
       - name: 💾 Cache Node Modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache
         with:
           path: |
@@ -94,7 +98,7 @@ jobs:
             # Fallback to OS-specific cache if exact match not found
             
       - name: 🗄️ Cache Nx
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .nx/cache
           key: nx-${{ runner.os }}-${{ github.sha }}
@@ -109,8 +113,7 @@ jobs:
       - name: 📦 Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          # Enable Yarn 4.x support with corepack
-          corepack enable
+          # Prepare Yarn 4.x (Corepack already enabled earlier)
           corepack prepare yarn@4.9.4 --activate
           
           # Use yarn for faster, reproducible installs
