@@ -165,6 +165,24 @@ Completed: 22/62
 
 
 
+### 📋 [E13 - Status API for Spec Dashboard](E13/E13.spec.md)
+
+> Status: `draft` | Priority: `high`
+
+
+- 📋 [F01 - Spec Parser Service](E13/F01/spec.md) `draft`
+
+- 📋 [F02 - Spec API Gateway](E13/F02/spec.md) `draft`
+
+- 📋 [F03 - Real-time Updates Engine](E13/F03/spec.md) `draft`
+
+- 📋 [F04 - Caching & Performance Layer](E13/F04/spec.md) `draft`
+
+- 📋 [F05 - Progress Calculation Engine](E13/F05/spec.md) `draft`
+
+- 📋 [F06 - Security & Resilience Module](E13/F06/spec.md) `draft`
+
+
 ---
 
 _Generated automatically by GitHub Actions_
