@@ -45,7 +45,7 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
-        cache: 'npm'
+        cache: 'yarn'
         # Leverage built-in caching for npm registry
         
     # ═══════════════════════════════════════════════════════════════
@@ -58,12 +58,13 @@ runs:
       with:
         path: |
           node_modules
-          ~/.npm
+          .yarn/cache
+          .yarn/unplugged
           .nx/cache
           # Cache all dependency and build artifacts
-        key: deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('nx.json') }}
+        key: deps-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('nx.json') }}
         restore-keys: |
-          deps-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}-
+          deps-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}-
           deps-${{ runner.os }}-
           # Progressive cache restoration strategy
           
@@ -77,14 +78,18 @@ runs:
       run: |
         echo "📦 Installing dependencies..."
         
-        # Use npm ci for reproducible builds
-        npm ci --prefer-offline --no-audit
+        # Enable Yarn 4.x support with corepack
+        corepack enable
+        corepack prepare yarn@4.9.4 --activate
+        
+        # Use yarn install for reproducible builds
+        yarn install --immutable
         
         # Reset Nx daemon to ensure clean state
-        npx nx reset
+        yarn nx reset
         
         echo "✅ Dependencies installed successfully"
-        # Bread crumb: Check package-lock.json for exact versions
+        # Bread crumb: Check yarn.lock for exact versions
         
     # ═══════════════════════════════════════════════════════════════
     # SECTION: Nx Cloud Configuration
@@ -121,15 +126,15 @@ runs:
         
         # Capture version information
         NODE_VERSION=$(node --version)
-        NPM_VERSION=$(npm --version)
-        NX_VERSION=$(npx nx --version 2>/dev/null || echo "Not installed")
+        YARN_VERSION=$(yarn --version)
+        NX_VERSION=$(yarn nx --version 2>/dev/null || echo "Not installed")
         
         echo "version=$NODE_VERSION" >> $GITHUB_OUTPUT
         
         # Display environment summary
         echo "═══ Environment Summary ═══"
         echo "Node.js: $NODE_VERSION"
-        echo "NPM: $NPM_VERSION"
+        echo "Yarn: $YARN_VERSION"
         echo "Nx: $NX_VERSION"
         echo "OS: ${{ runner.os }}"
         echo "Cache Hit: ${{ steps.cache-deps.outputs.cache-hit == 'true' && '✅ Yes' || '❌ No' }}"
@@ -138,7 +143,7 @@ runs:
         if command -v nx &> /dev/null; then
           echo ""
           echo "═══ Nx Workspace Info ═══"
-          npx nx report
+          yarn nx report
         fi
         # Helps debug version mismatches and configuration issues
 

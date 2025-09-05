@@ -120,7 +120,7 @@ jobs:
       # ═══════════════════════════════════════════════════════════════
       
       - name: 💬 Send Slack Notification
-        if: inputs.notify-slack
+        if: inputs.notify-slack && secrets.SLACK_WEBHOOK_URL != ''
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
@@ -142,7 +142,7 @@ jobs:
       # ═══════════════════════════════════════════════════════════════
       
       - name: 🎮 Send Discord Notification
-        if: inputs.notify-discord
+        if: inputs.notify-discord && secrets.DISCORD_WEBHOOK_URL != ''
         run: |
           # Send notification to Discord using webhook
           curl -H "Content-Type: application/json" \

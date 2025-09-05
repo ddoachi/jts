@@ -62,7 +62,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node-version }}
-          cache: 'npm'
+          cache: 'yarn'
           # Built-in caching for npm dependencies
           
       # ═══════════════════════════════════════════════════════════════
@@ -74,7 +74,7 @@ jobs:
         run: |
           # Generate a deterministic cache key based on OS and lockfile
           # This ensures cache invalidation when dependencies change
-          echo "key=node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}" >> $GITHUB_OUTPUT
+          echo "key=node-modules-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}" >> $GITHUB_OUTPUT
           
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Dependency Caching
@@ -86,7 +86,8 @@ jobs:
         with:
           path: |
             node_modules
-            ~/.npm
+            .yarn/cache
+            .yarn/unplugged
           key: ${{ steps.cache-key.outputs.key }}
           restore-keys: |
             node-modules-${{ runner.os }}-
@@ -108,6 +109,10 @@ jobs:
       - name: 📦 Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
+          # Enable Yarn 4.x support with corepack
+          corepack enable
+          corepack prepare yarn@4.9.4 --activate
+          
           # Use yarn for faster, reproducible installs
           yarn install --immutable
           
@@ -119,7 +124,7 @@ jobs:
         if: inputs.enable-nx-cloud
         run: |
           # Set up Nx Cloud for distributed task execution
-          npx nx reset
+          yarn nx reset
           
       - name: 🎯 Determine Nx Head
         id: nx-head
@@ -140,5 +145,5 @@ jobs:
         run: |
           echo "Node version: $(node --version)"
           echo "Yarn version: $(yarn --version)"
-          echo "Nx version: $(npx nx --version)"
+          echo "Nx version: $(yarn nx --version)"
           # Bread crumb: Helps debug version-related issues
