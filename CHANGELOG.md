@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/ddoachi/jts/compare/v1.0.4...v1.0.5) (2025-09-05)
+
+
+### Bug Fixes
+
+* **ci:** remove yarn cache from setup-node to fix Corepack version mismatch ([d3db467](https://github.com/ddoachi/jts/commit/d3db4671342afc0efcc9b8654768781d0258a0a7))
+
 ## [1.0.4](https://github.com/ddoachi/jts/compare/v1.0.3...v1.0.4) (2025-09-05)
 
 
