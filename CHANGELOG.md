@@ -1,3 +1,10 @@
+## [1.0.9](https://github.com/ddoachi/jts/compare/v1.0.8...v1.0.9) (2025-09-05)
+
+
+### Bug Fixes
+
+* **ci:** correct docker-compose file path for E2E tests ([1742803](https://github.com/ddoachi/jts/commit/1742803e4a6a1e93ea0d97eb46a414355689c95d))
+
 ## [1.0.8](https://github.com/ddoachi/jts/compare/v1.0.7...v1.0.8) (2025-09-05)
 
 
