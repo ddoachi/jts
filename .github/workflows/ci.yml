@@ -49,10 +49,19 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
 
-      - name: Install Yarn
+      - name: Enable Corepack
         run: corepack enable
+
+      - name: Cache Yarn
+        uses: actions/cache@v3
+        with:
+          path: |
+            .yarn/cache
+            .yarn/install-state.gz
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+
 
       - name: Cache Nx
         uses: actions/cache@v3
@@ -110,10 +119,20 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
 
-      - name: Install Yarn
+      - name: Enable Corepack
         run: corepack enable
+
+      - name: Cache Yarn
+        uses: actions/cache@v3
+        with:
+          path: |
+            .yarn/cache
+            .yarn/install-state.gz
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+
+
 
       - name: Restore Nx Cache
         uses: actions/cache@v3
@@ -144,10 +163,20 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
 
-      - name: Install Yarn
+      - name: Enable Corepack
         run: corepack enable
+
+      - name: Cache Yarn
+        uses: actions/cache@v3
+        with:
+          path: |
+            .yarn/cache
+            .yarn/install-state.gz
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+
+
 
       - name: Restore Nx Cache
         uses: actions/cache@v3
@@ -181,10 +210,20 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
 
-      - name: Install Yarn
+      - name: Enable Corepack
         run: corepack enable
+
+      - name: Cache Yarn
+        uses: actions/cache@v3
+        with:
+          path: |
+            .yarn/cache
+            .yarn/install-state.gz
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+
+
 
       - name: Restore Nx Cache
         uses: actions/cache@v3
@@ -226,10 +265,19 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
 
-      - name: Install Yarn
+      - name: Enable Corepack
         run: corepack enable
+
+      - name: Cache Yarn
+        uses: actions/cache@v3
+        with:
+          path: |
+            .yarn/cache
+            .yarn/install-state.gz
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+
 
       - name: Restore Nx Cache
         uses: actions/cache@v3
