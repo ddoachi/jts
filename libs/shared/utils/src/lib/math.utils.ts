@@ -21,8 +21,8 @@ export function calculateMedian(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
   return sorted.length % 2 !== 0
-    ? sorted[mid]
-    : (sorted[mid - 1] + sorted[mid]) / 2;
+    ? sorted[mid]!
+    : (sorted[mid - 1]! + sorted[mid]!) / 2;
 }
 
 export function calculateStandardDeviation(values: number[]): number {
@@ -63,7 +63,7 @@ export function calculateSharpeRatio(
 export function calculateMaxDrawdown(values: number[]): number {
   if (values.length === 0) return 0;
   let maxDrawdown = 0;
-  let peak = values[0];
+  let peak = values[0]!;
   
   for (const value of values) {
     if (value > peak) {
@@ -92,10 +92,10 @@ export function calculateEMA(
 ): number[] {
   if (values.length === 0) return [];
   const k = 2 / (period + 1);
-  const ema: number[] = [values[0]];
+  const ema: number[] = [values[0]!];
   
   for (let i = 1; i < values.length; i++) {
-    ema.push(values[i] * k + ema[i - 1] * (1 - k));
+    ema.push(values[i]! * k + ema[i - 1]! * (1 - k));
   }
   
   return ema;

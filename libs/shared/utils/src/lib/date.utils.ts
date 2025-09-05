@@ -68,7 +68,7 @@ export function timeframeToMilliseconds(timeframe: string): number {
   if (!match) throw new Error(`Invalid timeframe: ${timeframe}`);
   
   const [, value, unit] = match;
-  const num = parseInt(value, 10);
+  const num = parseInt(value!, 10);
   
   switch (unit) {
     case 's': return num * 1000;
