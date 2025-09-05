@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/ddoachi/jts/compare/v1.0.2...v1.0.3) (2025-09-05)
+
+
+### Bug Fixes
+
+* **ci:** remove invalid secrets reference in Discord notification conditional ([693a307](https://github.com/ddoachi/jts/commit/693a3070ce25ee62e7769f54dddfe0efdbcd4ca0))
+
 ## [1.0.2](https://github.com/ddoachi/jts/compare/v1.0.1...v1.0.2) (2025-09-05)
 
 
