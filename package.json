@@ -1,6 +1,6 @@
 {
   "name": "jts-monorepo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Joohan Trading System - Automated Trading Platform with Multi-Broker Integration",
   "private": true,
   "workspaces": [

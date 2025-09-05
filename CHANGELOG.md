@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/ddoachi/jts/compare/v1.0.0...v1.0.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* **ci:** resolve Yarn 4.x compatibility and lint errors ([c4d5eb6](https://github.com/ddoachi/jts/commit/c4d5eb6311969bff4ee1db910f5f4e39bf2e4ef8))
+
 # 1.0.0 (2025-09-05)
 
 
