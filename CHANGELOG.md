@@ -1,3 +1,10 @@
+## [1.0.11](https://github.com/ddoachi/jts/compare/v1.0.10...v1.0.11) (2025-09-05)
+
+
+### Bug Fixes
+
+* **ci:** correct PostgreSQL port in health check and increase service startup delay ([6755ea9](https://github.com/ddoachi/jts/commit/6755ea97a566cef4d2306c1aca4291a0d0ea619c))
+
 ## [1.0.10](https://github.com/ddoachi/jts/compare/v1.0.9...v1.0.10) (2025-09-05)
 
 
