@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/ddoachi/jts/compare/v1.2.0...v1.3.0) (2025-09-05)
+
+
+### Features
+
+* **specs:** enhance E01-F04 infrastructure tasks with comprehensive technical details ([74d768b](https://github.com/ddoachi/jts/commit/74d768b407f3d9d966026a5729a68977acc044db))
+
 # [1.2.0](https://github.com/ddoachi/jts/compare/v1.1.1...v1.2.0) (2025-09-05)
 
 
