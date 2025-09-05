@@ -1,3 +1,10 @@
+## [1.0.10](https://github.com/ddoachi/jts/compare/v1.0.9...v1.0.10) (2025-09-05)
+
+
+### Bug Fixes
+
+* **ci:** replace non-existent wait-for-services script with dev:health ([a8f0345](https://github.com/ddoachi/jts/commit/a8f03450cc83072a6c090a907a375da39258258d))
+
 ## [1.0.9](https://github.com/ddoachi/jts/compare/v1.0.8...v1.0.9) (2025-09-05)
 
 
