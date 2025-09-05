@@ -108,10 +108,8 @@ jobs:
       - name: 📦 Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          # Use ci for faster, reproducible installs
-          npm ci --prefer-offline --no-audit
-          # --prefer-offline: Use cached packages when available
-          # --no-audit: Skip security audit for faster installs (run separately)
+          # Use yarn for faster, reproducible installs
+          yarn install --immutable
           
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Nx Configuration
@@ -141,6 +139,6 @@ jobs:
       - name: ✅ Validate Environment
         run: |
           echo "Node version: $(node --version)"
-          echo "NPM version: $(npm --version)"
+          echo "Yarn version: $(yarn --version)"
           echo "Nx version: $(npx nx --version)"
           # Bread crumb: Helps debug version-related issues

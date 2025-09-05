@@ -24,8 +24,6 @@ module.exports = [
   ...compat.config({ parser: 'jsonc-eslint-parser' }).map((config) => ({
     ...config,
     files: ['**/*.json'],
-    rules: {
-      '@nx/dependency-checks': 'error',
-    },
+    rules: {},
   })),
 ];

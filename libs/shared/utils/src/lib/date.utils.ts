@@ -8,7 +8,7 @@ export function formatDate(date: Date, format: string = 'YYYY-MM-DD'): string {
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
-  
+
   return format
     .replace('YYYY', String(year))
     .replace('MM', month)
@@ -40,48 +40,58 @@ export function getTimezoneOffset(timezone: string): number {
 export function isMarketOpen(
   currentTime: Date,
   marketOpen: { hour: number; minute: number },
-  marketClose: { hour: number; minute: number }
+  marketClose: { hour: number; minute: number },
 ): boolean {
   const hours = currentTime.getHours();
   const minutes = currentTime.getMinutes();
   const currentMinutes = hours * 60 + minutes;
   const openMinutes = marketOpen.hour * 60 + marketOpen.minute;
   const closeMinutes = marketClose.hour * 60 + marketClose.minute;
-  
+
   return currentMinutes >= openMinutes && currentMinutes <= closeMinutes;
 }
 
 export function getNextTradingDay(date: Date): Date {
   const nextDay = new Date(date);
   nextDay.setDate(nextDay.getDate() + 1);
-  
+
   // Skip weekends
   while (nextDay.getDay() === 0 || nextDay.getDay() === 6) {
     nextDay.setDate(nextDay.getDate() + 1);
   }
-  
+
   return nextDay;
 }
 
 export function timeframeToMilliseconds(timeframe: string): number {
   const match = timeframe.match(/^(\d+)([smhdwM])$/);
   if (!match) throw new Error(`Invalid timeframe: ${timeframe}`);
-  
+
   const [, value, unit] = match;
   const num = parseInt(value!, 10);
-  
+
   switch (unit) {
-    case 's': return num * 1000;
-    case 'm': return num * 60 * 1000;
-    case 'h': return num * 60 * 60 * 1000;
-    case 'd': return num * 24 * 60 * 60 * 1000;
-    case 'w': return num * 7 * 24 * 60 * 60 * 1000;
-    case 'M': return num * 30 * 24 * 60 * 60 * 1000;
-    default: throw new Error(`Unknown timeframe unit: ${unit}`);
+    case 's':
+      return num * 1000;
+    case 'm':
+      return num * 60 * 1000;
+    case 'h':
+      return num * 60 * 60 * 1000;
+    case 'd':
+      return num * 24 * 60 * 60 * 1000;
+    case 'w':
+      return num * 7 * 24 * 60 * 60 * 1000;
+    case 'M':
+      return num * 30 * 24 * 60 * 60 * 1000;
+    default:
+      throw new Error(`Unknown timeframe unit: ${unit}`);
   }
 }
 
-export function getTimeDifference(start: Date, end: Date): {
+export function getTimeDifference(
+  start: Date,
+  end: Date,
+): {
   days: number;
   hours: number;
   minutes: number;
@@ -93,6 +103,6 @@ export function getTimeDifference(start: Date, end: Date): {
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-  
+
   return { days, hours, minutes, seconds, totalMilliseconds: diff };
 }
