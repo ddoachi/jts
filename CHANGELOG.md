@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/ddoachi/jts/compare/v1.0.3...v1.0.4) (2025-09-05)
+
+
+### Bug Fixes
+
+* **ci:** add install-deps to e2e job setup to enable Corepack ([6d5f325](https://github.com/ddoachi/jts/commit/6d5f325ad355e11ace9432002217b2c22bfb499c))
+
 ## [1.0.3](https://github.com/ddoachi/jts/compare/v1.0.2...v1.0.3) (2025-09-05)
 
 
