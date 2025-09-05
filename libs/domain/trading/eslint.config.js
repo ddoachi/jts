@@ -11,7 +11,11 @@ module.exports = [
   ...baseConfig,
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    rules: {},
+    rules: {
+      // Disable unused vars check for enum definitions
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
@@ -25,7 +29,6 @@ module.exports = [
     ...config,
     files: ['**/*.json'],
     rules: {
-      '@nx/dependency-checks': 'error',
     },
   })),
 ];

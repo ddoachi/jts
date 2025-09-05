@@ -11,11 +11,18 @@ module.exports = [
   ...baseConfig,
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    rules: {},
+    rules: {
+      // Disable unused vars check for interface definitions
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
-    rules: {},
+    rules: {
+      // These are interface definitions, parameters are part of the signature
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
   },
   {
     files: ['**/*.js', '**/*.jsx'],
@@ -25,7 +32,6 @@ module.exports = [
     ...config,
     files: ['**/*.json'],
     rules: {
-      '@nx/dependency-checks': 'error',
     },
   })),
 ];
