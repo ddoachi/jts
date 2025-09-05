@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/ddoachi/jts/compare/v1.1.0...v1.1.1) (2025-09-05)
+
+
+### Bug Fixes
+
+* **ci:** handle missing e2e projects gracefully ([ee2a612](https://github.com/ddoachi/jts/commit/ee2a6127ef587ee4f6405cab661b7f3396c57b25))
+
 # [1.1.0](https://github.com/ddoachi/jts/compare/v1.0.11...v1.1.0) (2025-09-05)
 
 
