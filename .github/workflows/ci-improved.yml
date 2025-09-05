@@ -247,7 +247,9 @@ jobs:
       - name: Start Services
         run: |
           docker compose -f configs/docker/docker-compose.dev.yml up -d
-          sleep 30
+          echo "🕐 Waiting for services to start..."
+          sleep 60
+          echo "🏥 Checking service health..."
           yarn dev:health
           
       - name: Run E2E Tests

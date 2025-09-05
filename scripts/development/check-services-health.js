@@ -23,7 +23,7 @@ const services = [
   {
     name: 'PostgreSQL',
     container: 'jts-postgres-dev',
-    port: 5432,
+    port: 5442,
     type: 'tcp',
     essential: true,
   },
