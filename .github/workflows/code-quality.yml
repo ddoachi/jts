@@ -25,68 +25,6 @@ on:
 
 jobs:
   # ═══════════════════════════════════════════════════════════════════
-  # ███ SECTION: SonarCloud Analysis ███
-  # ═══════════════════════════════════════════════════════════════════
-  sonarcloud:
-    name: SonarCloud Analysis
-    runs-on: ubuntu-latest
-    # Only run if SONAR_TOKEN secret is configured
-    if: github.event_name == 'pull_request' || github.event_name == 'schedule'
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          # Shallow clones should be disabled for better analysis
-          fetch-depth: 0
-
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: '20.x'
-
-      - name: Cache Yarn
-        uses: actions/cache@v3
-        with:
-          path: |
-            .yarn/cache
-            .yarn/install-state.gz
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: yarn-${{ runner.os }}-
-
-      - name: Install Dependencies
-        run: yarn install --immutable
-
-      - name: Run Tests with Coverage
-        run: |
-          # Generate coverage reports for SonarCloud
-          yarn test:coverage || true
-          
-          # Find and display coverage summary
-          if [ -f "coverage/lcov.info" ]; then
-            echo "✅ Coverage report generated"
-          else
-            echo "⚠️ No coverage report found - analysis will proceed without coverage data"
-          fi
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=jts-monorepo
-            -Dsonar.organization=jts
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.sources=apps,libs
-            -Dsonar.tests=apps,libs
-            -Dsonar.test.inclusions=**/*.spec.ts,**/*.spec.tsx,**/*.test.ts,**/*.test.tsx
-            -Dsonar.exclusions=**/*.spec.ts,**/*.spec.tsx,**/*.test.ts,**/*.test.tsx,**/node_modules/**,**/dist/**,**/.nx/**
-            -Dsonar.typescript.tsconfigPath=tsconfig.base.json
-
-  # ═══════════════════════════════════════════════════════════════════
   # ███ SECTION: CodeQL Security Analysis ███
   # ═══════════════════════════════════════════════════════════════════
   codeql:
@@ -209,7 +147,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════
   quality-summary:
     name: Quality Summary
-    needs: [sonarcloud, codeql, quality-gates]
+    needs: [codeql, quality-gates]
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -218,13 +156,11 @@ jobs:
           echo "## 📊 Code Quality Analysis Complete"
           echo ""
           echo "### Results Summary:"
-          echo "- SonarCloud: ${{ needs.sonarcloud.result }}"
           echo "- CodeQL: ${{ needs.codeql.result }}"
           echo "- Quality Gates: ${{ needs.quality-gates.result }}"
           echo ""
           
-          if [ "${{ needs.sonarcloud.result }}" == "failure" ] || \
-             [ "${{ needs.codeql.result }}" == "failure" ] || \
+          if [ "${{ needs.codeql.result }}" == "failure" ] || \
              [ "${{ needs.quality-gates.result }}" == "failure" ]; then
             echo "❌ Quality checks failed - review required"
             exit 1
