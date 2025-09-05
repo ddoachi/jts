@@ -62,8 +62,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node-version }}
-          cache: 'yarn'
-          # Built-in caching for npm dependencies
+          # Note: We don't use cache: 'yarn' here because it runs before
+          # Corepack is enabled and would use the wrong Yarn version
           
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Cache Key Generation
