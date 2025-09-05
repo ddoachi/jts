@@ -94,12 +94,12 @@ jobs:
         run: corepack enable
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: Cache Yarn
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             .yarn/cache

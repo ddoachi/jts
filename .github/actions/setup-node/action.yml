@@ -42,7 +42,7 @@ runs:
     # ═══════════════════════════════════════════════════════════════
     
     - name: Setup Node.js ${{ inputs.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v5
       with:
         node-version: ${{ inputs.node-version }}
         # Note: We don't use cache: 'yarn' here because it runs before
@@ -54,7 +54,7 @@ runs:
     
     - name: Cache Dependencies
       id: cache-deps
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           node_modules

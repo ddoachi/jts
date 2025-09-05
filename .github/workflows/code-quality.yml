@@ -59,7 +59,7 @@ jobs:
           node-version: '20.x'
 
       - name: Cache Yarn
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             .yarn/cache
@@ -103,7 +103,7 @@ jobs:
           node-version: '20.x'
 
       - name: Cache Yarn
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             .yarn/cache
