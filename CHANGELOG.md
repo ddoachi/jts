@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/ddoachi/jts/compare/v1.1.1...v1.2.0) (2025-09-05)
+
+
+### Features
+
+* **ci:** add Jest CI configuration for E01-F04-T02 ([19cfe5c](https://github.com/ddoachi/jts/commit/19cfe5c5c08e5d2904afd79d18ddaa19c25480ee))
+
 ## [1.1.1](https://github.com/ddoachi/jts/compare/v1.1.0...v1.1.1) (2025-09-05)
 
 
