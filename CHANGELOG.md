@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/ddoachi/jts/compare/v1.0.6...v1.0.7) (2025-09-05)
+
+
+### Bug Fixes
+
+* **ci:** replace deprecated nx print-affected with nx show projects --affected ([5dca4bd](https://github.com/ddoachi/jts/commit/5dca4bd750001453b0b37378902350d4373900cb))
+
 ## [1.0.6](https://github.com/ddoachi/jts/compare/v1.0.5...v1.0.6) (2025-09-05)
 
 
