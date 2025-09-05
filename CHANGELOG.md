@@ -1,3 +1,10 @@
+## [1.0.8](https://github.com/ddoachi/jts/compare/v1.0.7...v1.0.8) (2025-09-05)
+
+
+### Bug Fixes
+
+* **ci:** resolve E2E Tests job failures ([0dd76f6](https://github.com/ddoachi/jts/commit/0dd76f6bbdb7173dde18a0128733dcfbd7672ee0))
+
 ## [1.0.7](https://github.com/ddoachi/jts/compare/v1.0.6...v1.0.7) (2025-09-05)
 
 
