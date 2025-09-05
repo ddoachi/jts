@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/ddoachi/jts/compare/v1.0.11...v1.1.0) (2025-09-05)
+
+
+### Features
+
+* **specs:** add E13 Spec API Service epic with complete feature specifications ([0bc595a](https://github.com/ddoachi/jts/commit/0bc595af498a34847c861cf5b2e9d6fc476e9a7a))
+
 ## [1.0.11](https://github.com/ddoachi/jts/compare/v1.0.10...v1.0.11) (2025-09-05)
 
 
