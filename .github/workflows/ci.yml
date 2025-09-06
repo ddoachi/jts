@@ -83,9 +83,9 @@ jobs:
             NX_BASE=$(git rev-parse HEAD~1)
           fi
 
-          # Calculate affected projects
-          AFFECTED_APPS=$(yarn nx show projects --affected --base=$NX_BASE --head=HEAD --type=app)
-          AFFECTED_LIBS=$(yarn nx show projects --affected --base=$NX_BASE --head=HEAD --type=lib)
+          # Calculate affected projects (convert multiline to comma-separated)
+          AFFECTED_APPS=$(yarn nx show projects --affected --base=$NX_BASE --head=HEAD --type=app | tr '\n' ',' | sed 's/,$//')
+          AFFECTED_LIBS=$(yarn nx show projects --affected --base=$NX_BASE --head=HEAD --type=lib | tr '\n' ',' | sed 's/,$//')
           HAS_AFFECTED=$(yarn nx show projects --affected --base=$NX_BASE --head=HEAD | grep -q '.' && echo 'true' || echo 'false')
 
           # Output results for downstream jobs

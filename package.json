@@ -49,6 +49,7 @@
     "test:affected": "nx affected --target=test",
     "test:watch": "nx run-many --target=test --all --watch",
     "test:integration": "echo 'Integration tests not yet implemented'",
+    "test:ci": "nx run-many --target=test --all --configuration=ci",
     "test:e2e": "nx run-many --target=e2e --all",
     "lint": "nx run-many --target=lint --all",
     "lint:fix": "nx run-many --target=lint --all --fix",

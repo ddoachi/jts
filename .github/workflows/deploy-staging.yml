@@ -76,12 +76,12 @@ jobs:
       - name: Run Integration Tests
         run: |
           echo "🧪 Running integration tests..."
-          npm run test:integration
+          yarn test:integration
 
       - name: Security Scan
         run: |
           echo "🔒 Running security scan..."
-          npm audit --production
+          yarn audit --level moderate
 
       - name: License Check
         run: |
