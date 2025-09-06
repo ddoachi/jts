@@ -1,6 +1,7 @@
 # E13-F04: Caching & Performance Layer
 
 ## Spec Information
+
 - **Spec ID**: E13-F04
 - **Title**: Caching & Performance Layer
 - **Parent**: E13
@@ -22,6 +23,7 @@ The caching layer is critical for achieving the performance requirements of the 
 ## Scope
 
 ### In Scope
+
 - Redis integration and configuration
 - In-memory LRU cache implementation
 - Cache key strategy and namespacing
@@ -32,6 +34,7 @@ The caching layer is critical for achieving the performance requirements of the 
 - Cache statistics and monitoring
 
 ### Out of Scope
+
 - CDN caching (infrastructure level)
 - Browser caching headers (handled by F02)
 - Database query caching (no DB in this epic)
@@ -51,12 +54,14 @@ The caching layer is critical for achieving the performance requirements of the 
 ## Tasks
 
 ### T01: Redis Integration
+
 **Status**: Draft
 **Priority**: Critical
 
 Set up Redis connection with NestJS cache manager and proper configuration.
 
 **Deliverables**:
+
 - Redis module configuration
 - Connection pooling setup
 - Retry logic for connection failures
@@ -66,12 +71,14 @@ Set up Redis connection with NestJS cache manager and proper configuration.
 ---
 
 ### T02: Cache Key Strategy
+
 **Status**: Draft
 **Priority**: Critical
 
 Design and implement consistent cache key patterns with proper namespacing.
 
 **Deliverables**:
+
 - Key naming conventions (spec:{id}, tree:{root}, stats:global)
 - Namespace prefixing for environments
 - TTL strategy per cache type
@@ -81,12 +88,14 @@ Design and implement consistent cache key patterns with proper namespacing.
 ---
 
 ### T03: In-Memory LRU Cache
+
 **Status**: Draft
 **Priority**: High
 
 Implement fast in-memory cache for frequently accessed data with LRU eviction.
 
 **Deliverables**:
+
 - LRU cache implementation with size limits
 - Two-tier caching (memory → Redis)
 - Hot data identification
@@ -96,12 +105,14 @@ Implement fast in-memory cache for frequently accessed data with LRU eviction.
 ---
 
 ### T04: Cache Invalidation System
+
 **Status**: Draft
 **Priority**: High
 
 Implement intelligent cache invalidation triggered by file system changes.
 
 **Deliverables**:
+
 - Event-driven invalidation from file watcher
 - Cascading invalidation for related specs
 - Batch invalidation for multiple changes
@@ -111,12 +122,14 @@ Implement intelligent cache invalidation triggered by file system changes.
 ---
 
 ### T05: HTML Rendering Cache
+
 **Status**: Draft
 **Priority**: Medium
 
 Lazy render and cache HTML versions of markdown content for API responses.
 
 **Deliverables**:
+
 - On-demand HTML rendering
 - Rendered HTML caching in Redis
 - Markdown→HTML conversion with markdown-it
@@ -126,12 +139,14 @@ Lazy render and cache HTML versions of markdown content for API responses.
 ---
 
 ### T06: Query Result Caching
+
 **Status**: Draft
 **Priority**: Medium
 
 Cache complex query results like tree structures and statistics.
 
 **Deliverables**:
+
 - Query fingerprinting for cache keys
 - Result set caching with pagination
 - Statistics pre-computation
@@ -141,12 +156,14 @@ Cache complex query results like tree structures and statistics.
 ---
 
 ### T07: Cache Monitoring & Stats
+
 **Status**: Draft
 **Priority**: Low
 
 Implement cache performance monitoring and statistics collection.
 
 **Deliverables**:
+
 - Hit/miss ratio tracking
 - Cache size monitoring
 - Performance metrics collection
@@ -156,6 +173,7 @@ Implement cache performance monitoring and statistics collection.
 ## Technical Architecture
 
 ### Module Structure
+
 ```
 apps/spec-api/src/modules/cache/
 ├── services/
@@ -200,33 +218,35 @@ apps/spec-api/src/modules/cache/
 ### Cache Layers
 
 #### Level 1: In-Memory LRU
+
 ```typescript
 class MemoryCache {
-  private cache: LRUCache<string, CachedItem>
-  
+  private cache: LRUCache<string, CachedItem>;
+
   constructor(options: {
-    maxSize: number      // Max items
-    maxAge: number       // TTL in ms
-    sizeCalculation?: (item: any) => number
-  })
-  
-  get<T>(key: string): T | undefined
-  set<T>(key: string, value: T, ttl?: number): void
-  delete(key: string): void
-  clear(): void
-  stats(): CacheStats
+    maxSize: number; // Max items
+    maxAge: number; // TTL in ms
+    sizeCalculation?: (item: any) => number;
+  });
+
+  get<T>(key: string): T | undefined;
+  set<T>(key: string, value: T, ttl?: number): void;
+  delete(key: string): void;
+  clear(): void;
+  stats(): CacheStats;
 }
 ```
 
 #### Level 2: Redis Cache
+
 ```typescript
 class RedisCache {
-  async get<T>(key: string): Promise<T | null>
-  async set<T>(key: string, value: T, ttl?: number): Promise<void>
-  async delete(key: string | string[]): Promise<void>
-  async exists(key: string): Promise<boolean>
-  async ttl(key: string): Promise<number>
-  async scan(pattern: string): Promise<string[]>
+  async get<T>(key: string): Promise<T | null>;
+  async set<T>(key: string, value: T, ttl?: number): Promise<void>;
+  async delete(key: string | string[]): Promise<void>;
+  async exists(key: string): Promise<boolean>;
+  async ttl(key: string): Promise<number>;
+  async scan(pattern: string): Promise<string[]>;
 }
 ```
 
@@ -235,20 +255,20 @@ class RedisCache {
 ```typescript
 enum CacheKeys {
   // Individual specs
-  SPEC = 'spec:{id}',                    // spec:E13-F04
-  SPEC_HTML = 'spec:{id}:html',         // spec:E13-F04:html
-  
+  SPEC = 'spec:{id}', // spec:E13-F04
+  SPEC_HTML = 'spec:{id}:html', // spec:E13-F04:html
+
   // Collections
-  SPEC_LIST = 'specs:list:{hash}',      // specs:list:abc123
-  SPEC_TREE = 'specs:tree:{root}',      // specs:tree:E13
-  
+  SPEC_LIST = 'specs:list:{hash}', // specs:list:abc123
+  SPEC_TREE = 'specs:tree:{root}', // specs:tree:E13
+
   // Statistics
-  STATS_GLOBAL = 'stats:global',        // stats:global
-  STATS_BY_TYPE = 'stats:type:{type}',  // stats:type:feature
-  
+  STATS_GLOBAL = 'stats:global', // stats:global
+  STATS_BY_TYPE = 'stats:type:{type}', // stats:type:feature
+
   // Metadata
   SPEC_CHILDREN = 'spec:{id}:children', // spec:E13:children
-  SPEC_DEPS = 'spec:{id}:deps',        // spec:E13-F04:deps
+  SPEC_DEPS = 'spec:{id}:deps', // spec:E13-F04:deps
 }
 ```
 
@@ -257,24 +277,24 @@ enum CacheKeys {
 ```typescript
 interface CacheConfig {
   redis: {
-    host: string
-    port: number
-    password?: string
-    db: number
-    keyPrefix: string           // e.g., 'jts:spec:'
-  }
+    host: string;
+    port: number;
+    password?: string;
+    db: number;
+    keyPrefix: string; // e.g., 'jts:spec:'
+  };
   memory: {
-    maxSize: number            // e.g., 1000 items
-    maxMemory: string          // e.g., '100mb'
-    ttl: number               // Default TTL in seconds
-  }
+    maxSize: number; // e.g., 1000 items
+    maxMemory: string; // e.g., '100mb'
+    ttl: number; // Default TTL in seconds
+  };
   ttls: {
-    spec: number              // e.g., 3600 (1 hour)
-    list: number              // e.g., 300 (5 min)
-    tree: number              // e.g., 600 (10 min)
-    stats: number             // e.g., 60 (1 min)
-    html: number              // e.g., 86400 (1 day)
-  }
+    spec: number; // e.g., 3600 (1 hour)
+    list: number; // e.g., 300 (5 min)
+    tree: number; // e.g., 600 (10 min)
+    stats: number; // e.g., 60 (1 min)
+    html: number; // e.g., 86400 (1 day)
+  };
 }
 ```
 
@@ -285,25 +305,25 @@ class InvalidationService {
   // Single spec update
   async invalidateSpec(specId: string): Promise<void> {
     // Delete spec cache
-    await this.cache.delete(`spec:${specId}`)
-    await this.cache.delete(`spec:${specId}:html`)
-    
+    await this.cache.delete(`spec:${specId}`);
+    await this.cache.delete(`spec:${specId}:html`);
+
     // Invalidate parent's children cache
-    const parentId = this.getParentId(specId)
+    const parentId = this.getParentId(specId);
     if (parentId) {
-      await this.cache.delete(`spec:${parentId}:children`)
+      await this.cache.delete(`spec:${parentId}:children`);
     }
-    
+
     // Invalidate lists and stats
-    await this.invalidatePattern('specs:list:*')
-    await this.cache.delete('stats:global')
+    await this.invalidatePattern('specs:list:*');
+    await this.cache.delete('stats:global');
   }
-  
+
   // Pattern-based invalidation
-  async invalidatePattern(pattern: string): Promise<void>
-  
+  async invalidatePattern(pattern: string): Promise<void>;
+
   // Cascade invalidation
-  async cascadeInvalidate(specId: string): Promise<void>
+  async cascadeInvalidate(specId: string): Promise<void>;
 }
 ```
 
@@ -329,6 +349,7 @@ async updateSpec(id: string, data: any): Promise<void> {
 ```
 
 ### Dependencies
+
 - **redis**: ^4.6.0 - Redis client
 - **cache-manager**: ^5.3.0 - Cache abstraction
 - **cache-manager-redis-store**: ^3.0.1 - Redis adapter
@@ -337,12 +358,12 @@ async updateSpec(id: string, data: any): Promise<void> {
 
 ## Risk Analysis
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Redis failure | High | Fallback to memory cache, graceful degradation |
-| Memory overflow | Medium | Size limits, LRU eviction, monitoring |
-| Cache inconsistency | High | Event-driven invalidation, versioning |
-| Invalidation storms | Medium | Batch invalidation, debouncing |
+| Risk                | Impact | Mitigation                                     |
+| ------------------- | ------ | ---------------------------------------------- |
+| Redis failure       | High   | Fallback to memory cache, graceful degradation |
+| Memory overflow     | Medium | Size limits, LRU eviction, monitoring          |
+| Cache inconsistency | High   | Event-driven invalidation, versioning          |
+| Invalidation storms | Medium | Batch invalidation, debouncing                 |
 
 ## Success Metrics
 

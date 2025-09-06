@@ -190,15 +190,8 @@
       ],
       "estimated_hours": "80",
       "actual_hours": "0",
-      "pull_requests": [
-        "#18",
-        "#19"
-      ],
-      "commits": [
-        "08e4cc5",
-        "e5381ea",
-        "2da9f8d"
-      ]
+      "pull_requests": ["#18", "#19"],
+      "commits": ["08e4cc5", "e5381ea", "2da9f8d"]
     },
     "E02-F11": {
       "id": "c3535feb",
@@ -821,12 +814,8 @@
       "children": [],
       "estimated_hours": "3",
       "actual_hours": "1",
-      "pull_requests": [
-        "#15"
-      ],
-      "commits": [
-        "d41de7a"
-      ]
+      "pull_requests": ["#15"],
+      "commits": ["d41de7a"]
     },
     "E01-F01-T03": {
       "id": "6b180037",
@@ -980,10 +969,7 @@
       "E01-F02-T02",
       "E01-F02-T01"
     ],
-    "in_progress": [
-      "E01",
-      "E01-F03"
-    ],
+    "in_progress": ["E01", "E01-F03"],
     "draft": [
       "E12",
       "E11",
@@ -1768,12 +1754,8 @@
               "children": {},
               "estimated_hours": "3",
               "actual_hours": "1",
-              "pull_requests": [
-                "#15"
-              ],
-              "commits": [
-                "d41de7a"
-              ]
+              "pull_requests": ["#15"],
+              "commits": ["d41de7a"]
             },
             "T03": {
               "id": "6b180037",
@@ -1925,15 +1907,8 @@
       },
       "estimated_hours": "80",
       "actual_hours": "0",
-      "pull_requests": [
-        "#18",
-        "#19"
-      ],
-      "commits": [
-        "08e4cc5",
-        "e5381ea",
-        "2da9f8d"
-      ]
+      "pull_requests": ["#18", "#19"],
+      "commits": ["08e4cc5", "e5381ea", "2da9f8d"]
     }
   }
 }

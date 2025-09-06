@@ -25,13 +25,13 @@
  */
 import { Tree } from '@nx/devkit';
 export interface ServiceGeneratorSchema {
-    name: string;
-    directory?: string;
-    tags?: string;
-    port?: number;
-    includeKafka?: boolean;
-    includeGrpc?: boolean;
-    includeWebsocket?: boolean;
+  name: string;
+  directory?: string;
+  tags?: string;
+  port?: number;
+  includeKafka?: boolean;
+  includeGrpc?: boolean;
+  includeWebsocket?: boolean;
 }
 /**
  * Main generator entry point
@@ -40,4 +40,7 @@ export interface ServiceGeneratorSchema {
  * HOW: Calls each generation step in sequence
  * WHAT: Returns a function that installs packages after generation
  */
-export default function serviceGenerator(tree: Tree, options: ServiceGeneratorSchema): Promise<() => void>;
+export default function serviceGenerator(
+  tree: Tree,
+  options: ServiceGeneratorSchema,
+): Promise<() => void>;

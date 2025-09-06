@@ -3,7 +3,7 @@
 # ============================================================================
 # Generated from spec: [[E01-F03-T06] Configure CI/CD Pipeline and Automation](../../specs/E01/F03/T06/E01-F03-T06.spec.md)
 #
-# PURPOSE: 
+# PURPOSE:
 # Manual deployment workflow for JTS microservices to staging and production
 # environments with Docker image building and registry management.
 #
@@ -54,7 +54,7 @@ jobs:
           # WHY: Allow selective deployment of specific services or all services
           # HOW: Check input parameter and build service list accordingly
           # WHAT: Output JSON array of services to deploy
-          
+
           if [ -z "${{ inputs.service }}" ]; then
             # Deploy all services - scan apps directory
             SERVICES=$(ls apps/ | jq -R -s -c 'split("\n")[:-1]')
@@ -64,9 +64,9 @@ jobs:
             SERVICES='["${{ inputs.service }}"]'
             echo "🚀 Deploying ${{ inputs.service }} to ${{ inputs.environment }}"
           fi
-          
+
           echo "list=$SERVICES" >> $GITHUB_OUTPUT
-          
+
           # Display deployment summary
           echo "::group::Deployment Summary"
           echo "Environment: ${{ inputs.environment }}"
@@ -115,7 +115,7 @@ jobs:
           # Build the service using Nx with production configuration
           echo "📦 Building ${{ matrix.service }} for production..."
           npx nx build ${{ matrix.service }} --configuration=production
-          
+
           # Verify build output
           if [ -d "dist/apps/${{ matrix.service }}" ]; then
             echo "✅ Build successful for ${{ matrix.service }}"
@@ -162,21 +162,21 @@ jobs:
         run: |
           # PLACEHOLDER: Actual deployment implementation
           # This section would contain kubectl commands or Helm deployment
-          
+
           echo "::group::Deployment Configuration"
           echo "Environment: ${{ inputs.environment }}"
           echo "Services: ${{ needs.prepare.outputs.services }}"
           echo "Image Tag: ${{ github.sha }}"
           echo "Registry: ${{ env.REGISTRY }}/${{ github.repository }}"
           echo "::endgroup::"
-          
+
           echo "⚠️ Note: Actual Kubernetes deployment commands need to be implemented"
           echo "This would typically include:"
           echo "  1. kubectl config setup"
           echo "  2. Image update in deployment manifests"
           echo "  3. kubectl apply or helm upgrade"
           echo "  4. Deployment verification"
-          
+
           # Example placeholder commands (commented out):
           # kubectl config use-context ${{ inputs.environment }}-cluster
           # kubectl set image deployment/service-name service-name=${{ env.REGISTRY }}/${{ github.repository }}/service-name:${{ github.sha }}
@@ -220,7 +220,7 @@ jobs:
           echo "  - kubectl rollout undo"
           echo "  - Previous version restoration"
           echo "  - Health check verification"
-          
+
           # Example rollback commands (commented out):
           # kubectl rollout undo deployment/service-name
           # kubectl rollout status deployment/service-name

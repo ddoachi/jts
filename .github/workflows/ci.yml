@@ -3,7 +3,7 @@
 # ============================================================================
 # Generated from spec: [[E01-F03-T06] Configure CI/CD Pipeline and Automation](../../specs/E01/F03/T06/E01-F03-T06.spec.md)
 #
-# PURPOSE: 
+# PURPOSE:
 # Automated continuous integration for the JTS monorepo using Nx affected commands
 # to optimize build times and resource usage.
 #
@@ -62,7 +62,6 @@ jobs:
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
 
-
       - name: Cache Nx
         uses: actions/cache@v4
         with:
@@ -84,9 +83,9 @@ jobs:
             NX_BASE=$(git rev-parse HEAD~1)
           fi
 
-          # Calculate affected projects
-          AFFECTED_APPS=$(yarn nx show projects --affected --base=$NX_BASE --head=HEAD --type=app)
-          AFFECTED_LIBS=$(yarn nx show projects --affected --base=$NX_BASE --head=HEAD --type=lib)
+          # Calculate affected projects (convert multiline to comma-separated)
+          AFFECTED_APPS=$(yarn nx show projects --affected --base=$NX_BASE --head=HEAD --type=app | tr '\n' ',' | sed 's/,$//')
+          AFFECTED_LIBS=$(yarn nx show projects --affected --base=$NX_BASE --head=HEAD --type=lib | tr '\n' ',' | sed 's/,$//')
           HAS_AFFECTED=$(yarn nx show projects --affected --base=$NX_BASE --head=HEAD | grep -q '.' && echo 'true' || echo 'false')
 
           # Output results for downstream jobs
@@ -132,8 +131,6 @@ jobs:
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
 
-
-
       - name: Restore Nx Cache
         uses: actions/cache@v4
         with:
@@ -175,8 +172,6 @@ jobs:
             .yarn/install-state.gz
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-
-
 
       - name: Restore Nx Cache
         uses: actions/cache@v4
@@ -222,8 +217,6 @@ jobs:
             .yarn/install-state.gz
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-
-
 
       - name: Restore Nx Cache
         uses: actions/cache@v4
@@ -277,7 +270,6 @@ jobs:
             .yarn/install-state.gz
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-
 
       - name: Restore Nx Cache
         uses: actions/cache@v4

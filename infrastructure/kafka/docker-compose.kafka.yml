@@ -6,7 +6,7 @@ services:
     hostname: zookeeper
     container_name: jts-zookeeper
     ports:
-      - "2181:2181"
+      - '2181:2181'
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -29,8 +29,8 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
-      - "19092:19092"
+      - '9092:9092'
+      - '19092:19092'
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
@@ -52,12 +52,12 @@ services:
       KAFKA_SOCKET_RECEIVE_BUFFER_BYTES: 102400
       KAFKA_SOCKET_REQUEST_MAX_BYTES: 104857600
       # Log retention (adjust based on storage availability)
-      KAFKA_LOG_RETENTION_HOURS: 168  # 7 days
-      KAFKA_LOG_SEGMENT_BYTES: 1073741824  # 1GB
+      KAFKA_LOG_RETENTION_HOURS: 168 # 7 days
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824 # 1GB
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
-      KAFKA_LOG_CLEANUP_POLICY: "delete"
+      KAFKA_LOG_CLEANUP_POLICY: 'delete'
       # Compression
-      KAFKA_COMPRESSION_TYPE: "lz4"
+      KAFKA_COMPRESSION_TYPE: 'lz4'
     volumes:
       # Update this path when 4TB SSD is installed to: /mnt/ssd4tb/kafka/kafka1
       - ./data/kafka/kafka1:/var/lib/kafka/data
@@ -72,8 +72,8 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9093:9093"
-      - "19093:19093"
+      - '9093:9093'
+      - '19093:19093'
     environment:
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
@@ -98,8 +98,8 @@ services:
       KAFKA_LOG_RETENTION_HOURS: 168
       KAFKA_LOG_SEGMENT_BYTES: 1073741824
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
-      KAFKA_LOG_CLEANUP_POLICY: "delete"
-      KAFKA_COMPRESSION_TYPE: "lz4"
+      KAFKA_LOG_CLEANUP_POLICY: 'delete'
+      KAFKA_COMPRESSION_TYPE: 'lz4'
     volumes:
       # Update this path when 4TB SSD is installed to: /mnt/ssd4tb/kafka/kafka2
       - ./data/kafka/kafka2:/var/lib/kafka/data
@@ -114,8 +114,8 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - "9094:9094"
-      - "19094:19094"
+      - '9094:9094'
+      - '19094:19094'
     environment:
       KAFKA_BROKER_ID: 3
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
@@ -140,8 +140,8 @@ services:
       KAFKA_LOG_RETENTION_HOURS: 168
       KAFKA_LOG_SEGMENT_BYTES: 1073741824
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
-      KAFKA_LOG_CLEANUP_POLICY: "delete"
-      KAFKA_COMPRESSION_TYPE: "lz4"
+      KAFKA_LOG_CLEANUP_POLICY: 'delete'
+      KAFKA_COMPRESSION_TYPE: 'lz4'
     volumes:
       # Update this path when 4TB SSD is installed to: /mnt/ssd4tb/kafka/kafka3
       - ./data/kafka/kafka3:/var/lib/kafka/data
@@ -158,13 +158,13 @@ services:
       - kafka2
       - kafka3
     ports:
-      - "8081:8081"
+      - '8081:8081'
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka1:29092,kafka2:29093,kafka3:29094'
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
       SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 2
-      SCHEMA_REGISTRY_SCHEMA_COMPATIBILITY_LEVEL: "backward"
+      SCHEMA_REGISTRY_SCHEMA_COMPATIBILITY_LEVEL: 'backward'
     networks:
       - jts-network
     restart: unless-stopped
@@ -178,7 +178,7 @@ services:
       - kafka3
       - schema-registry
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
       KAFKA_CLUSTERS_0_NAME: jts-cluster
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:29092,kafka2:29093,kafka3:29094

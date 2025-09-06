@@ -36,7 +36,7 @@ jobs:
       # ═══════════════════════════════════════════════════════════════
       # SECTION: NPM Dependencies Cache
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 📦 Setup NPM Cache
         if: inputs.cache-npm
         uses: actions/cache@v4
@@ -49,11 +49,11 @@ jobs:
           restore-keys: |
             npm-${{ runner.os }}-
             # Progressive cache restoration
-            
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Nx Build Cache
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 🏗️ Setup Nx Cache
         if: inputs.cache-nx
         uses: actions/cache@v4
@@ -67,11 +67,11 @@ jobs:
             nx-${{ runner.os }}-${{ github.ref }}
             nx-${{ runner.os }}-
             # Multi-level cache fallback strategy
-            
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Docker Layer Cache
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 🐳 Setup Docker Buildx
         if: inputs.cache-docker
         uses: docker/setup-buildx-action@v3
@@ -79,7 +79,7 @@ jobs:
           driver-opts: |
             network=host
             # Enable host network for buildx
-            
+
       - name: 🐳 Configure Docker Cache
         if: inputs.cache-docker
         uses: actions/cache@v4
@@ -89,22 +89,22 @@ jobs:
           restore-keys: |
             docker-${{ runner.os }}-
             # Docker layer cache for faster builds
-            
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Cache Statistics
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 📊 Display Cache Statistics
         run: |
           echo "═══ Cache Configuration Summary ═══"
           echo "NPM Cache: ${{ inputs.cache-npm && 'Enabled ✅' || 'Disabled ❌' }}"
           echo "Nx Cache: ${{ inputs.cache-nx && 'Enabled ✅' || 'Disabled ❌' }}"
           echo "Docker Cache: ${{ inputs.cache-docker && 'Enabled ✅' || 'Disabled ❌' }}"
-          
+
           if [ -d "node_modules" ]; then
             echo "Node modules size: $(du -sh node_modules | cut -f1)"
           fi
-          
+
           if [ -d ".nx/cache" ]; then
             echo "Nx cache size: $(du -sh .nx/cache | cut -f1)"
           fi

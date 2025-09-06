@@ -107,12 +107,12 @@ async function getContainerStatus(containerName) {
     const { stdout } = await execAsync(
       `docker ps -a --filter "name=${containerName}" --format "{{.Status}}"`,
     );
-    
+
     const status = stdout.trim();
     if (!status) {
       return { exists: false, running: false };
     }
-    
+
     return {
       exists: true,
       running: status.toLowerCase().includes('up'),
@@ -128,24 +128,24 @@ async function checkTcpPort(host, port, timeout = 3000) {
   return new Promise((resolve) => {
     const socket = new net.Socket();
     let connected = false;
-    
+
     socket.setTimeout(timeout);
-    
+
     socket.on('connect', () => {
       connected = true;
       socket.destroy();
       resolve(true);
     });
-    
+
     socket.on('timeout', () => {
       socket.destroy();
       resolve(false);
     });
-    
+
     socket.on('error', () => {
       resolve(false);
     });
-    
+
     socket.connect(port, host);
   });
 }
@@ -160,20 +160,20 @@ async function checkHttpEndpoint(host, port, path = '/', timeout = 3000) {
       method: 'GET',
       timeout: timeout,
     };
-    
+
     const req = http.request(options, (res) => {
       resolve(res.statusCode < 500);
     });
-    
+
     req.on('error', () => {
       resolve(false);
     });
-    
+
     req.on('timeout', () => {
       req.destroy();
       resolve(false);
     });
-    
+
     req.end();
   });
 }
@@ -186,10 +186,10 @@ async function checkService(service) {
     container: service.container,
     port: service.port,
   };
-  
+
   // Check container status
   const containerStatus = await getContainerStatus(service.container);
-  
+
   if (!containerStatus.exists) {
     return {
       ...result,
@@ -198,7 +198,7 @@ async function checkService(service) {
       healthy: false,
     };
   }
-  
+
   if (!containerStatus.running) {
     return {
       ...result,
@@ -207,16 +207,16 @@ async function checkService(service) {
       healthy: false,
     };
   }
-  
+
   // Check port accessibility
   let portAccessible = false;
-  
+
   if (service.type === 'tcp') {
     portAccessible = await checkTcpPort('localhost', service.port);
   } else if (service.type === 'http') {
     portAccessible = await checkHttpEndpoint('localhost', service.port, service.path);
   }
-  
+
   if (!portAccessible) {
     return {
       ...result,
@@ -225,7 +225,7 @@ async function checkService(service) {
       healthy: false,
     };
   }
-  
+
   return {
     ...result,
     status: 'healthy',
@@ -237,7 +237,7 @@ async function checkService(service) {
 // Format service status for display
 function formatServiceStatus(result) {
   let icon, color;
-  
+
   switch (result.status) {
     case 'healthy':
       icon = '✅';
@@ -259,7 +259,7 @@ function formatServiceStatus(result) {
       icon = '❓';
       color = colors.reset;
   }
-  
+
   const essentialTag = result.essential ? ' [ESSENTIAL]' : '';
   return `${icon}  ${color}${result.name}${essentialTag}: ${result.message}${colors.reset}`;
 }
@@ -267,11 +267,11 @@ function formatServiceStatus(result) {
 // Check all services
 async function checkAllServices(options = {}) {
   const { verbose = false, json = false } = options;
-  
+
   if (!json) {
     console.log(`${colors.cyan}🏥 Checking service health...${colors.reset}\n`);
   }
-  
+
   // Check Docker availability first
   const dockerAvailable = await checkDockerAvailable();
   if (!dockerAvailable) {
@@ -283,7 +283,7 @@ async function checkAllServices(options = {}) {
     }
     process.exit(1);
   }
-  
+
   const dockerRunning = await checkDockerRunning();
   if (!dockerRunning) {
     const error = 'Docker daemon is not running';
@@ -295,59 +295,59 @@ async function checkAllServices(options = {}) {
     }
     process.exit(1);
   }
-  
+
   // Check all services
   const results = await Promise.all(services.map(checkService));
-  
+
   if (json) {
     console.log(JSON.stringify({ services: results }, null, 2));
     return;
   }
-  
+
   // Display results
-  const essentialServices = results.filter(r => r.essential);
-  const optionalServices = results.filter(r => !r.essential);
-  
+  const essentialServices = results.filter((r) => r.essential);
+  const optionalServices = results.filter((r) => !r.essential);
+
   console.log(`${colors.blue}Essential Services:${colors.reset}`);
-  essentialServices.forEach(result => {
+  essentialServices.forEach((result) => {
     console.log('  ' + formatServiceStatus(result));
   });
-  
+
   if (optionalServices.length > 0) {
     console.log(`\n${colors.blue}Optional Services:${colors.reset}`);
-    optionalServices.forEach(result => {
+    optionalServices.forEach((result) => {
       console.log('  ' + formatServiceStatus(result));
     });
   }
-  
+
   // Summary
-  const healthyEssential = essentialServices.filter(r => r.healthy).length;
+  const healthyEssential = essentialServices.filter((r) => r.healthy).length;
   const totalEssential = essentialServices.length;
-  const healthyOptional = optionalServices.filter(r => r.healthy).length;
+  const healthyOptional = optionalServices.filter((r) => r.healthy).length;
   const totalOptional = optionalServices.length;
-  
+
   console.log(`\n${colors.cyan}Summary:${colors.reset}`);
   console.log(`  Essential: ${healthyEssential}/${totalEssential} healthy`);
   if (totalOptional > 0) {
     console.log(`  Optional: ${healthyOptional}/${totalOptional} healthy`);
   }
-  
+
   // Check if all essential services are healthy
-  const allEssentialHealthy = essentialServices.every(r => r.healthy);
-  
+  const allEssentialHealthy = essentialServices.every((r) => r.healthy);
+
   if (allEssentialHealthy) {
     console.log(`\n${colors.green}✅ All essential services are healthy!${colors.reset}`);
     process.exit(0);
   } else {
     console.log(`\n${colors.yellow}⚠️  Some essential services are not healthy${colors.reset}`);
-    
+
     if (verbose) {
       console.log('\nTroubleshooting tips:');
       console.log('  1. Check container logs: yarn dev:logs');
       console.log('  2. Restart services: yarn dev:restart');
       console.log('  3. Clean and restart: yarn dev:clean && yarn dev:start');
     }
-    
+
     process.exit(1);
   }
 }
@@ -360,7 +360,7 @@ function parseArgs() {
     json: false,
     help: false,
   };
-  
+
   for (const arg of args) {
     switch (arg) {
       case '-v':
@@ -380,7 +380,7 @@ function parseArgs() {
         options.help = true;
     }
   }
-  
+
   return options;
 }
 
@@ -400,12 +400,12 @@ function showHelp() {
 // Main execution
 async function main() {
   const options = parseArgs();
-  
+
   if (options.help) {
     showHelp();
     process.exit(0);
   }
-  
+
   try {
     await checkAllServices(options);
   } catch (error) {

@@ -172,7 +172,7 @@ async function parseAllSpecs(): Promise<SpecData> {
       const parentParts = data.parent.split('-');
       const epicId = parentParts[0]; // E01
       const featureId = parentParts[1]; // F02
-      
+
       if (
         hierarchy[epicId] &&
         hierarchy[epicId].children &&
@@ -190,7 +190,7 @@ async function parseAllSpecs(): Promise<SpecData> {
       const epicId = parentParts[0]; // E01
       const featureId = parentParts[1]; // F02
       const taskId = parentParts[2]; // T01
-      
+
       if (hierarchy[epicId] && hierarchy[epicId].children) {
         const feature = hierarchy[epicId].children[featureId];
         if (feature && feature.children && feature.children[taskId]) {
