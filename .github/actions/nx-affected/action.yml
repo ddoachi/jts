@@ -59,11 +59,10 @@ runs:
         echo "🔍 Determining affected projects..."
 
         # Get list of affected projects
-        AFFECTED=$(npx nx print-affected \
+        AFFECTED=$(npx nx show projects --affected \
           --base=${{ inputs.base }} \
           --head=${{ inputs.head }} \
-          --select=projects \
-          2>/dev/null || echo "")
+          2>/dev/null | tr '\n' ',' | sed 's/,$//' || echo "")
 
         # Store for output
         echo "projects=$AFFECTED" >> $GITHUB_OUTPUT
@@ -101,11 +100,11 @@ runs:
       if: steps.check-affected.outputs.has-affected == 'true'
       shell: bash
       run: |
-        echo "🚀 Running nx affected:${{ inputs.target }}..."
+        echo "🚀 Running nx affected --target=${{ inputs.target }}..."
         echo "═══════════════════════════════════════"
 
         # Build the command
-        NX_COMMAND="npx nx affected:${{ inputs.target }}"
+        NX_COMMAND="npx nx affected --target=${{ inputs.target }}"
         NX_COMMAND="$NX_COMMAND --base=${{ inputs.base }}"
         NX_COMMAND="$NX_COMMAND --head=${{ inputs.head }}"
         NX_COMMAND="$NX_COMMAND --parallel=${{ inputs.parallel }}"
@@ -127,7 +126,7 @@ runs:
         eval $NX_COMMAND
 
         echo ""
-        echo "✅ Nx affected:${{ inputs.target }} completed"
+        echo "✅ Nx affected --target=${{ inputs.target }} completed"
         # GOTCHA: Exit code is propagated automatically
 
     # ═══════════════════════════════════════════════════════════════

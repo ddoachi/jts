@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        check: [lint, format, typecheck]
+        check: [lint, typecheck]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -90,6 +90,30 @@ jobs:
           base: ${{ github.event.pull_request.base.sha || 'HEAD~1' }}
           head: HEAD
           parallel: 3
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Format Check
+  # Check code formatting with Prettier
+  # ═══════════════════════════════════════════════════════════════════
+
+  format:
+    name: 🎨 Format Check
+    needs: [setup]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Environment
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          nx-cloud-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+      - name: Check Formatting
+        run: yarn format:check
 
   # ═══════════════════════════════════════════════════════════════════
   # JOB: Test Suite
@@ -139,7 +163,7 @@ jobs:
 
   build:
     name: 🏗️ Build Applications
-    needs: [code-quality, test]
+    needs: [code-quality, format, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -296,7 +320,7 @@ jobs:
 
   summary:
     name: 📊 Pipeline Summary
-    needs: [code-quality, test, build, security]
+    needs: [code-quality, format, test, build, security]
     if: always()
     runs-on: ubuntu-latest
     steps:
