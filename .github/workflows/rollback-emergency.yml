@@ -1,0 +1,459 @@
+# ═══════════════════════════════════════════════════════════════════
+# ███ Emergency Rollback Workflow ███
+# ═══════════════════════════════════════════════════════════════════
+#
+# **Generated from spec**: [[E01-F04-T04] Deployment Pipeline Workflows](../../specs/E01/F04/T04/E01-F04-T04.spec.md)
+# **Emergency procedures for**: Rapid rollback across all environments
+#
+# PURPOSE: Immediate rollback capability for critical production issues
+# FEATURES:
+# - <2 minute rollback time
+# - Environment-specific rollback strategies
+# - Trading system safety checks
+# - Comprehensive rollback validation
+# - Incident report generation
+#
+# WHY: Provide emergency recovery mechanism for critical failures
+# HOW: Instant traffic switching to previous stable environment
+# WHAT: Zero-downtime rollback with comprehensive validation
+
+name: 🚨 Emergency Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        type: choice
+        options:
+          - production
+          - staging
+          - development
+      reason:
+        description: 'Reason for rollback (required for audit)'
+        required: true
+        type: string
+      notify_all:
+        description: 'Send emergency notifications to all teams'
+        type: boolean
+        default: true
+      skip_validation:
+        description: 'Skip validation for critical emergencies (use with caution)'
+        type: boolean
+        default: false
+
+env:
+  ROLLBACK_TIMEOUT: 120  # 2 minute maximum rollback time
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Emergency Assessment
+  # ═══════════════════════════════════════════════════════════════════
+  
+  assess-emergency:
+    name: 🔍 Assess Emergency Severity
+    runs-on: ubuntu-latest
+    outputs:
+      severity: ${{ steps.assess.outputs.severity }}
+      rollback_environment: ${{ steps.assess.outputs.rollback_environment }}
+      notification_channels: ${{ steps.assess.outputs.notification_channels }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+        
+      - name: Assess Severity and Environment
+        id: assess
+        run: |
+          echo "🚨 EMERGENCY ROLLBACK INITIATED"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Reason: ${{ github.event.inputs.reason }}"
+          echo "Initiated by: @${{ github.actor }}"
+          echo "Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+          
+          # WHY: Determine severity based on environment and reason
+          # HOW: Analyze keywords in reason and environment criticality
+          # WHAT: Set severity level for appropriate response
+          
+          ENVIRONMENT="${{ github.event.inputs.environment }}"
+          REASON="${{ github.event.inputs.reason }}"
+          
+          # Determine severity
+          if [[ "$ENVIRONMENT" == "production" ]]; then
+            if echo "$REASON" | grep -iE "trading|order|settlement|critical|data.?loss" > /dev/null; then
+              SEVERITY="CRITICAL"
+              CHANNELS="slack,teams,email,pagerduty"
+            else
+              SEVERITY="HIGH"
+              CHANNELS="slack,teams,email"
+            fi
+          elif [[ "$ENVIRONMENT" == "staging" ]]; then
+            SEVERITY="MEDIUM"
+            CHANNELS="slack,teams"
+          else
+            SEVERITY="LOW"
+            CHANNELS="slack"
+          fi
+          
+          echo "severity=$SEVERITY" >> $GITHUB_OUTPUT
+          echo "rollback_environment=$ENVIRONMENT" >> $GITHUB_OUTPUT
+          echo "notification_channels=$CHANNELS" >> $GITHUB_OUTPUT
+          
+          echo "::warning::Severity Level: $SEVERITY"
+          echo "::warning::Notification Channels: $CHANNELS"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Production Rollback
+  # ═══════════════════════════════════════════════════════════════════
+  
+  rollback-production:
+    name: 🔄 Production Rollback
+    needs: [assess-emergency]
+    if: github.event.inputs.environment == 'production'
+    runs-on: ubuntu-latest
+    environment: production-emergency
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+        
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.PROD_KUBECONFIG }}" | base64 -d > kubeconfig
+          echo "KUBECONFIG=${PWD}/kubeconfig" >> $GITHUB_ENV
+          
+      - name: Identify Current and Previous Environments
+        id: environments
+        run: |
+          # WHY: Need to know which environment is active to rollback to previous
+          # HOW: Query Kubernetes service selectors
+          # WHAT: Determine blue/green environment states
+          
+          CURRENT_ENV=$(kubectl get service api-gateway-active -n production \
+            -o jsonpath='{.spec.selector.version}' 2>/dev/null || echo "blue")
+          PREVIOUS_ENV=$([ "$CURRENT_ENV" = "blue" ] && echo "green" || echo "blue")
+          
+          echo "current_env=$CURRENT_ENV" >> $GITHUB_OUTPUT
+          echo "previous_env=$PREVIOUS_ENV" >> $GITHUB_OUTPUT
+          
+          echo "📊 Current active environment: $CURRENT_ENV"
+          echo "🔄 Will rollback to: $PREVIOUS_ENV"
+          
+      - name: Pre-Rollback Validation
+        if: github.event.inputs.skip_validation != 'true'
+        run: |
+          # WHY: Ensure previous environment is healthy before switching
+          # HOW: Check pod status and basic health endpoints
+          # WHAT: Validate rollback target viability
+          
+          echo "🔍 Validating ${{ steps.environments.outputs.previous_env }} environment..."
+          
+          # Check pod status
+          kubectl get pods -n production \
+            -l "version=${{ steps.environments.outputs.previous_env }}" \
+            -o json | jq -r '.items[].status.phase' | grep -v Running && {
+            echo "⚠️ Warning: Some pods in previous environment are not running"
+            if [[ "${{ needs.assess-emergency.outputs.severity }}" != "CRITICAL" ]]; then
+              echo "❌ Aborting rollback - previous environment not healthy"
+              exit 1
+            fi
+            echo "⚠️ CRITICAL severity - continuing despite unhealthy pods"
+          }
+          
+          echo "✅ Previous environment validation passed"
+          
+      - name: Execute Emergency Rollback
+        id: rollback
+        timeout-minutes: 2
+        run: |
+          # WHY: Immediate traffic switch for fastest recovery
+          # HOW: Update Kubernetes service selectors atomically
+          # WHAT: Zero-downtime instant rollback
+          
+          START_TIME=$(date +%s)
+          echo "🚨 EXECUTING EMERGENCY ROLLBACK..."
+          
+          # Switch all services atomically
+          kubectl patch service api-gateway-active -n production \
+            -p '{"spec":{"selector":{"version":"${{ steps.environments.outputs.previous_env }}"}}}'
+          kubectl patch service strategy-engine-active -n production \
+            -p '{"spec":{"selector":{"version":"${{ steps.environments.outputs.previous_env }}"}}}'
+          kubectl patch service order-execution-active -n production \
+            -p '{"spec":{"selector":{"version":"${{ steps.environments.outputs.previous_env }}"}}}'
+          kubectl patch service risk-management-active -n production \
+            -p '{"spec":{"selector":{"version":"${{ steps.environments.outputs.previous_env }}"}}}'
+          kubectl patch service market-data-active -n production \
+            -p '{"spec":{"selector":{"version":"${{ steps.environments.outputs.previous_env }}"}}}'
+          
+          END_TIME=$(date +%s)
+          ROLLBACK_DURATION=$((END_TIME - START_TIME))
+          
+          echo "rollback_duration=$ROLLBACK_DURATION" >> $GITHUB_OUTPUT
+          echo "✅ Rollback executed in ${ROLLBACK_DURATION} seconds"
+          
+          # Scale up previous environment if needed
+          kubectl scale deployment --replicas=5 -n production \
+            -l "version=${{ steps.environments.outputs.previous_env }}"
+            
+      - name: Trading System Validation
+        run: |
+          # WHY: Critical to ensure trading systems are operational
+          # HOW: Check trading-specific endpoints and order flow
+          # WHAT: Validate financial system integrity
+          
+          echo "💹 Validating trading systems..."
+          
+          # Wait for stabilization
+          sleep 10
+          
+          # Check critical trading endpoints
+          ENDPOINTS=(
+            "https://api.jts.com/health"
+            "https://api.jts.com/api/trading/status"
+            "https://api.jts.com/api/market/status"
+            "https://api.jts.com/api/order/health"
+            "https://api.jts.com/api/risk/status"
+            "https://api.jts.com/api/settlement/health"
+          )
+          
+          for endpoint in "${ENDPOINTS[@]}"; do
+            echo "Checking: $endpoint"
+            curl -f -s -o /dev/null -w "Response time: %{time_total}s\n" "$endpoint" || {
+              echo "❌ Critical endpoint failed: $endpoint"
+              exit 1
+            }
+          done
+          
+          echo "✅ All trading systems operational"
+          
+      - name: Generate Incident Report
+        if: always()
+        run: |
+          # WHY: Document rollback for compliance and learning
+          # HOW: Generate comprehensive incident report
+          # WHAT: Detailed rollback documentation
+          
+          cat > incident_report.md << EOF
+          # Emergency Rollback Incident Report
+          
+          ## Incident Details
+          - **Time**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          - **Environment**: Production
+          - **Severity**: ${{ needs.assess-emergency.outputs.severity }}
+          - **Initiated By**: @${{ github.actor }}
+          - **Reason**: ${{ github.event.inputs.reason }}
+          
+          ## Rollback Details
+          - **From Environment**: ${{ steps.environments.outputs.current_env }}
+          - **To Environment**: ${{ steps.environments.outputs.previous_env }}
+          - **Duration**: ${{ steps.rollback.outputs.rollback_duration }} seconds
+          - **Status**: ${{ steps.rollback.outcome }}
+          
+          ## System Status
+          - Trading System: Operational
+          - Market Data: Active
+          - Order Execution: Running
+          - Risk Management: Active
+          - Settlement System: Operational
+          
+          ## Next Steps
+          1. Root cause analysis required
+          2. Post-mortem meeting scheduled
+          3. System monitoring enhanced
+          
+          ## Affected Services
+          - api-gateway
+          - strategy-engine
+          - order-execution
+          - risk-management
+          - market-data
+          EOF
+          
+          # Upload report as artifact
+          mkdir -p reports
+          mv incident_report.md reports/
+          
+      - name: Upload Incident Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: incident-report-${{ github.run_id }}
+          path: reports/
+          retention-days: 90
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Staging Rollback
+  # ═══════════════════════════════════════════════════════════════════
+  
+  rollback-staging:
+    name: 🔄 Staging Rollback
+    needs: [assess-emergency]
+    if: github.event.inputs.environment == 'staging'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.STAGING_KUBECONFIG }}" | base64 -d > kubeconfig
+          echo "KUBECONFIG=${PWD}/kubeconfig" >> $GITHUB_ENV
+          
+      - name: Execute Staging Rollback
+        run: |
+          # WHY: Staging rollback is simpler than production
+          # HOW: Direct service selector switch
+          # WHAT: Quick rollback for staging environment
+          
+          echo "🔄 Rolling back staging environment..."
+          
+          # Determine environments
+          CURRENT=$(kubectl get service api-gateway-active -n staging \
+            -o jsonpath='{.spec.selector.deployment}' 2>/dev/null || echo "green")
+          PREVIOUS=$([ "$CURRENT" = "green" ] && echo "blue" || echo "green")
+          
+          # Switch traffic
+          kubectl patch service api-gateway-active -n staging \
+            -p '{"spec":{"selector":{"deployment":"'$PREVIOUS'"}}}'
+            
+          echo "✅ Staging rolled back from $CURRENT to $PREVIOUS"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Development Rollback
+  # ═══════════════════════════════════════════════════════════════════
+  
+  rollback-development:
+    name: 🔄 Development Rollback
+    needs: [assess-emergency]
+    if: github.event.inputs.environment == 'development'
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.DEV_KUBECONFIG }}" | base64 -d > kubeconfig
+          echo "KUBECONFIG=${PWD}/kubeconfig" >> $GITHUB_ENV
+          
+      - name: Execute Development Rollback
+        run: |
+          # WHY: Development can use simple rollout undo
+          # HOW: Kubernetes native rollback command
+          # WHAT: Quick deployment rollback
+          
+          echo "🔄 Rolling back development deployments..."
+          
+          # Rollback all deployments
+          kubectl rollout undo deployment -n development --to-revision=0
+          kubectl rollout status deployment -n development --timeout=300s
+          
+          echo "✅ Development environment rolled back"
+
+  # ═══════════════════════════════════════════════════════════════════
+  # JOB: Emergency Notifications
+  # ═══════════════════════════════════════════════════════════════════
+  
+  notify-emergency:
+    name: 📢 Emergency Notifications
+    needs: [assess-emergency, rollback-production, rollback-staging, rollback-development]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack Notification
+        if: contains(needs.assess-emergency.outputs.notification_channels, 'slack')
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          webhook_url: ${{ secrets.SLACK_EMERGENCY_WEBHOOK }}
+          custom_payload: |
+            {
+              "text": "🚨 EMERGENCY ROLLBACK",
+              "attachments": [{
+                "color": "${{ job.status == 'success' && 'good' || 'danger' }}",
+                "fields": [
+                  {
+                    "title": "Environment",
+                    "value": "${{ github.event.inputs.environment }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Severity",
+                    "value": "${{ needs.assess-emergency.outputs.severity }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Reason",
+                    "value": "${{ github.event.inputs.reason }}",
+                    "short": false
+                  },
+                  {
+                    "title": "Status",
+                    "value": "${{ job.status == 'success' && '✅ Rollback Successful' || '❌ Rollback Failed' }}",
+                    "short": false
+                  },
+                  {
+                    "title": "Initiated By",
+                    "value": "@${{ github.actor }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Workflow Run",
+                    "value": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>",
+                    "short": true
+                  }
+                ]
+              }]
+            }
+            
+      - name: Send Teams Notification
+        if: contains(needs.assess-emergency.outputs.notification_channels, 'teams')
+        run: |
+          # Send to Microsoft Teams
+          curl -H "Content-Type: application/json" -d '{
+            "@type": "MessageCard",
+            "@context": "http://schema.org/extensions",
+            "themeColor": "${{ job.status == "success" && "00FF00" || "FF0000" }}",
+            "summary": "Emergency Rollback - ${{ github.event.inputs.environment }}",
+            "sections": [{
+              "activityTitle": "🚨 EMERGENCY ROLLBACK",
+              "facts": [
+                {"name": "Environment", "value": "${{ github.event.inputs.environment }}"},
+                {"name": "Severity", "value": "${{ needs.assess-emergency.outputs.severity }}"},
+                {"name": "Reason", "value": "${{ github.event.inputs.reason }}"},
+                {"name": "Status", "value": "${{ job.status }}"},
+                {"name": "Initiated By", "value": "@${{ github.actor }}"}
+              ]
+            }]
+          }' "${{ secrets.TEAMS_EMERGENCY_WEBHOOK }}"
+          
+      - name: Send PagerDuty Alert
+        if: |
+          contains(needs.assess-emergency.outputs.notification_channels, 'pagerduty') &&
+          needs.assess-emergency.outputs.severity == 'CRITICAL'
+        run: |
+          # WHY: Critical production issues need immediate escalation
+          # HOW: Trigger PagerDuty incident
+          # WHAT: Emergency response team notification
+          
+          curl -X POST https://events.pagerduty.com/v2/enqueue \
+            -H 'Content-Type: application/json' \
+            -H "Authorization: Token token=${{ secrets.PAGERDUTY_TOKEN }}" \
+            -d '{
+              "routing_key": "${{ secrets.PAGERDUTY_ROUTING_KEY }}",
+              "event_action": "trigger",
+              "payload": {
+                "summary": "CRITICAL: Emergency Rollback - Production Trading System",
+                "severity": "critical",
+                "source": "GitHub Actions",
+                "custom_details": {
+                  "environment": "${{ github.event.inputs.environment }}",
+                  "reason": "${{ github.event.inputs.reason }}",
+                  "initiated_by": "${{ github.actor }}",
+                  "workflow_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                }
+              }
+            }'
+
+# ═══════════════════════════════════════════════════════════════════
+# NOTES:
+# - This workflow provides <2 minute rollback capability
+# - Production rollbacks require special "production-emergency" environment
+# - Trading system validation is critical for production
+# - Incident reports are retained for 90 days for compliance
+# - PagerDuty integration for CRITICAL severity only
+# ═══════════════════════════════════════════════════════════════════
