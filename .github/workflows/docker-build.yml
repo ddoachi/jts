@@ -191,15 +191,21 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Enable Corepack first (before Node.js setup)
+      - name: Enable Corepack
+        run: corepack enable
+
       # Set up Node.js for dependency management
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      # Enable Corepack to use the correct Yarn version from package.json
-      - name: Enable Corepack
-        run: corepack enable
+      # Verify Yarn version
+      - name: Verify Yarn Version
+        run: |
+          # Verify Yarn version matches package.json
+          yarn --version
 
       - name: Cache Yarn
         uses: actions/cache@v4
