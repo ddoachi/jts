@@ -15,3 +15,4 @@ specs_backup/
 .github/workflows/deploy-staging.yml
 .github/workflows/deploy-dev.yml
 .github/workflows/rollback-emergency.yml
+specs*/*
