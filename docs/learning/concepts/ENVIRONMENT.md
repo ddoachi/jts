@@ -10,6 +10,7 @@ This guide covers the environment configuration for the JTS (Joohan Trading Syst
 ## Quick Start
 
 1. **Run the setup script:**
+
    ```bash
    bash scripts/setup-env.sh
    ```
@@ -35,6 +36,7 @@ The system supports up to 5 KIS accounts. Currently configured for 2 accounts wi
 ### Account Configuration
 
 Each account requires:
+
 ```env
 KIS_ACCOUNT_1_ID=KIS_001              # Unique identifier
 KIS_ACCOUNT_1_NAME=Primary_Account     # Display name
@@ -45,10 +47,12 @@ KIS_ACCOUNT_1_ENABLED=true             # Enable/disable account
 ```
 
 ### Current Setup
+
 - **Account 1 & 2**: Active and required
 - **Account 3-5**: Reserved for future expansion
 
 ### Rate Limiting
+
 - Per account: 20 requests/second, 200 requests/minute
 - Automatically managed by the system
 
@@ -57,6 +61,7 @@ KIS_ACCOUNT_1_ENABLED=true             # Enable/disable account
 For Korean market access via Creon:
 
 ### Directory Structure
+
 ```
 /secure/creon/
 ├── credentials/     # Encrypted credentials
@@ -65,6 +70,7 @@ For Korean market access via Creon:
 ```
 
 ### Configuration Variables
+
 ```env
 CREON_ENABLED=true                                    # Enable Creon
 CREON_SCRIPT_PATH=/secure/creon/scripts/creon-launcher.bat
@@ -72,6 +78,7 @@ CREON_AUTO_LOGIN_SCRIPT=auto-login.bat               # Your existing script
 ```
 
 ### Setup Steps
+
 1. Create secure directories (automatically done by setup script)
 2. Place your auto-login.bat script in `/secure/creon/scripts/`
 3. Add encrypted credentials to `/secure/creon/credentials/`
@@ -82,6 +89,7 @@ CREON_AUTO_LOGIN_SCRIPT=auto-login.bat               # Your existing script
 Reserved for future implementation:
 
 ### Binance
+
 ```env
 BINANCE_ENABLED=false
 BINANCE_API_KEY=your_key_when_available
@@ -89,6 +97,7 @@ BINANCE_SECRET_KEY=your_secret_when_available
 ```
 
 ### Upbit
+
 ```env
 UPBIT_ENABLED=false
 UPBIT_ACCESS_KEY=your_access_when_available
@@ -118,6 +127,7 @@ ENCRYPTION_KEY=yet-another-strong-key
 ## Database Configuration
 
 ### Development Databases
+
 ```env
 DATABASE_URL=postgresql://user:pass@localhost:5432/jts_dev
 CLICKHOUSE_URL=http://user:pass@localhost:8123/jts_market
@@ -126,6 +136,7 @@ REDIS_URL=redis://localhost:6379
 ```
 
 ### Test Databases
+
 ```env
 TEST_DATABASE_URL=postgresql://user:pass@localhost:5432/jts_test
 TEST_REDIS_URL=redis://localhost:6380
@@ -140,6 +151,7 @@ node scripts/validate-env.js
 ```
 
 The validator checks:
+
 - File existence
 - Required variables
 - Security settings
@@ -158,6 +170,7 @@ The validator checks:
 ### Common Issues
 
 1. **`.env.local` not found**
+
    ```bash
    cp .env.example .env.local
    ```
@@ -182,13 +195,13 @@ See `.env.example` for the complete list of available variables with description
 
 ## Files Created by This Spec
 
-| File | Purpose | Location |
-|------|---------|----------|
-| `.env.example` | Environment template | Project root |
-| `scripts/setup-env.sh` | Setup script | `/scripts/` |
-| `scripts/validate-env.js` | Validation utility | `/scripts/` |
-| `docs/ENVIRONMENT.md` | This documentation | `/docs/` |
-| `.gitignore` updates | Security patterns | Project root |
+| File                      | Purpose              | Location     |
+| ------------------------- | -------------------- | ------------ |
+| `.env.example`            | Environment template | Project root |
+| `scripts/setup-env.sh`    | Setup script         | `/scripts/`  |
+| `scripts/validate-env.js` | Validation utility   | `/scripts/`  |
+| `docs/ENVIRONMENT.md`     | This documentation   | `/docs/`     |
+| `.gitignore` updates      | Security patterns    | Project root |
 
 ## Related Specifications
 
@@ -198,6 +211,7 @@ See `.env.example` for the complete list of available variables with description
 ## Support
 
 For issues or questions about environment configuration, refer to:
+
 1. This documentation
 2. The validation script output
 3. The project's issue tracker

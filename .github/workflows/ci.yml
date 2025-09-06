@@ -3,7 +3,7 @@
 # ============================================================================
 # Generated from spec: [[E01-F03-T06] Configure CI/CD Pipeline and Automation](../../specs/E01/F03/T06/E01-F03-T06.spec.md)
 #
-# PURPOSE: 
+# PURPOSE:
 # Automated continuous integration for the JTS monorepo using Nx affected commands
 # to optimize build times and resource usage.
 #
@@ -61,7 +61,6 @@ jobs:
             .yarn/install-state.gz
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-
 
       - name: Cache Nx
         uses: actions/cache@v4
@@ -132,8 +131,6 @@ jobs:
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
 
-
-
       - name: Restore Nx Cache
         uses: actions/cache@v4
         with:
@@ -175,8 +172,6 @@ jobs:
             .yarn/install-state.gz
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-
-
 
       - name: Restore Nx Cache
         uses: actions/cache@v4
@@ -222,8 +217,6 @@ jobs:
             .yarn/install-state.gz
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-
-
 
       - name: Restore Nx Cache
         uses: actions/cache@v4
@@ -277,7 +270,6 @@ jobs:
             .yarn/install-state.gz
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: yarn-${{ runner.os }}-
-
 
       - name: Restore Nx Cache
         uses: actions/cache@v4

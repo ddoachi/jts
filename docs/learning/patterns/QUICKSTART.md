@@ -31,6 +31,7 @@ yarn setup
 ```
 
 This single command will:
+
 - ✅ Check all prerequisites
 - ✅ Install dependencies
 - ✅ Set up environment
@@ -45,6 +46,7 @@ yarn dev
 ```
 
 Your services are now running at:
+
 - 🌐 **API Gateway**: http://localhost:3000
 - 📊 **Kafka UI**: http://localhost:8080
 - 🗄️ **pgAdmin**: http://localhost:5050
@@ -58,6 +60,7 @@ yarn dev:health
 ```
 
 Expected output:
+
 ```
 ✅ PostgreSQL: Service is running
 ✅ ClickHouse: Service is running
@@ -115,15 +118,15 @@ yarn env:validate
 
 ## 📝 Essential Commands
 
-| Task | Command | Description |
-|------|---------|-------------|
-| **Setup** | `yarn setup` | Complete environment setup |
-| **Start** | `yarn dev` | Start all services |
-| **Stop** | `yarn dev:stop` | Stop all services |
-| **Logs** | `yarn dev:logs` | View service logs |
-| **Health** | `yarn dev:health` | Check service status |
-| **Test** | `yarn test` | Run all tests |
-| **Clean** | `yarn dev:clean` | Reset everything |
+| Task       | Command           | Description                |
+| ---------- | ----------------- | -------------------------- |
+| **Setup**  | `yarn setup`      | Complete environment setup |
+| **Start**  | `yarn dev`        | Start all services         |
+| **Stop**   | `yarn dev:stop`   | Stop all services          |
+| **Logs**   | `yarn dev:logs`   | View service logs          |
+| **Health** | `yarn dev:health` | Check service status       |
+| **Test**   | `yarn test`       | Run all tests              |
+| **Clean**  | `yarn dev:clean`  | Reset everything           |
 
 ## 🏗️ Project Structure
 
@@ -147,6 +150,7 @@ curl http://localhost:3000/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "ok",
@@ -171,6 +175,7 @@ nx test api-gateway
 **Error**: "Docker daemon is not running"
 
 **Solution**:
+
 ```bash
 # Start Docker Desktop or
 sudo systemctl start docker  # Linux
@@ -181,6 +186,7 @@ sudo systemctl start docker  # Linux
 **Error**: "Port 3000 is already in use"
 
 **Solution**:
+
 ```bash
 # Find and kill process
 lsof -i :3000
@@ -195,6 +201,7 @@ API_GATEWAY_PORT=3001 yarn dev
 **Error**: "yarn install failed"
 
 **Solution**:
+
 ```bash
 # Clear cache and retry
 yarn cache clean
@@ -207,6 +214,7 @@ yarn install
 **Error**: "Service jts-postgres-dev is unhealthy"
 
 **Solution**:
+
 ```bash
 # Restart services
 yarn dev:restart
@@ -258,16 +266,19 @@ yarn clean:all && yarn setup
 ## 📞 Getting Help
 
 1. **Check Logs First**
+
    ```bash
    yarn dev:logs | grep ERROR
    ```
 
 2. **Validate Environment**
+
    ```bash
    yarn env:validate
    ```
 
 3. **Health Check**
+
    ```bash
    yarn dev:health --verbose
    ```
@@ -281,5 +292,5 @@ yarn clean:all && yarn setup
 
 **Ready to trade! 🚀📈**
 
-*Estimated setup time: 5 minutes*  
-*First-time setup with downloads: 10-15 minutes*
+_Estimated setup time: 5 minutes_  
+_First-time setup with downloads: 10-15 minutes_

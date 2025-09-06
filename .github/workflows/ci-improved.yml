@@ -49,7 +49,7 @@ jobs:
   # JOB: Setup Environment
   # Uses reusable workflow for consistent setup
   # ═══════════════════════════════════════════════════════════════════
-  
+
   setup:
     name: 🚀 Setup Environment
     uses: ./.github/workflows/setup.yml
@@ -63,7 +63,7 @@ jobs:
   # JOB: Code Quality Checks
   # Parallel execution of linting and formatting checks
   # ═══════════════════════════════════════════════════════════════════
-  
+
   code-quality:
     name: 🎨 Code Quality
     needs: [setup]
@@ -76,13 +76,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ env.NODE_VERSION }}
           nx-cloud-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-          
+
       - name: Run ${{ matrix.check }}
         uses: ./.github/actions/nx-affected
         with:
@@ -95,7 +95,7 @@ jobs:
   # JOB: Test Suite
   # Comprehensive testing with coverage reporting
   # ═══════════════════════════════════════════════════════════════════
-  
+
   test:
     name: 🧪 Test Suite
     needs: [setup]
@@ -108,13 +108,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ env.NODE_VERSION }}
           nx-cloud-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-          
+
       - name: Run ${{ matrix.test-type }} Tests
         uses: ./.github/actions/nx-affected
         with:
@@ -123,7 +123,7 @@ jobs:
           head: HEAD
           parallel: 3
           args: --coverage --coverageReporters=json
-          
+
       - name: Upload Coverage
         if: matrix.test-type == 'unit'
         uses: codecov/codecov-action@v3
@@ -136,7 +136,7 @@ jobs:
   # JOB: Build Applications
   # Build affected applications with caching
   # ═══════════════════════════════════════════════════════════════════
-  
+
   build:
     name: 🏗️ Build Applications
     needs: [code-quality, test]
@@ -146,13 +146,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ env.NODE_VERSION }}
           nx-cloud-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-          
+
       - name: Build Affected Apps
         id: build
         uses: ./.github/actions/nx-affected
@@ -162,7 +162,7 @@ jobs:
           head: HEAD
           parallel: 3
           args: --configuration=production
-          
+
       - name: Upload Build Artifacts
         if: steps.build.outputs.has-affected == 'true'
         uses: actions/upload-artifact@v4
@@ -175,7 +175,7 @@ jobs:
   # JOB: Security Scanning
   # Check for vulnerabilities and license compliance
   # ═══════════════════════════════════════════════════════════════════
-  
+
   security:
     name: 🔒 Security Scan
     needs: [setup]
@@ -183,23 +183,23 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
+
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ env.NODE_VERSION }}
           install-deps: true
-          
+
       - name: Run Security Audit
         run: |
           echo "🔍 Running yarn audit..."
           yarn audit --level moderate || true
-          
+
       - name: Run License Check
         run: |
           echo "📜 Checking licenses..."
           npx license-checker --production --onlyAllow 'MIT;Apache-2.0;BSD;ISC' || true
-          
+
       - name: Dependency Check
         uses: dependency-check/Dependency-Check_Action@main
         with:
@@ -209,7 +209,7 @@ jobs:
           args: >
             --enableRetired
             --enableExperimental
-            
+
       - name: Upload Security Reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -221,7 +221,7 @@ jobs:
   # JOB: E2E Tests (Optional)
   # End-to-end testing for critical paths
   # ═══════════════════════════════════════════════════════════════════
-  
+
   e2e:
     name: 🎭 E2E Tests
     needs: [build]
@@ -230,20 +230,20 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        
+
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ env.NODE_VERSION }}
           install-deps: true
-          
+
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
           name: build-artifacts
           path: dist/
-          
+
       - name: Start Services
         run: |
           docker compose -f configs/docker/docker-compose.dev.yml up -d
@@ -251,7 +251,7 @@ jobs:
           sleep 60
           echo "🏥 Checking service health..."
           yarn dev:health
-          
+
       - name: Run E2E Tests
         run: |
           echo "🔍 Checking for E2E projects..."
@@ -262,7 +262,7 @@ jobs:
             echo "⚠️ No E2E projects found, skipping E2E tests"
             echo "This is expected in the current project state"
           fi
-          
+
       - name: Stop Services
         if: always()
         run: |
@@ -272,7 +272,7 @@ jobs:
   # JOB: Notification
   # Send status notifications to team channels
   # ═══════════════════════════════════════════════════════════════════
-  
+
   notify:
     name: 📢 Send Notifications
     needs: [build, security, e2e]
@@ -293,7 +293,7 @@ jobs:
   # JOB: Summary
   # Generate comprehensive job summary
   # ═══════════════════════════════════════════════════════════════════
-  
+
   summary:
     name: 📊 Pipeline Summary
     needs: [code-quality, test, build, security]
@@ -304,7 +304,7 @@ jobs:
         run: |
           echo "## CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           echo "### 📈 Results" >> $GITHUB_STEP_SUMMARY
           echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
@@ -312,7 +312,7 @@ jobs:
           echo "| Tests | ${{ needs.test.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build | ${{ needs.build.result == 'success' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Security | ${{ needs.security.result == 'success' && '✅ Passed' || '⚠️ Review Required' }} |" >> $GITHUB_STEP_SUMMARY
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📝 Details" >> $GITHUB_STEP_SUMMARY
           echo "- **Workflow**: ${{ github.workflow }}" >> $GITHUB_STEP_SUMMARY
@@ -320,5 +320,5 @@ jobs:
           echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Author**: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Run**: [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
-          
+
           # GOTCHA: Job summaries provide quick status overview in UI

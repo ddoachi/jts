@@ -53,7 +53,7 @@ function validateGenerator(generator) {
   console.log('─'.repeat(50));
 
   const basePath = path.join(process.cwd(), generator.path);
-  
+
   // Check if generator directory exists
   if (!fs.existsSync(basePath)) {
     console.log(`❌ Generator directory not found: ${generator.path}`);
@@ -104,12 +104,7 @@ function checkNpmScripts() {
   const packageJsonPath = path.join(process.cwd(), 'package.json');
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
-  const requiredScripts = [
-    'g:service',
-    'g:lib',
-    'generate:service',
-    'generate:library',
-  ];
+  const requiredScripts = ['g:service', 'g:lib', 'generate:service', 'generate:library'];
 
   let allScriptsExist = true;
   for (const script of requiredScripts) {

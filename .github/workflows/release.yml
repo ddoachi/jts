@@ -3,7 +3,7 @@
 # ============================================================================
 # Generated from spec: [[E01-F03-T06] Configure CI/CD Pipeline and Automation](../../specs/E01/F03/T06/E01-F03-T06.spec.md)
 #
-# PURPOSE: 
+# PURPOSE:
 # Automated semantic versioning and release management using conventional commits
 # to generate changelogs and create GitHub releases.
 #
@@ -78,7 +78,7 @@ jobs:
           # Build all projects for release
           echo "📦 Building all projects for release..."
           yarn build:all || yarn build || npx nx run-many --target=build --all
-          
+
           # Verify dist folder exists
           if [ -d "dist" ]; then
             echo "✅ Build successful"
@@ -155,7 +155,7 @@ jobs:
             ]
           }
           EOF
-          
+
           # Install semantic-release if not present
           if ! yarn list --pattern semantic-release &>/dev/null; then
             yarn add --dev semantic-release \
@@ -166,7 +166,7 @@ jobs:
               @semantic-release/commit-analyzer \
               @semantic-release/release-notes-generator
           fi
-          
+
           # Run semantic-release
           if [ "$DRY_RUN" == "true" ]; then
             echo "🔍 Running in dry-run mode..."
@@ -181,7 +181,7 @@ jobs:
           # Package distribution files
           VERSION=${{ steps.semantic.outputs.new_release_version }}
           echo "📦 Creating release artifacts for version $VERSION"
-          
+
           # Create archives for each app
           if [ -d "dist/apps" ]; then
             for app in dist/apps/*; do
@@ -228,23 +228,23 @@ jobs:
           VERSION=${{ needs.release.outputs.new_release_version }}
           MAJOR=${{ needs.release.outputs.new_release_major_version }}
           MINOR=${{ needs.release.outputs.new_release_minor_version }}
-          
+
           # Pull the latest image
           docker pull ghcr.io/${{ github.repository }}/${{ matrix.service }}:main || true
-          
+
           # Tag with various version formats
           docker tag ghcr.io/${{ github.repository }}/${{ matrix.service }}:main \
                     ghcr.io/${{ github.repository }}/${{ matrix.service }}:$VERSION
-          
+
           docker tag ghcr.io/${{ github.repository }}/${{ matrix.service }}:main \
                     ghcr.io/${{ github.repository }}/${{ matrix.service }}:$MAJOR
-          
+
           docker tag ghcr.io/${{ github.repository }}/${{ matrix.service }}:main \
                     ghcr.io/${{ github.repository }}/${{ matrix.service }}:$MAJOR.$MINOR
-          
+
           docker tag ghcr.io/${{ github.repository }}/${{ matrix.service }}:main \
                     ghcr.io/${{ github.repository }}/${{ matrix.service }}:latest
-          
+
           # Push all tags
           docker push ghcr.io/${{ github.repository }}/${{ matrix.service }}:$VERSION
           docker push ghcr.io/${{ github.repository }}/${{ matrix.service }}:$MAJOR
@@ -291,30 +291,30 @@ jobs:
           gh issue create \
             --title "📦 Release v$VERSION - Deployment Checklist" \
             --body "## Release v$VERSION Deployment Checklist
-          
+
           ### Pre-Deployment
           - [ ] Review release notes
           - [ ] Verify all CI checks passed
           - [ ] Check for any breaking changes
           - [ ] Review database migration requirements
-          
+
           ### Staging Deployment
           - [ ] Deploy to staging environment
           - [ ] Run smoke tests
           - [ ] Verify monitoring dashboards
           - [ ] Check application logs
-          
+
           ### Production Deployment
           - [ ] Get approval from stakeholders
           - [ ] Schedule maintenance window (if needed)
           - [ ] Deploy to production
           - [ ] Verify deployment success
           - [ ] Monitor for issues
-          
+
           ### Post-Deployment
           - [ ] Update documentation
           - [ ] Notify team of deployment
           - [ ] Close this issue
-          
+
           **Release URL**: https://github.com/${{ github.repository }}/releases/tag/v$VERSION
           **Commit**: ${{ github.sha }}"

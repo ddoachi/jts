@@ -30,16 +30,18 @@ Before starting development, ensure you have the following installed:
 ### Initial Setup
 
 1. **Clone the Repository**
+
    ```bash
    git clone https://github.com/ddoachi/jts-monorepo.git
    cd jts-monorepo
    ```
 
 2. **Run the Setup Script**
+
    ```bash
    yarn setup
    ```
-   
+
    This script will:
    - Check prerequisites
    - Install dependencies
@@ -49,12 +51,13 @@ Before starting development, ensure you have the following installed:
    - Set up Git hooks
 
 3. **Configure Environment**
-   
+
    Update `.env.local` with your credentials:
+
    ```bash
    # Edit the environment file
    nano .env.local
-   
+
    # Validate configuration
    yarn env:validate
    ```
@@ -98,54 +101,58 @@ jts-monorepo/
 
 ### Technology Stack
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| Runtime | Node.js 20+ | JavaScript runtime |
-| Framework | NestJS | Microservices framework |
-| Language | TypeScript | Type-safe development |
-| Package Manager | Yarn 4 (Berry) | Dependency management |
-| Build Tool | Nx | Monorepo orchestration |
-| Databases | PostgreSQL, ClickHouse, MongoDB, Redis | Data persistence |
-| Message Queue | Kafka | Event streaming |
-| Container | Docker | Service containerization |
+| Layer           | Technology                             | Purpose                  |
+| --------------- | -------------------------------------- | ------------------------ |
+| Runtime         | Node.js 20+                            | JavaScript runtime       |
+| Framework       | NestJS                                 | Microservices framework  |
+| Language        | TypeScript                             | Type-safe development    |
+| Package Manager | Yarn 4 (Berry)                         | Dependency management    |
+| Build Tool      | Nx                                     | Monorepo orchestration   |
+| Databases       | PostgreSQL, ClickHouse, MongoDB, Redis | Data persistence         |
+| Message Queue   | Kafka                                  | Event streaming          |
+| Container       | Docker                                 | Service containerization |
 
 ## Development Workflow
 
 ### Daily Development Flow
 
 1. **Start Services**
+
    ```bash
    # Start all Docker services
    yarn dev:start
-   
+
    # Check service health
    yarn dev:health
    ```
 
 2. **Run Applications**
+
    ```bash
    # Start all microservices
    yarn dev
-   
+
    # Or start specific services
    yarn start:gateway
    yarn start:strategy
    ```
 
 3. **Monitor Services**
+
    ```bash
    # View logs
    yarn dev:logs
-   
+
    # Check status
    yarn dev:status
    ```
 
 4. **Stop Services**
+
    ```bash
    # Stop Docker services
    yarn dev:stop
-   
+
    # Clean everything (including volumes)
    yarn dev:clean
    ```
@@ -155,28 +162,31 @@ jts-monorepo/
 #### Creating New Features
 
 1. **Generate Component**
+
    ```bash
    # Generate new service
    nx generate @nestjs/schematics:application --name=new-service
-   
+
    # Generate new library
    nx generate @nx/node:library --name=new-lib
    ```
 
 2. **Development Server**
+
    ```bash
    # Run with hot reload
    nx serve api-gateway --watch
    ```
 
 3. **Code Quality**
+
    ```bash
    # Run linter
    yarn lint
-   
+
    # Format code
    yarn format
-   
+
    # Type checking
    yarn type-check
    ```
@@ -184,11 +194,13 @@ jts-monorepo/
 #### Git Workflow
 
 1. **Feature Branch**
+
    ```bash
    git checkout -b feature/your-feature
    ```
 
 2. **Commit Changes**
+
    ```bash
    # Commits are validated by commitlint
    git commit -m "feat(gateway): add new endpoint"
@@ -213,6 +225,7 @@ Follow the [Conventional Commits](https://www.conventionalcommits.org/) specific
 - `chore`: Maintenance tasks
 
 Examples:
+
 ```bash
 feat(strategy): add momentum indicator
 fix(risk): correct position size calculation
@@ -244,16 +257,16 @@ yarn dev:clean
 
 ### Service URLs
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| API Gateway | http://localhost:3000 | - |
-| PostgreSQL | localhost:5432 | jts_user/jts_pass |
-| ClickHouse | http://localhost:8123 | default/- |
-| MongoDB | localhost:27017 | jts_user/jts_pass |
-| Redis | localhost:6379 | - |
-| Kafka | localhost:9092 | - |
-| Kafka UI | http://localhost:8080 | - |
-| pgAdmin | http://localhost:5050 | admin@jts.com/admin |
+| Service     | URL                   | Credentials         |
+| ----------- | --------------------- | ------------------- |
+| API Gateway | http://localhost:3000 | -                   |
+| PostgreSQL  | localhost:5432        | jts_user/jts_pass   |
+| ClickHouse  | http://localhost:8123 | default/-           |
+| MongoDB     | localhost:27017       | jts_user/jts_pass   |
+| Redis       | localhost:6379        | -                   |
+| Kafka       | localhost:9092        | -                   |
+| Kafka UI    | http://localhost:8080 | -                   |
+| pgAdmin     | http://localhost:5050 | admin@jts.com/admin |
 
 ### Health Monitoring
 
@@ -308,6 +321,7 @@ yarn db:reset
 ### Database Access
 
 #### PostgreSQL
+
 ```bash
 # Via Docker
 docker exec -it jts-postgres-dev psql -U jts_user -d jts_dev
@@ -318,6 +332,7 @@ docker exec -it jts-postgres-dev psql -U jts_user -d jts_dev
 ```
 
 #### ClickHouse
+
 ```bash
 # Via Docker
 docker exec -it jts-clickhouse-dev clickhouse-client
@@ -327,6 +342,7 @@ curl http://localhost:8123/?query=SELECT%201
 ```
 
 #### MongoDB
+
 ```bash
 # Via Docker
 docker exec -it jts-mongodb-dev mongosh -u jts_user -p jts_pass
@@ -336,6 +352,7 @@ mongodb://jts_user:jts_pass@localhost:27017/jts_dev
 ```
 
 #### Redis
+
 ```bash
 # Via Docker
 docker exec -it jts-redis-dev redis-cli
@@ -426,6 +443,7 @@ LOG_LEVEL=debug  # debug, info, warn, error
 ```
 
 Access logs:
+
 ```bash
 # All services
 yarn dev:logs

@@ -16,19 +16,19 @@ The JTS generators solve a critical problem in microservice development: maintai
 graph TD
     A[Developer] -->|yarn g:service| B[NestJS Service Generator]
     A -->|yarn g:lib| C[JTS Library Generator]
-    
+
     B --> D[Service Template Engine]
     C --> E[Library Template Engine]
-    
+
     D --> F[Generated Service]
     E --> G[Generated Library]
-    
+
     F --> H[apps/ directory]
     G --> I[libs/ directory]
-    
+
     H --> J[Nx Workspace]
     I --> J
-    
+
     style B fill:#f9f,stroke:#333,stroke-width:4px
     style C fill:#f9f,stroke:#333,stroke-width:4px
 ```
@@ -42,13 +42,14 @@ graph TD
 **Why it matters**: Enables creation of sophisticated generators that understand the monorepo structure and maintain consistency.
 
 **Example**:
+
 ```typescript
 // Using Nx Devkit to generate files from templates
 generateFiles(
-  tree,                    // Virtual file system
-  path.join(__dirname, 'files'),  // Template source
-  options.projectRoot,     // Destination
-  templateOptions         // Variables for substitution
+  tree, // Virtual file system
+  path.join(__dirname, 'files'), // Template source
+  options.projectRoot, // Destination
+  templateOptions, // Variables for substitution
 );
 ```
 
@@ -58,11 +59,13 @@ generateFiles(
 
 **Why it matters**: Templates can adapt to user input, creating customized output while maintaining structure.
 
-**Common pitfalls**: 
+**Common pitfalls**:
+
 - Forgetting the `__template__` suffix on template files
 - Not providing all required template variables
 
 **Best practices**:
+
 - Use descriptive variable names
 - Provide sensible defaults
 - Validate template variables before generation
@@ -74,6 +77,7 @@ generateFiles(
 **Why it matters**: Consistent architecture across all services reduces cognitive load and improves maintainability.
 
 **Example**: Every generated service follows DDD structure:
+
 ```
 src/
 ├── app/        # Application layer
@@ -91,7 +95,7 @@ src/
 ```typescript
 export default async function serviceGenerator(
   tree: Tree,
-  options: ServiceGeneratorSchema
+  options: ServiceGeneratorSchema,
 ): Promise<() => void> {
   // Step 1: Normalize and validate options
   const normalizedOptions = normalizeOptions(tree, options);
@@ -128,10 +132,7 @@ export default async function serviceGenerator(
 **File**: `tools/generators/nestjs-service/index.ts:122-153`
 
 ```typescript
-function normalizeOptions(
-  tree: Tree,
-  options: ServiceGeneratorSchema
-): NormalizedOptions {
+function normalizeOptions(tree: Tree, options: ServiceGeneratorSchema): NormalizedOptions {
   // Convert name to kebab-case for consistency
   const name = names(options.name).fileName;
 
@@ -200,18 +201,13 @@ function assignNextAvailablePort(tree: Tree): number {
 function addCustomFiles(tree: Tree, options: NormalizedOptions): void {
   const templateOptions = {
     ...options,
-    ...names(options.name),  // Adds className, fileName, etc.
+    ...names(options.name), // Adds className, fileName, etc.
     offsetFromRoot: offsetFromRoot(options.projectRoot),
-    template: '',  // Special marker for EJS
+    template: '', // Special marker for EJS
   };
 
   // Generate files from templates
-  generateFiles(
-    tree,
-    path.join(__dirname, 'files'),
-    options.projectRoot,
-    templateOptions
-  );
+  generateFiles(tree, path.join(__dirname, 'files'), options.projectRoot, templateOptions);
 
   // Add optional features
   if (options.includeKafka) generateKafkaConfig(tree, options);
@@ -229,10 +225,7 @@ function addCustomFiles(tree: Tree, options: NormalizedOptions): void {
 **File**: `tools/generators/jts-library/index.ts:110-143`
 
 ```typescript
-function normalizeOptions(
-  tree: Tree,
-  options: LibraryGeneratorSchema
-): NormalizedOptions {
+function normalizeOptions(tree: Tree, options: LibraryGeneratorSchema): NormalizedOptions {
   // Validate scope
   const validScopes = ['shared', 'domain', 'infrastructure', 'brokers'];
   if (!validScopes.includes(options.scope)) {
@@ -276,7 +269,8 @@ function normalizeOptions(
 2. No available port found
 3. Error thrown: "No available ports in range 3000-3999"
 
-**Solution**: 
+**Solution**:
+
 - Manually specify port outside range: `--port=4000`
 - Or clean up unused services
 
@@ -319,6 +313,7 @@ if (schema.$schema && schema.properties) {
 **Manual Testing Flow**:
 
 1. **Create test service**:
+
 ```bash
 yarn g:service --name=test-service --port=3999
 nx build test-service
@@ -326,6 +321,7 @@ nx serve test-service
 ```
 
 2. **Create test library**:
+
 ```bash
 yarn g:lib --name=test-lib --scope=shared
 nx build shared-test-lib
@@ -333,6 +329,7 @@ nx test shared-test-lib
 ```
 
 3. **Verify integration**:
+
 ```bash
 # Import library in service
 # Build and test together
@@ -344,16 +341,19 @@ nx affected:build
 ### Common Issues and Solutions
 
 **Issue 1: Template Variable Not Substituted**
+
 - **Symptom**: `<%= className %>` appears in generated files
 - **Cause**: Variable not provided in templateOptions
 - **Solution**: Add missing variable to `addCustomFiles()` function
 
 **Issue 2: Generator Command Not Found**
+
 - **Symptom**: `Error: Cannot find generator`
 - **Cause**: Nx not finding generator path
 - **Solution**: Ensure path in package.json is correct: `nx g ./tools/generators/{name}`
 
 **Issue 3: Generated Service Won't Build**
+
 - **Symptom**: TypeScript errors after generation
 - **Cause**: Template using outdated imports or syntax
 - **Solution**: Update template files to match current dependencies
@@ -378,11 +378,13 @@ nx affected:build
 To add a new generator type (e.g., worker service):
 
 1. **Copy existing generator**:
+
 ```bash
 cp -r tools/generators/nestjs-service tools/generators/worker-service
 ```
 
 2. **Modify schema.json**:
+
 ```json
 {
   "properties": {
@@ -396,6 +398,7 @@ cp -r tools/generators/nestjs-service tools/generators/worker-service
 3. **Update templates** for worker-specific structure
 
 4. **Add npm script**:
+
 ```json
 "g:worker": "nx g ./tools/generators/worker-service"
 ```
@@ -408,7 +411,7 @@ Generators can call other generators:
 // In custom generator
 await libraryGenerator(tree, {
   name: `${options.name}-types`,
-  scope: 'shared'
+  scope: 'shared',
 });
 ```
 
@@ -425,6 +428,7 @@ This creates related projects automatically.
 ## Next Steps
 
 After understanding generators:
+
 1. Create your first service with `yarn g:service`
 2. Create supporting libraries with `yarn g:lib`
 3. Customize templates for your team's needs

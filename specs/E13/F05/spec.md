@@ -1,6 +1,7 @@
 # E13-F05: Progress Calculation Engine
 
 ## Spec Information
+
 - **Spec ID**: E13-F05
 - **Title**: Progress Calculation Engine
 - **Parent**: E13
@@ -22,6 +23,7 @@ The progress calculation engine provides quantitative metrics about spec impleme
 ## Scope
 
 ### In Scope
+
 - Status-based completion calculations
 - Hierarchical progress aggregation
 - Weighted progress by priority
@@ -32,6 +34,7 @@ The progress calculation engine provides quantitative metrics about spec impleme
 - Progress history tracking
 
 ### Out of Scope
+
 - Time tracking integration
 - Developer assignment tracking
 - Cost/budget calculations
@@ -52,12 +55,14 @@ The progress calculation engine provides quantitative metrics about spec impleme
 ## Tasks
 
 ### T01: Core Progress Calculator
+
 **Status**: Draft
 **Priority**: Critical
 
 Implement fundamental progress calculation logic based on spec statuses.
 
 **Deliverables**:
+
 - ProgressCalculator service
 - Status to percentage mapping
 - Weighted average calculations
@@ -67,12 +72,14 @@ Implement fundamental progress calculation logic based on spec statuses.
 ---
 
 ### T02: Hierarchical Aggregation
+
 **Status**: Draft
 **Priority**: Critical
 
 Calculate rolled-up progress for epics and features based on child completion.
 
 **Deliverables**:
+
 - Bottom-up aggregation algorithm
 - Parent progress from children
 - Weighted aggregation by type
@@ -82,12 +89,14 @@ Calculate rolled-up progress for epics and features based on child completion.
 ---
 
 ### T03: Dependency Analysis
+
 **Status**: Draft
 **Priority**: High
 
 Analyze dependency chains to understand blocked progress and critical paths.
 
 **Deliverables**:
+
 - Dependency graph builder
 - Blocked spec identification
 - Critical path calculation
@@ -97,12 +106,14 @@ Analyze dependency chains to understand blocked progress and critical paths.
 ---
 
 ### T04: Velocity Metrics
+
 **Status**: Draft
 **Priority**: Medium
 
 Calculate velocity based on historical completion rates and status changes.
 
 **Deliverables**:
+
 - Status change tracking
 - Daily/weekly/monthly velocity
 - Moving average calculations
@@ -112,12 +123,14 @@ Calculate velocity based on historical completion rates and status changes.
 ---
 
 ### T05: Prediction Engine
+
 **Status**: Draft
 **Priority**: Medium
 
 Estimate completion dates based on current velocity and remaining work.
 
 **Deliverables**:
+
 - Remaining work calculation
 - Velocity-based predictions
 - Confidence intervals
@@ -127,12 +140,14 @@ Estimate completion dates based on current velocity and remaining work.
 ---
 
 ### T06: Metrics Export
+
 **Status**: Draft
 **Priority**: Low
 
 Export progress metrics in various formats for reporting and visualization.
 
 **Deliverables**:
+
 - JSON metrics export
 - CSV report generation
 - Burndown chart data
@@ -142,6 +157,7 @@ Export progress metrics in various formats for reporting and visualization.
 ## Technical Architecture
 
 ### Module Structure
+
 ```
 apps/spec-api/src/modules/analytics/
 ├── services/
@@ -163,6 +179,7 @@ apps/spec-api/src/modules/analytics/
 ### Progress Calculation Models
 
 #### Status Weights
+
 ```typescript
 enum StatusWeight {
   DRAFT = 0,
@@ -170,67 +187,72 @@ enum StatusWeight {
   REVIEW = 0.75,
   COMPLETED = 1.0,
   BLOCKED = 0.25,
-  CANCELLED = 0
+  CANCELLED = 0,
 }
 
 interface ProgressConfig {
-  statusWeights: Record<string, number>
+  statusWeights: Record<string, number>;
   typeWeights: {
-    epic: number      // e.g., 1.0
-    feature: number   // e.g., 0.8
-    task: number      // e.g., 0.6
-  }
+    epic: number; // e.g., 1.0
+    feature: number; // e.g., 0.8
+    task: number; // e.g., 0.6
+  };
   priorityWeights: {
-    critical: number  // e.g., 2.0
-    high: number      // e.g., 1.5
-    medium: number    // e.g., 1.0
-    low: number       // e.g., 0.5
-  }
+    critical: number; // e.g., 2.0
+    high: number; // e.g., 1.5
+    medium: number; // e.g., 1.0
+    low: number; // e.g., 0.5
+  };
 }
 ```
 
 #### Progress Calculation
+
 ```typescript
 interface Progress {
-  specId: string
-  percentage: number           // 0-100
-  completed: number           // Count of completed items
-  total: number              // Total items
-  weighted: number           // Weighted progress
-  children?: Progress[]      // Child progress
-  blockedBy?: string[]       // Blocking dependencies
-  lastUpdated: Date
+  specId: string;
+  percentage: number; // 0-100
+  completed: number; // Count of completed items
+  total: number; // Total items
+  weighted: number; // Weighted progress
+  children?: Progress[]; // Child progress
+  blockedBy?: string[]; // Blocking dependencies
+  lastUpdated: Date;
 }
 
 class ProgressCalculator {
   // Simple progress
   calculateSimple(specs: Spec[]): number {
-    const completed = specs.filter(s => s.status === 'completed').length
-    return (completed / specs.length) * 100
+    const completed = specs.filter((s) => s.status === 'completed').length;
+    return (completed / specs.length) * 100;
   }
-  
+
   // Weighted progress
   calculateWeighted(specs: Spec[], config: ProgressConfig): number {
-    return specs.reduce((sum, spec) => {
-      const statusWeight = config.statusWeights[spec.status]
-      const priorityWeight = config.priorityWeights[spec.priority]
-      return sum + (statusWeight * priorityWeight)
-    }, 0) / specs.length * 100
+    return (
+      (specs.reduce((sum, spec) => {
+        const statusWeight = config.statusWeights[spec.status];
+        const priorityWeight = config.priorityWeights[spec.priority];
+        return sum + statusWeight * priorityWeight;
+      }, 0) /
+        specs.length) *
+      100
+    );
   }
-  
+
   // Hierarchical progress
   calculateHierarchical(epic: Spec): Progress {
-    const features = this.getFeatures(epic.id)
-    const featureProgress = features.map(f => this.calculateFeature(f))
-    
+    const features = this.getFeatures(epic.id);
+    const featureProgress = features.map((f) => this.calculateFeature(f));
+
     return {
       specId: epic.id,
       percentage: this.aggregateProgress(featureProgress),
-      completed: featureProgress.filter(p => p.percentage === 100).length,
+      completed: featureProgress.filter((p) => p.percentage === 100).length,
       total: features.length,
       children: featureProgress,
-      lastUpdated: new Date()
-    }
+      lastUpdated: new Date(),
+    };
   }
 }
 ```
@@ -239,38 +261,30 @@ class ProgressCalculator {
 
 ```typescript
 interface VelocityMetrics {
-  period: 'daily' | 'weekly' | 'monthly'
-  completedCount: number
-  completedPoints?: number
-  averageVelocity: number
-  trend: 'increasing' | 'stable' | 'decreasing'
-  history: VelocityPoint[]
+  period: 'daily' | 'weekly' | 'monthly';
+  completedCount: number;
+  completedPoints?: number;
+  averageVelocity: number;
+  trend: 'increasing' | 'stable' | 'decreasing';
+  history: VelocityPoint[];
 }
 
 interface VelocityPoint {
-  date: Date
-  completed: number
-  inProgress: number
-  velocity: number
+  date: Date;
+  completed: number;
+  inProgress: number;
+  velocity: number;
 }
 
 class VelocityService {
-  calculateVelocity(
-    specs: Spec[],
-    period: string,
-    lookback: number
-  ): VelocityMetrics {
+  calculateVelocity(specs: Spec[], period: string, lookback: number): VelocityMetrics {
     // Group completions by period
     // Calculate moving average
     // Determine trend
     // Return metrics
   }
-  
-  predictCompletion(
-    remaining: number,
-    velocity: number,
-    confidence: number
-  ): PredictionResult {
+
+  predictCompletion(remaining: number, velocity: number, confidence: number): PredictionResult {
     // Monte Carlo simulation
     // Calculate confidence intervals
     // Return prediction
@@ -282,11 +296,11 @@ class VelocityService {
 
 ```typescript
 interface DependencyImpact {
-  specId: string
-  blockedSpecs: string[]
-  criticalPath: boolean
-  impactScore: number       // 0-1, how much this blocks progress
-  totalBlocked: number      // Total downstream specs blocked
+  specId: string;
+  blockedSpecs: string[];
+  criticalPath: boolean;
+  impactScore: number; // 0-1, how much this blocks progress
+  totalBlocked: number; // Total downstream specs blocked
 }
 
 class DependencyAnalyzer {
@@ -296,11 +310,11 @@ class DependencyAnalyzer {
     // Calculate critical path
     // Return analysis
   }
-  
+
   getBlockedProgress(specId: string): number {
     // Calculate progress impact of blocked spec
   }
-  
+
   getCriticalPath(specs: Spec[]): string[] {
     // Find longest dependency chain
     // Return critical path spec IDs
@@ -313,80 +327,74 @@ class DependencyAnalyzer {
 ```typescript
 interface SpecStatistics {
   overview: {
-    total: number
-    byStatus: Record<string, number>
-    byType: Record<string, number>
-    byPriority: Record<string, number>
-  }
+    total: number;
+    byStatus: Record<string, number>;
+    byType: Record<string, number>;
+    byPriority: Record<string, number>;
+  };
   progress: {
-    overall: number
-    byEpic: Record<string, number>
-    byFeature: Record<string, number>
-    weighted: number
-  }
+    overall: number;
+    byEpic: Record<string, number>;
+    byFeature: Record<string, number>;
+    weighted: number;
+  };
   velocity: {
-    current: number
-    average: number
-    trend: string
-  }
+    current: number;
+    average: number;
+    trend: string;
+  };
   predictions: {
-    estimatedCompletion: Date
-    confidence: number
-    remainingWork: number
-    criticalPath: string[]
-  }
+    estimatedCompletion: Date;
+    confidence: number;
+    remainingWork: number;
+    criticalPath: string[];
+  };
   dependencies: {
-    totalBlocked: number
-    criticalBlocking: string[]
-    cycles: string[][]
-  }
+    totalBlocked: number;
+    criticalBlocking: string[];
+    cycles: string[][];
+  };
 }
 ```
 
 ### Calculation Algorithms
 
 #### Weighted Average
+
 ```typescript
-function calculateWeightedProgress(
-  items: Array<{value: number, weight: number}>
-): number {
-  const weightedSum = items.reduce(
-    (sum, item) => sum + (item.value * item.weight), 0
-  )
-  const totalWeight = items.reduce(
-    (sum, item) => sum + item.weight, 0
-  )
-  return totalWeight > 0 ? weightedSum / totalWeight : 0
+function calculateWeightedProgress(items: Array<{ value: number; weight: number }>): number {
+  const weightedSum = items.reduce((sum, item) => sum + item.value * item.weight, 0);
+  const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+  return totalWeight > 0 ? weightedSum / totalWeight : 0;
 }
 ```
 
 #### Moving Average
+
 ```typescript
-function calculateMovingAverage(
-  values: number[],
-  window: number
-): number[] {
+function calculateMovingAverage(values: number[], window: number): number[] {
   return values.map((_, index) => {
-    const start = Math.max(0, index - window + 1)
-    const windowValues = values.slice(start, index + 1)
-    return windowValues.reduce((a, b) => a + b, 0) / windowValues.length
-  })
+    const start = Math.max(0, index - window + 1);
+    const windowValues = values.slice(start, index + 1);
+    return windowValues.reduce((a, b) => a + b, 0) / windowValues.length;
+  });
 }
 ```
 
 ### Dependencies
+
 - **simple-statistics**: ^7.8.3 - Statistical calculations
 - **date-fns**: ^2.30.0 - Date calculations
 - **graphlib**: ^2.1.8 - Dependency graph analysis
 
 ## Risk Analysis
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Inaccurate progress calculations | High | Comprehensive testing, validation |
-| Performance with large datasets | Medium | Caching, incremental updates |
-| Complex dependency cycles | Medium | Cycle detection, clear warnings |
-| Misleading predictions | High | Confidence intervals, disclaimers |
+| Risk                             | Impact | Mitigation                        |
+| -------------------------------- | ------ | --------------------------------- |
+| Inaccurate progress calculations | High   | Comprehensive testing, validation |
+| Performance with large datasets  | Medium | Caching, incremental updates      |
+| Complex dependency cycles        | Medium | Cycle detection, clear warnings   |
+| Misleading predictions           | High   | Confidence intervals, disclaimers |
 
 ## Success Metrics
 

@@ -1,6 +1,7 @@
 # E13-F02: Spec API Gateway
 
 ## Spec Information
+
 - **Spec ID**: E13-F02
 - **Title**: Spec API Gateway
 - **Parent**: E13
@@ -22,6 +23,7 @@ The API Gateway serves as the primary interface between the spec parser service 
 ## Scope
 
 ### In Scope
+
 - RESTful endpoints for spec data retrieval
 - OpenAPI/Swagger documentation
 - Response DTOs with validation
@@ -32,6 +34,7 @@ The API Gateway serves as the primary interface between the spec parser service 
 - Error response standardization
 
 ### Out of Scope
+
 - WebSocket endpoints (handled by F03)
 - Caching implementation (handled by F04)
 - Authentication/authorization (handled by F06)
@@ -51,12 +54,14 @@ The API Gateway serves as the primary interface between the spec parser service 
 ## Tasks
 
 ### T01: Core REST Controllers
+
 **Status**: Draft
 **Priority**: Critical
 
 Implement NestJS controllers for primary spec endpoints with proper decorators and routing.
 
 **Deliverables**:
+
 - SpecController with route handlers
 - GET /api/specs - List all specs
 - GET /api/specs/:id - Get single spec
@@ -66,12 +71,14 @@ Implement NestJS controllers for primary spec endpoints with proper decorators a
 ---
 
 ### T02: Response DTOs & Validation
+
 **Status**: Draft
 **Priority**: Critical
 
 Create Data Transfer Objects with class-validator decorators for request/response validation.
 
 **Deliverables**:
+
 - SpecResponseDto with metadata fields
 - SpecListResponseDto with pagination
 - TreeNodeDto for hierarchical data
@@ -81,12 +88,14 @@ Create Data Transfer Objects with class-validator decorators for request/respons
 ---
 
 ### T03: Statistics Endpoint
+
 **Status**: Draft
 **Priority**: High
 
 Implement aggregated statistics endpoint for dashboard metrics and progress tracking.
 
 **Deliverables**:
+
 - GET /api/specs/stats endpoint
 - StatsResponseDto with counts and percentages
 - Progress calculations by status
@@ -95,12 +104,14 @@ Implement aggregated statistics endpoint for dashboard metrics and progress trac
 ---
 
 ### T04: Content Format Negotiation
+
 **Status**: Draft
 **Priority**: Medium
 
 Support multiple response formats based on Accept headers and query parameters.
 
 **Deliverables**:
+
 - JSON response formatting (default)
 - HTML rendering with markdown-it
 - Raw markdown passthrough
@@ -110,12 +121,14 @@ Support multiple response formats based on Accept headers and query parameters.
 ---
 
 ### T05: OpenAPI Documentation
+
 **Status**: Draft
 **Priority**: High
 
 Configure Swagger/OpenAPI documentation with proper schemas and examples.
 
 **Deliverables**:
+
 - Swagger module configuration
 - API decorators on all endpoints
 - Response schema documentation
@@ -125,12 +138,14 @@ Configure Swagger/OpenAPI documentation with proper schemas and examples.
 ---
 
 ### T06: Pagination & Filtering
+
 **Status**: Draft
 **Priority**: Medium
 
 Implement query capabilities for large datasets with efficient pagination.
 
 **Deliverables**:
+
 - Pagination query parameters (page, limit)
 - Filtering by status, type, priority
 - Sorting options (created, updated, title)
@@ -140,6 +155,7 @@ Implement query capabilities for large datasets with efficient pagination.
 ## Technical Architecture
 
 ### Module Structure
+
 ```
 apps/spec-api/src/modules/api/
 ├── controllers/
@@ -161,6 +177,7 @@ apps/spec-api/src/modules/api/
 ### API Endpoints
 
 #### Spec Listing
+
 ```
 GET /api/specs
 Query Parameters:
@@ -183,6 +200,7 @@ Response: {
 ```
 
 #### Single Spec
+
 ```
 GET /api/specs/:id
 Parameters:
@@ -203,6 +221,7 @@ Response: {
 ```
 
 #### Hierarchical Tree
+
 ```
 GET /api/specs/tree
 Query Parameters:
@@ -219,6 +238,7 @@ Response: TreeNode {
 ```
 
 #### Statistics
+
 ```
 GET /api/specs/stats
 Query Parameters:
@@ -241,38 +261,39 @@ Response: {
 ```typescript
 class SpecResponseDto {
   @ApiProperty()
-  id: string
+  id: string;
 
   @ApiProperty()
-  title: string
+  title: string;
 
   @ApiProperty()
-  type: 'epic' | 'feature' | 'task'
+  type: 'epic' | 'feature' | 'task';
 
   @ApiProperty()
-  status: 'draft' | 'in_progress' | 'completed'
+  status: 'draft' | 'in_progress' | 'completed';
 
   @ApiProperty()
-  priority: string
+  priority: string;
 
   @ApiProperty()
-  created: string
+  created: string;
 
   @ApiProperty()
-  updated: string
+  updated: string;
 
   @ApiPropertyOptional()
-  parent?: string
+  parent?: string;
 
   @ApiPropertyOptional()
-  content?: string
+  content?: string;
 
   @ApiPropertyOptional()
-  html?: string
+  html?: string;
 }
 ```
 
 ### Dependencies
+
 - **@nestjs/swagger**: ^10.2.1 - OpenAPI documentation
 - **class-transformer**: ^0.5.1 - DTO transformation
 - **class-validator**: ^0.14.0 - Request validation
@@ -280,12 +301,12 @@ class SpecResponseDto {
 
 ## Risk Analysis
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Large response payloads | High | Implement pagination, field selection |
-| Slow HTML rendering | Medium | Lazy rendering, caching layer |
-| API contract changes | High | Versioning strategy, deprecation notices |
-| Invalid query parameters | Low | Comprehensive validation, clear errors |
+| Risk                     | Impact | Mitigation                               |
+| ------------------------ | ------ | ---------------------------------------- |
+| Large response payloads  | High   | Implement pagination, field selection    |
+| Slow HTML rendering      | Medium | Lazy rendering, caching layer            |
+| API contract changes     | High   | Versioning strategy, deprecation notices |
+| Invalid query parameters | Low    | Comprehensive validation, clear errors   |
 
 ## Success Metrics
 

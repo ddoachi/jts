@@ -40,27 +40,27 @@ runs:
     # ═══════════════════════════════════════════════════════════════
     # SECTION: Enable Corepack First
     # ═══════════════════════════════════════════════════════════════
-    
+
     - name: Enable Corepack
       shell: bash
       run: corepack enable
       # IMPORTANT: Must enable Corepack before setup-node to prevent yarn version conflicts
-    
+
     # ═══════════════════════════════════════════════════════════════
     # SECTION: Node.js Installation
     # ═══════════════════════════════════════════════════════════════
-    
+
     - name: Setup Node.js ${{ inputs.node-version }}
       uses: actions/setup-node@v5
       with:
         node-version: ${{ inputs.node-version }}
         # Note: We don't use cache: 'yarn' here because it runs before
         # Corepack is enabled and would use the wrong Yarn version
-        
+
     # ═══════════════════════════════════════════════════════════════
     # SECTION: Dependency Caching
     # ═══════════════════════════════════════════════════════════════
-    
+
     - name: Cache Dependencies
       id: cache-deps
       uses: actions/cache@v4
@@ -76,69 +76,69 @@ runs:
           deps-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}-
           deps-${{ runner.os }}-
           # Progressive cache restoration strategy
-          
+
     # ═══════════════════════════════════════════════════════════════
     # SECTION: Dependency Installation
     # ═══════════════════════════════════════════════════════════════
-    
+
     - name: Install Dependencies
       if: inputs.install-deps == 'true' && steps.cache-deps.outputs.cache-hit != 'true'
       shell: bash
       run: |
         echo "📦 Installing dependencies..."
-        
+
         # Prepare Yarn 4.x (Corepack already enabled earlier)
         corepack prepare yarn@4.9.4 --activate
-        
+
         # Use yarn install for reproducible builds
         yarn install --immutable
-        
+
         # Reset Nx daemon to ensure clean state
         yarn nx reset
-        
+
         echo "✅ Dependencies installed successfully"
         # Bread crumb: Check yarn.lock for exact versions
-        
+
     # ═══════════════════════════════════════════════════════════════
     # SECTION: Nx Cloud Configuration
     # ═══════════════════════════════════════════════════════════════
-    
+
     - name: Configure Nx Cloud
       if: inputs.nx-cloud-token != ''
       shell: bash
       run: |
         echo "☁️ Configuring Nx Cloud..."
-        
+
         # Set Nx Cloud token for distributed caching
         echo "NX_CLOUD_ACCESS_TOKEN=${{ inputs.nx-cloud-token }}" >> $GITHUB_ENV
-        
+
         # Configure Nx branch for proper cache segmentation
         if [[ "${{ github.event_name }}" == "pull_request" ]]; then
           echo "NX_BRANCH=${{ github.event.number }}" >> $GITHUB_ENV
         else
           echo "NX_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
         fi
-        
+
         echo "✅ Nx Cloud configured"
         # GOTCHA: Branch naming affects cache hit rates
-        
+
     # ═══════════════════════════════════════════════════════════════
     # SECTION: Environment Validation
     # ═══════════════════════════════════════════════════════════════
-    
+
     - name: Validate Node Environment
       id: node-info
       shell: bash
       run: |
         echo "🔍 Validating environment..."
-        
+
         # Capture version information
         NODE_VERSION=$(node --version)
         YARN_VERSION=$(yarn --version)
         NX_VERSION=$(yarn nx --version 2>/dev/null || echo "Not installed")
-        
+
         echo "version=$NODE_VERSION" >> $GITHUB_OUTPUT
-        
+
         # Display environment summary
         echo "═══ Environment Summary ═══"
         echo "Node.js: $NODE_VERSION"
@@ -146,7 +146,7 @@ runs:
         echo "Nx: $NX_VERSION"
         echo "OS: ${{ runner.os }}"
         echo "Cache Hit: ${{ steps.cache-deps.outputs.cache-hit == 'true' && '✅ Yes' || '❌ No' }}"
-        
+
         # List workspace info if Nx is available
         if command -v nx &> /dev/null; then
           echo ""

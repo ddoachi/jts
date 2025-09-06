@@ -14,58 +14,58 @@ db.createCollection('strategies', {
       properties: {
         name: {
           bsonType: 'string',
-          description: 'Strategy name - required'
+          description: 'Strategy name - required',
         },
         type: {
           bsonType: 'string',
           enum: ['momentum', 'mean_reversion', 'arbitrage', 'market_making', 'custom'],
-          description: 'Strategy type - required'
+          description: 'Strategy type - required',
         },
         description: {
           bsonType: 'string',
-          description: 'Strategy description'
+          description: 'Strategy description',
         },
         isActive: {
           bsonType: 'bool',
-          description: 'Whether strategy is active - required'
+          description: 'Whether strategy is active - required',
         },
         parameters: {
           bsonType: 'object',
-          description: 'Strategy parameters'
+          description: 'Strategy parameters',
         },
         symbols: {
           bsonType: 'array',
           items: {
-            bsonType: 'string'
+            bsonType: 'string',
           },
-          description: 'List of symbols this strategy trades'
+          description: 'List of symbols this strategy trades',
         },
         accounts: {
           bsonType: 'array',
           items: {
-            bsonType: 'string'
+            bsonType: 'string',
           },
-          description: 'List of account IDs this strategy uses'
+          description: 'List of account IDs this strategy uses',
         },
         riskLimits: {
           bsonType: 'object',
           properties: {
             maxPositionSize: { bsonType: 'number' },
             maxDailyLoss: { bsonType: 'number' },
-            maxOpenPositions: { bsonType: 'int' }
-          }
+            maxOpenPositions: { bsonType: 'int' },
+          },
         },
         createdAt: {
           bsonType: 'date',
-          description: 'Creation timestamp - required'
+          description: 'Creation timestamp - required',
         },
         updatedAt: {
           bsonType: 'date',
-          description: 'Last update timestamp'
-        }
-      }
-    }
-  }
+          description: 'Last update timestamp',
+        },
+      },
+    },
+  },
 });
 
 db.createCollection('brokerConfig', {
@@ -77,11 +77,11 @@ db.createCollection('brokerConfig', {
         broker: {
           bsonType: 'string',
           enum: ['KIS', 'EBEST', 'NH', 'KIWOOM'],
-          description: 'Broker name - required'
+          description: 'Broker name - required',
         },
         accountId: {
           bsonType: 'string',
-          description: 'Account identifier - required'
+          description: 'Account identifier - required',
         },
         credentials: {
           bsonType: 'object',
@@ -90,9 +90,9 @@ db.createCollection('brokerConfig', {
             appKey: { bsonType: 'string' },
             appSecret: { bsonType: 'string' },
             accountNumber: { bsonType: 'string' },
-            accountType: { bsonType: 'string' }
+            accountType: { bsonType: 'string' },
           },
-          description: 'Encrypted credentials - required'
+          description: 'Encrypted credentials - required',
         },
         settings: {
           bsonType: 'object',
@@ -104,26 +104,26 @@ db.createCollection('brokerConfig', {
               bsonType: 'object',
               properties: {
                 ordersPerSecond: { bsonType: 'int' },
-                requestsPerMinute: { bsonType: 'int' }
-              }
-            }
-          }
+                requestsPerMinute: { bsonType: 'int' },
+              },
+            },
+          },
         },
         isActive: {
           bsonType: 'bool',
-          description: 'Whether account is active'
+          description: 'Whether account is active',
         },
         createdAt: {
           bsonType: 'date',
-          description: 'Creation timestamp - required'
+          description: 'Creation timestamp - required',
         },
         updatedAt: {
           bsonType: 'date',
-          description: 'Last update timestamp'
-        }
-      }
-    }
-  }
+          description: 'Last update timestamp',
+        },
+      },
+    },
+  },
 });
 
 db.createCollection('symbols', {
@@ -134,65 +134,65 @@ db.createCollection('symbols', {
       properties: {
         symbol: {
           bsonType: 'string',
-          description: 'Symbol/ticker - required'
+          description: 'Symbol/ticker - required',
         },
         name: {
           bsonType: 'string',
-          description: 'Full name of the instrument'
+          description: 'Full name of the instrument',
         },
         exchange: {
           bsonType: 'string',
           enum: ['KOSPI', 'KOSDAQ', 'KONEX', 'KRX'],
-          description: 'Exchange - required'
+          description: 'Exchange - required',
         },
         type: {
           bsonType: 'string',
           enum: ['stock', 'etf', 'futures', 'options', 'bond'],
-          description: 'Instrument type - required'
+          description: 'Instrument type - required',
         },
         sector: {
           bsonType: 'string',
-          description: 'Market sector'
+          description: 'Market sector',
         },
         tradingHours: {
           bsonType: 'object',
           properties: {
             open: { bsonType: 'string' },
             close: { bsonType: 'string' },
-            timezone: { bsonType: 'string' }
-          }
+            timezone: { bsonType: 'string' },
+          },
         },
         tickSize: {
           bsonType: 'number',
-          description: 'Minimum price movement'
+          description: 'Minimum price movement',
         },
         lotSize: {
           bsonType: 'int',
-          description: 'Minimum order quantity'
+          description: 'Minimum order quantity',
         },
         marginRequirement: {
           bsonType: 'number',
-          description: 'Margin requirement percentage'
+          description: 'Margin requirement percentage',
         },
         isActive: {
           bsonType: 'bool',
-          description: 'Whether symbol is actively traded'
+          description: 'Whether symbol is actively traded',
         },
         metadata: {
           bsonType: 'object',
-          description: 'Additional symbol-specific data'
+          description: 'Additional symbol-specific data',
         },
         createdAt: {
           bsonType: 'date',
-          description: 'Creation timestamp - required'
+          description: 'Creation timestamp - required',
         },
         updatedAt: {
           bsonType: 'date',
-          description: 'Last update timestamp'
-        }
-      }
-    }
-  }
+          description: 'Last update timestamp',
+        },
+      },
+    },
+  },
 });
 
 db.createCollection('alerts', {
@@ -204,40 +204,40 @@ db.createCollection('alerts', {
         type: {
           bsonType: 'string',
           enum: ['price', 'volume', 'risk', 'system', 'strategy', 'account'],
-          description: 'Alert type - required'
+          description: 'Alert type - required',
         },
         level: {
           bsonType: 'string',
           enum: ['info', 'warning', 'error', 'critical'],
-          description: 'Alert level - required'
+          description: 'Alert level - required',
         },
         message: {
           bsonType: 'string',
-          description: 'Alert message - required'
+          description: 'Alert message - required',
         },
         details: {
           bsonType: 'object',
-          description: 'Additional alert details'
+          description: 'Additional alert details',
         },
         acknowledged: {
           bsonType: 'bool',
-          description: 'Whether alert has been acknowledged'
+          description: 'Whether alert has been acknowledged',
         },
         acknowledgedBy: {
           bsonType: 'string',
-          description: 'User who acknowledged the alert'
+          description: 'User who acknowledged the alert',
         },
         acknowledgedAt: {
           bsonType: 'date',
-          description: 'When alert was acknowledged'
+          description: 'When alert was acknowledged',
         },
         createdAt: {
           bsonType: 'date',
-          description: 'Creation timestamp - required'
-        }
-      }
-    }
-  }
+          description: 'Creation timestamp - required',
+        },
+      },
+    },
+  },
 });
 
 db.createCollection('systemConfig', {
@@ -248,35 +248,35 @@ db.createCollection('systemConfig', {
       properties: {
         key: {
           bsonType: 'string',
-          description: 'Configuration key - required'
+          description: 'Configuration key - required',
         },
         value: {
           bsonType: ['string', 'int', 'double', 'bool', 'object', 'array'],
-          description: 'Configuration value - required'
+          description: 'Configuration value - required',
         },
         description: {
           bsonType: 'string',
-          description: 'Configuration description'
+          description: 'Configuration description',
         },
         category: {
           bsonType: 'string',
-          description: 'Configuration category'
+          description: 'Configuration category',
         },
         isEncrypted: {
           bsonType: 'bool',
-          description: 'Whether value is encrypted'
+          description: 'Whether value is encrypted',
         },
         createdAt: {
           bsonType: 'date',
-          description: 'Creation timestamp - required'
+          description: 'Creation timestamp - required',
         },
         updatedAt: {
           bsonType: 'date',
-          description: 'Last update timestamp'
-        }
-      }
-    }
-  }
+          description: 'Last update timestamp',
+        },
+      },
+    },
+  },
 });
 
 // Create indexes
@@ -312,7 +312,7 @@ db.systemConfig.insertMany([
     category: 'trading',
     isEncrypted: false,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
   {
     key: 'trading.maxDailyLoss',
@@ -321,7 +321,7 @@ db.systemConfig.insertMany([
     category: 'risk',
     isEncrypted: false,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
   {
     key: 'trading.maxOpenPositions',
@@ -330,7 +330,7 @@ db.systemConfig.insertMany([
     category: 'risk',
     isEncrypted: false,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
   {
     key: 'monitoring.alertEmail',
@@ -339,7 +339,7 @@ db.systemConfig.insertMany([
     category: 'monitoring',
     isEncrypted: false,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
   },
   {
     key: 'system.maintenanceMode',
@@ -348,8 +348,8 @@ db.systemConfig.insertMany([
     category: 'system',
     isEncrypted: false,
     createdAt: new Date(),
-    updatedAt: new Date()
-  }
+    updatedAt: new Date(),
+  },
 ]);
 
 // Insert sample broker configuration (with dummy encrypted credentials)
@@ -360,7 +360,7 @@ db.brokerConfig.insertOne({
     appKey: 'ENCRYPTED_APP_KEY_1',
     appSecret: 'ENCRYPTED_APP_SECRET_1',
     accountNumber: 'ENCRYPTED_ACCOUNT_NUMBER_1',
-    accountType: 'trading'
+    accountType: 'trading',
   },
   settings: {
     apiUrl: 'https://openapi.koreainvestment.com:9443',
@@ -368,12 +368,12 @@ db.brokerConfig.insertOne({
     sandbox: true,
     rateLimits: {
       ordersPerSecond: 5,
-      requestsPerMinute: 180
-    }
+      requestsPerMinute: 180,
+    },
   },
   isActive: true,
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 });
 
 // Insert sample strategy
@@ -386,17 +386,17 @@ db.strategies.insertOne({
     lookbackPeriod: 20,
     momentumThreshold: 0.05,
     stopLoss: 0.02,
-    takeProfit: 0.05
+    takeProfit: 0.05,
   },
-  symbols: ['005930', '000660'],  // Samsung Electronics, SK Hynix
+  symbols: ['005930', '000660'], // Samsung Electronics, SK Hynix
   accounts: ['KIS_ACCOUNT_1'],
   riskLimits: {
     maxPositionSize: 1000000,
     maxDailyLoss: 50000,
-    maxOpenPositions: 5
+    maxOpenPositions: 5,
   },
   createdAt: new Date(),
-  updatedAt: new Date()
+  updatedAt: new Date(),
 });
 
 // Print confirmation

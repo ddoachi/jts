@@ -1,236 +1,219 @@
 # [1.3.0](https://github.com/ddoachi/jts/compare/v1.2.0...v1.3.0) (2025-09-05)
 
-
 ### Features
 
-* **specs:** enhance E01-F04 infrastructure tasks with comprehensive technical details ([74d768b](https://github.com/ddoachi/jts/commit/74d768b407f3d9d966026a5729a68977acc044db))
+- **specs:** enhance E01-F04 infrastructure tasks with comprehensive technical details ([74d768b](https://github.com/ddoachi/jts/commit/74d768b407f3d9d966026a5729a68977acc044db))
 
 # [1.2.0](https://github.com/ddoachi/jts/compare/v1.1.1...v1.2.0) (2025-09-05)
 
-
 ### Features
 
-* **ci:** add Jest CI configuration for E01-F04-T02 ([19cfe5c](https://github.com/ddoachi/jts/commit/19cfe5c5c08e5d2904afd79d18ddaa19c25480ee))
+- **ci:** add Jest CI configuration for E01-F04-T02 ([19cfe5c](https://github.com/ddoachi/jts/commit/19cfe5c5c08e5d2904afd79d18ddaa19c25480ee))
 
 ## [1.1.1](https://github.com/ddoachi/jts/compare/v1.1.0...v1.1.1) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ci:** handle missing e2e projects gracefully ([ee2a612](https://github.com/ddoachi/jts/commit/ee2a6127ef587ee4f6405cab661b7f3396c57b25))
+- **ci:** handle missing e2e projects gracefully ([ee2a612](https://github.com/ddoachi/jts/commit/ee2a6127ef587ee4f6405cab661b7f3396c57b25))
 
 # [1.1.0](https://github.com/ddoachi/jts/compare/v1.0.11...v1.1.0) (2025-09-05)
 
-
 ### Features
 
-* **specs:** add E13 Spec API Service epic with complete feature specifications ([0bc595a](https://github.com/ddoachi/jts/commit/0bc595af498a34847c861cf5b2e9d6fc476e9a7a))
+- **specs:** add E13 Spec API Service epic with complete feature specifications ([0bc595a](https://github.com/ddoachi/jts/commit/0bc595af498a34847c861cf5b2e9d6fc476e9a7a))
 
 ## [1.0.11](https://github.com/ddoachi/jts/compare/v1.0.10...v1.0.11) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ci:** correct PostgreSQL port in health check and increase service startup delay ([6755ea9](https://github.com/ddoachi/jts/commit/6755ea97a566cef4d2306c1aca4291a0d0ea619c))
+- **ci:** correct PostgreSQL port in health check and increase service startup delay ([6755ea9](https://github.com/ddoachi/jts/commit/6755ea97a566cef4d2306c1aca4291a0d0ea619c))
 
 ## [1.0.10](https://github.com/ddoachi/jts/compare/v1.0.9...v1.0.10) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ci:** replace non-existent wait-for-services script with dev:health ([a8f0345](https://github.com/ddoachi/jts/commit/a8f03450cc83072a6c090a907a375da39258258d))
+- **ci:** replace non-existent wait-for-services script with dev:health ([a8f0345](https://github.com/ddoachi/jts/commit/a8f03450cc83072a6c090a907a375da39258258d))
 
 ## [1.0.9](https://github.com/ddoachi/jts/compare/v1.0.8...v1.0.9) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ci:** correct docker-compose file path for E2E tests ([1742803](https://github.com/ddoachi/jts/commit/1742803e4a6a1e93ea0d97eb46a414355689c95d))
+- **ci:** correct docker-compose file path for E2E tests ([1742803](https://github.com/ddoachi/jts/commit/1742803e4a6a1e93ea0d97eb46a414355689c95d))
 
 ## [1.0.8](https://github.com/ddoachi/jts/compare/v1.0.7...v1.0.8) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ci:** resolve E2E Tests job failures ([0dd76f6](https://github.com/ddoachi/jts/commit/0dd76f6bbdb7173dde18a0128733dcfbd7672ee0))
+- **ci:** resolve E2E Tests job failures ([0dd76f6](https://github.com/ddoachi/jts/commit/0dd76f6bbdb7173dde18a0128733dcfbd7672ee0))
 
 ## [1.0.7](https://github.com/ddoachi/jts/compare/v1.0.6...v1.0.7) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ci:** replace deprecated nx print-affected with nx show projects --affected ([5dca4bd](https://github.com/ddoachi/jts/commit/5dca4bd750001453b0b37378902350d4373900cb))
+- **ci:** replace deprecated nx print-affected with nx show projects --affected ([5dca4bd](https://github.com/ddoachi/jts/commit/5dca4bd750001453b0b37378902350d4373900cb))
 
 ## [1.0.6](https://github.com/ddoachi/jts/compare/v1.0.5...v1.0.6) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ci:** enable Corepack before setup-node to prevent Yarn version conflicts ([ccf6822](https://github.com/ddoachi/jts/commit/ccf682291a0274452df43417625c05a68ae117bf))
-* **ci:** update deprecated GitHub Actions to latest versions ([ab861ea](https://github.com/ddoachi/jts/commit/ab861ea401366f4d7bce589adff6959cf1a24a37))
+- **ci:** enable Corepack before setup-node to prevent Yarn version conflicts ([ccf6822](https://github.com/ddoachi/jts/commit/ccf682291a0274452df43417625c05a68ae117bf))
+- **ci:** update deprecated GitHub Actions to latest versions ([ab861ea](https://github.com/ddoachi/jts/commit/ab861ea401366f4d7bce589adff6959cf1a24a37))
 
 ## [1.0.5](https://github.com/ddoachi/jts/compare/v1.0.4...v1.0.5) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ci:** remove yarn cache from setup-node to fix Corepack version mismatch ([d3db467](https://github.com/ddoachi/jts/commit/d3db4671342afc0efcc9b8654768781d0258a0a7))
+- **ci:** remove yarn cache from setup-node to fix Corepack version mismatch ([d3db467](https://github.com/ddoachi/jts/commit/d3db4671342afc0efcc9b8654768781d0258a0a7))
 
 ## [1.0.4](https://github.com/ddoachi/jts/compare/v1.0.3...v1.0.4) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ci:** add install-deps to e2e job setup to enable Corepack ([6d5f325](https://github.com/ddoachi/jts/commit/6d5f325ad355e11ace9432002217b2c22bfb499c))
+- **ci:** add install-deps to e2e job setup to enable Corepack ([6d5f325](https://github.com/ddoachi/jts/commit/6d5f325ad355e11ace9432002217b2c22bfb499c))
 
 ## [1.0.3](https://github.com/ddoachi/jts/compare/v1.0.2...v1.0.3) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ci:** remove invalid secrets reference in Discord notification conditional ([693a307](https://github.com/ddoachi/jts/commit/693a3070ce25ee62e7769f54dddfe0efdbcd4ca0))
+- **ci:** remove invalid secrets reference in Discord notification conditional ([693a307](https://github.com/ddoachi/jts/commit/693a3070ce25ee62e7769f54dddfe0efdbcd4ca0))
 
 ## [1.0.2](https://github.com/ddoachi/jts/compare/v1.0.1...v1.0.2) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ci:** remove invalid secrets references in workflow conditionals ([76ed158](https://github.com/ddoachi/jts/commit/76ed158643dc04e7162b41b699e8338b9ddd2041))
+- **ci:** remove invalid secrets references in workflow conditionals ([76ed158](https://github.com/ddoachi/jts/commit/76ed158643dc04e7162b41b699e8338b9ddd2041))
 
 ## [1.0.1](https://github.com/ddoachi/jts/compare/v1.0.0...v1.0.1) (2025-09-05)
 
-
 ### Bug Fixes
 
-* **ci:** resolve Yarn 4.x compatibility and lint errors ([c4d5eb6](https://github.com/ddoachi/jts/commit/c4d5eb6311969bff4ee1db910f5f4e39bf2e4ef8))
+- **ci:** resolve Yarn 4.x compatibility and lint errors ([c4d5eb6](https://github.com/ddoachi/jts/commit/c4d5eb6311969bff4ee1db910f5f4e39bf2e4ef8))
 
 # 1.0.0 (2025-09-05)
 
-
 ### Bug Fixes
 
-* **scripts:** Add datetime with hours/minutes to restructure-context.sh ([312a286](https://github.com/ddoachi/jts/commit/312a28699843ae852dc0c783669648ae13710a52))
-* **generators:** add missing dependencies and fix TypeScript errors ([b3ade69](https://github.com/ddoachi/jts/commit/b3ade69b3f9e13f0dbe5e2c2f4a596e6f67f8ca5))
-* **generate:** Add specPath helper for correct directory paths ([ddf0e25](https://github.com/ddoachi/jts/commit/ddf0e25d064c3d78032eedaecbb760e425f5bf95))
-* **index:** add status normalization and dynamic parent status calculation ([fdc8c8e](https://github.com/ddoachi/jts/commit/fdc8c8e56707d5137bfb4599e04801c3e0ca40b3))
-* **ci:** add Yarn installation step to all CI jobs ([06378ef](https://github.com/ddoachi/jts/commit/06378eff7f4f5d544bd79bae48f7491529892de9))
-* **index.md:** applies naming change to parsing ([1e6ce79](https://github.com/ddoachi/jts/commit/1e6ce793de5ea6ea8a090ba1790327e733af0e73))
-* changes `done` => `completed` ([041a93c](https://github.com/ddoachi/jts/commit/041a93c12cdd4aad9cf3c1a886a7df89ef486041))
-* **generators:** configure Nx workspace generators properly ([37af171](https://github.com/ddoachi/jts/commit/37af171d913695016d415b2a47469ac7e1078c0a))
-* **workflow:** configure yarn to use public npm registry ([e4b8ca3](https://github.com/ddoachi/jts/commit/e4b8ca398e892b85172427641e765ba6d857338e))
-* **templates:** correct hierarchical link generation in `index.template.md` ([98f9594](https://github.com/ddoachi/jts/commit/98f95944b9914e30244748f13af7859a81bc0580))
-* **templates:** Correct hierarchical path generation in index template ([de9a1d4](https://github.com/ddoachi/jts/commit/de9a1d46626f04cd16a9c4c3438b7ac5d3faa981))
-* **specs:** correct parent status calculation for hierarchical IDs ([1f7e857](https://github.com/ddoachi/jts/commit/1f7e857ae3bfb57a50c4ece0fe8d315fdbc2f99f))
-* **ci:** Critical - Fix CI workflow step order for Yarn 4.x ([16c8c06](https://github.com/ddoachi/jts/commit/16c8c06a92c6438498c0107ee5fdfa0b4af74762))
-* **specs:** deletes meaningless spec file links ([ef36aba](https://github.com/ddoachi/jts/commit/ef36aba0402d3a7b4ce053a72d59127482ea9a5e))
-* **spec:** deletes some unnecessary fields in `specs/**/*.md` ([b91b1b9](https://github.com/ddoachi/jts/commit/b91b1b9c809ed1900d7181e90c1df95a7c3d32bf))
-* **ci:** enable `Corepack` for Yarn 4 compatibility in GitHub Actions ([30c56f6](https://github.com/ddoachi/jts/commit/30c56f6a6e396e20514a9ca671fd5aee4f2d165f))
-* **specs:** Fix file paths and copy external files to project ([44393d5](https://github.com/ddoachi/jts/commit/44393d5905dd8c0d38d0f17d17cb40bb8c999dcb))
-* **specs:** Fix incorrect relative file paths ([9888a0f](https://github.com/ddoachi/jts/commit/9888a0f007c7dbf7d1b3ad86fdc94dfa17d402ad))
-* **specs:** Fix spec file links with correct paths and titles ([d943a10](https://github.com/ddoachi/jts/commit/d943a10779b722b61e2c27b62f2621ae6aac21a7))
-* **template:** Fix task indentation to show siblings at same level ([042de0b](https://github.com/ddoachi/jts/commit/042de0b8716288427902291e5ec8aa8090fc6b1a))
-* **ci:** fix Yarn 4.x caching in remaining workflow files ([96d24d2](https://github.com/ddoachi/jts/commit/96d24d2797c957a45e8ebdd424c8d4434c869a3d))
-* **ci:** fix Yarn 4.x caching issue in CI workflow ([50ddf4a](https://github.com/ddoachi/jts/commit/50ddf4a9331f95e8a774ac317e776e27356dc58f))
-* **ci:** fix Yarn 4.x package manager detection in GitHub Actions workflows ([023c28e](https://github.com/ddoachi/jts/commit/023c28ead95c895376c2fb2866d983f09be4c861))
-* fixes file path of deliverables ([65a4e1f](https://github.com/ddoachi/jts/commit/65a4e1f34ad055c460f0f3ff4fa1d21ef22853a1))
-* **spec:** modifies `spec.md` to `{id}.spec.md` ([a48ff2b](https://github.com/ddoachi/jts/commit/a48ff2bcfb4700a4570fad32d66d5d0fb8f9d4a1))
-* **templates:** Prevent HTML entity encoding in spec titles ([95a63b8](https://github.com/ddoachi/jts/commit/95a63b8f6b6a8392a1991b5a5111e2ae158f5794))
-* **specs:** Regenerate index.md with correct task indentation ([74ad5ea](https://github.com/ddoachi/jts/commit/74ad5eafbcfc65b74e614b971eb89050fd3bbd6f))
-* **specs:** Regenerate index.md with corrected paths and encoding ([adfa637](https://github.com/ddoachi/jts/commit/adfa63760bf2cb7d4b90d73e3fb0b74abb4c9d97))
-* regenerate yarn.lock with public registry URLs ([697bc7b](https://github.com/ddoachi/jts/commit/697bc7b75f3487bb1242a2c43aaf77f5922a8f9a))
-* **ci:** remove dependency-review and SonarCloud jobs ([3cec5a4](https://github.com/ddoachi/jts/commit/3cec5a452bb89c15717df4e06c5caf1489bc9bde))
-* **specs:** Remove duplicate Files sections ([08c22cc](https://github.com/ddoachi/jts/commit/08c22cc45d96e7cb67d7a56fd6397c58ba1b786c))
-* removed `index.md` temporarily ([2c154a9](https://github.com/ddoachi/jts/commit/2c154a9b190cfa72f429a8164d2be3dc8fea75f5))
-* **spec:** removes `assignee` and `reviewer` ([76be074](https://github.com/ddoachi/jts/commit/76be074378fe4ae8d296007874c19dd12d286d25))
-* **ci:** replace env variable references in reusable workflow calls ([06177a8](https://github.com/ddoachi/jts/commit/06177a81ad46238c7135d7e2bfa15d2ce1a6d071))
-* **scripts:** resolve arithmetic and string concatenation issues in setup scripts ([0a2ad80](https://github.com/ddoachi/jts/commit/0a2ad801a2f6402e56a1ae770e28cbff22583d66))
-* **specs:** resolve cross-epic task assignment in `parseAllSpecs()` ([dc81be2](https://github.com/ddoachi/jts/commit/dc81be22a4efb4db609785210fcd0b462acac683))
-* **specs:** resolve ID ambiguity in `parse-specs.ts` with hierarchical IDs ([546d17f](https://github.com/ddoachi/jts/commit/546d17f304d4e3e3729d3e8c5c069f7a8a07d2c4))
-* resolve merge conflicts and file reorganization ([6a5c2c6](https://github.com/ddoachi/jts/commit/6a5c2c6b99d3b9e49b573f78294d9014d2db0c43))
-* **ci:** resolve npm/yarn issues and lint errors ([8088e46](https://github.com/ddoachi/jts/commit/8088e4639e442f0d8104fa5bef74aada8f586ea5))
-* **E01-F02-T03:** resolve service configuration issues ([5b54957](https://github.com/ddoachi/jts/commit/5b549574643b2b2375bfe2b61d85f13cf2291765))
-* **domain:** resolve TypeScript build issues in trading domain ([6156255](https://github.com/ddoachi/jts/commit/6156255f8034e5956c2204ab2774e97a1269c941))
-* **ci:** resolve workflow reference and env variable issues ([dd76a25](https://github.com/ddoachi/jts/commit/dd76a251ab7bc416f1e2c81ac3d7d2b489cafcb0))
-* **ci:** resolve workflow secrets access and TypeScript errors ([fe46797](https://github.com/ddoachi/jts/commit/fe46797952a8037af4a30a891de629a555a3defe))
-* **specs:** revert spec link format from Markdown to hierarchical IDs ([856dc6a](https://github.com/ddoachi/jts/commit/856dc6a7b7273c943a03aedce78f4389f5c0f782))
-* **ci:** update all GitHub Actions workflows to use Yarn instead of npm ([3912a95](https://github.com/ddoachi/jts/commit/3912a95d4d7bd714b114468ce7eaa7a8bd3c7c47))
-* **ci:** update CI workflows to use Yarn and latest GitHub Actions ([89e03b6](https://github.com/ddoachi/jts/commit/89e03b65e393bf057f2a03beba87e8f714870159))
-* **specs:** update Creon service to run on dedicated Windows PC ([19d1baa](https://github.com/ddoachi/jts/commit/19d1baa77155c17f953a73c0549cc147b6ea1bda))
-* **spec-1002:** update docker-compose with monitoring and fix typo ([2c5df4e](https://github.com/ddoachi/jts/commit/2c5df4e36f4b727ff2b9d04db06d7964dca96be4))
-* **E01-F02-T05:** Update ESLint and git hooks configuration ([76ee040](https://github.com/ddoachi/jts/commit/76ee04014b420b8937ad2e0f4e7fa515ce1c6d89))
-* **E01-F02-T03:** update Redis config for multi-account support ([b743dfc](https://github.com/ddoachi/jts/commit/b743dfc9b2b7591515fdf6d741ae5043ebbf9640))
-* **generators:** update script format and document resolution ([6032f58](https://github.com/ddoachi/jts/commit/6032f58339adc5e62552fd965e528deac873420b))
-* update yarn.lock to fix GitHub Actions dependency installation ([027318b](https://github.com/ddoachi/jts/commit/027318b4b5b61bffe0ace70a372d17c201e35f74))
-* **index.md:** updates  again ([457077a](https://github.com/ddoachi/jts/commit/457077a6062bf3cc583f74639806773d6fb0a05b))
-* **index.md:** updates ([4b5ae7e](https://github.com/ddoachi/jts/commit/4b5ae7edf74a6a63a58dc729204c9bc3ce4c8aa1))
-* use jq compact output for single-line JSON in GitHub Actions ([5b73f3f](https://github.com/ddoachi/jts/commit/5b73f3fc78bc194ba279fdcf3eb91cc74905b548))
-* **template:** Use proper Handlebars variable scoping for hierarchy ([ecc01c7](https://github.com/ddoachi/jts/commit/ecc01c7e2f64a96e23f467546207dc7698286927))
-* use proper multiline output format for GitHub Actions JSON data ([1f0a33b](https://github.com/ddoachi/jts/commit/1f0a33b3876d3c41026afb1c6f63ca2ec8fd08eb))
-* use unique delimiter for multiline GitHub Actions output ([511e1c2](https://github.com/ddoachi/jts/commit/511e1c21bd518ee34fd4b802910560b67d428bac))
-
+- **scripts:** Add datetime with hours/minutes to restructure-context.sh ([312a286](https://github.com/ddoachi/jts/commit/312a28699843ae852dc0c783669648ae13710a52))
+- **generators:** add missing dependencies and fix TypeScript errors ([b3ade69](https://github.com/ddoachi/jts/commit/b3ade69b3f9e13f0dbe5e2c2f4a596e6f67f8ca5))
+- **generate:** Add specPath helper for correct directory paths ([ddf0e25](https://github.com/ddoachi/jts/commit/ddf0e25d064c3d78032eedaecbb760e425f5bf95))
+- **index:** add status normalization and dynamic parent status calculation ([fdc8c8e](https://github.com/ddoachi/jts/commit/fdc8c8e56707d5137bfb4599e04801c3e0ca40b3))
+- **ci:** add Yarn installation step to all CI jobs ([06378ef](https://github.com/ddoachi/jts/commit/06378eff7f4f5d544bd79bae48f7491529892de9))
+- **index.md:** applies naming change to parsing ([1e6ce79](https://github.com/ddoachi/jts/commit/1e6ce793de5ea6ea8a090ba1790327e733af0e73))
+- changes `done` => `completed` ([041a93c](https://github.com/ddoachi/jts/commit/041a93c12cdd4aad9cf3c1a886a7df89ef486041))
+- **generators:** configure Nx workspace generators properly ([37af171](https://github.com/ddoachi/jts/commit/37af171d913695016d415b2a47469ac7e1078c0a))
+- **workflow:** configure yarn to use public npm registry ([e4b8ca3](https://github.com/ddoachi/jts/commit/e4b8ca398e892b85172427641e765ba6d857338e))
+- **templates:** correct hierarchical link generation in `index.template.md` ([98f9594](https://github.com/ddoachi/jts/commit/98f95944b9914e30244748f13af7859a81bc0580))
+- **templates:** Correct hierarchical path generation in index template ([de9a1d4](https://github.com/ddoachi/jts/commit/de9a1d46626f04cd16a9c4c3438b7ac5d3faa981))
+- **specs:** correct parent status calculation for hierarchical IDs ([1f7e857](https://github.com/ddoachi/jts/commit/1f7e857ae3bfb57a50c4ece0fe8d315fdbc2f99f))
+- **ci:** Critical - Fix CI workflow step order for Yarn 4.x ([16c8c06](https://github.com/ddoachi/jts/commit/16c8c06a92c6438498c0107ee5fdfa0b4af74762))
+- **specs:** deletes meaningless spec file links ([ef36aba](https://github.com/ddoachi/jts/commit/ef36aba0402d3a7b4ce053a72d59127482ea9a5e))
+- **spec:** deletes some unnecessary fields in `specs/**/*.md` ([b91b1b9](https://github.com/ddoachi/jts/commit/b91b1b9c809ed1900d7181e90c1df95a7c3d32bf))
+- **ci:** enable `Corepack` for Yarn 4 compatibility in GitHub Actions ([30c56f6](https://github.com/ddoachi/jts/commit/30c56f6a6e396e20514a9ca671fd5aee4f2d165f))
+- **specs:** Fix file paths and copy external files to project ([44393d5](https://github.com/ddoachi/jts/commit/44393d5905dd8c0d38d0f17d17cb40bb8c999dcb))
+- **specs:** Fix incorrect relative file paths ([9888a0f](https://github.com/ddoachi/jts/commit/9888a0f007c7dbf7d1b3ad86fdc94dfa17d402ad))
+- **specs:** Fix spec file links with correct paths and titles ([d943a10](https://github.com/ddoachi/jts/commit/d943a10779b722b61e2c27b62f2621ae6aac21a7))
+- **template:** Fix task indentation to show siblings at same level ([042de0b](https://github.com/ddoachi/jts/commit/042de0b8716288427902291e5ec8aa8090fc6b1a))
+- **ci:** fix Yarn 4.x caching in remaining workflow files ([96d24d2](https://github.com/ddoachi/jts/commit/96d24d2797c957a45e8ebdd424c8d4434c869a3d))
+- **ci:** fix Yarn 4.x caching issue in CI workflow ([50ddf4a](https://github.com/ddoachi/jts/commit/50ddf4a9331f95e8a774ac317e776e27356dc58f))
+- **ci:** fix Yarn 4.x package manager detection in GitHub Actions workflows ([023c28e](https://github.com/ddoachi/jts/commit/023c28ead95c895376c2fb2866d983f09be4c861))
+- fixes file path of deliverables ([65a4e1f](https://github.com/ddoachi/jts/commit/65a4e1f34ad055c460f0f3ff4fa1d21ef22853a1))
+- **spec:** modifies `spec.md` to `{id}.spec.md` ([a48ff2b](https://github.com/ddoachi/jts/commit/a48ff2bcfb4700a4570fad32d66d5d0fb8f9d4a1))
+- **templates:** Prevent HTML entity encoding in spec titles ([95a63b8](https://github.com/ddoachi/jts/commit/95a63b8f6b6a8392a1991b5a5111e2ae158f5794))
+- **specs:** Regenerate index.md with correct task indentation ([74ad5ea](https://github.com/ddoachi/jts/commit/74ad5eafbcfc65b74e614b971eb89050fd3bbd6f))
+- **specs:** Regenerate index.md with corrected paths and encoding ([adfa637](https://github.com/ddoachi/jts/commit/adfa63760bf2cb7d4b90d73e3fb0b74abb4c9d97))
+- regenerate yarn.lock with public registry URLs ([697bc7b](https://github.com/ddoachi/jts/commit/697bc7b75f3487bb1242a2c43aaf77f5922a8f9a))
+- **ci:** remove dependency-review and SonarCloud jobs ([3cec5a4](https://github.com/ddoachi/jts/commit/3cec5a452bb89c15717df4e06c5caf1489bc9bde))
+- **specs:** Remove duplicate Files sections ([08c22cc](https://github.com/ddoachi/jts/commit/08c22cc45d96e7cb67d7a56fd6397c58ba1b786c))
+- removed `index.md` temporarily ([2c154a9](https://github.com/ddoachi/jts/commit/2c154a9b190cfa72f429a8164d2be3dc8fea75f5))
+- **spec:** removes `assignee` and `reviewer` ([76be074](https://github.com/ddoachi/jts/commit/76be074378fe4ae8d296007874c19dd12d286d25))
+- **ci:** replace env variable references in reusable workflow calls ([06177a8](https://github.com/ddoachi/jts/commit/06177a81ad46238c7135d7e2bfa15d2ce1a6d071))
+- **scripts:** resolve arithmetic and string concatenation issues in setup scripts ([0a2ad80](https://github.com/ddoachi/jts/commit/0a2ad801a2f6402e56a1ae770e28cbff22583d66))
+- **specs:** resolve cross-epic task assignment in `parseAllSpecs()` ([dc81be2](https://github.com/ddoachi/jts/commit/dc81be22a4efb4db609785210fcd0b462acac683))
+- **specs:** resolve ID ambiguity in `parse-specs.ts` with hierarchical IDs ([546d17f](https://github.com/ddoachi/jts/commit/546d17f304d4e3e3729d3e8c5c069f7a8a07d2c4))
+- resolve merge conflicts and file reorganization ([6a5c2c6](https://github.com/ddoachi/jts/commit/6a5c2c6b99d3b9e49b573f78294d9014d2db0c43))
+- **ci:** resolve npm/yarn issues and lint errors ([8088e46](https://github.com/ddoachi/jts/commit/8088e4639e442f0d8104fa5bef74aada8f586ea5))
+- **E01-F02-T03:** resolve service configuration issues ([5b54957](https://github.com/ddoachi/jts/commit/5b549574643b2b2375bfe2b61d85f13cf2291765))
+- **domain:** resolve TypeScript build issues in trading domain ([6156255](https://github.com/ddoachi/jts/commit/6156255f8034e5956c2204ab2774e97a1269c941))
+- **ci:** resolve workflow reference and env variable issues ([dd76a25](https://github.com/ddoachi/jts/commit/dd76a251ab7bc416f1e2c81ac3d7d2b489cafcb0))
+- **ci:** resolve workflow secrets access and TypeScript errors ([fe46797](https://github.com/ddoachi/jts/commit/fe46797952a8037af4a30a891de629a555a3defe))
+- **specs:** revert spec link format from Markdown to hierarchical IDs ([856dc6a](https://github.com/ddoachi/jts/commit/856dc6a7b7273c943a03aedce78f4389f5c0f782))
+- **ci:** update all GitHub Actions workflows to use Yarn instead of npm ([3912a95](https://github.com/ddoachi/jts/commit/3912a95d4d7bd714b114468ce7eaa7a8bd3c7c47))
+- **ci:** update CI workflows to use Yarn and latest GitHub Actions ([89e03b6](https://github.com/ddoachi/jts/commit/89e03b65e393bf057f2a03beba87e8f714870159))
+- **specs:** update Creon service to run on dedicated Windows PC ([19d1baa](https://github.com/ddoachi/jts/commit/19d1baa77155c17f953a73c0549cc147b6ea1bda))
+- **spec-1002:** update docker-compose with monitoring and fix typo ([2c5df4e](https://github.com/ddoachi/jts/commit/2c5df4e36f4b727ff2b9d04db06d7964dca96be4))
+- **E01-F02-T05:** Update ESLint and git hooks configuration ([76ee040](https://github.com/ddoachi/jts/commit/76ee04014b420b8937ad2e0f4e7fa515ce1c6d89))
+- **E01-F02-T03:** update Redis config for multi-account support ([b743dfc](https://github.com/ddoachi/jts/commit/b743dfc9b2b7591515fdf6d741ae5043ebbf9640))
+- **generators:** update script format and document resolution ([6032f58](https://github.com/ddoachi/jts/commit/6032f58339adc5e62552fd965e528deac873420b))
+- update yarn.lock to fix GitHub Actions dependency installation ([027318b](https://github.com/ddoachi/jts/commit/027318b4b5b61bffe0ace70a372d17c201e35f74))
+- **index.md:** updates again ([457077a](https://github.com/ddoachi/jts/commit/457077a6062bf3cc583f74639806773d6fb0a05b))
+- **index.md:** updates ([4b5ae7e](https://github.com/ddoachi/jts/commit/4b5ae7edf74a6a63a58dc729204c9bc3ce4c8aa1))
+- use jq compact output for single-line JSON in GitHub Actions ([5b73f3f](https://github.com/ddoachi/jts/commit/5b73f3fc78bc194ba279fdcf3eb91cc74905b548))
+- **template:** Use proper Handlebars variable scoping for hierarchy ([ecc01c7](https://github.com/ddoachi/jts/commit/ecc01c7e2f64a96e23f467546207dc7698286927))
+- use proper multiline output format for GitHub Actions JSON data ([1f0a33b](https://github.com/ddoachi/jts/commit/1f0a33b3876d3c41026afb1c6f63ca2ec8fd08eb))
+- use unique delimiter for multiline GitHub Actions output ([511e1c2](https://github.com/ddoachi/jts/commit/511e1c21bd518ee34fd4b802910560b67d428bac))
 
 ### Features
 
-* **E01-F02-T03:** add centralized port configuration ([98640d7](https://github.com/ddoachi/jts/commit/98640d70af558d1ba21a13575c3592e286c819bb))
-* **ci:** add code quality and release automation workflows ([589013e](https://github.com/ddoachi/jts/commit/589013e2aa2a82b03abdfda0ef4e42e301640947)), closes [#82](https://github.com/ddoachi/jts/issues/82)
-* **architecture:** add comprehensive DDD-based system architecture and workspace structure ([e40a152](https://github.com/ddoachi/jts/commit/e40a1528953ea279a538f3752c43558d737e871e))
-* **dev:** add comprehensive development automation and documentation ([5f8689d](https://github.com/ddoachi/jts/commit/5f8689d6ff48a0cedc98d17487e2a506a48ae75a))
-* **scripts:** Add convert-links.sh for Markdown link conversion ([74d7cdb](https://github.com/ddoachi/jts/commit/74d7cdb83eafda31d0cef62726301b796cb5d847))
-* **ci:** add deployment workflow and Dependabot configuration ([e8c37dd](https://github.com/ddoachi/jts/commit/e8c37dd84d8d7a731b627826186be371bb75b272)), closes [#82](https://github.com/ddoachi/jts/issues/82)
-* **scripts:** add generator npm shortcuts and workspace commands ([8f25973](https://github.com/ddoachi/jts/commit/8f25973180fd6058a2e28392f9a1c4ea147e4924))
-* add index.md template for automated generation ([14c16ef](https://github.com/ddoachi/jts/commit/14c16ef190a21d2702341e0fac008fdc0380db70))
-* **scripts:** Add master orchestration script for spec improvements ([ded7cc9](https://github.com/ddoachi/jts/commit/ded7cc999f5d1fb612b21ea3275a13a211dae7aa))
-* **scripts:** Add rename-spec-files.sh for hierarchy-based naming ([90edd6f](https://github.com/ddoachi/jts/commit/90edd6fcb09fb25f41f50aea03578690bb516f06))
-* **scripts:** Add restructure-context.sh to standardize context format ([16fba81](https://github.com/ddoachi/jts/commit/16fba816125bfc7930ec496905a7f3d07cbf881f))
-* **scripts:** Add restructure-spec.sh to move metadata to body ([c53639b](https://github.com/ddoachi/jts/commit/c53639bc92dea68397b3ec0282e2835803abdb93))
-* **scripts:** Add restructure-spec.sh to move metadata to body ([a96a406](https://github.com/ddoachi/jts/commit/a96a40624d537357c37c06046487a5ca09f6fbe8))
-* **scripts:** Add restructure-spec.sh to move metadata to body ([578e8ac](https://github.com/ddoachi/jts/commit/578e8ac678187e6bd59004d250c448dc7f910823))
-* **scripts:** Add restructure-spec.sh to move metadata to body ([18b1717](https://github.com/ddoachi/jts/commit/18b1717f7664cfbec060f483cfe084958ad28e1a))
-* **spec-1002:** add secure Creon authentication with batch scripts ([5d7dd4c](https://github.com/ddoachi/jts/commit/5d7dd4c600ae37baa181973efc4969ec22cc9f26))
-* **spec-1002:** add staging and production environment planning ([f278133](https://github.com/ddoachi/jts/commit/f278133580f82e8573de25bd4f73198800e940b0))
-* **specs:** add system architecture diagram to foundation epic ([970866d](https://github.com/ddoachi/jts/commit/970866d39fbabdff3929df403b08bf25a7794282))
-* add systemd service and timer configuration ([675785b](https://github.com/ddoachi/jts/commit/675785bb8c64130d11f06c62f8a7ce2d2668f676))
-* **monorepo:** add task breakdown specs for monorepo structure and tooling ([8539257](https://github.com/ddoachi/jts/commit/8539257b312ac9fb2576bd33871baab1c760123b))
-* **domain:** add trading domain service and market constants ([d880cc6](https://github.com/ddoachi/jts/commit/d880cc6a797f65112325a97c7f3d21acebca6d9a))
-* **nx:** Add type-check target to nx configuration ([d8ab86f](https://github.com/ddoachi/jts/commit/d8ab86febc9bc5438a5f6a01b444af0231ad0f70))
-* **utils:** add utility functions for math, date, and validation ([a35798d](https://github.com/ddoachi/jts/commit/a35798d6952ee41c88e3829ac7042848d10c601f))
-* **scripts:** Add verification documentation script ([ee3fabc](https://github.com/ddoachi/jts/commit/ee3fabcda0c374ca604b9b33bea62ccbfe22b2f2))
-* complete E01-F01-T05 storage performance optimization implementation ([e6e43eb](https://github.com/ddoachi/jts/commit/e6e43ebe35f3c0bc6352081aebc5f7d66f8b8f48))
-* **spec:** complete E01-F03-T05 implementation ([47c028c](https://github.com/ddoachi/jts/commit/47c028ca46071efc219233d2ee7b62324add6352)), closes [#79](https://github.com/ddoachi/jts/issues/79) [#79](https://github.com/ddoachi/jts/issues/79)
-* **1012:** complete spec documentation and tracking ([a47841e](https://github.com/ddoachi/jts/commit/a47841e6be0e844bcb2e4ab27031c79f16196f97))
-* complete tiered storage management implementation ([2838591](https://github.com/ddoachi/jts/commit/2838591bbd7884281a0dbf07378e3a6704a05494))
-* **E01-F02-T05:** configure comprehensive code quality tools ([8f1521e](https://github.com/ddoachi/jts/commit/8f1521ef7065c92941bc4da373d1be8e494a0bff))
-* **lint:** Configure ESLint with Nx module boundary rules ([c6bbfb4](https://github.com/ddoachi/jts/commit/c6bbfb447a9128f7819ffe78999c52620e26e772))
-* **format:** Configure Prettier for consistent code formatting ([087e8a5](https://github.com/ddoachi/jts/commit/087e8a5016b1ef5fd08f5a0e1728ef12135d27de))
-* **config:** configure strict TypeScript settings ([8cd39d8](https://github.com/ddoachi/jts/commit/8cd39d8e6bc0c75c1d4f84d6de99fb50f15731cf))
-* **E01-F02-T02:** configure VS Code IDE environment ([9db8326](https://github.com/ddoachi/jts/commit/9db83263d2d8fabbd1d34f202eb8c3afc1beac3e))
-* create deliverables directory structure and context tracking ([65d4b03](https://github.com/ddoachi/jts/commit/65d4b0354fe0661f9ecfdddfb06e02f5f40b9f29))
-* **storage:** decompose storage infrastructure into directory-based tasks ([5c19240](https://github.com/ddoachi/jts/commit/5c19240374dd8353aa14740df0b9774336a099a3))
-* **specs:** enhance foundation epic with detailed architecture recommendations ([78b605a](https://github.com/ddoachi/jts/commit/78b605a3c5fe5e8da9c461b819fa8763eff3e7cc))
-* **1012:** finalize database mount integration spec with index updates ([9250ffe](https://github.com/ddoachi/jts/commit/9250ffe5e84d008e19dbc6f328f2ebc95bfeaaf7))
-* **libs:** generate all shared libraries structure ([5bae2d8](https://github.com/ddoachi/jts/commit/5bae2d8026466f7acbb9092214060599a1ed8d54))
-* implement automated data tiering and cleanup script ([eae37cd](https://github.com/ddoachi/jts/commit/eae37cd7655a36e65af060cb8ab70a46f577d50b))
-* **automation:** implement automated index generation with dashboard integration ([7488bb4](https://github.com/ddoachi/jts/commit/7488bb4958d7513aa2523b11a778734e7b24fa75))
-* **automation:** implement automated index generation with dashboard ([a8d4dca](https://github.com/ddoachi/jts/commit/a8d4dcae79ec576ace48cb7d9eabcdcceab00f95))
-* **1012:** implement complete database mount integration ([4a46e72](https://github.com/ddoachi/jts/commit/4a46e725b4fd06719800a1a90e0e4eaf00b5e9b7))
-* implement comprehensive storage performance optimization for JTS trading system ([396ad75](https://github.com/ddoachi/jts/commit/396ad75ca506257904dbadd8872b37703f55365b))
-* implement comprehensive storage performance optimization for JTS trading system ([3960593](https://github.com/ddoachi/jts/commit/3960593ae286beb6c64585f1e688a10a4dd5f8ab))
-* **testing:** implement comprehensive testing and build infrastructure ([56339d1](https://github.com/ddoachi/jts/commit/56339d1f32b6b7044ca6ba21a4b1a31e8c994ef8)), closes [#69](https://github.com/ddoachi/jts/issues/69)
-* **E01-F02-T03:** implement Docker and database services setup ([426a401](https://github.com/ddoachi/jts/commit/426a401b13a68819372ccb2a3fad0321e92f14ee))
-* **E01-F02-T04:** implement environment configuration and secrets management ([8d06b99](https://github.com/ddoachi/jts/commit/8d06b990f703988439d6d96e758c78c2bb3cfac5))
-* **ci:** implement GitHub Actions workflow structure ([ff24f7b](https://github.com/ddoachi/jts/commit/ff24f7b220a4f0a32fc1c0a1628dd97151ce9f88)), closes [#98](https://github.com/ddoachi/jts/issues/98)
-* **specs:** implement hierarchical status normalization and parent calculation ([9fa0cac](https://github.com/ddoachi/jts/commit/9fa0cac51d8aba893e0497e43efe78c11c120ba4))
-* **generators:** implement JTS library generator ([201dff3](https://github.com/ddoachi/jts/commit/201dff383c29dad6fbc523f351c740850615f21d))
-* implement LVM snapshot management script ([e1fd699](https://github.com/ddoachi/jts/commit/e1fd699f1ae7c2a02c4ab394bc1dd1129faa3b31))
-* **ci:** implement main CI/CD pipeline workflow ([ea150d6](https://github.com/ddoachi/jts/commit/ea150d64afc06ebaaafdeeacf91cbf608520bfe3)), closes [#82](https://github.com/ddoachi/jts/issues/82)
-* implement multi-tier storage health monitoring script ([f5c5cea](https://github.com/ddoachi/jts/commit/f5c5cea2fa30f4e99ade7383589a65b2ec458ba0))
-* implement NAS archival management script ([80c1364](https://github.com/ddoachi/jts/commit/80c136474f78db9f08e931c0f6a17327bc4c0133))
-* **generators:** implement NestJS service generator ([c0f185d](https://github.com/ddoachi/jts/commit/c0f185d672a246b58f3aa2aa725589e77827589b))
-* **setup:** implement Node.js 20 and Yarn 4 environment setup ([718be47](https://github.com/ddoachi/jts/commit/718be471a82505cd8adc848c61218eee08893298))
-* **foundation:** initialize JTS monorepo with unified broker architecture ([5d0b51c](https://github.com/ddoachi/jts/commit/5d0b51cab7bfbb0c6a2595ab913c7172a997f92f))
-* **infrastructure:** initialize Nx workspace with base configuration ([0706436](https://github.com/ddoachi/jts/commit/0706436aeb9d0c8f9329a074dce2dc51065b37d4)), closes [#61](https://github.com/ddoachi/jts/issues/61)
-* mark all acceptance criteria as completed ([80dc675](https://github.com/ddoachi/jts/commit/80dc675809c18642d5a1456d704f7d8c653fe191))
-* **specs:** split CI/CD pipeline spec into 11 detailed task specifications ([f8bfa1f](https://github.com/ddoachi/jts/commit/f8bfa1f4f535e9c40c46bd1edf7b4a75c56f2ede))
-* **spec-1002:** split development environment feature into 6 tasks ([03ff152](https://github.com/ddoachi/jts/commit/03ff152161987a98c58262e96f0a0a4781fd5128))
-* **hooks:** Update npm scripts for monorepo linting and type checking ([2808860](https://github.com/ddoachi/jts/commit/28088608b0c1c85332f358f1af0997065cdd2e4c))
-* update spec.md with completion status and tracking info ([f37ee3b](https://github.com/ddoachi/jts/commit/f37ee3bc6ce57f11984a85b161070169364f9e66))
+- **E01-F02-T03:** add centralized port configuration ([98640d7](https://github.com/ddoachi/jts/commit/98640d70af558d1ba21a13575c3592e286c819bb))
+- **ci:** add code quality and release automation workflows ([589013e](https://github.com/ddoachi/jts/commit/589013e2aa2a82b03abdfda0ef4e42e301640947)), closes [#82](https://github.com/ddoachi/jts/issues/82)
+- **architecture:** add comprehensive DDD-based system architecture and workspace structure ([e40a152](https://github.com/ddoachi/jts/commit/e40a1528953ea279a538f3752c43558d737e871e))
+- **dev:** add comprehensive development automation and documentation ([5f8689d](https://github.com/ddoachi/jts/commit/5f8689d6ff48a0cedc98d17487e2a506a48ae75a))
+- **scripts:** Add convert-links.sh for Markdown link conversion ([74d7cdb](https://github.com/ddoachi/jts/commit/74d7cdb83eafda31d0cef62726301b796cb5d847))
+- **ci:** add deployment workflow and Dependabot configuration ([e8c37dd](https://github.com/ddoachi/jts/commit/e8c37dd84d8d7a731b627826186be371bb75b272)), closes [#82](https://github.com/ddoachi/jts/issues/82)
+- **scripts:** add generator npm shortcuts and workspace commands ([8f25973](https://github.com/ddoachi/jts/commit/8f25973180fd6058a2e28392f9a1c4ea147e4924))
+- add index.md template for automated generation ([14c16ef](https://github.com/ddoachi/jts/commit/14c16ef190a21d2702341e0fac008fdc0380db70))
+- **scripts:** Add master orchestration script for spec improvements ([ded7cc9](https://github.com/ddoachi/jts/commit/ded7cc999f5d1fb612b21ea3275a13a211dae7aa))
+- **scripts:** Add rename-spec-files.sh for hierarchy-based naming ([90edd6f](https://github.com/ddoachi/jts/commit/90edd6fcb09fb25f41f50aea03578690bb516f06))
+- **scripts:** Add restructure-context.sh to standardize context format ([16fba81](https://github.com/ddoachi/jts/commit/16fba816125bfc7930ec496905a7f3d07cbf881f))
+- **scripts:** Add restructure-spec.sh to move metadata to body ([c53639b](https://github.com/ddoachi/jts/commit/c53639bc92dea68397b3ec0282e2835803abdb93))
+- **scripts:** Add restructure-spec.sh to move metadata to body ([a96a406](https://github.com/ddoachi/jts/commit/a96a40624d537357c37c06046487a5ca09f6fbe8))
+- **scripts:** Add restructure-spec.sh to move metadata to body ([578e8ac](https://github.com/ddoachi/jts/commit/578e8ac678187e6bd59004d250c448dc7f910823))
+- **scripts:** Add restructure-spec.sh to move metadata to body ([18b1717](https://github.com/ddoachi/jts/commit/18b1717f7664cfbec060f483cfe084958ad28e1a))
+- **spec-1002:** add secure Creon authentication with batch scripts ([5d7dd4c](https://github.com/ddoachi/jts/commit/5d7dd4c600ae37baa181973efc4969ec22cc9f26))
+- **spec-1002:** add staging and production environment planning ([f278133](https://github.com/ddoachi/jts/commit/f278133580f82e8573de25bd4f73198800e940b0))
+- **specs:** add system architecture diagram to foundation epic ([970866d](https://github.com/ddoachi/jts/commit/970866d39fbabdff3929df403b08bf25a7794282))
+- add systemd service and timer configuration ([675785b](https://github.com/ddoachi/jts/commit/675785bb8c64130d11f06c62f8a7ce2d2668f676))
+- **monorepo:** add task breakdown specs for monorepo structure and tooling ([8539257](https://github.com/ddoachi/jts/commit/8539257b312ac9fb2576bd33871baab1c760123b))
+- **domain:** add trading domain service and market constants ([d880cc6](https://github.com/ddoachi/jts/commit/d880cc6a797f65112325a97c7f3d21acebca6d9a))
+- **nx:** Add type-check target to nx configuration ([d8ab86f](https://github.com/ddoachi/jts/commit/d8ab86febc9bc5438a5f6a01b444af0231ad0f70))
+- **utils:** add utility functions for math, date, and validation ([a35798d](https://github.com/ddoachi/jts/commit/a35798d6952ee41c88e3829ac7042848d10c601f))
+- **scripts:** Add verification documentation script ([ee3fabc](https://github.com/ddoachi/jts/commit/ee3fabcda0c374ca604b9b33bea62ccbfe22b2f2))
+- complete E01-F01-T05 storage performance optimization implementation ([e6e43eb](https://github.com/ddoachi/jts/commit/e6e43ebe35f3c0bc6352081aebc5f7d66f8b8f48))
+- **spec:** complete E01-F03-T05 implementation ([47c028c](https://github.com/ddoachi/jts/commit/47c028ca46071efc219233d2ee7b62324add6352)), closes [#79](https://github.com/ddoachi/jts/issues/79) [#79](https://github.com/ddoachi/jts/issues/79)
+- **1012:** complete spec documentation and tracking ([a47841e](https://github.com/ddoachi/jts/commit/a47841e6be0e844bcb2e4ab27031c79f16196f97))
+- complete tiered storage management implementation ([2838591](https://github.com/ddoachi/jts/commit/2838591bbd7884281a0dbf07378e3a6704a05494))
+- **E01-F02-T05:** configure comprehensive code quality tools ([8f1521e](https://github.com/ddoachi/jts/commit/8f1521ef7065c92941bc4da373d1be8e494a0bff))
+- **lint:** Configure ESLint with Nx module boundary rules ([c6bbfb4](https://github.com/ddoachi/jts/commit/c6bbfb447a9128f7819ffe78999c52620e26e772))
+- **format:** Configure Prettier for consistent code formatting ([087e8a5](https://github.com/ddoachi/jts/commit/087e8a5016b1ef5fd08f5a0e1728ef12135d27de))
+- **config:** configure strict TypeScript settings ([8cd39d8](https://github.com/ddoachi/jts/commit/8cd39d8e6bc0c75c1d4f84d6de99fb50f15731cf))
+- **E01-F02-T02:** configure VS Code IDE environment ([9db8326](https://github.com/ddoachi/jts/commit/9db83263d2d8fabbd1d34f202eb8c3afc1beac3e))
+- create deliverables directory structure and context tracking ([65d4b03](https://github.com/ddoachi/jts/commit/65d4b0354fe0661f9ecfdddfb06e02f5f40b9f29))
+- **storage:** decompose storage infrastructure into directory-based tasks ([5c19240](https://github.com/ddoachi/jts/commit/5c19240374dd8353aa14740df0b9774336a099a3))
+- **specs:** enhance foundation epic with detailed architecture recommendations ([78b605a](https://github.com/ddoachi/jts/commit/78b605a3c5fe5e8da9c461b819fa8763eff3e7cc))
+- **1012:** finalize database mount integration spec with index updates ([9250ffe](https://github.com/ddoachi/jts/commit/9250ffe5e84d008e19dbc6f328f2ebc95bfeaaf7))
+- **libs:** generate all shared libraries structure ([5bae2d8](https://github.com/ddoachi/jts/commit/5bae2d8026466f7acbb9092214060599a1ed8d54))
+- implement automated data tiering and cleanup script ([eae37cd](https://github.com/ddoachi/jts/commit/eae37cd7655a36e65af060cb8ab70a46f577d50b))
+- **automation:** implement automated index generation with dashboard integration ([7488bb4](https://github.com/ddoachi/jts/commit/7488bb4958d7513aa2523b11a778734e7b24fa75))
+- **automation:** implement automated index generation with dashboard ([a8d4dca](https://github.com/ddoachi/jts/commit/a8d4dcae79ec576ace48cb7d9eabcdcceab00f95))
+- **1012:** implement complete database mount integration ([4a46e72](https://github.com/ddoachi/jts/commit/4a46e725b4fd06719800a1a90e0e4eaf00b5e9b7))
+- implement comprehensive storage performance optimization for JTS trading system ([396ad75](https://github.com/ddoachi/jts/commit/396ad75ca506257904dbadd8872b37703f55365b))
+- implement comprehensive storage performance optimization for JTS trading system ([3960593](https://github.com/ddoachi/jts/commit/3960593ae286beb6c64585f1e688a10a4dd5f8ab))
+- **testing:** implement comprehensive testing and build infrastructure ([56339d1](https://github.com/ddoachi/jts/commit/56339d1f32b6b7044ca6ba21a4b1a31e8c994ef8)), closes [#69](https://github.com/ddoachi/jts/issues/69)
+- **E01-F02-T03:** implement Docker and database services setup ([426a401](https://github.com/ddoachi/jts/commit/426a401b13a68819372ccb2a3fad0321e92f14ee))
+- **E01-F02-T04:** implement environment configuration and secrets management ([8d06b99](https://github.com/ddoachi/jts/commit/8d06b990f703988439d6d96e758c78c2bb3cfac5))
+- **ci:** implement GitHub Actions workflow structure ([ff24f7b](https://github.com/ddoachi/jts/commit/ff24f7b220a4f0a32fc1c0a1628dd97151ce9f88)), closes [#98](https://github.com/ddoachi/jts/issues/98)
+- **specs:** implement hierarchical status normalization and parent calculation ([9fa0cac](https://github.com/ddoachi/jts/commit/9fa0cac51d8aba893e0497e43efe78c11c120ba4))
+- **generators:** implement JTS library generator ([201dff3](https://github.com/ddoachi/jts/commit/201dff383c29dad6fbc523f351c740850615f21d))
+- implement LVM snapshot management script ([e1fd699](https://github.com/ddoachi/jts/commit/e1fd699f1ae7c2a02c4ab394bc1dd1129faa3b31))
+- **ci:** implement main CI/CD pipeline workflow ([ea150d6](https://github.com/ddoachi/jts/commit/ea150d64afc06ebaaafdeeacf91cbf608520bfe3)), closes [#82](https://github.com/ddoachi/jts/issues/82)
+- implement multi-tier storage health monitoring script ([f5c5cea](https://github.com/ddoachi/jts/commit/f5c5cea2fa30f4e99ade7383589a65b2ec458ba0))
+- implement NAS archival management script ([80c1364](https://github.com/ddoachi/jts/commit/80c136474f78db9f08e931c0f6a17327bc4c0133))
+- **generators:** implement NestJS service generator ([c0f185d](https://github.com/ddoachi/jts/commit/c0f185d672a246b58f3aa2aa725589e77827589b))
+- **setup:** implement Node.js 20 and Yarn 4 environment setup ([718be47](https://github.com/ddoachi/jts/commit/718be471a82505cd8adc848c61218eee08893298))
+- **foundation:** initialize JTS monorepo with unified broker architecture ([5d0b51c](https://github.com/ddoachi/jts/commit/5d0b51cab7bfbb0c6a2595ab913c7172a997f92f))
+- **infrastructure:** initialize Nx workspace with base configuration ([0706436](https://github.com/ddoachi/jts/commit/0706436aeb9d0c8f9329a074dce2dc51065b37d4)), closes [#61](https://github.com/ddoachi/jts/issues/61)
+- mark all acceptance criteria as completed ([80dc675](https://github.com/ddoachi/jts/commit/80dc675809c18642d5a1456d704f7d8c653fe191))
+- **specs:** split CI/CD pipeline spec into 11 detailed task specifications ([f8bfa1f](https://github.com/ddoachi/jts/commit/f8bfa1f4f535e9c40c46bd1edf7b4a75c56f2ede))
+- **spec-1002:** split development environment feature into 6 tasks ([03ff152](https://github.com/ddoachi/jts/commit/03ff152161987a98c58262e96f0a0a4781fd5128))
+- **hooks:** Update npm scripts for monorepo linting and type checking ([2808860](https://github.com/ddoachi/jts/commit/28088608b0c1c85332f358f1af0997065cdd2e4c))
+- update spec.md with completion status and tracking info ([f37ee3b](https://github.com/ddoachi/jts/commit/f37ee3bc6ce57f11984a85b161070169364f9e66))

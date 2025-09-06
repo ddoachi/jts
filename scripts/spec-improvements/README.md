@@ -5,31 +5,41 @@ This directory contains scripts to improve and standardize the spec documentatio
 ## Scripts Overview
 
 ### 1. `rename-spec-files.sh`
+
 Renames spec.md and context.md files to include hierarchy strings.
+
 - `spec.md` → `E01-F01-T01.spec.md`
 - `context.md` → `E01-F01-T01.context.md`
 
 ### 2. `convert-links.sh`
+
 Converts references to Markdown links:
+
 - Commit hashes → `[hash](github.com/repo/commit/hash)`
 - Issue/PR refs → `[#123: Title](github.com/repo/issues/123)`
 - File paths → `[/path/file.ts](../relative/path/file.ts)`
 
 ### 3. `restructure-spec.sh`
+
 Restructures spec.md files:
+
 - Moves dependencies, blocks, related from YAML to body
 - Removes pull_requests, commits, context_file from YAML
 - Formats as Markdown links in appropriate sections
 
 ### 4. `restructure-context.sh`
+
 Standardizes context.md format following E01-F03-T03 template:
+
 - Adds link to related spec.md at top
 - Formats GitHub issues as single Markdown link
 - Structures with Implementation Timeline (YYYY-MM-DD HH:MM)
 - Adds verification and acceptance criteria sections
 
 ### 5. `add-verification-docs.sh`
+
 Adds verification documentation:
+
 - Setup and execution instructions
 - Manual verification steps
 - Expected output examples
@@ -37,7 +47,9 @@ Adds verification documentation:
 - Creates missing context files with verification template
 
 ### 6. `master-improvement.sh`
+
 Orchestrates all improvements:
+
 - Runs scripts in correct order
 - Creates backup before modifications
 - Provides progress feedback
@@ -80,11 +92,13 @@ DRY_RUN=true ./rename-spec-files.sh
 ## Options
 
 All scripts support:
+
 - `--dry-run`: Preview changes without modifying files
 - `--verbose`: Show detailed output
 - `--help`: Display usage information
 
 Environment variables:
+
 - `DRY_RUN=true`: Same as --dry-run
 - `VERBOSE=true`: Same as --verbose
 
@@ -120,18 +134,21 @@ The master script runs improvements in this order:
 ## Examples
 
 ### Test Individual Script
+
 ```bash
 # See what would be renamed
 ./rename-spec-files.sh --dry-run --verbose
 ```
 
 ### Apply All Changes
+
 ```bash
 # Full execution with backup
 ./master-improvement.sh
 ```
 
 ### Custom Execution
+
 ```bash
 # No backup, verbose output
 BACKUP=false VERBOSE=true ./master-improvement.sh
@@ -150,14 +167,17 @@ After running the scripts:
 ## Troubleshooting
 
 ### Script Not Executable
+
 ```bash
 chmod +x *.sh
 ```
 
 ### Python Not Found
+
 Install Python 3 for relative path calculations.
 
 ### GitHub CLI Not Available
+
 Install `gh` for automatic issue title fetching, or links will be created without titles.
 
 ## Notes
