@@ -1,6 +1,7 @@
 # E13-F01: Spec Parser Service
 
 ## Spec Information
+
 - **Spec ID**: E13-F01
 - **Title**: Spec Parser Service
 - **Parent**: E13
@@ -21,6 +22,7 @@ The parser service is the foundation layer that all other features depend upon. 
 ## Scope
 
 ### In Scope
+
 - Spec file discovery and indexing from filesystem
 - YAML frontmatter parsing using gray-matter
 - Markdown content extraction and preservation
@@ -31,6 +33,7 @@ The parser service is the foundation layer that all other features depend upon. 
 - Error handling for malformed specs
 
 ### Out of Scope
+
 - HTML rendering (handled by F02)
 - Caching strategies (handled by F04)
 - WebSocket notifications (handled by F03)
@@ -50,12 +53,14 @@ The parser service is the foundation layer that all other features depend upon. 
 ## Tasks
 
 ### T01: Core Parser Implementation
+
 **Status**: Draft
 **Priority**: Critical
 
 Implement the fundamental parsing logic using gray-matter for YAML frontmatter extraction.
 
 **Deliverables**:
+
 - SpecParser class with gray-matter integration
 - YAML frontmatter extraction and validation
 - Markdown content preservation
@@ -64,12 +69,14 @@ Implement the fundamental parsing logic using gray-matter for YAML frontmatter e
 ---
 
 ### T02: File Discovery Service
+
 **Status**: Draft
 **Priority**: Critical
 
 Implement filesystem scanning to discover and index all spec files.
 
 **Deliverables**:
+
 - SpecDiscovery service with glob pattern matching
 - Recursive directory traversal
 - File filtering for .spec.md extension
@@ -78,12 +85,14 @@ Implement filesystem scanning to discover and index all spec files.
 ---
 
 ### T03: Hierarchical ID Resolver
+
 **Status**: Draft
 **Priority**: High
 
 Parse spec IDs to understand hierarchical relationships and build parent-child mappings.
 
 **Deliverables**:
+
 - ID parsing logic (E13 → Epic, E13-F01 → Feature)
 - Parent ID extraction from child IDs
 - Relationship mapping data structures
@@ -92,12 +101,14 @@ Parse spec IDs to understand hierarchical relationships and build parent-child m
 ---
 
 ### T04: In-Memory Registry
+
 **Status**: Draft
 **Priority**: High
 
 Implement efficient in-memory storage with fast lookups and relationship traversal.
 
 **Deliverables**:
+
 - SpecRegistry class with Map-based storage
 - O(1) lookup by spec ID
 - Tree traversal methods
@@ -106,12 +117,14 @@ Implement efficient in-memory storage with fast lookups and relationship travers
 ---
 
 ### T05: File Watcher Integration
+
 **Status**: Draft
 **Priority**: Medium
 
 Implement file system monitoring to detect spec file changes in real-time.
 
 **Deliverables**:
+
 - Chokidar integration for file watching
 - Change event detection (add, update, delete)
 - Incremental parsing for changed files
@@ -120,6 +133,7 @@ Implement file system monitoring to detect spec file changes in real-time.
 ## Technical Architecture
 
 ### Module Structure
+
 ```
 apps/spec-api/src/modules/parser/
 ├── services/
@@ -139,54 +153,58 @@ apps/spec-api/src/modules/parser/
 ### Core Components
 
 #### SpecParser Service
+
 ```typescript
 interface ISpecParser {
-  parseFile(path: string): Promise<ParsedSpec>
-  parseContent(content: string): ParsedSpec
-  extractFrontmatter(content: string): SpecMetadata
-  validateMetadata(metadata: any): SpecMetadata
+  parseFile(path: string): Promise<ParsedSpec>;
+  parseContent(content: string): ParsedSpec;
+  extractFrontmatter(content: string): SpecMetadata;
+  validateMetadata(metadata: any): SpecMetadata;
 }
 ```
 
 #### Spec Registry
+
 ```typescript
 interface ISpecRegistry {
-  get(id: string): Spec | undefined
-  getAll(): Spec[]
-  getChildren(parentId: string): Spec[]
-  getTree(): SpecTreeNode
-  upsert(spec: Spec): void
-  delete(id: string): void
+  get(id: string): Spec | undefined;
+  getAll(): Spec[];
+  getChildren(parentId: string): Spec[];
+  getTree(): SpecTreeNode;
+  upsert(spec: Spec): void;
+  delete(id: string): void;
 }
 ```
 
 #### Data Models
+
 ```typescript
 interface ParsedSpec {
-  metadata: SpecMetadata
-  content: string
-  path: string
+  metadata: SpecMetadata;
+  content: string;
+  path: string;
   hierarchy: {
-    level: 'epic' | 'feature' | 'task'
-    parentId?: string
-    childIds: string[]
-  }
+    level: 'epic' | 'feature' | 'task';
+    parentId?: string;
+    childIds: string[];
+  };
 }
 
 interface SpecMetadata {
-  id: string
-  title: string
-  type: string
-  status: string
-  priority: string
-  created: string
-  updated: string
-  parent?: string
-  dependencies?: string[]
+  id: string;
+  title: string;
+  type: string;
+  status: string;
+  priority: string;
+  created: string;
+  updated: string;
+  parent?: string;
+  dependencies?: string[];
 }
 ```
 
 ### Dependencies
+
 - **gray-matter**: ^4.0.3 - YAML frontmatter parsing
 - **chokidar**: ^3.5.3 - File system watching
 - **glob**: ^10.3.10 - File discovery patterns
@@ -194,12 +212,12 @@ interface SpecMetadata {
 
 ## Risk Analysis
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Memory consumption with large spec sets | High | Implement pagination, lazy loading for content |
-| File system performance bottleneck | Medium | Use caching, batch file operations |
-| Malformed YAML breaking parser | High | Comprehensive error handling, validation |
-| Race conditions during file updates | Medium | Queue-based processing, file locks |
+| Risk                                    | Impact | Mitigation                                     |
+| --------------------------------------- | ------ | ---------------------------------------------- |
+| Memory consumption with large spec sets | High   | Implement pagination, lazy loading for content |
+| File system performance bottleneck      | Medium | Use caching, batch file operations             |
+| Malformed YAML breaking parser          | High   | Comprehensive error handling, validation       |
+| Race conditions during file updates     | Medium | Queue-based processing, file locks             |
 
 ## Success Metrics
 

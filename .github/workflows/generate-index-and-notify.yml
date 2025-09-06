@@ -12,42 +12,42 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write # Need to push index.md updates
-      
+
     steps:
       - name: Checkout JTS repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: '20'
-          
+
       - name: Enable Corepack and setup Yarn
         run: |
           corepack enable
           corepack prepare yarn@4.9.4 --activate
           yarn --version
-          
+
       - name: Install dependencies
         run: yarn install --immutable
-        
+
       - name: Parse all spec files
         id: parse
         run: |
           yarn run parse:specs
           echo "specs_data=$(jq -c . specs-data.json)" >> "$GITHUB_OUTPUT"
-          
+
       - name: Generate updated index.md
         run: |
           yarn run generate:index
-          
+
       - name: Commit index.md to JTS if changed
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          
+
           if git diff --quiet specs/index.md; then
             echo "No changes to index.md"
             echo "index_changed=false" >> $GITHUB_OUTPUT
@@ -58,7 +58,7 @@ jobs:
             echo "index_changed=true" >> $GITHUB_OUTPUT
           fi
         id: commit
-          
+
       - name: Notify specwork dashboard
         if: steps.commit.outputs.index_changed == 'true'
         run: |

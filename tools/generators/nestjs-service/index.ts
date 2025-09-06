@@ -76,7 +76,7 @@ interface NormalizedOptions extends ServiceGeneratorSchema {
  */
 export default async function serviceGenerator(
   tree: Tree,
-  options: ServiceGeneratorSchema
+  options: ServiceGeneratorSchema,
 ): Promise<() => void> {
   // Step 1: Normalize and validate options
   const normalizedOptions = normalizeOptions(tree, options);
@@ -125,10 +125,7 @@ export default async function serviceGenerator(
  *
  * GOTCHA: Port range starts at 3000, increments by service count
  */
-function normalizeOptions(
-  tree: Tree,
-  options: ServiceGeneratorSchema
-): NormalizedOptions {
+function normalizeOptions(tree: Tree, options: ServiceGeneratorSchema): NormalizedOptions {
   // Convert name to kebab-case for consistency
   const name = names(options.name).fileName;
 
@@ -224,12 +221,7 @@ function addCustomFiles(tree: Tree, options: NormalizedOptions): void {
   };
 
   // Generate files from templates
-  generateFiles(
-    tree,
-    path.join(__dirname, 'files'),
-    options.projectRoot,
-    templateOptions
-  );
+  generateFiles(tree, path.join(__dirname, 'files'), options.projectRoot, templateOptions);
 
   // Add additional configurations based on options
   if (options.includeKafka) {
@@ -409,10 +401,7 @@ export class ${options.className}Gateway {
  * HOW: Modifies project.json with additional targets
  * WHAT: Configures port, Docker, and deployment settings
  */
-function updateProjectConfig(
-  tree: Tree,
-  options: NormalizedOptions
-): void {
+function updateProjectConfig(tree: Tree, options: NormalizedOptions): void {
   const projectConfig = readProjectConfiguration(tree, options.projectName);
 
   // Update serve target with port
@@ -452,10 +441,7 @@ function updateProjectConfig(
  * HOW: Modifies package.json scripts section
  * WHAT: Creates service-specific dev, test, and build scripts
  */
-function updateRootPackageJson(
-  tree: Tree,
-  options: NormalizedOptions
-): void {
+function updateRootPackageJson(tree: Tree, options: NormalizedOptions): void {
   updateJson(tree, 'package.json', (json) => {
     json.scripts = json.scripts || {};
 

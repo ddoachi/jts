@@ -74,7 +74,7 @@ interface NormalizedOptions extends LibraryGeneratorSchema {
  */
 export default async function jtsLibraryGenerator(
   tree: Tree,
-  options: LibraryGeneratorSchema
+  options: LibraryGeneratorSchema,
 ): Promise<() => void> {
   // Step 1: Normalize and validate options
   const normalizedOptions = normalizeOptions(tree, options);
@@ -127,16 +127,11 @@ export default async function jtsLibraryGenerator(
  *
  * GOTCHA: Import paths follow @jts/{scope}/{name} convention
  */
-function normalizeOptions(
-  tree: Tree,
-  options: LibraryGeneratorSchema
-): NormalizedOptions {
+function normalizeOptions(tree: Tree, options: LibraryGeneratorSchema): NormalizedOptions {
   // Validate scope
   const validScopes = ['shared', 'domain', 'infrastructure', 'brokers'];
   if (!validScopes.includes(options.scope)) {
-    throw new Error(
-      `Invalid scope: ${options.scope}. Must be one of: ${validScopes.join(', ')}`
-    );
+    throw new Error(`Invalid scope: ${options.scope}. Must be one of: ${validScopes.join(', ')}`);
   }
 
   // Convert name to kebab-case
@@ -159,9 +154,7 @@ function normalizeOptions(
 
   // Parse and add scope-based tags
   const defaultTags = [`scope:${options.scope}`, 'type:library'];
-  const userTags = options.tags
-    ? options.tags.split(',').map((s) => s.trim())
-    : [];
+  const userTags = options.tags ? options.tags.split(',').map((s) => s.trim()) : [];
   const parsedTags = [...defaultTags, ...userTags];
 
   return {
@@ -193,12 +186,7 @@ function addCustomFiles(tree: Tree, options: NormalizedOptions): void {
   };
 
   // Generate files from templates
-  generateFiles(
-    tree,
-    path.join(__dirname, 'files'),
-    options.projectRoot,
-    templateOptions
-  );
+  generateFiles(tree, path.join(__dirname, 'files'), options.projectRoot, templateOptions);
 
   // Add scope-specific templates
   addScopeSpecificFiles(tree, options);
@@ -211,10 +199,7 @@ function addCustomFiles(tree: Tree, options: NormalizedOptions): void {
  * HOW: Generates files based on library scope
  * WHAT: Creates scope-appropriate structures and examples
  */
-function addScopeSpecificFiles(
-  tree: Tree,
-  options: NormalizedOptions
-): void {
+function addScopeSpecificFiles(tree: Tree, options: NormalizedOptions): void {
   switch (options.scope) {
     case 'shared':
       generateSharedLibraryFiles(tree, options);
@@ -238,10 +223,7 @@ function addScopeSpecificFiles(
  * HOW: Creates structure for constants, types, and utilities
  * WHAT: Standard shared library organization
  */
-function generateSharedLibraryFiles(
-  tree: Tree,
-  options: NormalizedOptions
-): void {
+function generateSharedLibraryFiles(tree: Tree, options: NormalizedOptions): void {
   // Create directory structure
   const dirs = ['constants', 'types', 'utils', 'dto'];
   dirs.forEach((dir) => {
@@ -263,10 +245,7 @@ function generateSharedLibraryFiles(
  * HOW: Creates structure for entities, services, and events
  * WHAT: Domain-driven design structure
  */
-function generateDomainLibraryFiles(
-  tree: Tree,
-  options: NormalizedOptions
-): void {
+function generateDomainLibraryFiles(tree: Tree, options: NormalizedOptions): void {
   // Create DDD structure
   const dirs = ['entities', 'value-objects', 'services', 'events', 'repositories'];
   dirs.forEach((dir) => {
@@ -291,7 +270,7 @@ export interface Repository<T> {
   save(entity: T): Promise<T>;
   delete(id: string): Promise<void>;
 }
-`
+`,
   );
 }
 
@@ -302,10 +281,7 @@ export interface Repository<T> {
  * HOW: Creates structure for adapters and clients
  * WHAT: Ports and adapters pattern implementation
  */
-function generateInfrastructureLibraryFiles(
-  tree: Tree,
-  options: NormalizedOptions
-): void {
+function generateInfrastructureLibraryFiles(tree: Tree, options: NormalizedOptions): void {
   // Create infrastructure structure
   const dirs = ['adapters', 'clients', 'config'];
   dirs.forEach((dir) => {
@@ -321,10 +297,7 @@ function generateInfrastructureLibraryFiles(
  * HOW: Creates structure for broker-specific implementations
  * WHAT: Standardized broker adapter pattern
  */
-function generateBrokersLibraryFiles(
-  tree: Tree,
-  options: NormalizedOptions
-): void {
+function generateBrokersLibraryFiles(tree: Tree, options: NormalizedOptions): void {
   // Create broker adapter structure
   const adapterPath = `${options.projectRoot}/src/adapter.ts`;
   tree.write(
@@ -355,7 +328,7 @@ export class ${options.className}Adapter {
     // Implementation here
   }
 }
-`
+`,
   );
 }
 
@@ -370,12 +343,9 @@ export class ${options.className}Adapter {
  * HOW: Creates barrel exports with clear organization
  * WHAT: Main index.ts with organized exports
  */
-function generateStandardExports(
-  tree: Tree,
-  options: NormalizedOptions
-): void {
+function generateStandardExports(tree: Tree, options: NormalizedOptions): void {
   const indexPath = `${options.projectRoot}/src/index.ts`;
-  
+
   let exportContent = `/**
  * ${options.className} Library
  * Scope: ${options.scope}
@@ -452,16 +422,13 @@ export * from './adapter';
  * HOW: Modifies project.json with additional options
  * WHAT: Build optimization and output settings
  */
-function updateLibraryConfig(
-  tree: Tree,
-  options: NormalizedOptions
-): void {
+function updateLibraryConfig(tree: Tree, options: NormalizedOptions): void {
   const projectConfig = readProjectConfiguration(tree, options.projectName);
 
   // Add custom targets
   projectConfig.targets = {
     ...projectConfig.targets,
-    'validate': {
+    validate: {
       executor: '@nx/js:tsc',
       options: {
         tsConfig: `${options.projectRoot}/tsconfig.lib.json`,
@@ -487,14 +454,10 @@ function updateTsConfig(tree: Tree, options: NormalizedOptions): void {
     json.compilerOptions.paths = json.compilerOptions.paths || {};
 
     // Add path mapping for the library
-    json.compilerOptions.paths[options.importPath] = [
-      `${options.projectRoot}/src/index.ts`,
-    ];
+    json.compilerOptions.paths[options.importPath] = [`${options.projectRoot}/src/index.ts`];
 
     // Add wildcard path for deep imports
-    json.compilerOptions.paths[`${options.importPath}/*`] = [
-      `${options.projectRoot}/src/*`,
-    ];
+    json.compilerOptions.paths[`${options.importPath}/*`] = [`${options.projectRoot}/src/*`];
 
     return json;
   });

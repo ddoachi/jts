@@ -7,7 +7,7 @@ This directory contains all configuration files for the JTS trading system, orga
 ```
 configs/
 ├── database/          # Database configurations
-├── services/          # Service-specific configurations  
+├── services/          # Service-specific configurations
 ├── environment/       # Development environment configs
 ├── security/          # Security configs (non-sensitive)
 ├── monitoring/        # System monitoring and optimization
@@ -17,18 +17,24 @@ configs/
 ## Directory Purpose
 
 ### `/database/`
+
 Contains database configuration files:
+
 - `clickhouse-config.xml` - ClickHouse time-series database configuration
 - `redis.conf` - Redis cache and session store configuration
 
 ### `/services/`
+
 Contains service-specific configuration files:
+
 - `telegram.config.json` - Telegram bot integration settings
 - `rollback_migration.sh` - Database migration rollback script
 - `migration_log.json` - Migration execution log
 
 ### `/environment/`
+
 Contains development environment and tooling configurations:
+
 - `.pre-commit-config.yaml` - Pre-commit hooks configuration
 - `eslint.config.js` - ESLint code quality rules
 - `lint-staged.config.js` - Lint-staged configuration
@@ -36,11 +42,14 @@ Contains development environment and tooling configurations:
 - `package.json.template` - Template for package.json files
 
 ### `/security/`
+
 Reserved for security-related configurations (certificates, keys - non-sensitive only).
 Note: Sensitive keys and secrets should always be stored in environment variables or secure vaults.
 
 ### `/monitoring/`
+
 Contains system monitoring, optimization and infrastructure configurations:
+
 - `60-ssd-scheduler.rules` - SSD I/O scheduler optimization rules
 - `sysctl-nas-optimization.conf` - System kernel parameter optimization
 - `fstab-nas-mount.conf` - Network attached storage mount configuration
@@ -51,7 +60,9 @@ Contains system monitoring, optimization and infrastructure configurations:
 - `tiered-storage.timer` - Systemd timer for tiered storage operations
 
 ### `/docker/`
+
 Contains Docker and container orchestration configurations:
+
 - `docker-compose.dev.yml` - Development environment Docker Compose configuration
 
 ## Usage Notes

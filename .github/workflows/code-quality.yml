@@ -3,7 +3,7 @@
 # ============================================================================
 # Generated from spec: [[E01-F03-T06] Configure CI/CD Pipeline and Automation](../../specs/E01/F03/T06/E01-F03-T06.spec.md)
 #
-# PURPOSE: 
+# PURPOSE:
 # Automated code quality analysis using SonarCloud and GitHub CodeQL
 # for continuous security and maintainability monitoring.
 #
@@ -41,7 +41,7 @@ jobs:
         language: ['javascript', 'typescript']
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -49,7 +49,7 @@ jobs:
           languages: ${{ matrix.language }}
           # Customize queries if needed
           queries: security-extended,security-and-quality
-          
+
       - name: Enable Corepack
         run: corepack enable
 
@@ -90,7 +90,7 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -159,7 +159,7 @@ jobs:
           echo "- CodeQL: ${{ needs.codeql.result }}"
           echo "- Quality Gates: ${{ needs.quality-gates.result }}"
           echo ""
-          
+
           if [ "${{ needs.codeql.result }}" == "failure" ] || \
              [ "${{ needs.quality-gates.result }}" == "failure" ]; then
             echo "❌ Quality checks failed - review required"

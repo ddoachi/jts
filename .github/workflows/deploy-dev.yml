@@ -39,7 +39,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════
   # JOB: Pre-deployment Setup
   # ═══════════════════════════════════════════════════════════════════
-  
+
   setup:
     name: 🚀 Pre-deployment Setup
     uses: ./.github/workflows/setup.yml
@@ -51,14 +51,14 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════
   # JOB: Build and Push Images
   # ═══════════════════════════════════════════════════════════════════
-  
+
   build-images:
     name: 🐳 Build Docker Images
     needs: [setup]
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: 
+        service:
           - api-gateway
           - strategy-engine
           - risk-management
@@ -67,18 +67,18 @@ jobs:
           - portfolio-service
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
-        
+        uses: actions/checkout@v5
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        
+
       - name: Log in to Registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Extract Metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -88,9 +88,9 @@ jobs:
             type=ref,event=branch
             type=sha,prefix={{branch}}-
             type=raw,value=dev-latest
-            
+
       - name: Build and Push Image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./apps/${{ matrix.service }}/Dockerfile
@@ -106,7 +106,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════
   # JOB: Database Migrations
   # ═══════════════════════════════════════════════════════════════════
-  
+
   migrate-database:
     name: 🗄️ Run Database Migrations
     needs: [setup]
@@ -114,13 +114,13 @@ jobs:
     environment: development
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
-        
+        uses: actions/checkout@v5
+
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         with:
           node-version: '20.x'
-          
+
       - name: Run Migrations
         env:
           DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
@@ -128,16 +128,16 @@ jobs:
         run: |
           echo "🗄️ Running PostgreSQL migrations..."
           npm run migration:run:dev
-          
+
           echo "📊 Running ClickHouse migrations..."
           npm run migration:clickhouse:dev
-          
+
           echo "✅ Migrations completed"
 
   # ═══════════════════════════════════════════════════════════════════
   # JOB: Deploy to Kubernetes
   # ═══════════════════════════════════════════════════════════════════
-  
+
   deploy:
     name: 🚢 Deploy to Kubernetes
     needs: [build-images, migrate-database]
@@ -147,21 +147,21 @@ jobs:
       url: https://dev.jts.example.com
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
-        
+        uses: actions/checkout@v5
+
       - name: Configure kubectl
         run: |
           echo "${{ secrets.DEV_KUBECONFIG }}" | base64 -d > kubeconfig
           echo "KUBECONFIG=${PWD}/kubeconfig" >> $GITHUB_ENV
-          
+
       - name: Deploy Services
         run: |
           # Apply namespace if not exists
           kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
-          
+
           # Apply configurations
           kubectl apply -f ./k8s/dev/config/ -n ${{ env.NAMESPACE }}
-          
+
           # Deploy services
           if [ -n "${{ github.event.inputs.service }}" ]; then
             echo "🚀 Deploying ${{ github.event.inputs.service }}..."
@@ -172,14 +172,14 @@ jobs:
             kubectl apply -f ./k8s/dev/services/ -n ${{ env.NAMESPACE }}
             kubectl rollout restart deployment -n ${{ env.NAMESPACE }}
           fi
-          
+
           # Wait for rollout
           kubectl rollout status deployment -n ${{ env.NAMESPACE }} --timeout=5m
 
   # ═══════════════════════════════════════════════════════════════════
   # JOB: Health Check
   # ═══════════════════════════════════════════════════════════════════
-  
+
   health-check:
     name: 🏥 Health Check
     needs: [deploy]
@@ -188,35 +188,35 @@ jobs:
       - name: Check Service Health
         run: |
           echo "🏥 Checking service health..."
-          
+
           # API Gateway health check
           curl -f https://dev.jts.example.com/health || exit 1
-          
+
           # Individual service health checks
           for service in api-gateway strategy-engine risk-management order-execution; do
             echo "Checking $service..."
             curl -f https://dev.jts.example.com/$service/health || exit 1
           done
-          
+
           echo "✅ All services healthy"
 
   # ═══════════════════════════════════════════════════════════════════
   # JOB: Smoke Tests
   # ═══════════════════════════════════════════════════════════════════
-  
+
   smoke-tests:
     name: 🔥 Smoke Tests
     needs: [health-check]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
-        
+        uses: actions/checkout@v5
+
       - name: Setup Environment
         uses: ./.github/actions/setup-node
         with:
           node-version: '20.x'
-          
+
       - name: Run Smoke Tests
         env:
           API_URL: https://dev.jts.example.com
@@ -228,7 +228,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════
   # JOB: Notification
   # ═══════════════════════════════════════════════════════════════════
-  
+
   notify:
     name: 📢 Send Deployment Notification
     needs: [deploy, health-check, smoke-tests]
@@ -245,7 +245,6 @@ jobs:
         URL: https://dev.jts.example.com
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
 # ═══════════════════════════════════════════════════════════════════
 # NOTES:
 # - Update URLs and namespaces to match your infrastructure

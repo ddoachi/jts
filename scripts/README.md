@@ -18,6 +18,7 @@ scripts/
 ## Directory Descriptions
 
 ### `/build/` - Build and Compilation Scripts
+
 Scripts for building, installing dependencies, and preparing the development environment.
 
 - `docker-setup.sh` - Docker installation and configuration for Linux/WSL
@@ -26,6 +27,7 @@ Scripts for building, installing dependencies, and preparing the development env
 - `install-node-yarn.sh` - Generic Node.js and Yarn installation script
 
 ### `/database/` - Database Management Scripts
+
 Scripts for database initialization, user management, and data operations.
 
 - `init-mongo.js` - MongoDB database initialization and configuration
@@ -34,6 +36,7 @@ Scripts for database initialization, user management, and data operations.
 - `sync-database.ts` - Database synchronization utilities
 
 ### `/deployment/` - Deployment Scripts
+
 Scripts for production deployment and credential management.
 
 - `creon-launcher.bat` - Creon trading platform auto-login wrapper
@@ -41,6 +44,7 @@ Scripts for production deployment and credential management.
 - `encrypt-credentials.ps1` - PowerShell script for credential encryption
 
 ### `/development/` - Development Utilities
+
 Scripts for development environment setup and service management.
 
 - `check-services-health.js` - Health check for all development services
@@ -50,6 +54,7 @@ Scripts for development environment setup and service management.
 - `validate-env.js` - Environment variable validation utility
 
 ### `/maintenance/` - System Maintenance Scripts
+
 Scripts for system maintenance, fixes, and cleanup operations.
 
 - `configure-permissions.sh` - System permissions configuration and fixes
@@ -59,6 +64,7 @@ Scripts for system maintenance, fixes, and cleanup operations.
 - `tiered-storage.sh` - Storage tier management and optimization
 
 ### `/monitoring/` - System Monitoring Scripts
+
 Scripts for system health monitoring, performance benchmarking, and alerting.
 
 - `hot-storage-monitor.sh` - Real-time monitoring for hot storage (NVMe)
@@ -69,6 +75,7 @@ Scripts for system health monitoring, performance benchmarking, and alerting.
 - `storage-health.sh` - General storage system health checks
 
 ### `/utilities/` - General Utility Scripts
+
 General-purpose scripts for various system operations, testing, and validation.
 
 - `fix-spec-ids.py` - Fix and update specification IDs
@@ -88,6 +95,7 @@ General-purpose scripts for various system operations, testing, and validation.
 ## Usage Guidelines
 
 ### Execution Permissions
+
 Most scripts maintain their original executable permissions. To run a script:
 
 ```bash
@@ -105,6 +113,7 @@ python3 script-name.py
 ```
 
 ### Common Requirements
+
 - **Linux/Unix environment**: Most shell scripts are designed for Linux/Unix systems
 - **Node.js**: Required for JavaScript/TypeScript scripts
 - **Python 3**: Required for Python scripts
@@ -112,7 +121,9 @@ python3 script-name.py
 - **Appropriate permissions**: Some scripts may require `sudo` privileges
 
 ### Script Dependencies
+
 Many scripts have dependencies on:
+
 - Docker and Docker Compose
 - Node.js and npm/yarn
 - PostgreSQL, MongoDB, ClickHouse, Redis
@@ -121,19 +132,23 @@ Many scripts have dependencies on:
 ## Development Notes
 
 ### Script Conventions
+
 - Use `#!/bin/bash` shebang for shell scripts
 - Include error handling with `set -e` or `set -euo pipefail`
 - Use consistent color coding for output messages
 - Include descriptive comments and usage instructions
 
 ### Adding New Scripts
+
 When adding new scripts:
+
 1. Place them in the appropriate directory based on functionality
 2. Ensure proper executable permissions (`chmod +x`)
 3. Follow existing naming conventions
 4. Update this README if adding new categories
 
 ### Maintenance
+
 - Regularly review and update script dependencies
 - Test scripts in clean environments
 - Keep documentation current with actual functionality
@@ -142,12 +157,14 @@ When adding new scripts:
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Permission Denied**: Check executable permissions with `ls -la`
 2. **Command Not Found**: Ensure required dependencies are installed
 3. **Path Issues**: Scripts may need to be run from specific directories
 4. **Environment Variables**: Check that required environment variables are set
 
 ### Getting Help
+
 - Check script headers for usage instructions
 - Review error messages and logs
 - Consult project documentation in the main repository

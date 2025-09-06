@@ -97,5 +97,5 @@
       }
     }
   },
-  "defaultProject": "api-gateway"
+  "defaultProject": "infrastructure-http"
 }

@@ -17,10 +17,10 @@ The JTS monorepo includes custom Nx generators to ensure consistent project stru
 
 ## Available Generators
 
-| Generator | Purpose | Command |
-|-----------|---------|---------|
-| `nestjs-service` | Create new NestJS microservice | `yarn g:service` |
-| `jts-library` | Create scoped TypeScript library | `yarn g:lib` |
+| Generator        | Purpose                          | Command          |
+| ---------------- | -------------------------------- | ---------------- |
+| `nestjs-service` | Create new NestJS microservice   | `yarn g:service` |
+| `jts-library`    | Create scoped TypeScript library | `yarn g:lib`     |
 
 ## NestJS Service Generator
 
@@ -47,15 +47,15 @@ yarn g:service --name=market-data \
 
 ### Options
 
-| Option | Type | Description | Default |
-|--------|------|-------------|---------|
-| `name` | string | Service name (kebab-case) | Required |
-| `directory` | string | Subdirectory in apps/ | Optional |
-| `port` | number | Service port (3000-3999) | Auto-assigned |
-| `tags` | string | Comma-separated Nx tags | `scope:apps,type:service` |
-| `includeKafka` | boolean | Add Kafka configuration | false |
-| `includeGrpc` | boolean | Add gRPC support | false |
-| `includeWebsocket` | boolean | Add WebSocket gateway | false |
+| Option             | Type    | Description               | Default                   |
+| ------------------ | ------- | ------------------------- | ------------------------- |
+| `name`             | string  | Service name (kebab-case) | Required                  |
+| `directory`        | string  | Subdirectory in apps/     | Optional                  |
+| `port`             | number  | Service port (3000-3999)  | Auto-assigned             |
+| `tags`             | string  | Comma-separated Nx tags   | `scope:apps,type:service` |
+| `includeKafka`     | boolean | Add Kafka configuration   | false                     |
+| `includeGrpc`      | boolean | Add gRPC support          | false                     |
+| `includeWebsocket` | boolean | Add WebSocket gateway     | false                     |
 
 ### Generated Structure
 
@@ -113,6 +113,7 @@ Every service includes health check endpoints for container orchestration:
 #### 3. **Docker Configuration**
 
 Multi-stage Dockerfile with:
+
 - Optimized layer caching
 - Non-root user for security
 - Health check configuration
@@ -121,6 +122,7 @@ Multi-stage Dockerfile with:
 #### 4. **Environment Configuration**
 
 Comprehensive `.env.example` with all service dependencies:
+
 - Database connections (PostgreSQL, MongoDB, ClickHouse, Redis)
 - Message queue configuration (Kafka)
 - JWT and security settings
@@ -135,6 +137,7 @@ yarn g:service --name=trading-engine --port=3100
 ```
 
 This creates a basic service at `apps/trading-engine/` with:
+
 - Port 3100
 - Standard JTS structure
 - Health checks
@@ -150,6 +153,7 @@ yarn g:service --name=market-data \
 ```
 
 This creates a service at `apps/market-data/` with:
+
 - Port 3200
 - Kafka producer/consumer configuration
 - WebSocket gateway for real-time updates
@@ -180,24 +184,24 @@ yarn g:lib --name=trading-logic \
 
 ### Options
 
-| Option | Type | Description | Default |
-|--------|------|-------------|---------|
-| `name` | string | Library name (kebab-case) | Required |
-| `scope` | enum | Library scope (see below) | Required |
-| `directory` | string | Subdirectory within scope | Optional |
-| `buildable` | boolean | Can be built independently | true |
-| `publishable` | boolean | Can be published to npm | false |
-| `strict` | boolean | Enable TypeScript strict mode | true |
-| `tags` | string | Additional Nx tags | Auto-generated |
+| Option        | Type    | Description                   | Default        |
+| ------------- | ------- | ----------------------------- | -------------- |
+| `name`        | string  | Library name (kebab-case)     | Required       |
+| `scope`       | enum    | Library scope (see below)     | Required       |
+| `directory`   | string  | Subdirectory within scope     | Optional       |
+| `buildable`   | boolean | Can be built independently    | true           |
+| `publishable` | boolean | Can be published to npm       | false          |
+| `strict`      | boolean | Enable TypeScript strict mode | true           |
+| `tags`        | string  | Additional Nx tags            | Auto-generated |
 
 ### Scopes
 
-| Scope | Purpose | Import Path | Example |
-|-------|---------|-------------|---------|
-| `shared` | Cross-cutting utilities and types | `@jts/shared/{name}` | `@jts/shared/common-types` |
-| `domain` | Business logic and domain models | `@jts/domain/{name}` | `@jts/domain/trading-logic` |
-| `infrastructure` | External service interfaces | `@jts/infrastructure/{name}` | `@jts/infrastructure/database` |
-| `brokers` | Broker-specific implementations | `@jts/brokers/{name}` | `@jts/brokers/creon` |
+| Scope            | Purpose                           | Import Path                  | Example                        |
+| ---------------- | --------------------------------- | ---------------------------- | ------------------------------ |
+| `shared`         | Cross-cutting utilities and types | `@jts/shared/{name}`         | `@jts/shared/common-types`     |
+| `domain`         | Business logic and domain models  | `@jts/domain/{name}`         | `@jts/domain/trading-logic`    |
+| `infrastructure` | External service interfaces       | `@jts/infrastructure/{name}` | `@jts/infrastructure/database` |
+| `brokers`        | Broker-specific implementations   | `@jts/brokers/{name}`        | `@jts/brokers/creon`           |
 
 ### Generated Structure by Scope
 
@@ -264,6 +268,7 @@ yarn g:lib --name=common-types --scope=shared
 ```
 
 Creates `libs/shared/common-types/` with:
+
 - Import path: `@jts/shared/common-types`
 - Structure for types, constants, and utilities
 - Buildable configuration
@@ -275,6 +280,7 @@ yarn g:lib --name=trading-logic --scope=domain
 ```
 
 Creates `libs/domain/trading-logic/` with:
+
 - Import path: `@jts/domain/trading-logic`
 - DDD structure (entities, services, events)
 - Repository interfaces
@@ -286,6 +292,7 @@ yarn g:lib --name=creon --scope=brokers
 ```
 
 Creates `libs/brokers/creon/` with:
+
 - Import path: `@jts/brokers/creon`
 - Broker adapter template
 - Platform-specific implementation structure
@@ -304,6 +311,7 @@ Creates `libs/brokers/creon/` with:
 #### 1. **Domain-Driven Design**
 
 All services follow DDD principles with clear separation:
+
 - **Domain Layer**: Pure business logic, no framework dependencies
 - **Infrastructure Layer**: External service implementations
 - **Application Layer**: Controllers and orchestration
@@ -312,6 +320,7 @@ All services follow DDD principles with clear separation:
 #### 2. **Ports and Adapters**
 
 Infrastructure implements domain interfaces:
+
 ```typescript
 // Domain defines the port (interface)
 export interface OrderRepository {
@@ -329,12 +338,13 @@ export class PostgresOrderRepository implements OrderRepository {
 #### 3. **Dependency Injection**
 
 All dependencies are injected, making testing and swapping implementations easy:
+
 ```typescript
 @Injectable()
 export class TradingService {
   constructor(
     private readonly orderRepo: OrderRepository,
-    private readonly marketData: MarketDataService
+    private readonly marketData: MarketDataService,
   ) {}
 }
 ```
@@ -350,6 +360,7 @@ export class TradingService {
 ### Import Path Strategy
 
 All libraries use the `@jts` namespace:
+
 ```typescript
 // Good - uses namespace
 import { OrderDTO } from '@jts/shared/common-types';
@@ -370,6 +381,7 @@ Error: Cannot find generator @tools/generators/nestjs-service
 ```
 
 **Solution**: Ensure you're in the repository root and generators are properly installed:
+
 ```bash
 cd /path/to/jts
 yarn install
@@ -382,6 +394,7 @@ Error: No available ports in range 3000-3999
 ```
 
 **Solution**: Either:
+
 - Manually specify a port: `--port=4000`
 - Clean up unused services
 - Extend the port range in the generator
@@ -401,6 +414,7 @@ Cannot find module '@jts/shared/my-lib'
 ```
 
 **Solution**: Ensure `tsconfig.base.json` has the correct path mapping:
+
 ```json
 {
   "compilerOptions": {
@@ -416,21 +430,25 @@ Cannot find module '@jts/shared/my-lib'
 Before using generated code:
 
 1. **Build the project**:
+
 ```bash
 nx build {project-name}
 ```
 
 2. **Run tests**:
+
 ```bash
 nx test {project-name}
 ```
 
 3. **Check dependencies**:
+
 ```bash
 nx graph
 ```
 
 4. **Validate imports**:
+
 ```bash
 nx lint {project-name}
 ```
@@ -440,11 +458,13 @@ nx lint {project-name}
 ### Adding a New Generator
 
 1. **Create generator directory**:
+
 ```bash
 mkdir -p tools/generators/my-generator
 ```
 
 2. **Create generator files**:
+
 ```
 tools/generators/my-generator/
 ├── index.ts        # Generator logic
@@ -453,6 +473,7 @@ tools/generators/my-generator/
 ```
 
 3. **Implement generator**:
+
 ```typescript
 import { Tree, formatFiles, generateFiles } from '@nx/devkit';
 
@@ -463,6 +484,7 @@ export default async function myGenerator(tree: Tree, options: any) {
 ```
 
 4. **Add npm script**:
+
 ```json
 {
   "scripts": {
@@ -482,15 +504,15 @@ export default async function myGenerator(tree: Tree, options: any) {
 
 Templates use EJS syntax with these available variables:
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `<%= name %>` | Raw name | `trading-service` |
-| `<%= className %>` | PascalCase name | `TradingService` |
-| `<%= fileName %>` | File-safe name | `trading-service` |
-| `<%= constantName %>` | CONSTANT_CASE | `TRADING_SERVICE` |
-| `<%= propertyName %>` | camelCase | `tradingService` |
-| `<%= projectRoot %>` | Project path | `apps/trading-service` |
-| `<%= offsetFromRoot %>` | Relative path to root | `../../` |
+| Variable                | Description           | Example                |
+| ----------------------- | --------------------- | ---------------------- |
+| `<%= name %>`           | Raw name              | `trading-service`      |
+| `<%= className %>`      | PascalCase name       | `TradingService`       |
+| `<%= fileName %>`       | File-safe name        | `trading-service`      |
+| `<%= constantName %>`   | CONSTANT_CASE         | `TRADING_SERVICE`      |
+| `<%= propertyName %>`   | camelCase             | `tradingService`       |
+| `<%= projectRoot %>`    | Project path          | `apps/trading-service` |
+| `<%= offsetFromRoot %>` | Relative path to root | `../../`               |
 
 ### Best Practices for Custom Generators
 

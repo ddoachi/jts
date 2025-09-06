@@ -56,7 +56,7 @@ jobs:
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Status Determination
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 🎨 Determine Status Color and Emoji
         id: status-format
         run: |
@@ -83,45 +83,45 @@ jobs:
               echo "text=completed with unknown status" >> $GITHUB_OUTPUT
               ;;
           esac
-          
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Message Construction
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 📝 Build Notification Message
         id: message
         run: |
           # Construct a comprehensive notification message
           TITLE="${{ steps.status-format.outputs.emoji }} ${{ inputs.workflow-name }} ${{ steps.status-format.outputs.text }}"
-          
+
           # Build the base message
           MESSAGE="*Repository:* ${{ github.repository }}\n"
           MESSAGE="${MESSAGE}*Branch:* ${{ github.ref_name }}\n"
           MESSAGE="${MESSAGE}*Commit:* \`${{ github.sha }}\`\n"
           MESSAGE="${MESSAGE}*Author:* ${{ github.actor }}\n"
           MESSAGE="${MESSAGE}*Run:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Details>\n"
-          
+
           # Add custom message if provided
           if [ -n "${{ inputs.custom-message }}" ]; then
             MESSAGE="${MESSAGE}\n${{ inputs.custom-message }}"
           fi
-          
+
           # Add commit message
           MESSAGE="${MESSAGE}\n*Commit Message:* ${{ github.event.head_commit.message }}"
-          
+
           # Export for use in notification steps
           echo "title=$TITLE" >> $GITHUB_OUTPUT
           echo "body<<EOF" >> $GITHUB_OUTPUT
           echo "$MESSAGE" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Slack Notification
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 💬 Send Slack Notification
         if: inputs.notify-slack
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@v2.1.1
         with:
           payload: |
             {
@@ -136,11 +136,11 @@ jobs:
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Discord Notification
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 🎮 Send Discord Notification
         if: inputs.notify-discord
         run: |
@@ -160,11 +160,11 @@ jobs:
                  }]
                }" \
                "${{ secrets.DISCORD_WEBHOOK_URL }}"
-               
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Summary Generation
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 📋 Generate Job Summary
         run: |
           # Create a summary that appears in the GitHub Actions UI
@@ -179,7 +179,7 @@ jobs:
           echo "| Commit | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Author | @${{ github.actor }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Run | [View Details](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) |" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ -n "${{ inputs.custom-message }}" ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### Custom Message" >> $GITHUB_STEP_SUMMARY

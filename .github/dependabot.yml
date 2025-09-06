@@ -3,7 +3,7 @@
 # ============================================================================
 # Generated from spec: [[E01-F04-T01] GitHub Actions Workflow Structure Setup](../../specs/E01/F04/T01/E01-F04-T01.spec.md)
 #
-# PURPOSE: 
+# PURPOSE:
 # Automated dependency updates for security patches and version maintenance
 # across NPM packages, GitHub Actions, and Docker base images.
 #
@@ -36,7 +36,7 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
-      
+
       # NestJS framework
       nestjs:
         patterns:
@@ -44,7 +44,7 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
-      
+
       # Testing tools
       testing:
         patterns:
@@ -55,7 +55,7 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
-      
+
       # Linting and formatting
       linting:
         patterns:
@@ -65,7 +65,7 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
-      
+
       # TypeScript and types
       typescript:
         patterns:
@@ -74,7 +74,7 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
-      
+
       # Database drivers
       database:
         patterns:
@@ -87,7 +87,7 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
-      
+
       # Monitoring and observability
       observability:
         patterns:
@@ -97,18 +97,18 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
-    
+
     # Commit message configuration
     commit-message:
       prefix: 'chore'
       prefix-development: 'chore'
       include: 'scope'
-    
+
     # Labels for PRs
     labels:
       - 'dependencies'
       - 'javascript'
-    
+
     # Ignore certain updates
     ignore:
       # Major version updates should be done manually

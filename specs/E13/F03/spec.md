@@ -1,6 +1,7 @@
 # E13-F03: Real-time Updates Engine
 
 ## Spec Information
+
 - **Spec ID**: E13-F03
 - **Title**: Real-time Updates Engine
 - **Parent**: E13
@@ -22,6 +23,7 @@ The real-time updates engine provides push notifications when spec files change,
 ## Scope
 
 ### In Scope
+
 - WebSocket server implementation with Socket.IO
 - Server-Sent Events as fallback option
 - File change event broadcasting
@@ -32,6 +34,7 @@ The real-time updates engine provides push notifications when spec files change,
 - Event filtering and throttling
 
 ### Out of Scope
+
 - Collaborative editing (read-only updates)
 - Conflict resolution (no concurrent writes)
 - Message persistence/history
@@ -52,12 +55,14 @@ The real-time updates engine provides push notifications when spec files change,
 ## Tasks
 
 ### T01: WebSocket Server Setup
+
 **Status**: Draft
 **Priority**: Critical
 
 Configure Socket.IO server with NestJS integration and proper namespace structure.
 
 **Deliverables**:
+
 - Socket.IO adapter configuration
 - WebSocket gateway with @WebSocketGateway
 - Namespace structure (/specs)
@@ -67,12 +72,14 @@ Configure Socket.IO server with NestJS integration and proper namespace structur
 ---
 
 ### T02: Event Broadcasting System
+
 **Status**: Draft
 **Priority**: Critical
 
 Implement event emission from file watcher to WebSocket clients with proper typing.
 
 **Deliverables**:
+
 - Event types (spec.created, spec.updated, spec.deleted)
 - Event payload DTOs with validation
 - Broadcasting to all connected clients
@@ -82,27 +89,31 @@ Implement event emission from file watcher to WebSocket clients with proper typi
 ---
 
 ### T03: Subscription Management
+
 **Status**: Draft
 **Priority**: High
 
 Enable clients to subscribe to specific specs or spec trees for targeted updates.
 
 **Deliverables**:
+
 - Room-based subscriptions (room per spec)
 - Subscribe/unsubscribe endpoints
-- Wildcard subscriptions (e.g., E13-*)
+- Wildcard subscriptions (e.g., E13-\*)
 - Subscription state management
 - Room cleanup on empty
 
 ---
 
 ### T04: SSE Fallback Implementation
+
 **Status**: Draft
 **Priority**: Medium
 
 Provide Server-Sent Events as fallback for environments where WebSockets are blocked.
 
 **Deliverables**:
+
 - SSE controller endpoint (/api/events)
 - Event stream formatting
 - Connection management for SSE
@@ -112,12 +123,14 @@ Provide Server-Sent Events as fallback for environments where WebSockets are blo
 ---
 
 ### T05: Connection Health Monitoring
+
 **Status**: Draft
 **Priority**: Medium
 
 Implement heartbeat mechanism to detect and clean up stale connections.
 
 **Deliverables**:
+
 - Ping-pong interval configuration
 - Connection timeout detection
 - Automatic cleanup of dead connections
@@ -127,12 +140,14 @@ Implement heartbeat mechanism to detect and clean up stale connections.
 ---
 
 ### T06: Event Throttling & Filtering
+
 **Status**: Draft
 **Priority**: Low
 
 Optimize event delivery with intelligent throttling and client-side filtering options.
 
 **Deliverables**:
+
 - Debounce rapid file changes
 - Batch multiple changes
 - Client-configurable filters
@@ -142,6 +157,7 @@ Optimize event delivery with intelligent throttling and client-side filtering op
 ## Technical Architecture
 
 ### Module Structure
+
 ```
 apps/spec-api/src/modules/realtime/
 ├── gateways/
@@ -162,6 +178,7 @@ apps/spec-api/src/modules/realtime/
 ### WebSocket Events
 
 #### Client → Server
+
 ```typescript
 // Subscribe to spec updates
 {
@@ -188,6 +205,7 @@ apps/spec-api/src/modules/realtime/
 ```
 
 #### Server → Client
+
 ```typescript
 // Spec created
 {
@@ -230,78 +248,80 @@ apps/spec-api/src/modules/realtime/
 ```
 
 ### Gateway Implementation
+
 ```typescript
 @WebSocketGateway({
   namespace: '/specs',
   cors: {
     origin: process.env.DASHBOARD_URL,
-    credentials: true
-  }
+    credentials: true,
+  },
 })
 export class SpecGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
-  server: Server
+  server: Server;
 
   @SubscribeMessage('subscribe')
   async handleSubscribe(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: SubscribeDto
+    @MessageBody() data: SubscribeDto,
   ): Promise<void> {
     // Join rooms for requested specs
     for (const specId of data.specIds) {
-      await client.join(`spec:${specId}`)
+      await client.join(`spec:${specId}`);
     }
   }
 
   async broadcastSpecUpdate(specId: string, event: SpecChangeEvent): Promise<void> {
-    this.server
-      .to(`spec:${specId}`)
-      .emit('spec.updated', event)
+    this.server.to(`spec:${specId}`).emit('spec.updated', event);
   }
 }
 ```
 
 ### SSE Implementation
+
 ```typescript
 @Controller('api/events')
 export class SseController {
   @Sse('specs')
   specEvents(): Observable<MessageEvent> {
     return this.broadcastService.getEventStream().pipe(
-      map(event => ({
+      map((event) => ({
         data: event,
         type: event.type,
-        id: event.timestamp
-      }))
-    )
+        id: event.timestamp,
+      })),
+    );
   }
 }
 ```
 
 ### Connection Management
+
 ```typescript
 interface ConnectionState {
-  clientId: string
-  connectedAt: Date
-  lastPing: Date
-  subscriptions: Set<string>
+  clientId: string;
+  connectedAt: Date;
+  lastPing: Date;
+  subscriptions: Set<string>;
   metadata: {
-    userAgent: string
-    ip: string
-  }
+    userAgent: string;
+    ip: string;
+  };
 }
 
 class ConnectionService {
-  private connections = new Map<string, ConnectionState>()
-  
-  register(client: Socket): void
-  unregister(clientId: string): void
-  getActiveConnections(): number
-  pruneStale(timeout: number): void
+  private connections = new Map<string, ConnectionState>();
+
+  register(client: Socket): void;
+  unregister(clientId: string): void;
+  getActiveConnections(): number;
+  pruneStale(timeout: number): void;
 }
 ```
 
 ### Dependencies
+
 - **socket.io**: ^4.6.0 - WebSocket server
 - **@nestjs/websockets**: ^10.3.0 - NestJS WebSocket support
 - **@nestjs/platform-socket.io**: ^10.3.0 - Socket.IO adapter
@@ -309,12 +329,12 @@ class ConnectionService {
 
 ## Risk Analysis
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Memory leaks from connections | High | Proper cleanup, connection limits |
-| Event flooding | Medium | Throttling, batching, rate limits |
-| WebSocket proxy issues | Medium | SSE fallback, documentation |
-| Stale connections | Low | Heartbeat monitoring, timeouts |
+| Risk                          | Impact | Mitigation                        |
+| ----------------------------- | ------ | --------------------------------- |
+| Memory leaks from connections | High   | Proper cleanup, connection limits |
+| Event flooding                | Medium | Throttling, batching, rate limits |
+| WebSocket proxy issues        | Medium | SSE fallback, documentation       |
+| Stale connections             | Low    | Heartbeat monitoring, timeouts    |
 
 ## Success Metrics
 

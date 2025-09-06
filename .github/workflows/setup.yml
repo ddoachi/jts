@@ -42,48 +42,47 @@ jobs:
     outputs:
       cache-key: ${{ steps.cache-key.outputs.key }}
       nx-head: ${{ steps.nx-head.outputs.sha }}
-    
+
     steps:
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Repository Checkout
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: ${{ inputs.checkout-depth }}
           # GOTCHA: fetch-depth of 0 fetches all history for Nx affected commands
-          
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Node.js Environment Setup
       # ═══════════════════════════════════════════════════════════════
-      
       - name: 🔧 Enable Corepack
         run: corepack enable
         # IMPORTANT: Must enable Corepack before setup-node to prevent yarn version conflicts
-        
+
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v5
         with:
           node-version: ${{ inputs.node-version }}
           # Note: We don't use cache: 'yarn' here because it runs before
           # Corepack is enabled and would use the wrong Yarn version
-          
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Cache Key Generation
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 🔑 Generate Cache Key
         id: cache-key
         run: |
           # Generate a deterministic cache key based on OS and lockfile
           # This ensures cache invalidation when dependencies change
           echo "key=node-modules-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}" >> $GITHUB_OUTPUT
-          
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Dependency Caching
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 💾 Cache Node Modules
         uses: actions/cache@v4
         id: cache
@@ -96,7 +95,7 @@ jobs:
           restore-keys: |
             node-modules-${{ runner.os }}-
             # Fallback to OS-specific cache if exact match not found
-            
+
       - name: 🗄️ Cache Nx
         uses: actions/cache@v4
         with:
@@ -105,30 +104,30 @@ jobs:
           restore-keys: |
             nx-${{ runner.os }}-
             # Nx cache helps with incremental builds
-            
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Dependency Installation
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: 📦 Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           # Prepare Yarn 4.x (Corepack already enabled earlier)
           corepack prepare yarn@4.9.4 --activate
-          
+
           # Use yarn for faster, reproducible installs
           yarn install --immutable
-          
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Nx Configuration
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: ⚙️ Configure Nx
         if: inputs.enable-nx-cloud
         run: |
           # Set up Nx Cloud for distributed task execution
           yarn nx reset
-          
+
       - name: 🎯 Determine Nx Head
         id: nx-head
         run: |
@@ -139,11 +138,11 @@ jobs:
             echo "sha=${{ github.event.before || 'HEAD~1' }}" >> $GITHUB_OUTPUT
           fi
           # This helps Nx determine which projects are affected by changes
-          
+
       # ═══════════════════════════════════════════════════════════════
       # SECTION: Environment Validation
       # ═══════════════════════════════════════════════════════════════
-      
+
       - name: ✅ Validate Environment
         run: |
           echo "Node version: $(node --version)"
