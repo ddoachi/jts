@@ -9,3 +9,7 @@ tmp/
 *.min.js
 specs_backup/
 .obsidian/
+
+# Complex GitHub Actions workflows with embedded shell scripts
+.github/workflows/deploy-production.yml
+.github/workflows/deploy-staging.yml

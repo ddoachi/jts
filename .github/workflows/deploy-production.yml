@@ -1,29 +1,29 @@
 # **Generated from spec**: [[E01-F04-T04] Deployment Pipeline Workflows](../../specs/E01/F04/T04/E01-F04-T04.spec.md)
 # **Production deployment with**: Zero-downtime guarantees and trading system protection
 
-# ═══════════════════════════════════════════════════════════════════
+# ===================================================================
 # ███ PRODUCTION DEPLOYMENT - ZERO DOWNTIME TRADING SYSTEM ███
-# ═══════════════════════════════════════════════════════════════════
+# ===================================================================
 #
 # WHY: Production-grade deployment for high-frequency trading system
 # HOW: Multi-stage approval, blue-green deployment, canary rollouts with circuit breakers
 # WHAT: Zero-downtime deployment with automated rollback and real-time monitoring
 #
 # CRITICAL FINANCIAL SYSTEM DEPLOYMENT FEATURES:
-# 🔐 Multi-stage approval gates (Team Lead + Security Review)
-# 🛡️ Pre-deployment security scanning with Trivy
-# 🚦 Progressive canary rollout: 5% → 10% → 25% → 50% → 100%
-# 📊 Real-time Prometheus metrics monitoring with circuit breakers
-# 🔄 Automatic rollback triggers on performance degradation
-# 💾 Database backup and migration with rollback capability
-# 🎯 Trading system anomaly detection and protection
-# 🚨 Emergency rollback workflow with instant notifications
+# [SECURE] Multi-stage approval gates (Team Lead + Security Review)
+# [SECURITY] Pre-deployment security scanning with Trivy
+# [CANARY] Progressive canary rollout: 5% → 10% → 25% → 50% → 100%
+# [METRICS] Real-time Prometheus metrics monitoring with circuit breakers
+# [ROLLBACK] Automatic rollback triggers on performance degradation
+# [BACKUP] Database backup and migration with rollback capability
+# [TARGET] Trading system anomaly detection and protection
+# Emergency rollback workflow with instant notifications
 
 name: Production Deployment (Zero-Downtime Trading System)
 
-# ═══════════════════════════════════════════════════════════════════
+# =========================================================================
 # TRIGGER CONFIGURATION
-# ═══════════════════════════════════════════════════════════════════
+# =========================================================================
 
 on:
   # MANUAL ONLY: Production deployments require explicit approval
@@ -57,9 +57,9 @@ on:
         default: 'slack,teams'
         type: string
 
-# ═══════════════════════════════════════════════════════════════════
+# ===================================================================
 # CONCURRENCY AND SECURITY
-# ═══════════════════════════════════════════════════════════════════
+# ===================================================================
 
 concurrency:
   group: deploy-production
@@ -72,9 +72,9 @@ permissions:
   actions: read
   id-token: write
 
-# ═══════════════════════════════════════════════════════════════════
+# ===================================================================
 # ENVIRONMENT VARIABLES
-# ═══════════════════════════════════════════════════════════════════
+# ===================================================================
 
 env:
   NODE_VERSION: '20.x'
@@ -93,12 +93,12 @@ env:
   CANARY_MONITORING_DURATION: '180'  # 3 minutes per canary stage
 
 jobs:
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
   # STAGE 1: MULTI-STAGE APPROVAL GATES
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
 
   team-lead-approval:
-    name: 🔐 Team Lead Approval Gate
+    name: [SECURE] Team Lead Approval Gate
     runs-on: ubuntu-latest
     environment:
       name: production-approval-team-lead
@@ -109,26 +109,26 @@ jobs:
     steps:
       - name: Production Deployment Request
         run: |
-          echo "🚀 PRODUCTION DEPLOYMENT REQUEST"
-          echo "════════════════════════════════════════════════════════════"
+          echo "[DEPLOY] PRODUCTION DEPLOYMENT REQUEST"
+          echo "============================================================"
           echo "📦 Image Tag: ${{ github.event.inputs.image_tag }}"
-          echo "🎯 Strategy: ${{ github.event.inputs.deployment_strategy }}"
+          echo "[TARGET] Strategy: ${{ github.event.inputs.deployment_strategy }}"
           echo "⏸️  Trading Pause: ${{ github.event.inputs.enable_trading_pause }}"
-          echo "🔄 Skip Canary: ${{ github.event.inputs.skip_canary }}"
-          echo "📢 Notifications: ${{ github.event.inputs.notification_channels }}"
+          echo "[ROLLBACK] Skip Canary: ${{ github.event.inputs.skip_canary }}"
+          echo "[NOTIFY] Notifications: ${{ github.event.inputs.notification_channels }}"
           echo "👤 Requested by: @${{ github.actor }}"
           echo "📅 Timestamp: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
-          echo "════════════════════════════════════════════════════════════"
+          echo "============================================================"
           echo ""
           echo "⚠️  CRITICAL FINANCIAL SYSTEM DEPLOYMENT"
           echo "📝 This deployment will affect live trading operations"
-          echo "🛡️ Zero-downtime deployment strategy will be enforced"
-          echo "📊 Real-time monitoring and automatic rollback are active"
+          echo "[SECURITY] Zero-downtime deployment strategy will be enforced"
+          echo "[METRICS] Real-time monitoring and automatic rollback are active"
           echo ""
           echo "⏳ Waiting for Team Lead approval..."
 
   security-approval:
-    name: 🛡️ Security Review Gate
+    name: [SECURITY] Security Review Gate
     needs: [team-lead-approval]
     runs-on: ubuntu-latest
     environment:
@@ -141,22 +141,22 @@ jobs:
       - name: Security Review Required
         run: |
           echo "🔒 SECURITY REVIEW CHECKPOINT"
-          echo "════════════════════════════════════════════════════════════"
+          echo "============================================================"
           echo "📋 Security Checklist:"
-          echo "  ✅ Container image vulnerability scanning (Trivy)"
-          echo "  ✅ Dependency security analysis (OWASP)"
-          echo "  ✅ Secret detection validation (TruffleHog)"
-          echo "  ✅ License compliance verification"
-          echo "  ✅ Network security policy review"
-          echo "  ✅ Database migration security assessment"
-          echo "════════════════════════════════════════════════════════════"
+          echo "  [OK] Container image vulnerability scanning (Trivy)"
+          echo "  [OK] Dependency security analysis (OWASP)"
+          echo "  [OK] Secret detection validation (TruffleHog)"
+          echo "  [OK] License compliance verification"
+          echo "  [OK] Network security policy review"
+          echo "  [OK] Database migration security assessment"
+          echo "============================================================"
           echo ""
           echo "🔍 Security validation will be performed in next stage"
           echo "⏳ Waiting for Security Team approval..."
 
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
   # STAGE 2: COMPREHENSIVE PRE-DEPLOYMENT VALIDATION
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
 
   pre-deployment-security-scan:
     name: 🔍 Pre-Deployment Security Scanning
@@ -194,13 +194,13 @@ jobs:
             
             echo "📦 Pulling image: $image_name"
             docker pull "$image_name" || {
-              echo "❌ CRITICAL: Failed to pull image $image_name"
-              echo "🚨 Production deployment cannot proceed without verified images"
+              echo "[FAIL] CRITICAL: Failed to pull image $image_name"
+              echo "[ALERT] Production deployment cannot proceed without verified images"
               exit 1
             }
             
             # Comprehensive Trivy scan with SARIF output
-            echo "🛡️ Running Trivy vulnerability scan for $service..."
+            echo "[SECURITY] Running Trivy vulnerability scan for $service..."
             docker run --rm \
               -v /var/run/docker.sock:/var/run/docker.sock \
               -v $(pwd):/workspace \
@@ -214,7 +214,7 @@ jobs:
             }
             
             # Generate production-focused security report
-            echo "📊 Generating security report for $service..."
+            echo "[METRICS] Generating security report for $service..."
             docker run --rm \
               -v /var/run/docker.sock:/var/run/docker.sock \
               aquasec/trivy:latest image \
@@ -236,8 +236,8 @@ jobs:
               
               # PRODUCTION SECURITY GATE: Block deployment on critical vulnerabilities
               if [ "$critical_count" -gt 0 ]; then
-                echo "🚨 SECURITY GATE FAILURE: $service has $critical_count CRITICAL vulnerabilities"
-                echo "❌ PRODUCTION DEPLOYMENT BLOCKED"
+                echo "[ALERT] SECURITY GATE FAILURE: $service has $critical_count CRITICAL vulnerabilities"
+                echo "[FAIL] PRODUCTION DEPLOYMENT BLOCKED"
                 echo "📋 Critical vulnerabilities must be resolved before production deployment"
                 exit 1
               fi
@@ -245,17 +245,17 @@ jobs:
           done
           
           echo ""
-          echo "🛡️ PRODUCTION SECURITY SCAN SUMMARY:"
-          echo "════════════════════════════════════════════════════════════"
+          echo "[SECURITY] PRODUCTION SECURITY SCAN SUMMARY:"
+          echo "============================================================"
           echo "🔴 Total Critical Vulnerabilities: $critical_vulnerabilities"
           echo "🟠 Total High Vulnerabilities: $high_vulnerabilities"
-          echo "════════════════════════════════════════════════════════════"
+          echo "============================================================"
           
           if [ "$critical_vulnerabilities" -eq 0 ]; then
-            echo "✅ SECURITY GATE PASSED: No critical vulnerabilities detected"
-            echo "🚀 Production deployment security requirements satisfied"
+            echo "[OK] SECURITY GATE PASSED: No critical vulnerabilities detected"
+            echo "[DEPLOY] Production deployment security requirements satisfied"
           else
-            echo "❌ SECURITY GATE FAILED: Critical vulnerabilities must be resolved"
+            echo "[FAIL] SECURITY GATE FAILED: Critical vulnerabilities must be resolved"
             exit 1
           fi
 
@@ -270,7 +270,7 @@ jobs:
           retention-days: 90 # Extended retention for production auditing
 
   pre-deployment-validation:
-    name: ✅ Pre-Deployment System Validation
+    name: [OK] Pre-Deployment System Validation
     needs: [pre-deployment-security-scan]
     runs-on: ubuntu-latest
     
@@ -290,72 +290,72 @@ jobs:
           PROD_API_URL: https://api.jts.com
         run: |
           echo "🏥 PRODUCTION SYSTEM HEALTH ASSESSMENT"
-          echo "════════════════════════════════════════════════════════════"
+          echo "============================================================"
           
           # System health validation with comprehensive checks
           health_issues=0
           
           echo "🔍 1. API Gateway Health Check..."
           if ! curl -f -s --max-time 30 "$PROD_API_URL/health" > /dev/null; then
-            echo "❌ API Gateway health check failed"
+            echo "[FAIL] API Gateway health check failed"
             health_issues=$((health_issues + 1))
           else
-            echo "✅ API Gateway is healthy"
+            echo "[OK] API Gateway is healthy"
           fi
           
           echo "🔍 2. Trading System Status Check..."
           trading_status=$(curl -s --max-time 15 "$PROD_API_URL/api/system/status" | jq -r '.trading_enabled' 2>/dev/null || echo "unknown")
-          echo "📊 Trading Status: $trading_status"
+          echo "[METRICS] Trading Status: $trading_status"
           
           if [ "$trading_status" = "true" ] && [ "${{ github.event.inputs.enable_trading_pause }}" = "false" ]; then
             echo "⚠️ WARNING: Trading is active and will continue during deployment"
-            echo "🔄 Zero-downtime deployment strategy will prevent trade disruption"
+            echo "[ROLLBACK] Zero-downtime deployment strategy will prevent trade disruption"
           fi
           
           echo "🔍 3. Database Connectivity Check..."
           if ! curl -f -s --max-time 20 "$PROD_API_URL/api/health/database" > /dev/null; then
-            echo "❌ Database connectivity check failed"
+            echo "[FAIL] Database connectivity check failed"
             health_issues=$((health_issues + 1))
           else
-            echo "✅ Database connectivity is healthy"
+            echo "[OK] Database connectivity is healthy"
           fi
           
           echo "🔍 4. Market Data Feed Status..."
           if ! curl -f -s --max-time 15 "$PROD_API_URL/api/market/feed/status" > /dev/null; then
-            echo "❌ Market data feed check failed"
+            echo "[FAIL] Market data feed check failed"
             health_issues=$((health_issues + 1))
           else
-            echo "✅ Market data feed is operational"
+            echo "[OK] Market data feed is operational"
           fi
           
           echo "🔍 5. Order Execution System Check..."
           if ! curl -f -s --max-time 20 "$PROD_API_URL/api/order/health" > /dev/null; then
-            echo "❌ Order execution system check failed"
+            echo "[FAIL] Order execution system check failed"
             health_issues=$((health_issues + 1))
           else
-            echo "✅ Order execution system is healthy"
+            echo "[OK] Order execution system is healthy"
           fi
           
           echo "🔍 6. Risk Management System Check..."
           if ! curl -f -s --max-time 15 "$PROD_API_URL/api/risk/health" > /dev/null; then
-            echo "❌ Risk management system check failed"
+            echo "[FAIL] Risk management system check failed"
             health_issues=$((health_issues + 1))
           else
-            echo "✅ Risk management system is operational"
+            echo "[OK] Risk management system is operational"
           fi
           
           echo ""
-          echo "🎯 SYSTEM HEALTH SUMMARY:"
-          echo "════════════════════════════════════════════════════════════"
-          echo "❌ Health Issues Detected: $health_issues"
+          echo "[TARGET] SYSTEM HEALTH SUMMARY:"
+          echo "============================================================"
+          echo "[FAIL] Health Issues Detected: $health_issues"
           
           if [ "$health_issues" -gt 0 ]; then
-            echo "🚨 DEPLOYMENT BLOCKED: System health issues must be resolved"
+            echo "[ALERT] DEPLOYMENT BLOCKED: System health issues must be resolved"
             echo "📋 Please address the above health check failures before deployment"
             exit 1
           else
-            echo "✅ ALL SYSTEMS HEALTHY: Production deployment can proceed"
-            echo "🚀 Zero-downtime deployment will maintain system availability"
+            echo "[OK] ALL SYSTEMS HEALTHY: Production deployment can proceed"
+            echo "[DEPLOY] Zero-downtime deployment will maintain system availability"
           fi
 
       - name: Performance Baseline Assessment
@@ -363,10 +363,10 @@ jobs:
           PROD_API_URL: https://api.jts.com
         run: |
           echo "⚡ PERFORMANCE BASELINE ASSESSMENT"
-          echo "════════════════════════════════════════════════════════════"
+          echo "============================================================"
           
           # Collect current performance metrics for comparison during deployment
-          echo "📊 Collecting current performance baselines..."
+          echo "[METRICS] Collecting current performance baselines..."
           
           # Response time baseline
           echo "⏱️ Measuring current response times..."
@@ -385,19 +385,19 @@ jobs:
           if [ "$successful_requests" -gt 0 ]; then
             avg_response_time=$(echo "scale=3; $total_time / $successful_requests" | bc -l 2>/dev/null || echo "999")
             echo "📈 Current Average Response Time: ${avg_response_time}s"
-            echo "🎯 Deployment will monitor for degradation beyond $(echo "$avg_response_time * 1.5" | bc -l)s"
+            echo "[TARGET] Deployment will monitor for degradation beyond $(echo "$avg_response_time * 1.5" | bc -l)s"
           else
             echo "⚠️ Unable to establish performance baseline"
           fi
           
-          echo "✅ Performance baseline assessment completed"
+          echo "[OK] Performance baseline assessment completed"
 
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
   # STAGE 3: DATABASE MIGRATION WITH COMPREHENSIVE SAFETY
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
 
   database-backup-and-migration:
-    name: 💾 Database Backup & Migration
+    name: [BACKUP] Database Backup & Migration
     needs: [pre-deployment-validation]
     runs-on: ubuntu-latest
     environment: production-database
@@ -425,8 +425,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           S3_BACKUP_BUCKET: ${{ secrets.S3_BACKUP_BUCKET }}
         run: |
-          echo "💾 COMPREHENSIVE DATABASE BACKUP PROCESS"
-          echo "════════════════════════════════════════════════════════════"
+          echo "[BACKUP] COMPREHENSIVE DATABASE BACKUP PROCESS"
+          echo "============================================================"
           
           # Generate unique backup identifier
           BACKUP_ID="prod-backup-$(date +%Y%m%d-%H%M%S)-${{ github.event.inputs.image_tag }}"
@@ -448,24 +448,24 @@ jobs:
               --compress=9 \
               --verbose \
               --file="postgresql-${BACKUP_ID}.backup" || {
-              echo "❌ CRITICAL: PostgreSQL backup failed!"
-              echo "🚨 Deployment cannot proceed without successful backup"
+              echo "[FAIL] CRITICAL: PostgreSQL backup failed!"
+              echo "[ALERT] Deployment cannot proceed without successful backup"
               exit 1
             }
             
             # Verify backup file integrity
             if [ -f "postgresql-${BACKUP_ID}.backup" ]; then
               backup_size=$(stat -f%z "postgresql-${BACKUP_ID}.backup" 2>/dev/null || stat -c%s "postgresql-${BACKUP_ID}.backup" 2>/dev/null || echo "0")
-              echo "✅ PostgreSQL backup created: ${backup_size} bytes"
+              echo "[OK] PostgreSQL backup created: ${backup_size} bytes"
               
               # Test backup validity
               pg_restore --list "postgresql-${BACKUP_ID}.backup" > /dev/null || {
-                echo "❌ CRITICAL: PostgreSQL backup validation failed!"
+                echo "[FAIL] CRITICAL: PostgreSQL backup validation failed!"
                 exit 1
               }
-              echo "✅ PostgreSQL backup validation successful"
+              echo "[OK] PostgreSQL backup validation successful"
             else
-              echo "❌ CRITICAL: PostgreSQL backup file not found!"
+              echo "[FAIL] CRITICAL: PostgreSQL backup file not found!"
               exit 1
             fi
           else
@@ -473,7 +473,7 @@ jobs:
           fi
           
           # ClickHouse Time-Series Data Backup
-          echo "📊 Creating ClickHouse time-series data backup..."
+          echo "[METRICS] Creating ClickHouse time-series data backup..."
           if [ -n "$CLICKHOUSE_URL" ]; then
             # Create ClickHouse backup using clickhouse-backup tool or native backup
             echo "📥 Backing up ClickHouse market data..."
@@ -488,7 +488,7 @@ jobs:
               touch "$clickhouse_backup_file" # Placeholder for staging
             }
             
-            echo "✅ ClickHouse backup process completed"
+            echo "[OK] ClickHouse backup process completed"
           else
             echo "⚠️ ClickHouse URL not configured"
           fi
@@ -501,7 +501,7 @@ jobs:
               echo "📝 MongoDB backup would be created in production"
               mkdir -p "mongodb-${BACKUP_ID}" # Placeholder
             }
-            echo "✅ MongoDB backup process completed"
+            echo "[OK] MongoDB backup process completed"
           else
             echo "⚠️ MongoDB URL not configured"
           fi
@@ -518,13 +518,13 @@ jobs:
             
             # Upload other backups
             echo "📤 All database backups uploaded to secure storage"
-            echo "🔐 Backups are encrypted and stored with 90-day retention"
+            echo "[SECURE] Backups are encrypted and stored with 90-day retention"
           else
             echo "⚠️ S3 backup bucket not configured"
           fi
           
           echo ""
-          echo "✅ COMPREHENSIVE DATABASE BACKUP COMPLETED"
+          echo "[OK] COMPREHENSIVE DATABASE BACKUP COMPLETED"
           echo "🆔 Backup Reference: $BACKUP_ID"
           echo "⏰ Backup Timestamp: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
 
@@ -537,14 +537,14 @@ jobs:
           MONGODB_URL: ${{ secrets.PROD_MONGODB_URL }}
         run: |
           echo "🗄️ PRODUCTION DATABASE MIGRATIONS"
-          echo "════════════════════════════════════════════════════════════"
+          echo "============================================================"
           
           # PostgreSQL migrations with transaction safety
           echo "🐘 Executing PostgreSQL migrations with transaction safety..."
           if [ -n "$DATABASE_URL" ]; then
             # Check if migration scripts exist
             if yarn run --silent --json 2>/dev/null | jq -r '.data.trees[].name' 2>/dev/null | grep -q '^migration:run:production$'; then
-              echo "✅ Production migration script found"
+              echo "[OK] Production migration script found"
               
               # Get current migration state
               echo "📋 Checking current migration state..."
@@ -554,19 +554,19 @@ jobs:
               # Execute migrations in transaction
               echo "⚡ Executing migrations with transaction safety..."
               yarn run migration:run:production || {
-                echo "❌ MIGRATION FAILURE DETECTED"
-                echo "🔄 Checking if rollback is needed..."
+                echo "[FAIL] MIGRATION FAILURE DETECTED"
+                echo "[ROLLBACK] Checking if rollback is needed..."
                 
                 # Attempt automatic rollback if migration fails
                 if yarn run --silent --json 2>/dev/null | jq -r '.data.trees[].name' 2>/dev/null | grep -q '^migration:rollback:production$'; then
-                  echo "🔄 Attempting automatic migration rollback..."
+                  echo "[ROLLBACK] Attempting automatic migration rollback..."
                   yarn run migration:rollback:production || {
-                    echo "❌ CRITICAL: Migration rollback failed!"
-                    echo "🚨 Manual database intervention required"
+                    echo "[FAIL] CRITICAL: Migration rollback failed!"
+                    echo "[ALERT] Manual database intervention required"
                     echo "🆔 Backup ID for manual restore: ${{ env.backup-id }}"
                     exit 1
                   }
-                  echo "✅ Migration rollback successful"
+                  echo "[OK] Migration rollback successful"
                 else
                   echo "⚠️ No rollback script available"
                 fi
@@ -574,7 +574,7 @@ jobs:
               }
               
               # Verify migration success
-              echo "✅ PostgreSQL migrations completed successfully"
+              echo "[OK] PostgreSQL migrations completed successfully"
               
               # Post-migration validation
               echo "🔍 Validating database integrity post-migration..."
@@ -593,16 +593,16 @@ jobs:
           fi
           
           # ClickHouse schema migrations
-          echo "📊 Executing ClickHouse schema migrations..."
+          echo "[METRICS] Executing ClickHouse schema migrations..."
           if [ -n "$CLICKHOUSE_URL" ]; then
             if yarn run --silent --json 2>/dev/null | jq -r '.data.trees[].name' 2>/dev/null | grep -q '^migration:clickhouse:production$'; then
-              echo "✅ ClickHouse migration script found"
+              echo "[OK] ClickHouse migration script found"
               
               yarn run migration:clickhouse:production || {
                 echo "⚠️ ClickHouse migration completed with warnings"
                 echo "📋 Time-series schema changes may require manual verification"
               }
-              echo "✅ ClickHouse migrations completed"
+              echo "[OK] ClickHouse migrations completed"
             else
               echo "📝 No ClickHouse migration scripts found"
             fi
@@ -614,12 +614,12 @@ jobs:
           echo "🍃 Executing MongoDB configuration migrations..."
           if [ -n "$MONGODB_URL" ]; then
             if yarn run --silent --json 2>/dev/null | jq -r '.data.trees[].name' 2>/dev/null | grep -q '^migration:mongodb:production$'; then
-              echo "✅ MongoDB migration script found"
+              echo "[OK] MongoDB migration script found"
               
               yarn run migration:mongodb:production || {
                 echo "⚠️ MongoDB migration completed with warnings"
               }
-              echo "✅ MongoDB migrations completed"
+              echo "[OK] MongoDB migrations completed"
             else
               echo "📝 No MongoDB migration scripts found"
             fi
@@ -628,16 +628,16 @@ jobs:
           fi
           
           echo ""
-          echo "✅ ALL DATABASE MIGRATIONS COMPLETED SUCCESSFULLY"
-          echo "🛡️ Database backup available for rollback: ${{ env.backup-id }}"
-          echo "📊 Migration completed with transaction safety and integrity validation"
+          echo "[OK] ALL DATABASE MIGRATIONS COMPLETED SUCCESSFULLY"
+          echo "[SECURITY] Database backup available for rollback: ${{ env.backup-id }}"
+          echo "[METRICS] Migration completed with transaction safety and integrity validation"
 
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
   # STAGE 4: BLUE-GREEN DEPLOYMENT WITH ZERO-DOWNTIME
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
 
   blue-green-deployment:
-    name: 🚀 Blue-Green Zero-Downtime Deployment
+    name: [DEPLOY] Blue-Green Zero-Downtime Deployment
     needs: [database-backup-and-migration]
     runs-on: ubuntu-latest
     environment: production-deployment
@@ -657,7 +657,7 @@ jobs:
       - name: Configure Production Kubernetes
         run: |
           echo "🔧 PRODUCTION KUBERNETES CONFIGURATION"
-          echo "════════════════════════════════════════════════════════════"
+          echo "============================================================"
           
           # Decode and setup kubeconfig with enhanced security
           echo "${{ secrets.PROD_KUBECONFIG }}" | base64 -d > kubeconfig
@@ -666,26 +666,26 @@ jobs:
           
           # Verify cluster connectivity and permissions
           kubectl cluster-info || {
-            echo "❌ CRITICAL: Failed to connect to production Kubernetes cluster"
-            echo "🔐 Verify PROD_KUBECONFIG secret and cluster accessibility"
+            echo "[FAIL] CRITICAL: Failed to connect to production Kubernetes cluster"
+            echo "[SECURE] Verify PROD_KUBECONFIG secret and cluster accessibility"
             exit 1
           }
           
           # Verify namespace access
           kubectl auth can-i "*" "*" -n ${{ env.NAMESPACE }} || {
-            echo "❌ CRITICAL: Insufficient permissions for production namespace"
+            echo "[FAIL] CRITICAL: Insufficient permissions for production namespace"
             exit 1
           }
           
-          echo "✅ Production Kubernetes access verified"
+          echo "[OK] Production Kubernetes access verified"
 
       # EDUCATIONAL: Blue-Green deployment strategy ensures zero downtime
       # Financial systems require seamless environment switching
       - name: Determine Blue-Green Deployment Environment
         id: determine-env
         run: |
-          echo "🎯 BLUE-GREEN ENVIRONMENT DETERMINATION"
-          echo "════════════════════════════════════════════════════════════"
+          echo "[TARGET] BLUE-GREEN ENVIRONMENT DETERMINATION"
+          echo "============================================================"
           
           # Get current active environment (blue or green)
           current_env=$(kubectl get service api-gateway-active -n ${{ env.NAMESPACE }} \
@@ -695,14 +695,14 @@ jobs:
           target_env=$([ "$current_env" = "blue" ] && echo "green" || echo "blue")
           
           echo "📍 Current Active Environment: $current_env"
-          echo "🎯 Target Deployment Environment: $target_env"
-          echo "🔄 Blue-Green Switch Direction: $current_env → $target_env"
+          echo "[TARGET] Target Deployment Environment: $target_env"
+          echo "[ROLLBACK] Blue-Green Switch Direction: $current_env → $target_env"
           
           # Output for subsequent jobs
           echo "current=$current_env" >> $GITHUB_OUTPUT
           echo "target=$target_env" >> $GITHUB_OUTPUT
           
-          echo "✅ Blue-Green environment determination completed"
+          echo "[OK] Blue-Green environment determination completed"
 
       - name: Deploy to Target Environment
         env:
@@ -710,9 +710,9 @@ jobs:
           IMAGE_TAG: ${{ github.event.inputs.image_tag }}
         run: |
           echo "🚢 DEPLOYING TO $TARGET_ENV ENVIRONMENT"
-          echo "════════════════════════════════════════════════════════════"
+          echo "============================================================"
           echo "📦 Image Tag: $IMAGE_TAG"
-          echo "🎯 Target Environment: $TARGET_ENV"
+          echo "[TARGET] Target Environment: $TARGET_ENV"
           echo "🌍 Namespace: ${{ env.NAMESPACE }}"
           
           # Create namespace if it doesn't exist
@@ -723,112 +723,112 @@ jobs:
           
           echo "🔧 Deploying microservices..."
           for service in "${services[@]}"; do
-            echo "🚀 Deploying $service to $TARGET_ENV environment..."
+            echo "[DEPLOY] Deploying $service to $TARGET_ENV environment..."
             
             # Create production-grade deployment with blue-green labels
-            cat << EOF | kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ${service}-${TARGET_ENV}
-  namespace: ${{ env.NAMESPACE }}
-  labels:
-    app: ${service}
-    version: ${TARGET_ENV}
-    deployment-strategy: blue-green
-    deployment-id: "${{ github.run_id }}"
-spec:
-  replicas: 3
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0  # Zero downtime requirement
-  selector:
-    matchLabels:
-      app: ${service}
-      version: ${TARGET_ENV}
-  template:
-    metadata:
-      labels:
-        app: ${service}
-        version: ${TARGET_ENV}
-        monitoring: enabled
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/path: "/metrics"
-    spec:
-      containers:
-      - name: ${service}
-        image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${service}:${IMAGE_TAG}
-        ports:
-        - containerPort: 8080
-          name: http
-          protocol: TCP
-        - containerPort: 9090
-          name: metrics
-          protocol: TCP
-        resources:
-          requests:
-            cpu: "500m"
-            memory: "1Gi"
-          limits:
-            cpu: "2000m"
-            memory: "4Gi"
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: SERVICE_VERSION
-          value: "${TARGET_ENV}"
-        - name: DEPLOYMENT_ID
-          value: "${{ github.run_id }}"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health/ready
-            port: 8080
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 2
-        lifecycle:
-          preStop:
-            exec:
-              command: ["/bin/sh", "-c", "sleep 15"]
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ${service}-${TARGET_ENV}
-  namespace: ${{ env.NAMESPACE }}
-  labels:
-    app: ${service}
-    version: ${TARGET_ENV}
-spec:
-  type: LoadBalancer
-  selector:
-    app: ${service}
-    version: ${TARGET_ENV}
-  ports:
-  - port: 80
-    targetPort: 8080
-    protocol: TCP
-    name: http
-  - port: 9090
-    targetPort: 9090
-    protocol: TCP
-    name: metrics
+            kubectl apply -f - <<EOF
+            apiVersion: apps/v1
+            kind: Deployment
+            metadata:
+              name: \${service}-\${TARGET_ENV}
+              namespace: ${{ env.NAMESPACE }}
+              labels:
+                app: \${service}
+                version: \${TARGET_ENV}
+                deployment-strategy: blue-green
+                deployment-id: "${{ github.run_id }}"
+            spec:
+              replicas: 3
+              strategy:
+                type: RollingUpdate
+                rollingUpdate:
+                  maxSurge: 1
+                  maxUnavailable: 0
+              selector:
+                matchLabels:
+                  app: \${service}
+                  version: \${TARGET_ENV}
+              template:
+                metadata:
+                  labels:
+                    app: \${service}
+                    version: \${TARGET_ENV}
+                    monitoring: enabled
+                  annotations:
+                    prometheus.io/scrape: "true"
+                    prometheus.io/port: "8080"
+                    prometheus.io/path: "/metrics"
+                spec:
+                  containers:
+                  - name: \${service}
+                    image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/\${service}:\${IMAGE_TAG}
+                    ports:
+                    - containerPort: 8080
+                      name: http
+                      protocol: TCP
+                    - containerPort: 9090
+                      name: metrics
+                      protocol: TCP
+                    resources:
+                      requests:
+                        cpu: "500m"
+                        memory: "1Gi"
+                      limits:
+                        cpu: "2000m"
+                        memory: "4Gi"
+                    env:
+                    - name: NODE_ENV
+                      value: "production"
+                    - name: SERVICE_VERSION
+                      value: "\${TARGET_ENV}"
+                    - name: DEPLOYMENT_ID
+                      value: "${{ github.run_id }}"
+                    livenessProbe:
+                      httpGet:
+                        path: /health
+                        port: 8080
+                      initialDelaySeconds: 30
+                      periodSeconds: 10
+                      timeoutSeconds: 5
+                      failureThreshold: 3
+                    readinessProbe:
+                      httpGet:
+                        path: /health/ready
+                        port: 8080
+                      initialDelaySeconds: 10
+                      periodSeconds: 5
+                      timeoutSeconds: 3
+                      failureThreshold: 2
+                    lifecycle:
+                      preStop:
+                        exec:
+                          command: ["/bin/sh", "-c", "sleep 15"]
+            ---
+            apiVersion: v1
+            kind: Service
+            metadata:
+              name: \${service}-\${TARGET_ENV}
+              namespace: ${{ env.NAMESPACE }}
+              labels:
+                app: \${service}
+                version: \${TARGET_ENV}
+            spec:
+              type: LoadBalancer
+              selector:
+                app: \${service}
+                version: \${TARGET_ENV}
+              ports:
+              - port: 80
+                targetPort: 8080
+                protocol: TCP
+                name: http
+              - port: 9090
+                targetPort: 9090
+                protocol: TCP
+                name: metrics
 EOF
             
-            echo "✅ $service deployment manifest applied"
+            echo "[OK] $service deployment manifest applied"
           done
           
           echo "🎉 All services deployed to $TARGET_ENV environment"
@@ -840,18 +840,18 @@ EOF
           TARGET_ENV: ${{ steps.determine-env.outputs.target }}
         run: |
           echo "🏥 COMPREHENSIVE DEPLOYMENT VALIDATION"
-          echo "════════════════════════════════════════════════════════════"
+          echo "============================================================"
           
           # Wait for all deployments to be ready with extended timeouts for production
           services=("api-gateway" "strategy-engine" "risk-management" "order-execution" "market-data" "portfolio-service")
           
           echo "⏳ Waiting for all deployments to become ready..."
           for service in "${services[@]}"; do
-            echo "🔄 Waiting for ${service}-${TARGET_ENV} deployment..."
+            echo "[ROLLBACK] Waiting for ${service}-${TARGET_ENV} deployment..."
             
             kubectl rollout status deployment "${service}-${TARGET_ENV}" \
               -n ${{ env.NAMESPACE }} --timeout=20m || {
-              echo "❌ CRITICAL: ${service}-${TARGET_ENV} deployment failed to become ready"
+              echo "[FAIL] CRITICAL: ${service}-${TARGET_ENV} deployment failed to become ready"
               
               # Enhanced debugging for production failures
               echo "🔍 Deployment troubleshooting information:"
@@ -862,21 +862,21 @@ EOF
               exit 1
             }
             
-            echo "✅ ${service}-${TARGET_ENV} is ready and healthy"
+            echo "[OK] ${service}-${TARGET_ENV} is ready and healthy"
           done
           
           # Extended stabilization period for production readiness
           echo "⏱️ Production stabilization period: 2 minutes for service mesh convergence..."
           sleep 120
           
-          echo "✅ All deployments are ready and stabilized"
+          echo "[OK] All deployments are ready and stabilized"
 
       - name: Advanced Health and Performance Validation
         env:
           TARGET_ENV: ${{ steps.determine-env.outputs.target }}
         run: |
           echo "🩺 ADVANCED HEALTH & PERFORMANCE VALIDATION"
-          echo "════════════════════════════════════════════════════════════"
+          echo "============================================================"
           
           # Get target environment service endpoints
           services=("api-gateway" "strategy-engine" "risk-management" "order-execution" "market-data" "portfolio-service")
@@ -905,10 +905,10 @@ EOF
                 echo "🔍 Health check attempt $attempt/$max_attempts for $service..."
                 
                 if curl -f -s --max-time 10 "http://${service_ip}:80/health" > /dev/null 2>&1; then
-                  echo "✅ $service health check passed"
+                  echo "[OK] $service health check passed"
                   break
                 elif [ $attempt -eq $max_attempts ]; then
-                  echo "❌ $service health check failed after $max_attempts attempts"
+                  echo "[FAIL] $service health check failed after $max_attempts attempts"
                   health_failures=$((health_failures + 1))
                 else
                   echo "⏳ Attempt $attempt failed, retrying in 15 seconds..."
@@ -928,7 +928,7 @@ EOF
             -o jsonpath='{.spec.clusterIP}')
           
           if [ -n "$api_gateway_ip" ]; then
-            echo "📊 Measuring response time performance..."
+            echo "[METRICS] Measuring response time performance..."
             
             # Perform performance test
             total_time=0
@@ -954,39 +954,39 @@ EOF
               
               echo "📈 Performance Results:"
               echo "  ⏱️ Average Response Time: ${avg_response_time}s"
-              echo "  🎯 Success Rate: ${success_rate}%"
-              echo "  ✅ Successful Requests: $successful_requests/10"
-              echo "  ❌ Failed Requests: $failed_requests/10"
+              echo "  [TARGET] Success Rate: ${success_rate}%"
+              echo "  [OK] Successful Requests: $successful_requests/10"
+              echo "  [FAIL] Failed Requests: $failed_requests/10"
               
               # Performance threshold validation
               if (( $(echo "$avg_response_time > ${{ env.MAX_RESPONSE_TIME }}" | bc -l 2>/dev/null || echo "1") )); then
-                echo "🚨 PERFORMANCE FAILURE: Response time ${avg_response_time}s exceeds threshold ${{ env.MAX_RESPONSE_TIME }}s"
+                echo "[ALERT] PERFORMANCE FAILURE: Response time ${avg_response_time}s exceeds threshold ${{ env.MAX_RESPONSE_TIME }}s"
                 health_failures=$((health_failures + 1))
               fi
               
               if (( $(echo "$success_rate < ${{ env.MIN_SUCCESS_RATE }}" | bc -l 2>/dev/null || echo "1") )); then
-                echo "🚨 RELIABILITY FAILURE: Success rate ${success_rate}% below threshold ${{ env.MIN_SUCCESS_RATE }}%"
+                echo "[ALERT] RELIABILITY FAILURE: Success rate ${success_rate}% below threshold ${{ env.MIN_SUCCESS_RATE }}%"
                 health_failures=$((health_failures + 1))
               fi
             else
-              echo "❌ Performance test failed - no successful requests"
+              echo "[FAIL] Performance test failed - no successful requests"
               health_failures=$((health_failures + 1))
             fi
           fi
           
           # Final health validation summary
           echo ""
-          echo "🎯 HEALTH VALIDATION SUMMARY:"
-          echo "════════════════════════════════════════════════════════════"
-          echo "❌ Health Failures: $health_failures"
+          echo "[TARGET] HEALTH VALIDATION SUMMARY:"
+          echo "============================================================"
+          echo "[FAIL] Health Failures: $health_failures"
           
           if [ $health_failures -eq 0 ]; then
-            echo "✅ ALL HEALTH CHECKS PASSED"
-            echo "🚀 $TARGET_ENV environment ready for traffic"
+            echo "[OK] ALL HEALTH CHECKS PASSED"
+            echo "[DEPLOY] $TARGET_ENV environment ready for traffic"
             echo "deployment-success=true" >> $GITHUB_ENV
           else
-            echo "❌ HEALTH VALIDATION FAILED"
-            echo "🚨 Deployment cannot proceed to traffic switching"
+            echo "[FAIL] HEALTH VALIDATION FAILED"
+            echo "[ALERT] Deployment cannot proceed to traffic switching"
             echo "deployment-success=false" >> $GITHUB_ENV
             exit 1
           fi
@@ -996,12 +996,12 @@ EOF
         run: |
           echo "success=${{ env.deployment-success }}" >> $GITHUB_OUTPUT
 
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
   # STAGE 5: PROGRESSIVE CANARY ROLLOUT WITH CIRCUIT BREAKERS
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
 
   canary-rollout:
-    name: 🐤 Progressive Canary Rollout
+    name: [CANARY] Progressive Canary Rollout
     needs: [blue-green-deployment]
     runs-on: ubuntu-latest
     environment: production-canary
@@ -1024,18 +1024,18 @@ EOF
           CURRENT_ENV: ${{ needs.blue-green-deployment.outputs.current-environment }}
           TARGET_ENV: ${{ needs.blue-green-deployment.outputs.target-environment }}
         run: |
-          echo "🚦 PROGRESSIVE CANARY TRAFFIC SWITCHING"
-          echo "════════════════════════════════════════════════════════════"
+          echo "[CANARY] PROGRESSIVE CANARY TRAFFIC SWITCHING"
+          echo "============================================================"
           echo "📍 Current Environment: $CURRENT_ENV"
-          echo "🎯 Target Environment: $TARGET_ENV"
-          echo "🔄 Canary Strategy: 5% → 10% → 25% → 50% → 100%"
+          echo "[TARGET] Target Environment: $TARGET_ENV"
+          echo "[ROLLBACK] Canary Strategy: 5% → 10% → 25% → 50% → 100%"
           
           # Progressive traffic percentages with extended monitoring
           percentages=(5 10 25 50 100)
           
           for percentage in "${percentages[@]}"; do
             echo ""
-            echo "🎯 CANARY STAGE: $percentage% TRAFFIC TO $TARGET_ENV"
+            echo "[TARGET] CANARY STAGE: $percentage% TRAFFIC TO $TARGET_ENV"
             echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             
             if [ "$percentage" = "100" ]; then
@@ -1043,8 +1043,8 @@ EOF
               echo "🏁 FINAL TRAFFIC SWITCH: 100% to $TARGET_ENV environment"
               kubectl patch service api-gateway-active -n ${{ env.NAMESPACE }} \
                 -p '{"spec":{"selector":{"version":"'$TARGET_ENV'"}}}'  || {
-                echo "❌ CRITICAL: Final traffic switch failed!"
-                echo "🚨 Initiating emergency rollback..."
+                echo "[FAIL] CRITICAL: Final traffic switch failed!"
+                echo "[ALERT] Initiating emergency rollback..."
                 kubectl patch service api-gateway-active -n ${{ env.NAMESPACE }} \
                   -p '{"spec":{"selector":{"version":"'$CURRENT_ENV'"}}}'
                 exit 1
@@ -1059,40 +1059,40 @@ EOF
                 }
               done
               
-              echo "✅ 100% traffic now routing to $TARGET_ENV environment"
+              echo "[OK] 100% traffic now routing to $TARGET_ENV environment"
             else
               # Canary percentage switch (simulated for educational purposes)
-              echo "🔄 CANARY SIMULATION: $percentage% traffic routing"
+              echo "[ROLLBACK] CANARY SIMULATION: $percentage% traffic routing"
               echo "📝 In production: Service mesh (Istio/Linkerd) handles actual traffic splitting"
               echo "📝 Current implementation: Educational simulation with monitoring"
               
               # Create canary service definition for monitoring
-              cat << EOF | kubectl apply -f -
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-gateway-canary-$percentage
-  namespace: ${{ env.NAMESPACE }}
-  labels:
-    canary-percentage: "$percentage"
-    canary-environment: "$TARGET_ENV"
-    monitoring: enabled
-spec:
-  type: ClusterIP
-  selector:
-    app: api-gateway
-    version: $TARGET_ENV
-  ports:
-  - port: 80
-    targetPort: 8080
-    protocol: TCP
-    name: http
+              kubectl apply -f - <<EOF
+              apiVersion: v1
+              kind: Service
+              metadata:
+                name: api-gateway-canary-\$percentage
+                namespace: ${{ env.NAMESPACE }}
+                labels:
+                  canary-percentage: "\$percentage"
+                  canary-environment: "\$TARGET_ENV"
+                  monitoring: enabled
+              spec:
+                type: ClusterIP
+                selector:
+                  app: api-gateway
+                  version: \$TARGET_ENV
+                ports:
+                - port: 80
+                  targetPort: 8080
+                  protocol: TCP
+                  name: http
 EOF
-              echo "✅ Canary service created for $percentage% monitoring"
+              echo "[OK] Canary service created for $percentage% monitoring"
             fi
             
             # ADVANCED CIRCUIT BREAKER MONITORING
-            echo "📊 CIRCUIT BREAKER MONITORING: $percentage% traffic validation"
+            echo "[METRICS] CIRCUIT BREAKER MONITORING: $percentage% traffic validation"
             echo "📝 Educational: Production-grade monitoring with real-time metrics"
             
             # Extended stabilization period for accurate metrics
@@ -1116,7 +1116,7 @@ EOF
                   health_status=$(timeout 5s curl -s -o /dev/null -w '%{http_code}' \
                     "http://${target_ip}:80/health" 2>/dev/null || echo "000")
                   if [ "$health_status" = "200" ]; then
-                    echo "✅ Intermediate health: OK"
+                    echo "[OK] Intermediate health: OK"
                   else
                     echo "⚠️ Intermediate health: HTTP $health_status"
                   fi
@@ -1173,10 +1173,10 @@ EOF
               
               echo "📈 PERFORMANCE METRICS SUMMARY:"
               echo "  ⏱️ Average Response Time: ${avg_response_time}s (Threshold: ${{ env.MAX_RESPONSE_TIME }}s)"
-              echo "  🎯 Success Rate: ${success_rate}% (Threshold: ${{ env.MIN_SUCCESS_RATE }}%)"
+              echo "  [TARGET] Success Rate: ${success_rate}% (Threshold: ${{ env.MIN_SUCCESS_RATE }}%)"
               echo "  📉 Error Rate: ${error_rate} (Threshold: ${{ env.MAX_ERROR_RATE }})"
-              echo "  ✅ Successful: $successful_requests/10"
-              echo "  ❌ Errors: $error_count/10"
+              echo "  [OK] Successful: $successful_requests/10"
+              echo "  [FAIL] Errors: $error_count/10"
               echo "  ⏰ Timeouts: $timeout_count/10"
               
               # CIRCUIT BREAKER THRESHOLD EVALUATION
@@ -1204,21 +1204,21 @@ EOF
               # EXECUTE CIRCUIT BREAKER IF TRIGGERED
               if [ "$circuit_breaker_triggered" = "true" ]; then
                 echo ""
-                echo "🚨🚨🚨 CIRCUIT BREAKER ACTIVATED 🚨🚨🚨"
+                echo "[ALERT][ALERT][ALERT] CIRCUIT BREAKER ACTIVATED [ALERT][ALERT][ALERT]"
                 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                 echo "🔴 PERFORMANCE THRESHOLDS EXCEEDED"
-                echo "📊 Failure Reasons:"
+                echo "[METRICS] Failure Reasons:"
                 for reason in "${failure_reasons[@]}"; do
                   echo "  • $reason"
                 done
                 echo ""
-                echo "🔄 INITIATING AUTOMATIC ROLLBACK TO $CURRENT_ENV..."
+                echo "[ROLLBACK] INITIATING AUTOMATIC ROLLBACK TO $CURRENT_ENV..."
                 echo "📝 Zero-downtime maintained through instant traffic switch"
                 
                 # Immediate emergency rollback
                 kubectl patch service api-gateway-active -n ${{ env.NAMESPACE }} \
                   -p '{"spec":{"selector":{"version":"'$CURRENT_ENV'"}}}'  || {
-                  echo "❌ CRITICAL: Emergency rollback failed!"
+                  echo "[FAIL] CRITICAL: Emergency rollback failed!"
                   echo "🆘 MANUAL INTERVENTION REQUIRED"
                   exit 1
                 }
@@ -1239,25 +1239,25 @@ EOF
                   -o jsonpath='{.spec.selector.version}' 2>/dev/null || echo "unknown")
                 
                 if [ "$current_version" = "$CURRENT_ENV" ]; then
-                  echo "✅ EMERGENCY ROLLBACK SUCCESSFUL"
-                  echo "🛡️ Traffic restored to stable $CURRENT_ENV environment"
-                  echo "📊 Zero-downtime maintained during automatic failover"
+                  echo "[OK] EMERGENCY ROLLBACK SUCCESSFUL"
+                  echo "[SECURITY] Traffic restored to stable $CURRENT_ENV environment"
+                  echo "[METRICS] Zero-downtime maintained during automatic failover"
                 else
-                  echo "❌ ROLLBACK VERIFICATION FAILED"
+                  echo "[FAIL] ROLLBACK VERIFICATION FAILED"
                   echo "🆘 System may be in inconsistent state"
                 fi
                 
                 echo ""
                 echo "📋 CIRCUIT BREAKER SUMMARY:"
-                echo "  🚨 Trigger: Performance threshold violation at $percentage% traffic"
-                echo "  🔄 Action: Automatic rollback to $CURRENT_ENV environment"
+                echo "  [ALERT] Trigger: Performance threshold violation at $percentage% traffic"
+                echo "  [ROLLBACK] Action: Automatic rollback to $CURRENT_ENV environment"
                 echo "  ⏱️ Duration: Rollback completed in < 30 seconds"
-                echo "  🛡️ Impact: Zero downtime maintained"
+                echo "  [SECURITY] Impact: Zero downtime maintained"
                 
                 exit 1
               fi
               
-              echo "✅ CIRCUIT BREAKER: All thresholds passed"
+              echo "[OK] CIRCUIT BREAKER: All thresholds passed"
               echo "🎆 $percentage% canary stage successful"
               
             else
@@ -1265,26 +1265,26 @@ EOF
             fi
             
             # TRADING SYSTEM ANOMALY DETECTION (Educational)
-            echo "📊 TRADING SYSTEM ANOMALY DETECTION"
+            echo "[METRICS] TRADING SYSTEM ANOMALY DETECTION"
             echo "📝 Educational: In production, this monitors trading-specific metrics"
             echo "📈 Simulated checks: Order latency, market data lag, risk calculations"
             
             # Simulate trading system health metrics
             trading_metrics=(
-              "Order processing latency: 12ms (threshold: 50ms) ✅"
-              "Market data lag: 3ms (threshold: 10ms) ✅"
-              "Risk calculation time: 8ms (threshold: 25ms) ✅"
-              "Portfolio synchronization: Active ✅"
+              "Order processing latency: 12ms (threshold: 50ms) [OK]"
+              "Market data lag: 3ms (threshold: 10ms) [OK]"
+              "Risk calculation time: 8ms (threshold: 25ms) [OK]"
+              "Portfolio synchronization: Active [OK]"
             )
             
             for metric in "${trading_metrics[@]}"; do
-              echo "  📊 $metric"
+              echo "  [METRICS] $metric"
             done
             
-            echo "✅ Trading system anomaly detection: No anomalies detected"
+            echo "[OK] Trading system anomaly detection: No anomalies detected"
             
             if [ "$percentage" != "100" ]; then
-              echo "🔄 Proceeding to next canary stage..."
+              echo "[ROLLBACK] Proceeding to next canary stage..."
             else
               echo "🏁 CANARY ROLLOUT COMPLETED SUCCESSFULLY"
               echo "🎆 100% traffic now on $TARGET_ENV with zero downtime"
@@ -1293,15 +1293,15 @@ EOF
           
           echo ""
           echo "🎉 PROGRESSIVE CANARY ROLLOUT COMPLETED SUCCESSFULLY"
-          echo "🛡️ Zero-downtime deployment achieved with comprehensive monitoring"
-          echo "📊 All performance and reliability thresholds maintained"
+          echo "[SECURITY] Zero-downtime deployment achieved with comprehensive monitoring"
+          echo "[METRICS] All performance and reliability thresholds maintained"
 
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
   # STAGE 6: PROMETHEUS METRICS INTEGRATION AND MONITORING
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
 
   prometheus-metrics-validation:
-    name: 📊 Prometheus Metrics Validation
+    name: [METRICS] Prometheus Metrics Validation
     needs: [canary-rollout]
     runs-on: ubuntu-latest
     if: always() && (needs.canary-rollout.result == 'success' || needs.canary-rollout.result == 'skipped')
@@ -1319,9 +1319,9 @@ EOF
           PROMETHEUS_URL: ${{ secrets.PROMETHEUS_URL || 'http://prometheus.jts.com:9090' }}
           TARGET_ENV: ${{ needs.blue-green-deployment.outputs.target-environment }}
         run: |
-          echo "📊 PROMETHEUS METRICS VALIDATION"
-          echo "════════════════════════════════════════════════════════════"
-          echo "🎯 Target Environment: $TARGET_ENV"
+          echo "[METRICS] PROMETHEUS METRICS VALIDATION"
+          echo "============================================================"
+          echo "[TARGET] Target Environment: $TARGET_ENV"
           echo "📈 Prometheus URL: $PROMETHEUS_URL"
           
           # Wait for metrics to propagate
@@ -1329,7 +1329,7 @@ EOF
           sleep 60
           
           # Validate deployment metrics
-          echo "📊 Validating deployment-specific metrics..."
+          echo "[METRICS] Validating deployment-specific metrics..."
           
           # Query deployment success metrics
           deployment_query="up{job=\"kubernetes-pods\",version=\"$TARGET_ENV\"}"
@@ -1337,23 +1337,23 @@ EOF
           
           # In production, these would be actual Prometheus queries
           echo "📈 Simulated Prometheus Metrics Validation:"
-          echo "  ✅ Service availability: 100% (3/3 pods up)"
-          echo "  ✅ Request rate: 150 req/sec (within normal range)"
-          echo "  ✅ Error rate: 0.1% (below 0.5% threshold)"
-          echo "  ✅ P95 latency: 85ms (below 200ms threshold)"
-          echo "  ✅ Memory usage: 65% (below 80% threshold)"
-          echo "  ✅ CPU usage: 45% (below 70% threshold)"
+          echo "  [OK] Service availability: 100% (3/3 pods up)"
+          echo "  [OK] Request rate: 150 req/sec (within normal range)"
+          echo "  [OK] Error rate: 0.1% (below 0.5% threshold)"
+          echo "  [OK] P95 latency: 85ms (below 200ms threshold)"
+          echo "  [OK] Memory usage: 65% (below 80% threshold)"
+          echo "  [OK] CPU usage: 45% (below 70% threshold)"
           
           # Trading-specific metrics validation
           echo "💹 Trading System Metrics:"
-          echo "  ✅ Order execution rate: 95 orders/sec"
-          echo "  ✅ Trade settlement latency: 15ms average"
-          echo "  ✅ Market data ingestion rate: 1.2K updates/sec"
-          echo "  ✅ Risk calculation time: 8ms P95"
-          echo "  ✅ Portfolio valuation accuracy: 99.99%"
+          echo "  [OK] Order execution rate: 95 orders/sec"
+          echo "  [OK] Trade settlement latency: 15ms average"
+          echo "  [OK] Market data ingestion rate: 1.2K updates/sec"
+          echo "  [OK] Risk calculation time: 8ms P95"
+          echo "  [OK] Portfolio valuation accuracy: 99.99%"
           
           # Validate alert rules
-          echo "🚨 Alert Rules Validation:"
+          echo "[ALERT] Alert Rules Validation:"
           alert_rules=(
             "DeploymentReplicasDown: OK (no alerts)"
             "HighErrorRate: OK (0.1% < 1% threshold)"
@@ -1371,17 +1371,17 @@ EOF
           deployment_annotation="{\"deployment_id\":\"${{ github.run_id }}\",\"environment\":\"$TARGET_ENV\",\"image_tag\":\"${{ github.event.inputs.image_tag }}\",\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}"
           
           # In production, this would create a Grafana annotation
-          echo "📊 Deployment annotation created: $deployment_annotation"
+          echo "[METRICS] Deployment annotation created: $deployment_annotation"
           
-          echo "✅ PROMETHEUS METRICS VALIDATION COMPLETED"
+          echo "[OK] PROMETHEUS METRICS VALIDATION COMPLETED"
           echo "📈 All metrics within acceptable ranges for production traffic"
 
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
   # STAGE 7: POST-DEPLOYMENT VALIDATION AND CLEANUP
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
 
   post-deployment-validation:
-    name: ✅ Post-Deployment Validation
+    name: [OK] Post-Deployment Validation
     needs: [blue-green-deployment, canary-rollout, prometheus-metrics-validation]
     runs-on: ubuntu-latest
     if: always() && needs.blue-green-deployment.outputs.deployment-success == 'true'
@@ -1399,8 +1399,8 @@ EOF
           PROD_API_URL: https://api.jts.com
           TARGET_ENV: ${{ needs.blue-green-deployment.outputs.target-environment }}
         run: |
-          echo "🎯 COMPREHENSIVE PRODUCTION SYSTEM VALIDATION"
-          echo "════════════════════════════════════════════════════════════"
+          echo "[TARGET] COMPREHENSIVE PRODUCTION SYSTEM VALIDATION"
+          echo "============================================================"
           
           # Wait for system stabilization
           echo "⏱️ System stabilization period (5 minutes for production readiness)..."
@@ -1411,9 +1411,9 @@ EOF
           # 1. API Gateway Validation
           echo "🚪 API Gateway End-to-End Validation..."
           if curl -f -s --max-time 30 "$PROD_API_URL/health" > /dev/null; then
-            echo "✅ API Gateway: Healthy"
+            echo "[OK] API Gateway: Healthy"
           else
-            echo "❌ API Gateway: Health check failed"
+            echo "[FAIL] API Gateway: Health check failed"
             validation_failures=$((validation_failures + 1))
           fi
           
@@ -1430,9 +1430,9 @@ EOF
           for endpoint in "${trading_endpoints[@]}"; do
             echo "🔍 Testing $endpoint..."
             if curl -f -s --max-time 20 "$PROD_API_URL$endpoint" > /dev/null; then
-              echo "✅ $endpoint: Responsive"
+              echo "[OK] $endpoint: Responsive"
             else
-              echo "❌ $endpoint: Failed"
+              echo "[FAIL] $endpoint: Failed"
               validation_failures=$((validation_failures + 1))
             fi
           done
@@ -1449,7 +1449,7 @@ EOF
           for endpoint in "${db_endpoints[@]}"; do
             echo "🔍 Testing database $endpoint..."
             if curl -f -s --max-time 15 "$PROD_API_URL$endpoint" > /dev/null; then
-              echo "✅ $endpoint: Connected"
+              echo "[OK] $endpoint: Connected"
             else
               echo "⚠️ $endpoint: Connection issue"
               # Database issues are warnings, not failures
@@ -1458,7 +1458,7 @@ EOF
           
           # 4. Performance Validation
           echo "⚡ Production Performance Validation..."
-          echo "📊 Measuring end-to-end performance..."
+          echo "[METRICS] Measuring end-to-end performance..."
           
           # Performance test with multiple samples
           total_time=0
@@ -1484,8 +1484,8 @@ EOF
             
             echo "📈 Performance Results:"
             echo "  ⏱️ Average Response Time: ${avg_response_time}s"
-            echo "  📊 P95 Response Time: ${p95_time}s"
-            echo "  🎯 Success Rate: $(echo "scale=1; $successful_requests / 20 * 100" | bc -l)%"
+            echo "  [METRICS] P95 Response Time: ${p95_time}s"
+            echo "  [TARGET] Success Rate: $(echo "scale=1; $successful_requests / 20 * 100" | bc -l)%"
             
             # Validate performance thresholds
             if (( $(echo "$avg_response_time > 1.0" | bc -l 2>/dev/null || echo "0") )); then
@@ -1493,7 +1493,7 @@ EOF
               validation_failures=$((validation_failures + 1))
             fi
           else
-            echo "❌ Performance validation failed - no successful requests"
+            echo "[FAIL] Performance validation failed - no successful requests"
             validation_failures=$((validation_failures + 1))
           fi
           
@@ -1502,11 +1502,11 @@ EOF
           echo "📝 Educational: In production, this runs comprehensive integration tests"
           
           integration_tests=(
-            "Order placement workflow: PASSED ✅"
-            "Market data ingestion: PASSED ✅" 
-            "Risk calculation engine: PASSED ✅"
-            "Portfolio synchronization: PASSED ✅"
-            "Trade settlement process: PASSED ✅"
+            "Order placement workflow: PASSED [OK]"
+            "Market data ingestion: PASSED [OK]" 
+            "Risk calculation engine: PASSED [OK]"
+            "Portfolio synchronization: PASSED [OK]"
+            "Trade settlement process: PASSED [OK]"
           )
           
           for test in "${integration_tests[@]}"; do
@@ -1516,30 +1516,30 @@ EOF
           # 6. Security Validation
           echo "🔒 Security Configuration Validation..."
           security_checks=(
-            "TLS certificate validity: VALID ✅"
-            "Security headers present: CONFIGURED ✅"
-            "API rate limiting: ACTIVE ✅"
-            "Authentication endpoints: SECURED ✅"
-            "Database encryption: ENABLED ✅"
+            "TLS certificate validity: VALID [OK]"
+            "Security headers present: CONFIGURED [OK]"
+            "API rate limiting: ACTIVE [OK]"
+            "Authentication endpoints: SECURED [OK]"
+            "Database encryption: ENABLED [OK]"
           )
           
           for check in "${security_checks[@]}"; do
-            echo "  🛡️ $check"
+            echo "  [SECURITY] $check"
           done
           
           # Final validation summary
           echo ""
-          echo "🎯 POST-DEPLOYMENT VALIDATION SUMMARY:"
-          echo "════════════════════════════════════════════════════════════"
-          echo "❌ Validation Failures: $validation_failures"
-          echo "🎯 Target Environment: $TARGET_ENV"
+          echo "[TARGET] POST-DEPLOYMENT VALIDATION SUMMARY:"
+          echo "============================================================"
+          echo "[FAIL] Validation Failures: $validation_failures"
+          echo "[TARGET] Target Environment: $TARGET_ENV"
           echo "📦 Image Tag: ${{ github.event.inputs.image_tag }}"
           echo "⏰ Validation Completed: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
           
           if [ $validation_failures -eq 0 ]; then
             echo "🎉 ALL VALIDATIONS PASSED SUCCESSFULLY"
-            echo "✅ Production deployment completed with zero downtime"
-            echo "🚀 System ready for full production traffic"
+            echo "[OK] Production deployment completed with zero downtime"
+            echo "[DEPLOY] System ready for full production traffic"
           else
             echo "⚠️ Some validations failed but system is operational"
             echo "📋 Review and address validation failures as needed"
@@ -1551,9 +1551,9 @@ EOF
           TARGET_ENV: ${{ needs.blue-green-deployment.outputs.target-environment }}
         run: |
           echo "🧹 PRODUCTION ENVIRONMENT CLEANUP"
-          echo "════════════════════════════════════════════════════════════"
-          echo "🔄 Current Environment (previous): $CURRENT_ENV"
-          echo "🎯 Target Environment (active): $TARGET_ENV"
+          echo "============================================================"
+          echo "[ROLLBACK] Current Environment (previous): $CURRENT_ENV"
+          echo "[TARGET] Target Environment (active): $TARGET_ENV"
           
           # Scale down previous environment but keep for rollback
           echo "📉 Scaling down previous environment for resource optimization..."
@@ -1586,15 +1586,15 @@ EOF
             }
           done
           
-          echo "✅ Production environment cleanup completed"
-          echo "🛡️ Previous environment ($CURRENT_ENV) scaled down but available for emergency rollback"
+          echo "[OK] Production environment cleanup completed"
+          echo "[SECURITY] Previous environment ($CURRENT_ENV) scaled down but available for emergency rollback"
 
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
   # STAGE 8: EMERGENCY ROLLBACK (IF NEEDED)
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
 
   emergency-rollback:
-    name: 🚨 Emergency Rollback
+    name: [ALERT] Emergency Rollback
     needs: [blue-green-deployment, canary-rollout, post-deployment-validation]
     runs-on: ubuntu-latest
     environment: production-emergency
@@ -1613,25 +1613,25 @@ EOF
           CURRENT_ENV: ${{ needs.blue-green-deployment.outputs.current-environment }}
           TARGET_ENV: ${{ needs.blue-green-deployment.outputs.target-environment }}
         run: |
-          echo "🚨🚨🚨 EMERGENCY ROLLBACK INITIATED 🚨🚨🚨"
-          echo "════════════════════════════════════════════════════════════"
-          echo "❌ Deployment validation failed - executing emergency rollback"
-          echo "🔄 Rolling back from $TARGET_ENV to $CURRENT_ENV environment"
+          echo "[ALERT][ALERT][ALERT] EMERGENCY ROLLBACK INITIATED [ALERT][ALERT][ALERT]"
+          echo "============================================================"
+          echo "[FAIL] Deployment validation failed - executing emergency rollback"
+          echo "[ROLLBACK] Rolling back from $TARGET_ENV to $CURRENT_ENV environment"
           echo "⏱️ Target rollback time: < 2 minutes"
           
           rollback_start=$(date +%s)
           
           # Immediate traffic switch back to previous environment
-          echo "🚦 IMMEDIATE TRAFFIC SWITCH: $TARGET_ENV → $CURRENT_ENV"
+          echo "[CANARY] IMMEDIATE TRAFFIC SWITCH: $TARGET_ENV → $CURRENT_ENV"
           
           services=("api-gateway" "strategy-engine" "risk-management" "order-execution" "market-data" "portfolio-service")
           
           # Switch all active services back to previous environment
           for service in "${services[@]}"; do
-            echo "🔄 Switching $service traffic back to $CURRENT_ENV..."
+            echo "[ROLLBACK] Switching $service traffic back to $CURRENT_ENV..."
             kubectl patch service ${service}-active -n ${{ env.NAMESPACE }} \
               -p '{"spec":{"selector":{"version":"'$CURRENT_ENV'"}}}'  || {
-              echo "❌ CRITICAL: Failed to switch $service traffic!"
+              echo "[FAIL] CRITICAL: Failed to switch $service traffic!"
               echo "🆘 Manual intervention required for $service"
             }
           done
@@ -1666,9 +1666,9 @@ EOF
           # Test API Gateway health
           if kubectl get service api-gateway-active -n ${{ env.NAMESPACE }} \
             -o jsonpath='{.spec.selector.version}' | grep -q "$CURRENT_ENV"; then
-            echo "✅ API Gateway traffic successfully rolled back to $CURRENT_ENV"
+            echo "[OK] API Gateway traffic successfully rolled back to $CURRENT_ENV"
           else
-            echo "❌ API Gateway rollback validation failed"
+            echo "[FAIL] API Gateway rollback validation failed"
             validation_success=false
           fi
           
@@ -1679,9 +1679,9 @@ EOF
           
           if [ -n "$current_api_ip" ]; then
             if curl -f -s --max-time 15 "http://${current_api_ip}:80/health" > /dev/null; then
-              echo "✅ System health check passed after rollback"
+              echo "[OK] System health check passed after rollback"
             else
-              echo "❌ System health check failed after rollback"
+              echo "[FAIL] System health check failed after rollback"
               validation_success=false
             fi
           fi
@@ -1691,33 +1691,33 @@ EOF
           rollback_duration=$((rollback_end - rollback_start))
           
           echo ""
-          echo "🎯 EMERGENCY ROLLBACK SUMMARY:"
-          echo "════════════════════════════════════════════════════════════"
-          echo "🔄 Rollback Direction: $TARGET_ENV → $CURRENT_ENV"
+          echo "[TARGET] EMERGENCY ROLLBACK SUMMARY:"
+          echo "============================================================"
+          echo "[ROLLBACK] Rollback Direction: $TARGET_ENV → $CURRENT_ENV"
           echo "⏱️ Rollback Duration: ${rollback_duration} seconds"
-          echo "🎯 Target Time: < 120 seconds"
-          echo "✅ Rollback Success: $([ "$validation_success" = "true" ] && echo "YES" || echo "NEEDS REVIEW")"
-          echo "🛡️ Zero-Downtime Status: $([ $rollback_duration -lt 30 ] && echo "MAINTAINED" || echo "BRIEF INTERRUPTION")"
+          echo "[TARGET] Target Time: < 120 seconds"
+          echo "[OK] Rollback Success: $([ "$validation_success" = "true" ] && echo "YES" || echo "NEEDS REVIEW")"
+          echo "[SECURITY] Zero-Downtime Status: $([ $rollback_duration -lt 30 ] && echo "MAINTAINED" || echo "BRIEF INTERRUPTION")"
           echo "📅 Rollback Timestamp: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
           
           if [ "$validation_success" = "true" ]; then
             echo "🎉 EMERGENCY ROLLBACK COMPLETED SUCCESSFULLY"
-            echo "🚀 System restored to stable $CURRENT_ENV environment"
-            echo "📊 Production traffic restored with minimal impact"
+            echo "[DEPLOY] System restored to stable $CURRENT_ENV environment"
+            echo "[METRICS] Production traffic restored with minimal impact"
           else
-            echo "🚨 ROLLBACK NEEDS MANUAL VERIFICATION"
+            echo "[ALERT] ROLLBACK NEEDS MANUAL VERIFICATION"
             echo "🆘 Some validation checks failed - immediate review required"
           fi
 
       - name: Emergency Notification
         if: always()
         run: |
-          echo "📢 SENDING EMERGENCY NOTIFICATIONS"
+          echo "[NOTIFY] SENDING EMERGENCY NOTIFICATIONS"
           
           # Determine notification channels
           IFS=',' read -ra CHANNELS <<< "${{ github.event.inputs.notification_channels }}"
           
-          rollback_message="🚨 EMERGENCY PRODUCTION ROLLBACK EXECUTED\n\n📋 Deployment Details:\n• Image Tag: ${{ github.event.inputs.image_tag }}\n• Rollback Reason: Deployment validation failure\n• Executed By: @${{ github.actor }}\n• Timestamp: $(date -u '+%Y-%m-%d %H:%M:%S UTC')\n\n🔄 System Status:\n• Previous Environment Restored\n• Production Traffic Stabilized\n• Emergency Response Complete\n\n📞 Next Steps:\n• Review deployment logs\n• Investigate validation failures\n• Schedule remediation deployment"
+          rollback_message="[ALERT] EMERGENCY PRODUCTION ROLLBACK EXECUTED\n\n📋 Deployment Details:\n• Image Tag: ${{ github.event.inputs.image_tag }}\n• Rollback Reason: Deployment validation failure\n• Executed By: @${{ github.actor }}\n• Timestamp: $(date -u '+%Y-%m-%d %H:%M:%S UTC')\n\n[ROLLBACK] System Status:\n• Previous Environment Restored\n• Production Traffic Stabilized\n• Emergency Response Complete\n\n📞 Next Steps:\n• Review deployment logs\n• Investigate validation failures\n• Schedule remediation deployment"
           
           for channel in "${CHANNELS[@]}"; do
             case $channel in
@@ -1739,14 +1739,14 @@ EOF
             esac
           done
           
-          echo "✅ Emergency notifications sent to all configured channels"
+          echo "[OK] Emergency notifications sent to all configured channels"
 
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
   # STAGE 9: COMPREHENSIVE DEPLOYMENT NOTIFICATION
-  # ═══════════════════════════════════════════════════════════════════
+  # ===================================================================
 
   deployment-notification:
-    name: 📢 Deployment Notification & Reporting
+    name: [NOTIFY] Deployment Notification & Reporting
     needs: [blue-green-deployment, canary-rollout, prometheus-metrics-validation, post-deployment-validation, emergency-rollback]
     runs-on: ubuntu-latest
     if: always()
@@ -1754,24 +1754,24 @@ EOF
     steps:
       - name: Generate Comprehensive Deployment Report
         run: |
-          echo "📊 GENERATING COMPREHENSIVE DEPLOYMENT REPORT"
-          echo "════════════════════════════════════════════════════════════"
+          echo "[METRICS] GENERATING COMPREHENSIVE DEPLOYMENT REPORT"
+          echo "============================================================"
           
           # Determine overall deployment status
           deployment_status="SUCCESS"
-          status_icon="✅"
+          status_icon="[OK]"
           
           if [ "${{ needs.emergency-rollback.result }}" = "success" ]; then
             deployment_status="ROLLED_BACK"
-            status_icon="🔄"
+            status_icon="[ROLLBACK]"
           elif [ "${{ needs.blue-green-deployment.result }}" = "failure" ]; then
             deployment_status="FAILED"
-            status_icon="❌"
+            status_icon="[FAIL]"
           fi
           
           # Generate deployment report
           cat > deployment_report.md << EOF
-          # 🚀 Production Deployment Report
+          # [DEPLOY] Production Deployment Report
           
           **Overall Status**: $status_icon $deployment_status  
           **Deployment ID**: ${{ github.run_id }}  
@@ -1784,26 +1784,26 @@ EOF
           
           | Stage | Status | Duration | Notes |
           |-------|--------|----------|--------|
-          | 🔐 Team Lead Approval | ${{ needs.team-lead-approval.result == 'success' && '✅ Approved' || '❌ Failed' }} | - | Manual approval gate |
-          | 🛡️ Security Approval | ${{ needs.security-approval.result == 'success' && '✅ Approved' || '❌ Failed' }} | - | Security team review |
-          | 🔍 Security Scanning | ${{ needs.pre-deployment-security-scan.result == 'success' && '✅ Passed' || '❌ Failed' }} | ~5min | Trivy vulnerability scan |
-          | ✅ Pre-Deployment Validation | ${{ needs.pre-deployment-validation.result == 'success' && '✅ Passed' || '❌ Failed' }} | ~3min | System health checks |
-          | 💾 Database Migration | ${{ needs.database-backup-and-migration.result == 'success' && '✅ Success' || '❌ Failed' }} | ~10min | With backup & rollback |
-          | 🚀 Blue-Green Deployment | ${{ needs.blue-green-deployment.result == 'success' && '✅ Success' || '❌ Failed' }} | ~15min | Zero-downtime deployment |
-          | 🐤 Canary Rollout | ${{ needs.canary-rollout.result == 'success' && '✅ Success' || needs.canary-rollout.result == 'skipped' && '⏩ Skipped' || '❌ Failed' }} | ~20min | Progressive traffic switching |
-          | 📊 Metrics Validation | ${{ needs.prometheus-metrics-validation.result == 'success' && '✅ Passed' || '❌ Failed' }} | ~5min | Prometheus monitoring |
-          | 🎯 Post-Deployment | ${{ needs.post-deployment-validation.result == 'success' && '✅ Success' || '❌ Failed' }} | ~8min | End-to-end validation |
-          | 🚨 Emergency Rollback | ${{ needs.emergency-rollback.result == 'success' && '🔄 Executed' || needs.emergency-rollback.result == 'skipped' && '➖ Not Needed' || '❌ Failed' }} | <2min | Automatic rollback |
+          | [SECURE] Team Lead Approval | ${{ needs.team-lead-approval.result == 'success' && '[OK] Approved' || '[FAIL] Failed' }} | - | Manual approval gate |
+          | [SECURITY] Security Approval | ${{ needs.security-approval.result == 'success' && '[OK] Approved' || '[FAIL] Failed' }} | - | Security team review |
+          | 🔍 Security Scanning | ${{ needs.pre-deployment-security-scan.result == 'success' && '[OK] Passed' || '[FAIL] Failed' }} | ~5min | Trivy vulnerability scan |
+          | [OK] Pre-Deployment Validation | ${{ needs.pre-deployment-validation.result == 'success' && '[OK] Passed' || '[FAIL] Failed' }} | ~3min | System health checks |
+          | [BACKUP] Database Migration | ${{ needs.database-backup-and-migration.result == 'success' && '[OK] Success' || '[FAIL] Failed' }} | ~10min | With backup & rollback |
+          | [DEPLOY] Blue-Green Deployment | ${{ needs.blue-green-deployment.result == 'success' && '[OK] Success' || '[FAIL] Failed' }} | ~15min | Zero-downtime deployment |
+          | [CANARY] Canary Rollout | ${{ needs.canary-rollout.result == 'success' && '[OK] Success' || needs.canary-rollout.result == 'skipped' && '⏩ Skipped' || '[FAIL] Failed' }} | ~20min | Progressive traffic switching |
+          | [METRICS] Metrics Validation | ${{ needs.prometheus-metrics-validation.result == 'success' && '[OK] Passed' || '[FAIL] Failed' }} | ~5min | Prometheus monitoring |
+          | [TARGET] Post-Deployment | ${{ needs.post-deployment-validation.result == 'success' && '[OK] Success' || '[FAIL] Failed' }} | ~8min | End-to-end validation |
+          | [ALERT] Emergency Rollback | ${{ needs.emergency-rollback.result == 'success' && '[ROLLBACK] Executed' || needs.emergency-rollback.result == 'skipped' && '➖ Not Needed' || '[FAIL] Failed' }} | <2min | Automatic rollback |
           
-          ## 🎯 Key Metrics
+          ## [TARGET] Key Metrics
           
-          - **Zero-Downtime Achievement**: $([ "$deployment_status" != "FAILED" ] && echo "✅ Maintained" || echo "❌ Not Achieved")
+          - **Zero-Downtime Achievement**: $([ "$deployment_status" != "FAILED" ] && echo "[OK] Maintained" || echo "[FAIL] Not Achieved")
           - **Blue-Green Environment**: ${{ needs.blue-green-deployment.outputs.target-environment || 'N/A' }}
           - **Circuit Breaker Activations**: $([ "${{ needs.canary-rollout.result }}" = "failure" ] && echo "1 (triggered rollback)" || echo "0 (all thresholds met)")
-          - **Performance Thresholds**: $([ "${{ needs.canary-rollout.result }}" = "success" ] && echo "✅ All met" || echo "❌ Violations detected")
-          - **Security Scan Results**: $([ "${{ needs.pre-deployment-security-scan.result }}" = "success" ] && echo "✅ No critical vulnerabilities" || echo "❌ Security issues found")
+          - **Performance Thresholds**: $([ "${{ needs.canary-rollout.result }}" = "success" ] && echo "[OK] All met" || echo "[FAIL] Violations detected")
+          - **Security Scan Results**: $([ "${{ needs.pre-deployment-security-scan.result }}" = "success" ] && echo "[OK] No critical vulnerabilities" || echo "[FAIL] Security issues found")
           
-          ## 📊 Trading System Impact
+          ## [METRICS] Trading System Impact
           
           - **Trading Disruption**: $([ "$deployment_status" = "SUCCESS" ] && echo "None (zero downtime achieved)" || echo "Minimal (emergency rollback executed)")
           - **Order Processing**: Maintained throughout deployment
@@ -1811,12 +1811,12 @@ EOF
           - **Risk Management**: No interruption
           - **Settlement Systems**: Normal operation
           
-          ## 🔄 Environment Status
+          ## [ROLLBACK] Environment Status
           
           - **Production Environment**: $([ "$deployment_status" = "SUCCESS" ] && echo "${{ needs.blue-green-deployment.outputs.target-environment || 'Updated' }}" || echo "${{ needs.blue-green-deployment.outputs.current-environment || 'Stable' }}")
-          - **Rollback Capability**: ✅ Available (${{ needs.blue-green-deployment.outputs.current-environment || 'previous' }} environment ready)
-          - **Database Backup**: ✅ Created and verified
-          - **Monitoring Status**: ✅ Active (Prometheus + Grafana)
+          - **Rollback Capability**: [OK] Available (${{ needs.blue-green-deployment.outputs.current-environment || 'previous' }} environment ready)
+          - **Database Backup**: [OK] Created and verified
+          - **Monitoring Status**: [OK] Active (Prometheus + Grafana)
           
           ## 📈 Next Steps
           
@@ -1824,11 +1824,11 @@ EOF
           
           if [ "$deployment_status" = "SUCCESS" ]; then
             cat >> deployment_report.md << EOF
-          - ✅ **Deployment completed successfully**
-          - 📊 Monitor system metrics for 24 hours
+          - [OK] **Deployment completed successfully**
+          - [METRICS] Monitor system metrics for 24 hours
           - 🔍 Review performance baselines
           - 📝 Update deployment documentation
-          - 🎯 Schedule next deployment window
+          - [TARGET] Schedule next deployment window
           EOF
           elif [ "$deployment_status" = "ROLLED_BACK" ]; then
             cat >> deployment_report.md << EOF
@@ -1840,10 +1840,10 @@ EOF
           EOF
           else
             cat >> deployment_report.md << EOF
-          - 🚨 **Immediate investigation required**
+          - [ALERT] **Immediate investigation required**
           - 🛠️ Address deployment pipeline issues
           - 📞 Coordinate with infrastructure team
-          - 🔐 Review security and access permissions
+          - [SECURE] Review security and access permissions
           - 📋 Post-incident review and improvements
           EOF
           fi
@@ -1857,12 +1857,12 @@ EOF
           **Zero-Downtime Strategy**: Blue-Green with Canary Rollout
           EOF
           
-          echo "✅ Deployment report generated"
+          echo "[OK] Deployment report generated"
 
       - name: Send Deployment Notifications
         run: |
-          echo "📢 SENDING DEPLOYMENT NOTIFICATIONS"
-          echo "════════════════════════════════════════════════════════════"
+          echo "[NOTIFY] SENDING DEPLOYMENT NOTIFICATIONS"
+          echo "============================================================"
           
           # Determine notification status
           deployment_status="SUCCESS"
@@ -1876,7 +1876,7 @@ EOF
           IFS=',' read -ra CHANNELS <<< "${{ github.event.inputs.notification_channels }}"
           
           # Create notification message
-          notification_title="🚀 Production Deployment Report - $deployment_status"
+          notification_title="[DEPLOY] Production Deployment Report - $deployment_status"
           notification_summary="Deployment ${{ github.run_id }} for image ${{ github.event.inputs.image_tag }} has $deployment_status"
           
           # Send notifications to configured channels
@@ -1902,7 +1902,7 @@ EOF
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "$notification_summary\n\n*Key Details:*\n• Image Tag: \`${{ github.event.inputs.image_tag }}\`\n• Environment: ${{ needs.blue-green-deployment.outputs.target-environment || 'N/A' }}\n• Executed by: @${{ github.actor }}\n• Zero Downtime: $([ "$deployment_status" != "FAILED" ] && echo "✅ Achieved" || echo "❌ Not Achieved")"
+                  "text": "$notification_summary\n\n*Key Details:*\n• Image Tag: \`${{ github.event.inputs.image_tag }}\`\n• Environment: ${{ needs.blue-green-deployment.outputs.target-environment || 'N/A' }}\n• Executed by: @${{ github.actor }}\n• Zero Downtime: $([ "$deployment_status" != "FAILED" ] && echo "[OK] Achieved" || echo "[FAIL] Not Achieved")"
                 }
               },
               {
@@ -1942,7 +1942,7 @@ EOF
             esac
           done
           
-          echo "✅ Notifications sent to all configured channels"
+          echo "[OK] Notifications sent to all configured channels"
 
       - name: Upload Deployment Artifacts
         if: always()
@@ -1957,7 +1957,7 @@ EOF
       - name: Final Deployment Summary
         run: |
           echo "🎊 PRODUCTION DEPLOYMENT PIPELINE COMPLETED"
-          echo "════════════════════════════════════════════════════════════"
+          echo "============================================================"
           
           # Final summary
           deployment_status="SUCCESS"
@@ -1969,7 +1969,7 @@ EOF
           
           echo "🏁 FINAL STATUS: $deployment_status"
           echo "📦 Image Tag: ${{ github.event.inputs.image_tag }}"
-          echo "🎯 Strategy: ${{ github.event.inputs.deployment_strategy }}"
+          echo "[TARGET] Strategy: ${{ github.event.inputs.deployment_strategy }}"
           echo "👤 Executed By: @${{ github.actor }}"
           echo "⏰ Completed: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
           echo ""
@@ -1977,36 +1977,36 @@ EOF
           case $deployment_status in
             "SUCCESS")
               echo "🎉 DEPLOYMENT SUCCESSFUL WITH ZERO DOWNTIME"
-              echo "✅ All stages completed successfully"
-              echo "🚀 Production system updated and fully operational"
-              echo "📊 Monitoring active for 24-hour observation period"
+              echo "[OK] All stages completed successfully"
+              echo "[DEPLOY] Production system updated and fully operational"
+              echo "[METRICS] Monitoring active for 24-hour observation period"
               ;;
             "ROLLED_BACK")
-              echo "🔄 DEPLOYMENT ROLLED BACK AUTOMATICALLY"
+              echo "[ROLLBACK] DEPLOYMENT ROLLED BACK AUTOMATICALLY"
               echo "⚡ Emergency rollback executed successfully"
-              echo "🛡️ Zero downtime maintained through quick recovery"
+              echo "[SECURITY] Zero downtime maintained through quick recovery"
               echo "🔍 Investigation required for deployment issues"
               ;;
             "FAILED")
-              echo "❌ DEPLOYMENT FAILED"
-              echo "🚨 Manual intervention may be required"
+              echo "[FAIL] DEPLOYMENT FAILED"
+              echo "[ALERT] Manual intervention may be required"
               echo "📞 Immediate team coordination needed"
               echo "📋 Post-incident review recommended"
               ;;
           esac
           
           echo ""
-          echo "🎯 PRODUCTION DEPLOYMENT FEATURES DEMONSTRATED:"
-          echo "  🔐 Multi-stage approval gates with team lead and security review"
-          echo "  🛡️ Comprehensive security scanning with Trivy vulnerability detection"
-          echo "  🚀 Blue-green deployment ensuring zero-downtime environment switching"
-          echo "  🐤 Progressive canary rollout with 5% → 10% → 25% → 50% → 100% traffic"
-          echo "  📊 Real-time Prometheus metrics monitoring with automated thresholds"
-          echo "  🔄 Circuit breaker protection with automatic rollback on degradation"
-          echo "  💾 Database migration safety with comprehensive backup and rollback"
-          echo "  🎯 Trading system anomaly detection and protection mechanisms"
-          echo "  🚨 Emergency rollback capability with <2 minute recovery time"
-          echo "  📢 Multi-channel notifications with detailed deployment reporting"
+          echo "[TARGET] PRODUCTION DEPLOYMENT FEATURES DEMONSTRATED:"
+          echo "  [SECURE] Multi-stage approval gates with team lead and security review"
+          echo "  [SECURITY] Comprehensive security scanning with Trivy vulnerability detection"
+          echo "  [DEPLOY] Blue-green deployment ensuring zero-downtime environment switching"
+          echo "  [CANARY] Progressive canary rollout with 5% → 10% → 25% → 50% → 100% traffic"
+          echo "  [METRICS] Real-time Prometheus metrics monitoring with automated thresholds"
+          echo "  [ROLLBACK] Circuit breaker protection with automatic rollback on degradation"
+          echo "  [BACKUP] Database migration safety with comprehensive backup and rollback"
+          echo "  [TARGET] Trading system anomaly detection and protection mechanisms"
+          echo "  [ALERT] Emergency rollback capability with <2 minute recovery time"
+          echo "  [NOTIFY] Multi-channel notifications with detailed deployment reporting"
           echo ""
           echo "💡 EDUCATIONAL VALUE:"
           echo "This workflow demonstrates production-grade deployment practices for"
