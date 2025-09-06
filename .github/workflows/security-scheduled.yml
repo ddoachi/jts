@@ -1442,17 +1442,19 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue.data.number,
-                body: `## 📋 Security Analysis Context
-          
-          This issue was automatically created based on findings from our scheduled security analysis.
-          
-          **Next Steps**:
-          1. Security team should review within 2 hours
-          2. Assign appropriate team members for remediation
-          3. Set target resolution timeline based on severity
-          4. Update issue status as work progresses
-          
-          **Workflow Run**: [View detailed analysis](${context.payload.repository.html_url}/actions/runs/${context.runId})`
+                body: [
+                  '## 📋 Security Analysis Context',
+                  '',
+                  'This issue was automatically created based on findings from our scheduled security analysis.',
+                  '',
+                  '**Next Steps**:',
+                  '1. Security team should review within 2 hours',
+                  '2. Assign appropriate team members for remediation',
+                  '3. Set target resolution timeline based on severity',
+                  '4. Update issue status as work progresses',
+                  '',
+                  `**Workflow Run**: [View detailed analysis](${context.payload.repository.html_url}/actions/runs/${context.runId})`
+                ].join('\n')
               });
               
             } catch (error) {
