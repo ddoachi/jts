@@ -1,11 +1,11 @@
 /**
  * Docker Health Check Utilities for JTS Trading System
- * 
+ *
  * This module provides comprehensive health checking capabilities for containerized
  * microservices in the JTS trading platform. It implements a modular, extensible
  * health check system that integrates with Docker's native health check mechanism
  * and Kubernetes liveness/readiness probes.
- * 
+ *
  * Key Features:
  * - Modular health check registration
  * - Service-specific health validations
@@ -15,7 +15,6 @@
  */
 
 import { Injectable, Logger } from '@nestjs/common';
-import { HealthCheckService, HealthCheck, HealthCheckResult } from '@nestjs/terminus';
 
 /**
  * Health check status enumeration
@@ -66,15 +65,15 @@ export type HealthCheckFunction = () => Promise<HealthCheckDetail>;
 
 /**
  * DockerHealthCheck Service
- * 
+ *
  * Core service for managing health checks in containerized environments.
  * This service provides a flexible framework for registering and executing
  * health checks with proper error handling and timeout management.
- * 
+ *
  * Usage Example:
  * ```typescript
  * const healthService = new DockerHealthCheck('api-gateway', '1.0.0');
- * 
+ *
  * // Register database health check
  * healthService.registerCheck('database', async () => {
  *   const isConnected = await db.ping();
@@ -84,7 +83,7 @@ export type HealthCheckFunction = () => Promise<HealthCheckDetail>;
  *     message: isConnected ? 'Database connected' : 'Database connection failed'
  *   };
  * });
- * 
+ *
  * // Perform health check
  * const result = await healthService.performHealthCheck();
  * ```
@@ -118,14 +117,18 @@ export class DockerHealthCheck {
 
       return {
         name: 'memory',
-        status: usagePercent < 90 ? HealthStatus.HEALTHY : 
-                usagePercent < 95 ? HealthStatus.DEGRADED : HealthStatus.UNHEALTHY,
+        status:
+          usagePercent < 90
+            ? HealthStatus.HEALTHY
+            : usagePercent < 95
+              ? HealthStatus.DEGRADED
+              : HealthStatus.UNHEALTHY,
         message: `Heap usage: ${heapUsedMB.toFixed(2)}MB / ${heapTotalMB.toFixed(2)}MB (${usagePercent.toFixed(1)}%)`,
         metadata: {
           heapUsedMB,
           heapTotalMB,
-          usagePercent
-        }
+          usagePercent,
+        },
       };
     });
 
@@ -140,15 +143,15 @@ export class DockerHealthCheck {
         message: `Service uptime: ${uptimeHours.toFixed(2)} hours`,
         metadata: {
           uptimeMs,
-          uptimeHours
-        }
+          uptimeHours,
+        },
       };
     });
   }
 
   /**
    * Register a custom health check
-   * 
+   *
    * @param name - Unique identifier for the health check
    * @param check - Async function that performs the health check
    */
@@ -159,7 +162,7 @@ export class DockerHealthCheck {
 
   /**
    * Remove a health check
-   * 
+   *
    * @param name - Name of the health check to remove
    */
   public unregisterCheck(name: string): void {
@@ -169,7 +172,7 @@ export class DockerHealthCheck {
 
   /**
    * Execute all registered health checks
-   * 
+   *
    * @returns Comprehensive health check response
    */
   public async performHealthCheck(): Promise<DockerHealthResponse> {
@@ -190,12 +193,12 @@ export class DockerHealthCheck {
       if (result.status === 'fulfilled') {
         return result.value;
       } else {
-        const checkName = Array.from(this.checks.keys())[index];
+        const checkName = Array.from(this.checks.keys())[index] || 'unknown';
         this.logger.error(`Health check '${checkName}' failed:`, result.reason);
         return {
           name: checkName,
           status: HealthStatus.UNHEALTHY,
-          message: `Check failed: ${result.reason?.message || 'Unknown error'}`
+          message: `Check failed: ${result.reason?.message || 'Unknown error'}`,
         };
       }
     });
@@ -215,22 +218,22 @@ export class DockerHealthCheck {
       checks,
       metrics: {
         memoryUsage: process.memoryUsage(),
-        cpuUsage: process.cpuUsage ? process.cpuUsage() : undefined,
-        responseTime
-      }
+        ...(process.cpuUsage && { cpuUsage: process.cpuUsage() }),
+        responseTime,
+      },
     };
   }
 
   /**
    * Execute a health check with timeout protection
-   * 
+   *
    * @param name - Name of the health check
    * @param checkFn - Health check function to execute
    * @returns Health check result or timeout error
    */
   private async executeCheckWithTimeout(
     name: string,
-    checkFn: HealthCheckFunction
+    checkFn: HealthCheckFunction,
   ): Promise<HealthCheckDetail> {
     const timeoutPromise = new Promise<HealthCheckDetail>((_, reject) => {
       setTimeout(() => {
@@ -249,8 +252,8 @@ export class DockerHealthCheck {
         return {
           name,
           status: HealthStatus.UNHEALTHY,
-          message: `Check error: ${error.message}`,
-          responseTime: Date.now() - startTime
+          message: `Check error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          responseTime: Date.now() - startTime,
         };
       }
     })();
@@ -260,23 +263,23 @@ export class DockerHealthCheck {
 
   /**
    * Determine overall health status based on individual check results
-   * 
+   *
    * @param checks - Array of individual health check results
    * @returns Overall health status
    */
   private determineOverallStatus(checks: HealthCheckDetail[]): HealthStatus {
     // If any check is unhealthy, overall status is unhealthy
-    if (checks.some(c => c.status === HealthStatus.UNHEALTHY)) {
+    if (checks.some((c) => c.status === HealthStatus.UNHEALTHY)) {
       return HealthStatus.UNHEALTHY;
     }
 
     // If any check is degraded, overall status is degraded
-    if (checks.some(c => c.status === HealthStatus.DEGRADED)) {
+    if (checks.some((c) => c.status === HealthStatus.DEGRADED)) {
       return HealthStatus.DEGRADED;
     }
 
     // If any check is starting, overall status is starting
-    if (checks.some(c => c.status === HealthStatus.STARTING)) {
+    if (checks.some((c) => c.status === HealthStatus.STARTING)) {
       return HealthStatus.STARTING;
     }
 
@@ -287,23 +290,28 @@ export class DockerHealthCheck {
   /**
    * Express/Fastify compatible health check endpoint handler
    * Can be used directly as a route handler
-   * 
+   *
    * @returns Express-compatible request handler
    */
   public getExpressHandler() {
-    return async (req: any, res: any) => {
+    return async (_req: any, res: any) => {
       try {
         const health = await this.performHealthCheck();
-        const statusCode = health.status === HealthStatus.HEALTHY ? 200 :
-                          health.status === HealthStatus.DEGRADED ? 200 :
-                          health.status === HealthStatus.STARTING ? 503 : 503;
-        
+        const statusCode =
+          health.status === HealthStatus.HEALTHY
+            ? 200
+            : health.status === HealthStatus.DEGRADED
+              ? 200
+              : health.status === HealthStatus.STARTING
+                ? 503
+                : 503;
+
         res.status(statusCode).json(health);
       } catch (error) {
         this.logger.error('Health check handler error:', error);
         res.status(503).json({
           status: HealthStatus.UNHEALTHY,
-          error: error.message
+          error: error instanceof Error ? error.message : 'Unknown error',
         });
       }
     };
@@ -335,14 +343,14 @@ export class DatabaseHealthCheck {
           responseTime,
           metadata: {
             connectionPool: dbConnection.pool?.size || 0,
-            activeConnections: dbConnection.pool?.activeConnections || 0
-          }
+            activeConnections: dbConnection.pool?.activeConnections || 0,
+          },
         };
       } catch (error) {
         return {
           name: 'database',
           status: HealthStatus.UNHEALTHY,
-          message: `Database connection failed: ${error.message}`
+          message: `Database connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         };
       }
     };
@@ -365,13 +373,13 @@ export class RedisHealthCheck {
           name: 'redis',
           status: responseTime < 100 ? HealthStatus.HEALTHY : HealthStatus.DEGRADED,
           message: `Redis responding in ${responseTime}ms`,
-          responseTime
+          responseTime,
         };
       } catch (error) {
         return {
           name: 'redis',
           status: HealthStatus.UNHEALTHY,
-          message: `Redis connection failed: ${error.message}`
+          message: `Redis connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         };
       }
     };
@@ -396,14 +404,14 @@ export class KafkaHealthCheck {
           status: HealthStatus.HEALTHY,
           message: `Kafka connected with ${topics.length} topics`,
           metadata: {
-            topicCount: topics.length
-          }
+            topicCount: topics.length,
+          },
         };
       } catch (error) {
         return {
           name: 'kafka',
           status: HealthStatus.UNHEALTHY,
-          message: `Kafka connection failed: ${error.message}`
+          message: `Kafka connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         };
       }
     };
@@ -419,10 +427,15 @@ export class ExternalAPIHealthCheck {
     return async (): Promise<HealthCheckDetail> => {
       try {
         const startTime = Date.now();
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
         const response = await fetch(healthEndpoint, {
           method: 'GET',
-          timeout: 5000
+          signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
         const responseTime = Date.now() - startTime;
 
         return {
@@ -431,14 +444,14 @@ export class ExternalAPIHealthCheck {
           message: `${apiName} API responding with status ${response.status}`,
           responseTime,
           metadata: {
-            statusCode: response.status
-          }
+            statusCode: response.status,
+          },
         };
       } catch (error) {
         return {
           name: `external-api-${apiName}`,
           status: HealthStatus.UNHEALTHY,
-          message: `${apiName} API unreachable: ${error.message}`
+          message: `${apiName} API unreachable: ${error instanceof Error ? error.message : 'Unknown error'}`,
         };
       }
     };
@@ -457,16 +470,19 @@ export class CircuitBreakerHealthCheck {
 
       return {
         name: 'circuit-breaker',
-        status: state === 'OPEN' ? HealthStatus.UNHEALTHY :
-                state === 'HALF_OPEN' ? HealthStatus.DEGRADED :
-                HealthStatus.HEALTHY,
+        status:
+          state === 'OPEN'
+            ? HealthStatus.UNHEALTHY
+            : state === 'HALF_OPEN'
+              ? HealthStatus.DEGRADED
+              : HealthStatus.HEALTHY,
         message: `Circuit breaker state: ${state}`,
         metadata: {
           state,
           successRate: stats.successRate,
           failureCount: stats.failureCount,
-          requestCount: stats.requestCount
-        }
+          requestCount: stats.requestCount,
+        },
       };
     };
   }
