@@ -192,14 +192,22 @@ jobs:
 
       # Set up Node.js for dependency management
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '20'
-          cache: 'yarn'
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache Yarn
+        uses: actions/cache@v4
+        with:
+          path: |
+            .yarn/cache
+            .yarn/install-state.gz
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
 
       # Install dependencies for build context
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile --non-interactive
+      - name: Install Dependencies
+        run: yarn install --immutable
 
       # Set up Docker Buildx for multi-platform builds
       - name: Set up Docker Buildx
