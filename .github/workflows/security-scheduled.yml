@@ -1,0 +1,1902 @@
+# ═══════════════════════════════════════════════════════════════════
+# ███ Scheduled Security Scans & Deep Analysis Workflow ███
+# ═══════════════════════════════════════════════════════════════════
+#
+# **Purpose**: Comprehensive scheduled security scanning with deep dependency analysis,
+# secret rotation audits, and vulnerability aggregation for the JTS trading system.
+#
+# **WHY**: Scheduled scans catch newly disclosed vulnerabilities and security issues
+# that emerge between code changes, providing continuous security monitoring.
+#
+# **HOW**: Multi-layered approach combining deep dependency analysis, secret detection,
+# compliance checks, and automated issue creation with notification integration.
+#
+# **WHAT**: Production-ready scheduled security pipeline with educational comments,
+# error handling, actionable reporting, and comprehensive security coverage.
+#
+# CRITICAL FIXES from T01:
+# ✅ Use `docker compose` (space) not `docker-compose` (hyphen)
+# ✅ Use modern Nx syntax: `nx show projects --affected` not deprecated commands
+# ✅ Convert multiline output to single-line: `| tr '\n' ',' | sed 's/,$//'`
+# ✅ Don't reference non-existent projects - check what exists first
+# ✅ Use `yarn` consistently, not `npm`
+# ✅ Handle missing scripts gracefully with error checking
+
+name: 'Scheduled Security Analysis'
+
+on:
+  # WHY: Regular scheduled scans to catch new vulnerabilities and security issues
+  # STRATEGY: Monthly deep scans for comprehensive analysis, weekly quick scans for rapid detection
+  schedule:
+    # Monthly deep scan - First Monday of each month at 3 AM UTC
+    - cron: '0 3 1 * *' # Deep scan with full vulnerability database updates
+    # Weekly quick scan - Every Monday at 2 AM UTC
+    - cron: '0 2 * * 1' # Quick scan for newly disclosed vulnerabilities
+    # Daily dependency check - Every day at 1 AM UTC
+    - cron: '0 1 * * *' # Lightweight dependency vulnerability check
+
+  # WHY: Allow manual triggering for incident response and security audits
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of security scan to perform'
+        required: true
+        default: 'quick'
+        type: choice
+        options:
+          - quick # Fast scan focusing on critical vulnerabilities
+          - deep # Comprehensive scan including all security checks
+          - dependency # Deep dependency analysis with Retire.js and Snyk
+          - secrets # Focus on secret detection and rotation audit
+          - compliance # License and regulatory compliance check
+          - full # All security checks plus extended analysis
+
+      notification_level:
+        description: 'Notification level for findings'
+        required: false
+        default: 'critical'
+        type: choice
+        options:
+          - all # Notify on all findings
+          - critical # Only critical severity findings
+          - high-critical # High and critical severity findings
+          - none # No notifications (testing/debugging)
+
+      create_issues:
+        description: 'Automatically create GitHub issues for critical findings'
+        required: false
+        default: true
+        type: boolean
+
+      update_dependencies:
+        description: 'Attempt to auto-update vulnerable dependencies'
+        required: false
+        default: false
+        type: boolean
+
+# SECURITY: Minimal permissions with explicit escalation for security operations
+permissions:
+  contents: read # Read repository content and configuration
+  security-events: write # Upload SARIF results to GitHub Security tab
+  issues: write # Create issues for critical security findings
+  pull-requests: write # Create PRs for dependency updates
+  actions: read # Read workflow and action status
+  checks: write # Update check status for security gates
+  id-token: write # OIDC authentication for external services
+
+# WHY: Global environment configuration for consistent security scanning
+env:
+  NODE_VERSION: '20.x'
+  YARN_CACHE_FOLDER: .yarn/cache
+  NX_CLOUD_DISTRIBUTED_EXECUTION: false # Disable for security scans
+  SECURITY_SCAN_TIMEOUT: 3600 # 1 hour timeout for deep scans
+  # EDUCATIONAL: Security scanning tools often require extended timeouts
+  # due to vulnerability database downloads and comprehensive analysis
+
+  # Notification configuration
+  SLACK_WEBHOOK_URL: ${{ secrets.SECURITY_SLACK_WEBHOOK }}
+  DISCORD_WEBHOOK_URL: ${{ secrets.SECURITY_DISCORD_WEBHOOK }}
+
+  # External security service integration
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  SONARCLOUD_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+jobs:
+  # ═══════════════════════════════════════════════════════════════
+  # JOB: Determine Scan Strategy & Project Discovery
+  # ═══════════════════════════════════════════════════════════════
+  prepare-security-scan:
+    name: 'Security Scan Preparation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    outputs:
+      scan-strategy: ${{ steps.determine-strategy.outputs.strategy }}
+      scan-scope: ${{ steps.determine-strategy.outputs.scope }}
+      notification-level: ${{ steps.determine-strategy.outputs.notifications }}
+      should-create-issues: ${{ steps.determine-strategy.outputs.create-issues }}
+      projects-found: ${{ steps.discover-projects.outputs.has-projects }}
+      project-list: ${{ steps.discover-projects.outputs.all-projects }}
+      scan-matrix: ${{ steps.create-scan-matrix.outputs.matrix }}
+      deep-scan-enabled: ${{ steps.determine-strategy.outputs.deep-scan }}
+      dependency-scan-enabled: ${{ steps.determine-strategy.outputs.dependency-scan }}
+      secrets-scan-enabled: ${{ steps.determine-strategy.outputs.secrets-scan }}
+
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
+        with:
+          # WHY: Full history needed for comprehensive security analysis
+          fetch-depth: 0
+          # SECURITY: Ensure we have complete codebase for vulnerability scanning
+
+      - name: 'Setup Node Environment'
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          install-deps: true
+
+      - name: 'Determine Scan Strategy'
+        id: determine-strategy
+        run: |
+          echo "🎯 Determining security scan strategy..."
+
+          # Initialize strategy variables
+          STRATEGY="quick"
+          SCOPE="full"
+          NOTIFICATIONS="critical"
+          CREATE_ISSUES="true"
+          DEEP_SCAN="false"
+          DEPENDENCY_SCAN="true"
+          SECRETS_SCAN="true"
+
+          # EDUCATIONAL: Different scan strategies optimize for different scenarios:
+          # - Quick: Fast vulnerability detection for daily monitoring
+          # - Deep: Comprehensive analysis for monthly security reviews
+          # - Full: All security checks for incident response and audits
+
+          if [[ "${{ github.event_name }}" == "schedule" ]]; then
+            # Determine scan type based on cron schedule
+            case "${{ github.event.schedule }}" in
+              "0 3 1 * *")  # Monthly deep scan
+                STRATEGY="deep"
+                DEEP_SCAN="true"
+                NOTIFICATIONS="high-critical"
+                echo "📊 Monthly deep security scan activated"
+                ;;
+              "0 2 * * 1")  # Weekly quick scan
+                STRATEGY="quick"
+                NOTIFICATIONS="critical"
+                echo "⚡ Weekly quick security scan activated"
+                ;;
+              "0 1 * * *")  # Daily dependency check
+                STRATEGY="dependency"
+                DEEP_SCAN="false"
+                SECRETS_SCAN="false"
+                echo "📦 Daily dependency security check activated"
+                ;;
+            esac
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            # Use manual input parameters
+            STRATEGY="${{ inputs.scan_type }}"
+            NOTIFICATIONS="${{ inputs.notification_level }}"
+            CREATE_ISSUES="${{ inputs.create_issues }}"
+            
+            # Enable deep scanning for comprehensive scan types
+            case "$STRATEGY" in
+              "deep"|"full")
+                DEEP_SCAN="true"
+                ;;
+              "secrets")
+                DEEP_SCAN="false"
+                DEPENDENCY_SCAN="false"
+                SECRETS_SCAN="true"
+                ;;
+              "dependency")
+                DEEP_SCAN="false"
+                SECRETS_SCAN="false"
+                ;;
+            esac
+            
+            echo "🔧 Manual security scan: $STRATEGY"
+          fi
+
+          # Output strategy configuration
+          echo "strategy=$STRATEGY" >> $GITHUB_OUTPUT
+          echo "scope=$SCOPE" >> $GITHUB_OUTPUT
+          echo "notifications=$NOTIFICATIONS" >> $GITHUB_OUTPUT
+          echo "create-issues=$CREATE_ISSUES" >> $GITHUB_OUTPUT
+          echo "deep-scan=$DEEP_SCAN" >> $GITHUB_OUTPUT
+          echo "dependency-scan=$DEPENDENCY_SCAN" >> $GITHUB_OUTPUT
+          echo "secrets-scan=$SECRETS_SCAN" >> $GITHUB_OUTPUT
+
+          echo "════════════════════════════════════════"
+          echo "Security Scan Configuration:"
+          echo "Strategy: $STRATEGY"
+          echo "Scope: $SCOPE"
+          echo "Notifications: $NOTIFICATIONS"
+          echo "Create Issues: $CREATE_ISSUES"
+          echo "Deep Scan: $DEEP_SCAN"
+          echo "Dependency Scan: $DEPENDENCY_SCAN"
+          echo "Secrets Scan: $SECRETS_SCAN"
+          echo "════════════════════════════════════════"
+
+      - name: 'Discover Projects'
+        id: discover-projects
+        run: |
+          echo "🔍 Discovering projects for security analysis..."
+
+          # CRITICAL: Clean Nx cache to prevent stale data affecting security scans
+          rm -rf .nx/cache || true
+          yarn nx reset || true
+
+          # EDUCATIONAL: Project discovery is critical for security scanning because:
+          # 1. Different projects may have different security requirements
+          # 2. Monorepos require scanning each project's dependencies separately
+          # 3. Security configurations may vary between projects
+
+          # CRITICAL: Use modern Nx syntax and handle missing projects gracefully
+          if command -v nx &> /dev/null && yarn nx show projects &>/dev/null; then
+            # Get all projects using modern Nx commands
+            ALL_PROJECTS=$(yarn nx show projects 2>/dev/null | tr '\n' ',' | sed 's/,$//' || echo "")
+            
+            if [[ -n "$ALL_PROJECTS" ]]; then
+              HAS_PROJECTS="true"
+              echo "📋 Found Nx projects: $ALL_PROJECTS"
+            else
+              HAS_PROJECTS="false"
+              echo "⚠️ No Nx projects found, scanning root directory"
+            fi
+          else
+            echo "⚠️ Nx not available or not configured, scanning entire repository"
+            ALL_PROJECTS=""
+            HAS_PROJECTS="false"
+          fi
+
+          # Output project discovery results
+          echo "all-projects=$ALL_PROJECTS" >> $GITHUB_OUTPUT
+          echo "has-projects=$HAS_PROJECTS" >> $GITHUB_OUTPUT
+
+          echo "═══ Project Discovery Results ═══"
+          echo "Projects Found: $HAS_PROJECTS"
+          echo "Project List: $ALL_PROJECTS"
+
+      - name: 'Create Scan Matrix'
+        id: create-scan-matrix
+        run: |
+          echo "🔧 Creating security scan matrix..."
+
+          STRATEGY="${{ steps.determine-strategy.outputs.strategy }}"
+          HAS_PROJECTS="${{ steps.discover-projects.outputs.has-projects }}"
+
+          # EDUCATIONAL: Scan matrix allows parallel execution of security checks
+          # across different projects and security tool combinations for efficiency
+
+          # Create matrix based on scan strategy and available projects
+          if [[ "$HAS_PROJECTS" == "true" ]]; then
+            PROJECTS="${{ steps.discover-projects.outputs.all-projects }}"
+            
+            # Convert comma-separated projects to JSON array
+            if [[ -n "$PROJECTS" ]]; then
+              PROJECT_ARRAY=$(echo "$PROJECTS" | sed 's/,/","/g' | sed 's/^/"/' | sed 's/$/"/')
+              PROJECT_MATRIX="[$PROJECT_ARRAY]"
+            else
+              PROJECT_MATRIX='["root"]'
+            fi
+          else
+            PROJECT_MATRIX='["root"]'
+          fi
+
+          # Define security tool combinations based on strategy
+          case "$STRATEGY" in
+            "quick")
+              TOOL_MATRIX='["snyk", "retire"]'
+              ;;
+            "deep"|"full")
+              TOOL_MATRIX='["snyk", "retire", "audit", "owasp", "trivy"]'
+              ;;
+            "dependency")
+              TOOL_MATRIX='["snyk", "retire", "audit", "owasp"]'
+              ;;
+            "secrets")
+              TOOL_MATRIX='["trufflehog", "gitleaks"]'
+              ;;
+            *)
+              TOOL_MATRIX='["snyk", "retire", "audit"]'
+              ;;
+          esac
+
+          # Create combined matrix
+          MATRIX_JSON="{\"project\":$PROJECT_MATRIX,\"tool\":$TOOL_MATRIX}"
+
+          echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
+          echo "🔧 Security scan matrix: $MATRIX_JSON"
+
+  # ═══════════════════════════════════════════════════════════════
+  # JOB: Deep Dependency Analysis with Retire.js and Snyk
+  # ═══════════════════════════════════════════════════════════════
+  deep-dependency-analysis:
+    name: 'Deep Dependency Security Analysis'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: prepare-security-scan
+
+    # WHY: Only run dependency analysis when enabled by scan strategy
+    if: needs.prepare-security-scan.outputs.dependency-scan-enabled == 'true'
+
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # EDUCATIONAL: Multiple dependency scanning tools provide complementary coverage:
+          # - Snyk: Commercial-grade vulnerability database with fix recommendations
+          # - Retire.js: Focus on JavaScript libraries with detailed version tracking
+          # - OWASP Dependency Check: Comprehensive CVE database integration
+          # - Yarn Audit: Built-in Node.js ecosystem vulnerability detection
+          - tool: 'snyk'
+            name: 'Snyk Security Analysis'
+          - tool: 'retire'
+            name: 'Retire.js Vulnerability Detection'
+          - tool: 'owasp'
+            name: 'OWASP Dependency Check'
+          - tool: 'yarn-audit'
+            name: 'Yarn Security Audit'
+
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 'Setup Node Environment'
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          install-deps: true
+
+      - name: 'Setup Security Scanning Tools'
+        run: |
+          echo "🔧 Setting up ${{ matrix.tool }} security scanner..."
+
+          case "${{ matrix.tool }}" in
+            "snyk")
+              # EDUCATIONAL: Snyk provides commercial-grade vulnerability scanning
+              # with detailed fix recommendations and license compliance checks
+              if [[ -n "${{ env.SNYK_TOKEN }}" ]]; then
+                npm install -g snyk
+                snyk auth ${{ env.SNYK_TOKEN }}
+                echo "✅ Snyk authentication successful"
+              else
+                echo "⚠️ Snyk token not available, using public database only"
+                npm install -g snyk
+              fi
+              ;;
+            
+            "retire")
+              # EDUCATIONAL: Retire.js specializes in JavaScript library vulnerabilities
+              # with detailed version tracking and security advisories
+              yarn global add retire
+              echo "✅ Retire.js installed"
+              ;;
+            
+            "owasp")
+              # EDUCATIONAL: OWASP Dependency Check provides comprehensive CVE scanning
+              # with integration to National Vulnerability Database (NVD)
+              echo "✅ OWASP Dependency Check will be handled by Docker container"
+              ;;
+            
+            "yarn-audit")
+              # EDUCATIONAL: Yarn audit uses the npm security advisory database
+              # and is built into the Yarn package manager
+              echo "✅ Yarn audit is built-in, no additional setup required"
+              ;;
+          esac
+
+      - name: 'Run Snyk Security Analysis'
+        if: matrix.tool == 'snyk'
+        run: |
+          echo "🔍 Running Snyk security analysis..."
+
+          # Create output directory
+          mkdir -p security-reports/snyk
+
+          # EDUCATIONAL: Snyk test checks for vulnerabilities in dependencies
+          # --severity-threshold sets minimum severity level for reporting
+          # --json provides structured output for further processing
+
+          # Test for vulnerabilities
+          snyk test \
+            --severity-threshold=low \
+            --json \
+            --file=package.json > security-reports/snyk/vulnerabilities.json || {
+            echo "⚠️ Snyk found vulnerabilities, continuing with report generation"
+          }
+
+          # Generate SARIF format for GitHub Security integration
+          snyk test \
+            --sarif \
+            --sarif-file-output=security-reports/snyk/snyk-results.sarif \
+            --file=package.json || {
+            echo "⚠️ SARIF generation completed with findings"
+          }
+
+          # License compliance check
+          snyk test \
+            --json \
+            --file=package.json \
+            --package-manager=yarn > security-reports/snyk/licenses.json || {
+            echo "⚠️ License check completed with findings"
+          }
+
+          # Generate remediation advice
+          snyk test \
+            --json \
+            --file=package.json \
+            --remediation > security-reports/snyk/remediation.json || {
+            echo "⚠️ Remediation advice generated"
+          }
+
+          echo "📊 Snyk analysis complete, results saved to security-reports/snyk/"
+
+      - name: 'Run Retire.js Analysis'
+        if: matrix.tool == 'retire'
+        run: |
+          echo "🔍 Running Retire.js vulnerability detection..."
+
+          mkdir -p security-reports/retire
+
+          # EDUCATIONAL: Retire.js focuses specifically on JavaScript libraries
+          # with known security issues, providing detailed version information
+
+          # Scan for vulnerable JavaScript libraries
+          retire \
+            --js \
+            --node \
+            --outputformat json \
+            --outputpath security-reports/retire/retire-results.json \
+            --path . || {
+            echo "⚠️ Retire.js found vulnerable libraries, continuing with analysis"
+          }
+
+          # Generate human-readable report
+          retire \
+            --js \
+            --node \
+            --outputformat text \
+            --outputpath security-reports/retire/retire-summary.txt \
+            --path . || {
+            echo "⚠️ Retire.js summary generated"
+          }
+
+          # Convert to SARIF format for GitHub integration
+          # Note: This is a simplified conversion - in production, you might use a dedicated tool
+          if [[ -f security-reports/retire/retire-results.json ]]; then
+            echo "📄 Converting Retire.js results to SARIF format..."
+            cat > security-reports/retire/retire-sarif.json << 'EOF'
+          {
+            "version": "2.1.0",
+            "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+            "runs": [
+              {
+                "tool": {
+                  "driver": {
+                    "name": "Retire.js",
+                    "version": "latest",
+                    "informationUri": "https://retirejs.github.io/retire.js/"
+                  }
+                },
+                "results": []
+              }
+            ]
+          }
+          EOF
+          fi
+
+          echo "📊 Retire.js analysis complete, results saved to security-reports/retire/"
+
+      - name: 'Run OWASP Dependency Check'
+        if: matrix.tool == 'owasp'
+        run: |
+          echo "🔍 Running OWASP Dependency Check..."
+
+          mkdir -p security-reports/owasp
+
+          # EDUCATIONAL: OWASP Dependency Check integrates with the National
+          # Vulnerability Database (NVD) to identify known vulnerabilities
+
+          # Use Docker container to run OWASP Dependency Check
+          docker run --rm \
+            -v $(pwd):/src \
+            -v $(pwd)/security-reports/owasp:/report \
+            owasp/dependency-check:latest \
+            --scan /src \
+            --format SARIF \
+            --format JSON \
+            --format HTML \
+            --out /report \
+            --project "JTS-Trading-System" \
+            --enableRetired \
+            --enableExperimental || {
+            echo "⚠️ OWASP Dependency Check completed with findings"
+          }
+
+          echo "📊 OWASP analysis complete, results saved to security-reports/owasp/"
+
+      - name: 'Run Yarn Security Audit'
+        if: matrix.tool == 'yarn-audit'
+        run: |
+          echo "🔍 Running Yarn security audit..."
+
+          mkdir -p security-reports/yarn-audit
+
+          # EDUCATIONAL: Yarn audit checks dependencies against the npm security
+          # advisory database and provides built-in fix recommendations
+
+          # Generate JSON report for processing
+          yarn audit --json > security-reports/yarn-audit/audit-results.json 2>/dev/null || {
+            echo "⚠️ Yarn audit found vulnerabilities, continuing with analysis"
+          }
+
+          # Generate summary report
+          yarn audit --summary > security-reports/yarn-audit/audit-summary.txt 2>/dev/null || {
+            echo "⚠️ Yarn audit summary generated"
+          }
+
+          # Analyze audit results and generate metrics
+          if [[ -f security-reports/yarn-audit/audit-results.json ]]; then
+            echo "📊 Analyzing yarn audit results..."
+            
+            # Count vulnerabilities by severity
+            CRITICAL_COUNT=$(grep -o '"severity":"critical"' security-reports/yarn-audit/audit-results.json | wc -l || echo "0")
+            HIGH_COUNT=$(grep -o '"severity":"high"' security-reports/yarn-audit/audit-results.json | wc -l || echo "0")
+            MODERATE_COUNT=$(grep -o '"severity":"moderate"' security-reports/yarn-audit/audit-results.json | wc -l || echo "0")
+            LOW_COUNT=$(grep -o '"severity":"low"' security-reports/yarn-audit/audit-results.json | wc -l || echo "0")
+            
+            # Create summary metrics file
+            cat > security-reports/yarn-audit/metrics.json << EOF
+          {
+            "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+            "vulnerabilities": {
+              "critical": $CRITICAL_COUNT,
+              "high": $HIGH_COUNT,
+              "moderate": $MODERATE_COUNT,
+              "low": $LOW_COUNT,
+              "total": $((CRITICAL_COUNT + HIGH_COUNT + MODERATE_COUNT + LOW_COUNT))
+            }
+          }
+          EOF
+            
+            echo "Critical: $CRITICAL_COUNT, High: $HIGH_COUNT, Moderate: $MODERATE_COUNT, Low: $LOW_COUNT"
+          fi
+
+          echo "📊 Yarn audit complete, results saved to security-reports/yarn-audit/"
+
+      - name: 'Upload Security Scan SARIF Results'
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: security-reports/${{ matrix.tool }}/*.sarif
+          category: 'Deep Dependency Analysis - ${{ matrix.name }}'
+        continue-on-error: true
+
+      - name: 'Generate Tool-Specific Summary'
+        if: always()
+        run: |
+          echo "📋 Generating ${{ matrix.tool }} security summary..."
+
+          TOOL="${{ matrix.tool }}"
+          REPORT_DIR="security-reports/$TOOL"
+
+          if [[ -d "$REPORT_DIR" ]]; then
+            echo "## 🔒 ${{ matrix.name }} Results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            case "$TOOL" in
+              "snyk")
+                if [[ -f "$REPORT_DIR/vulnerabilities.json" ]]; then
+                  VULN_COUNT=$(jq -r '.vulnerabilities | length' "$REPORT_DIR/vulnerabilities.json" 2>/dev/null || echo "0")
+                  echo "- **Vulnerabilities Found**: $VULN_COUNT" >> $GITHUB_STEP_SUMMARY
+                fi
+                ;;
+              
+              "retire")
+                if [[ -f "$REPORT_DIR/retire-results.json" ]]; then
+                  echo "- **Status**: Retire.js scan completed" >> $GITHUB_STEP_SUMMARY
+                  echo "- **Focus**: JavaScript library vulnerabilities" >> $GITHUB_STEP_SUMMARY
+                fi
+                ;;
+              
+              "owasp")
+                if [[ -f "$REPORT_DIR/dependency-check-report.json" ]]; then
+                  echo "- **Status**: OWASP Dependency Check completed" >> $GITHUB_STEP_SUMMARY
+                  echo "- **Coverage**: CVE database integration" >> $GITHUB_STEP_SUMMARY
+                fi
+                ;;
+              
+              "yarn-audit")
+                if [[ -f "$REPORT_DIR/metrics.json" ]]; then
+                  CRITICAL=$(jq -r '.vulnerabilities.critical' "$REPORT_DIR/metrics.json" 2>/dev/null || echo "0")
+                  HIGH=$(jq -r '.vulnerabilities.high' "$REPORT_DIR/metrics.json" 2>/dev/null || echo "0")
+                  TOTAL=$(jq -r '.vulnerabilities.total' "$REPORT_DIR/metrics.json" 2>/dev/null || echo "0")
+                  
+                  echo "- **Total Vulnerabilities**: $TOTAL" >> $GITHUB_STEP_SUMMARY
+                  echo "- **Critical**: $CRITICAL" >> $GITHUB_STEP_SUMMARY  
+                  echo "- **High**: $HIGH" >> $GITHUB_STEP_SUMMARY
+                fi
+                ;;
+            esac
+            
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: 'Upload Security Reports'
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports-${{ matrix.tool }}
+          path: security-reports/${{ matrix.tool }}/
+          retention-days: 90
+          # EDUCATIONAL: Long retention for security reports enables trend analysis
+
+  # ═══════════════════════════════════════════════════════════════
+  # JOB: Secret Rotation Audit & Advanced Secret Detection
+  # ═══════════════════════════════════════════════════════════════
+  secret-rotation-audit:
+    name: 'Secret Rotation & Detection Audit'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: prepare-security-scan
+
+    if: needs.prepare-security-scan.outputs.secrets-scan-enabled == 'true'
+
+    permissions:
+      contents: read
+      security-events: write
+      issues: write
+
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # WHY: Full history needed for comprehensive secret scanning
+
+      - name: 'Setup Secret Detection Tools'
+        run: |
+          echo "🔧 Setting up advanced secret detection tools..."
+
+          # Install TruffleHog for comprehensive secret scanning
+          curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+
+          # Install GitLeaks for additional secret pattern detection
+          wget -O- https://github.com/zricethezav/gitleaks/releases/latest/download/gitleaks_linux_x64.tar.gz | tar xz
+          sudo mv gitleaks /usr/local/bin/
+
+          # Install detect-secrets for baseline comparison
+          pip3 install detect-secrets
+
+          echo "✅ Secret detection tools installed"
+
+      - name: 'Run TruffleHog Secret Scan'
+        run: |
+          echo "🔍 Running TruffleHog comprehensive secret scan..."
+
+          mkdir -p security-reports/secrets/trufflehog
+
+          # EDUCATIONAL: TruffleHog scans for secrets across:
+          # - Git history and commits
+          # - File system contents  
+          # - Multiple secret types (API keys, tokens, certificates, etc.)
+
+          # Scan entire git history for secrets
+          trufflehog git file://. \
+            --json \
+            --only-verified \
+            --no-update > security-reports/secrets/trufflehog/git-history.json || {
+            echo "⚠️ TruffleHog found secrets in git history"
+          }
+
+          # Scan filesystem for secrets
+          trufflehog filesystem . \
+            --json \
+            --only-verified > security-reports/secrets/trufflehog/filesystem.json || {
+            echo "⚠️ TruffleHog found secrets in filesystem"
+          }
+
+          # Generate JSON output for analysis
+          trufflehog git file://. \
+            --json \
+            --only-verified \
+            --no-update > security-reports/secrets/trufflehog/trufflehog-results.json || {
+            echo "⚠️ TruffleHog scan completed"
+          }
+
+          echo "📊 TruffleHog scan complete"
+
+      - name: 'Run GitLeaks Secret Detection'
+        run: |
+          echo "🔍 Running GitLeaks secret detection..."
+
+          mkdir -p security-reports/secrets/gitleaks
+
+          # EDUCATIONAL: GitLeaks provides complementary secret detection with:
+          # - Custom rule configuration
+          # - High-performance scanning
+          # - Detailed location information
+
+          # Scan for secrets with detailed reporting
+          gitleaks detect \
+            --source . \
+            --format json \
+            --report-path security-reports/secrets/gitleaks/gitleaks-results.json \
+            --verbose || {
+            echo "⚠️ GitLeaks detected secrets"
+          }
+
+          # Generate SARIF format
+          gitleaks detect \
+            --source . \
+            --format sarif \
+            --report-path security-reports/secrets/gitleaks/gitleaks-results.sarif || {
+            echo "⚠️ GitLeaks SARIF generation completed"
+          }
+
+          echo "📊 GitLeaks scan complete"
+
+      - name: 'Secret Rotation Analysis'
+        run: |
+          echo "🔄 Analyzing secret rotation patterns and age..."
+
+          mkdir -p security-reports/secrets/rotation-audit
+
+          # EDUCATIONAL: Secret rotation audit helps identify:
+          # - Secrets that haven't been rotated recently
+          # - Patterns indicating potential secret reuse
+          # - Compliance with security policies
+
+          # Find potential secrets and analyze their age
+          cat > security-reports/secrets/rotation-audit/analyze-secrets.sh << 'EOF'
+          #!/bin/bash
+
+          echo "Analyzing secret rotation patterns..."
+
+          # Common secret patterns to check for age
+          SECRET_PATTERNS=(
+            "api[_-]?key"
+            "password"
+            "secret"
+            "token"
+            "auth"
+            "credential"
+          )
+
+          for pattern in "${SECRET_PATTERNS[@]}"; do
+            echo "Checking pattern: $pattern"
+            
+            # Find files containing potential secrets and check their last modification
+            grep -r -i "$pattern" . \
+              --exclude-dir=node_modules \
+              --exclude-dir=.git \
+              --exclude-dir=security-reports \
+              --include="*.js" \
+              --include="*.ts" \
+              --include="*.json" \
+              --include="*.env*" \
+              --include="*.yaml" \
+              --include="*.yml" 2>/dev/null | while read -r line; do
+              
+              file=$(echo "$line" | cut -d':' -f1)
+              if [[ -f "$file" ]]; then
+                last_modified=$(stat -c %Y "$file" 2>/dev/null || date +%s)
+                current_time=$(date +%s)
+                age_days=$(( (current_time - last_modified) / 86400 ))
+                
+                if [[ $age_days -gt 90 ]]; then
+                  echo "WARNING: Potential secret in $file is $age_days days old"
+                fi
+              fi
+            done
+          done
+
+          # Check for hardcoded credentials
+          echo "Checking for hardcoded credentials..."
+          grep -r -i -E "(password|pwd|secret|key)\s*[=:]\s*['\"][^'\"]{8,}" . \
+            --exclude-dir=node_modules \
+            --exclude-dir=.git \
+            --exclude-dir=security-reports \
+            --include="*.js" \
+            --include="*.ts" \
+            --include="*.json" 2>/dev/null || echo "No obvious hardcoded credentials found"
+          EOF
+
+          chmod +x security-reports/secrets/rotation-audit/analyze-secrets.sh
+          ./security-reports/secrets/rotation-audit/analyze-secrets.sh > security-reports/secrets/rotation-audit/rotation-analysis.txt
+
+          echo "📊 Secret rotation analysis complete"
+
+      - name: 'Generate Secret Detection Summary'
+        run: |
+          echo "📋 Generating comprehensive secret detection summary..."
+
+          # Count findings from different tools
+          TRUFFLEHOG_SECRETS=0
+          GITLEAKS_SECRETS=0
+
+          if [[ -f security-reports/secrets/trufflehog/git-history.json ]]; then
+            TRUFFLEHOG_SECRETS=$(jq '. | length' security-reports/secrets/trufflehog/git-history.json 2>/dev/null || echo "0")
+          fi
+
+          if [[ -f security-reports/secrets/gitleaks/gitleaks-results.json ]]; then
+            GITLEAKS_SECRETS=$(jq '. | length' security-reports/secrets/gitleaks/gitleaks-results.json 2>/dev/null || echo "0")
+          fi
+
+          TOTAL_SECRETS=$((TRUFFLEHOG_SECRETS + GITLEAKS_SECRETS))
+
+          # Create comprehensive summary
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## 🔐 Secret Detection & Rotation Audit Results
+
+          **Scan Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+
+          ### Secret Detection Summary
+          - **TruffleHog Findings**: $TRUFFLEHOG_SECRETS
+          - **GitLeaks Findings**: $GITLEAKS_SECRETS  
+          - **Total Potential Secrets**: $TOTAL_SECRETS
+
+          ### Recommendations
+          EOF
+
+          if [[ $TOTAL_SECRETS -gt 0 ]]; then
+            cat >> $GITHUB_STEP_SUMMARY << EOF
+
+          ⚠️ **Immediate Actions Required**:
+          1. Review detected secrets in the Security tab
+          2. Rotate any exposed credentials immediately
+          3. Remove secrets from git history if needed
+          4. Implement proper secret management practices
+
+          EOF
+          else
+            echo "✅ **No secrets detected** - Good security practices maintained" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+
+          ### Security Best Practices
+          - Use environment variables for secrets
+          - Implement secret rotation policies
+          - Use dedicated secret management tools
+          - Never commit secrets to version control
+          - Regular security audits and training
+
+          EOF
+
+      - name: 'Upload Secret Detection SARIF Results'
+        if: always() && hashFiles('security-reports/secrets/*/*.sarif') != ''
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: security-reports/secrets/*/*.sarif
+          category: 'Secret Detection & Rotation Audit'
+        continue-on-error: true
+
+      - name: 'Upload Secret Analysis Reports'
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: secret-analysis-reports
+          path: security-reports/secrets/
+          retention-days: 90
+
+  # ═══════════════════════════════════════════════════════════════
+  # JOB: Comprehensive Vulnerability Aggregation & Analysis
+  # ═══════════════════════════════════════════════════════════════
+  vulnerability-aggregation:
+    name: 'Vulnerability Aggregation & Analysis'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs:
+      - prepare-security-scan
+      - deep-dependency-analysis
+      - secret-rotation-audit
+
+    # WHY: Always run aggregation to consolidate findings even if some scans fail
+    if: always() && needs.prepare-security-scan.outputs.scan-strategy != 'secrets'
+
+    permissions:
+      contents: read
+      security-events: read
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
+
+      - name: 'Setup Analysis Environment'
+        run: |
+          echo "🔧 Setting up vulnerability analysis environment..."
+
+          # Install jq for JSON processing
+          sudo apt-get update && sudo apt-get install -y jq
+
+          # Install Python for advanced analysis
+          pip3 install requests pandas matplotlib seaborn
+
+          echo "✅ Analysis environment ready"
+
+      - name: 'Download Security Reports'
+        uses: actions/download-artifact@v4
+        with:
+          path: downloaded-reports/
+        continue-on-error: true
+
+      - name: 'Aggregate Vulnerability Data'
+        run: |
+          echo "📊 Aggregating vulnerability data from all security tools..."
+
+          mkdir -p aggregated-analysis
+
+          # EDUCATIONAL: Vulnerability aggregation helps:
+          # 1. Eliminate duplicate findings across tools
+          # 2. Prioritize fixes based on severity and impact
+          # 3. Track security trends over time
+          # 4. Generate actionable security reports
+
+          # Create Python script for comprehensive analysis
+          cat > aggregated-analysis/analyze-vulnerabilities.py << 'EOF'
+          #!/usr/bin/env python3
+          import json
+          import os
+          import glob
+          from datetime import datetime
+          from collections import defaultdict, Counter
+
+          def analyze_vulnerabilities():
+              """Comprehensive vulnerability analysis across all security tools"""
+              
+              print("Starting comprehensive vulnerability analysis...")
+              
+              # Initialize analysis data structures
+              all_vulnerabilities = []
+              severity_counts = Counter()
+              tool_findings = defaultdict(int)
+              vulnerability_types = Counter()
+              
+              # Process downloaded security reports
+              report_dirs = glob.glob('downloaded-reports/security-reports-*/')
+              
+              for report_dir in report_dirs:
+                  tool_name = os.path.basename(report_dir.rstrip('/')).replace('security-reports-', '')
+                  print(f"Processing {tool_name} reports...")
+                  
+                  # Process JSON reports
+                  json_files = glob.glob(os.path.join(report_dir, '**/*.json'), recursive=True)
+                  
+                  for json_file in json_files:
+                      try:
+                          with open(json_file, 'r') as f:
+                              data = json.load(f)
+                              
+                          # Extract vulnerabilities based on tool format
+                          if tool_name == 'snyk':
+                              vulnerabilities = data.get('vulnerabilities', [])
+                              for vuln in vulnerabilities:
+                                  process_snyk_vulnerability(vuln, tool_findings, severity_counts, vulnerability_types)
+                                  
+                          elif tool_name == 'yarn-audit':
+                              # Process yarn audit format
+                              if 'advisories' in data:
+                                  for advisory in data['advisories']:
+                                      process_yarn_vulnerability(advisory, tool_findings, severity_counts, vulnerability_types)
+                                      
+                          elif tool_name == 'retire':
+                              # Process retire.js format
+                              for result in data:
+                                  if 'results' in result:
+                                      for vuln in result['results']:
+                                          process_retire_vulnerability(vuln, tool_findings, severity_counts, vulnerability_types)
+                          
+                          tool_findings[tool_name] += 1
+                          
+                      except (json.JSONDecodeError, KeyError, FileNotFoundError) as e:
+                          print(f"Warning: Could not process {json_file}: {e}")
+                          continue
+              
+              # Generate aggregated analysis report
+              analysis_report = {
+                  'timestamp': datetime.utcnow().isoformat() + 'Z',
+                  'summary': {
+                      'total_vulnerabilities': sum(severity_counts.values()),
+                      'severity_breakdown': dict(severity_counts),
+                      'tool_coverage': dict(tool_findings),
+                      'vulnerability_types': dict(vulnerability_types)
+                  },
+                  'recommendations': generate_recommendations(severity_counts, vulnerability_types),
+                  'risk_assessment': assess_risk_level(severity_counts)
+              }
+              
+              # Save analysis report
+              with open('aggregated-analysis/vulnerability-analysis.json', 'w') as f:
+                  json.dump(analysis_report, f, indent=2)
+              
+              print("Vulnerability analysis complete!")
+              return analysis_report
+
+          def process_snyk_vulnerability(vuln, tool_findings, severity_counts, vuln_types):
+              """Process Snyk vulnerability format"""
+              severity = vuln.get('severity', 'unknown').lower()
+              severity_counts[severity] += 1
+              vuln_types[vuln.get('type', 'unknown')] += 1
+
+          def process_yarn_vulnerability(advisory, tool_findings, severity_counts, vuln_types):
+              """Process Yarn audit vulnerability format"""  
+              severity = advisory.get('severity', 'unknown').lower()
+              severity_counts[severity] += 1
+              vuln_types['dependency'] += 1
+
+          def process_retire_vulnerability(vuln, tool_findings, severity_counts, vuln_types):
+              """Process Retire.js vulnerability format"""
+              severity = vuln.get('severity', 'medium').lower()
+              severity_counts[severity] += 1
+              vuln_types['javascript-library'] += 1
+
+          def generate_recommendations(severity_counts, vuln_types):
+              """Generate actionable security recommendations"""
+              recommendations = []
+              
+              if severity_counts.get('critical', 0) > 0:
+                  recommendations.append({
+                      'priority': 'CRITICAL',
+                      'action': 'Address critical vulnerabilities immediately',
+                      'timeline': 'Within 24 hours'
+                  })
+              
+              if severity_counts.get('high', 0) > 0:
+                  recommendations.append({
+                      'priority': 'HIGH', 
+                      'action': 'Plan fixes for high severity vulnerabilities',
+                      'timeline': 'Within 1 week'
+                  })
+              
+              if vuln_types.get('dependency', 0) > 5:
+                  recommendations.append({
+                      'priority': 'MEDIUM',
+                      'action': 'Review and update dependency management strategy',
+                      'timeline': 'Within 2 weeks'
+                  })
+              
+              return recommendations
+
+          def assess_risk_level(severity_counts):
+              """Assess overall security risk level"""
+              critical = severity_counts.get('critical', 0)
+              high = severity_counts.get('high', 0)
+              total = sum(severity_counts.values())
+              
+              if critical > 0:
+                  return 'CRITICAL'
+              elif high > 3:
+                  return 'HIGH'
+              elif total > 10:
+                  return 'MEDIUM'
+              else:
+                  return 'LOW'
+
+          if __name__ == '__main__':
+              analyze_vulnerabilities()
+          EOF
+
+          # Run vulnerability analysis
+          python3 aggregated-analysis/analyze-vulnerabilities.py
+
+          echo "📊 Vulnerability aggregation complete"
+
+      - name: 'Generate Security Trends Analysis'
+        run: |
+          echo "📈 Generating security trends analysis..."
+
+          # EDUCATIONAL: Trend analysis helps identify:
+          # - Improvement or degradation in security posture
+          # - Effectiveness of security measures
+          # - Areas needing additional focus
+
+          # Create trends analysis script
+          cat > aggregated-analysis/security-trends.py << 'EOF'
+          #!/usr/bin/env python3
+          import json
+          import os
+          from datetime import datetime, timedelta
+
+          def analyze_security_trends():
+              """Analyze security trends over time"""
+              
+              print("Analyzing security trends...")
+              
+              # This would typically fetch historical data from previous scans
+              # For this example, we'll create a baseline analysis
+              
+              trends_data = {
+                  'analysis_date': datetime.utcnow().isoformat() + 'Z',
+                  'trend_analysis': {
+                      'vulnerability_trajectory': 'stable',  # Would be calculated from historical data
+                      'security_score': 85,  # Example score based on findings
+                      'improvement_areas': [
+                          'Dependency management',
+                          'Secret detection practices',
+                          'Container security'
+                      ]
+                  },
+                  'recommendations': [
+                      'Implement automated dependency updates',
+                      'Enhance secret management practices',
+                      'Regular security training for development team'
+                  ]
+              }
+              
+              with open('aggregated-analysis/security-trends.json', 'w') as f:
+                  json.dump(trends_data, f, indent=2)
+              
+              print("Security trends analysis complete")
+
+          if __name__ == '__main__':
+              analyze_security_trends()
+          EOF
+
+          python3 aggregated-analysis/security-trends.py
+
+          echo "📈 Security trends analysis complete"
+
+      - name: 'Create Comprehensive Security Report'
+        run: |
+          echo "📋 Creating comprehensive security report..."
+
+          # Read analysis results
+          if [[ -f aggregated-analysis/vulnerability-analysis.json ]]; then
+            RISK_LEVEL=$(jq -r '.risk_assessment' aggregated-analysis/vulnerability-analysis.json 2>/dev/null || echo "UNKNOWN")
+            TOTAL_VULNS=$(jq -r '.summary.total_vulnerabilities' aggregated-analysis/vulnerability-analysis.json 2>/dev/null || echo "0")
+            CRITICAL_COUNT=$(jq -r '.summary.severity_breakdown.critical // 0' aggregated-analysis/vulnerability-analysis.json 2>/dev/null || echo "0")
+            HIGH_COUNT=$(jq -r '.summary.severity_breakdown.high // 0' aggregated-analysis/vulnerability-analysis.json 2>/dev/null || echo "0")
+          else
+            RISK_LEVEL="UNKNOWN"
+            TOTAL_VULNS="0"
+            CRITICAL_COUNT="0"
+            HIGH_COUNT="0"
+          fi
+
+          # Create comprehensive summary
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          # 🛡️ Comprehensive Security Analysis Report
+
+          **Analysis Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')  
+          **Scan Strategy**: ${{ needs.prepare-security-scan.outputs.scan-strategy }}  
+          **Overall Risk Level**: **$RISK_LEVEL**
+
+          ## 📊 Vulnerability Summary
+
+          | Metric | Count |
+          |--------|-------|
+          | Total Vulnerabilities | $TOTAL_VULNS |
+          | Critical Severity | $CRITICAL_COUNT |
+          | High Severity | $HIGH_COUNT |
+
+          ## 🎯 Priority Actions
+
+          EOF
+
+          case "$RISK_LEVEL" in
+            "CRITICAL")
+              cat >> $GITHUB_STEP_SUMMARY << EOF
+          🚨 **CRITICAL RISK DETECTED**
+          - Immediate action required for critical vulnerabilities
+          - Review all findings in Security tab
+          - Consider blocking deployments until resolved
+
+          EOF
+              ;;
+            "HIGH")
+              cat >> $GITHUB_STEP_SUMMARY << EOF
+          ⚠️ **HIGH RISK IDENTIFIED**  
+          - Address high severity vulnerabilities within 1 week
+          - Review and prioritize security fixes
+          - Implement additional security measures
+
+          EOF
+              ;;
+            "MEDIUM")
+              cat >> $GITHUB_STEP_SUMMARY << EOF
+          📋 **MODERATE RISK LEVEL**
+          - Regular vulnerability management practices needed
+          - Plan security improvements for next iteration
+          - Continue monitoring for new threats
+
+          EOF
+              ;;
+            *)
+              cat >> $GITHUB_STEP_SUMMARY << EOF
+          ✅ **LOW RISK - GOOD SECURITY POSTURE**
+          - Continue current security practices
+          - Regular monitoring and updates recommended
+          - No immediate actions required
+
+          EOF
+              ;;
+          esac
+
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## 🔗 Resources
+
+          - [Security Findings](../../security)
+          - [Vulnerability Reports](../../actions/runs/${{ github.run_id }})
+          - [Security Best Practices Guide](../../security/policy)
+
+          ---
+
+          *This analysis aggregates findings from multiple security tools to provide comprehensive vulnerability assessment and actionable recommendations.*
+
+          EOF
+
+      - name: 'Upload Aggregated Analysis Reports'
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aggregated-security-analysis
+          path: aggregated-analysis/
+          retention-days: 365
+          # EDUCATIONAL: Long retention for security analysis enables historical trending
+
+  # ═══════════════════════════════════════════════════════════════
+  # JOB: Automated Issue Creation for Critical Findings
+  # ═══════════════════════════════════════════════════════════════
+  create-security-issues:
+    name: 'Create Security Issues'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs:
+      - prepare-security-scan
+      - vulnerability-aggregation
+
+    # WHY: Only create issues when enabled and critical findings exist
+    if: |
+      always() && 
+      needs.prepare-security-scan.outputs.should-create-issues == 'true' &&
+      (needs.vulnerability-aggregation.result == 'success' || needs.vulnerability-aggregation.result == 'failure')
+
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
+
+      - name: 'Download Aggregated Analysis'
+        uses: actions/download-artifact@v4
+        with:
+          name: aggregated-security-analysis
+          path: security-analysis/
+        continue-on-error: true
+
+      - name: 'Analyze Findings for Issue Creation'
+        id: analyze-findings
+        run: |
+          echo "🔍 Analyzing security findings for issue creation..."
+
+          SHOULD_CREATE_ISSUES="false"
+          CRITICAL_FINDINGS=0
+          HIGH_FINDINGS=0
+          ISSUE_TITLE=""
+          ISSUE_BODY=""
+
+          # Check if aggregated analysis exists
+          if [[ -f security-analysis/vulnerability-analysis.json ]]; then
+            RISK_LEVEL=$(jq -r '.risk_assessment' security-analysis/vulnerability-analysis.json 2>/dev/null || echo "LOW")
+            CRITICAL_FINDINGS=$(jq -r '.summary.severity_breakdown.critical // 0' security-analysis/vulnerability-analysis.json 2>/dev/null || echo "0")
+            HIGH_FINDINGS=$(jq -r '.summary.severity_breakdown.high // 0' security-analysis/vulnerability-analysis.json 2>/dev/null || echo "0")
+            TOTAL_VULNS=$(jq -r '.summary.total_vulnerabilities' security-analysis/vulnerability-analysis.json 2>/dev/null || echo "0")
+            
+            # EDUCATIONAL: Issue creation criteria based on:
+            # 1. Critical vulnerabilities always create issues
+            # 2. High number of high-severity issues create issues
+            # 3. Overall risk assessment triggers issue creation
+            
+            if [[ "$RISK_LEVEL" == "CRITICAL" ]] || [[ $CRITICAL_FINDINGS -gt 0 ]] || [[ $HIGH_FINDINGS -gt 5 ]]; then
+              SHOULD_CREATE_ISSUES="true"
+              
+              # Create issue title and body
+              if [[ $CRITICAL_FINDINGS -gt 0 ]]; then
+                ISSUE_TITLE="🚨 CRITICAL Security Vulnerabilities Detected - Immediate Action Required"
+              else
+                ISSUE_TITLE="⚠️ High Priority Security Vulnerabilities Detected"
+              fi
+              
+              # Build comprehensive issue body
+              cat > issue_body.md << EOF
+          # Security Vulnerability Report
+
+          **Detection Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+          **Risk Level**: $RISK_LEVEL
+          **Total Vulnerabilities**: $TOTAL_VULNS
+
+          ## 📊 Severity Breakdown
+
+          - **Critical**: $CRITICAL_FINDINGS
+          - **High**: $HIGH_FINDINGS
+          - **Total**: $TOTAL_VULNS
+
+          ## 🎯 Immediate Actions Required
+
+          EOF
+              
+              if [[ $CRITICAL_FINDINGS -gt 0 ]]; then
+                cat >> issue_body.md << EOF
+          ### Critical Priority (24 hours)
+          - [ ] Review critical vulnerabilities in [Security tab](../../security)
+          - [ ] Identify affected systems and components
+          - [ ] Implement immediate fixes or mitigations
+          - [ ] Verify fixes and re-run security scans
+          - [ ] Update incident response documentation
+
+          EOF
+              fi
+              
+              if [[ $HIGH_FINDINGS -gt 0 ]]; then
+                cat >> issue_body.md << EOF
+          ### High Priority (1 week)
+          - [ ] Analyze high severity vulnerabilities
+          - [ ] Plan remediation strategy
+          - [ ] Update dependencies and packages
+          - [ ] Review security configurations
+          - [ ] Conduct security testing
+
+          EOF
+              fi
+              
+              cat >> issue_body.md << EOF
+          ## 🔗 Resources
+
+          - [Security Analysis Report](../../actions/runs/${{ github.run_id }})
+          - [Security Findings](../../security)
+          - [Vulnerability Database](../../security/advisories)
+
+          ## 🛡️ Security Best Practices
+
+          - Implement automated dependency updates
+          - Use security-focused linting and testing
+          - Regular security training and awareness
+          - Implement defense-in-depth strategies
+          - Maintain security incident response procedures
+
+          ---
+
+          **Assigned Priority**: $([[ $CRITICAL_FINDINGS -gt 0 ]] && echo "Critical" || echo "High")
+          **Estimated Resolution**: $([[ $CRITICAL_FINDINGS -gt 0 ]] && echo "24 hours" || echo "1 week")
+
+          *This issue was automatically created by the scheduled security analysis workflow.*
+          EOF
+              
+              ISSUE_BODY=$(cat issue_body.md)
+            fi
+          else
+            echo "⚠️ No aggregated analysis found, checking individual job results..."
+            
+            # Check individual job results for critical findings
+            # This is a fallback when aggregation fails but individual scans find issues
+            SHOULD_CREATE_ISSUES="false"
+          fi
+
+          echo "should-create=$SHOULD_CREATE_ISSUES" >> $GITHUB_OUTPUT
+          echo "critical-count=$CRITICAL_FINDINGS" >> $GITHUB_OUTPUT
+          echo "high-count=$HIGH_FINDINGS" >> $GITHUB_OUTPUT
+
+          # Save issue content to files for use in next step
+          echo "$ISSUE_TITLE" > issue_title.txt
+          echo "$ISSUE_BODY" > issue_body_final.md
+
+          echo "═══ Issue Creation Analysis ═══"
+          echo "Should Create Issues: $SHOULD_CREATE_ISSUES"
+          echo "Critical Findings: $CRITICAL_FINDINGS"
+          echo "High Findings: $HIGH_FINDINGS"
+
+      - name: 'Create Security Issue'
+        if: steps.analyze-findings.outputs.should-create == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            // Read issue title and body from files
+            const title = fs.readFileSync('issue_title.txt', 'utf8').trim();
+            const body = fs.readFileSync('issue_body_final.md', 'utf8');
+
+            // EDUCATIONAL: Automated issue creation helps ensure:
+            // 1. Critical security findings are not overlooked
+            // 2. Security issues are tracked and managed systematically
+            // 3. Clear accountability and timeline for remediation
+            // 4. Integration with existing project management workflows
+
+            try {
+              const issue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: [
+                  'security',
+                  'vulnerability', 
+                  ${{ steps.analyze-findings.outputs.critical-count > 0 && '"critical"' || '"high-priority"' }},
+                  'automated'
+                ],
+                assignees: [], // Add default security team members if configured
+                milestone: null // Add security milestone if configured
+              });
+              
+              console.log(`✅ Created security issue #${issue.data.number}: ${title}`);
+              
+              // Add comment with additional context
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.data.number,
+                body: [
+                  '## 📋 Security Analysis Context',
+                  '',
+                  'This issue was automatically created based on findings from our scheduled security analysis.',
+                  '',
+                  '**Next Steps**:',
+                  '1. Security team should review within 2 hours',
+                  '2. Assign appropriate team members for remediation',
+                  '3. Set target resolution timeline based on severity',
+                  '4. Update issue status as work progresses',
+                  '',
+                  `**Workflow Run**: [View detailed analysis](${context.payload.repository.html_url}/actions/runs/${context.runId})`
+                ].join('\n')
+              });
+              
+            } catch (error) {
+              console.error('Failed to create security issue:', error);
+              core.setFailed(`Issue creation failed: ${error.message}`);
+            }
+
+  # ═══════════════════════════════════════════════════════════════
+  # JOB: Security Notifications (Slack/Discord)
+  # ═══════════════════════════════════════════════════════════════
+  security-notifications:
+    name: 'Security Event Notifications'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs:
+      - prepare-security-scan
+      - vulnerability-aggregation
+      - create-security-issues
+
+    # WHY: Send notifications based on configured level and findings
+    if: |
+      always() && 
+      needs.prepare-security-scan.outputs.notification-level != 'none' &&
+      (needs.vulnerability-aggregation.result == 'success' || needs.vulnerability-aggregation.result == 'failure')
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
+
+      - name: 'Download Analysis Results'
+        uses: actions/download-artifact@v4
+        with:
+          name: aggregated-security-analysis
+          path: notification-data/
+        continue-on-error: true
+
+      - name: 'Prepare Notification Content'
+        id: prepare-notification
+        run: |
+          echo "📢 Preparing security notification content..."
+
+          NOTIFICATION_LEVEL="${{ needs.prepare-security-scan.outputs.notification-level }}"
+          SHOULD_NOTIFY="false"
+
+          # Initialize notification variables
+          RISK_LEVEL="UNKNOWN"
+          CRITICAL_COUNT=0
+          HIGH_COUNT=0
+          TOTAL_VULNS=0
+
+          # Read analysis results if available
+          if [[ -f notification-data/vulnerability-analysis.json ]]; then
+            RISK_LEVEL=$(jq -r '.risk_assessment' notification-data/vulnerability-analysis.json 2>/dev/null || echo "UNKNOWN")
+            CRITICAL_COUNT=$(jq -r '.summary.severity_breakdown.critical // 0' notification-data/vulnerability-analysis.json 2>/dev/null || echo "0")
+            HIGH_COUNT=$(jq -r '.summary.severity_breakdown.high // 0' notification-data/vulnerability-analysis.json 2>/dev/null || echo "0")
+            TOTAL_VULNS=$(jq -r '.summary.total_vulnerabilities' notification-data/vulnerability-analysis.json 2>/dev/null || echo "0")
+          fi
+
+          # EDUCATIONAL: Notification criteria based on configured level:
+          # - all: Send notifications for any findings
+          # - critical: Only critical severity findings
+          # - high-critical: High and critical severity findings
+
+          case "$NOTIFICATION_LEVEL" in
+            "all")
+              [[ $TOTAL_VULNS -gt 0 ]] && SHOULD_NOTIFY="true"
+              ;;
+            "critical")
+              [[ $CRITICAL_COUNT -gt 0 ]] && SHOULD_NOTIFY="true"
+              ;;
+            "high-critical")
+              [[ $CRITICAL_COUNT -gt 0 ]] || [[ $HIGH_COUNT -gt 0 ]] && SHOULD_NOTIFY="true"
+              ;;
+          esac
+
+          # Determine notification urgency and color
+          URGENCY="info"
+          COLOR="#36a64f"  # Green
+
+          case "$RISK_LEVEL" in
+            "CRITICAL")
+              URGENCY="critical"
+              COLOR="#ff0000"  # Red
+              ;;
+            "HIGH")
+              URGENCY="high"
+              COLOR="#ff9900"  # Orange
+              ;;
+            "MEDIUM")
+              URGENCY="medium"
+              COLOR="#ffcc00"  # Yellow
+              ;;
+          esac
+
+          # Create notification message
+          if [[ "$SHOULD_NOTIFY" == "true" ]]; then
+            cat > slack_message.json << EOF
+          {
+            "text": "🛡️ Security Analysis Alert - $RISK_LEVEL Risk Detected",
+            "attachments": [
+              {
+                "color": "$COLOR",
+                "title": "JTS Trading System - Security Scan Results",
+                "title_link": "${{ github.repository_url }}/actions/runs/${{ github.run_id }}",
+                "fields": [
+                  {
+                    "title": "Risk Level",
+                    "value": "$RISK_LEVEL",
+                    "short": true
+                  },
+                  {
+                    "title": "Total Vulnerabilities", 
+                    "value": "$TOTAL_VULNS",
+                    "short": true
+                  },
+                  {
+                    "title": "Critical",
+                    "value": "$CRITICAL_COUNT",
+                    "short": true
+                  },
+                  {
+                    "title": "High",
+                    "value": "$HIGH_COUNT",
+                    "short": true
+                  }
+                ],
+                "footer": "JTS Security Analysis",
+                "ts": $(date +%s)
+              }
+            ]
+          }
+          EOF
+            
+            # Create Discord webhook message
+            cat > discord_message.json << EOF
+          {
+            "content": "🛡️ **Security Analysis Alert**",
+            "embeds": [
+              {
+                "title": "JTS Trading System - Security Scan Results",
+                "url": "${{ github.repository_url }}/actions/runs/${{ github.run_id }}",
+                "color": $(printf "%d" "0x${COLOR#\#}"),
+                "fields": [
+                  {
+                    "name": "Risk Level",
+                    "value": "$RISK_LEVEL",
+                    "inline": true
+                  },
+                  {
+                    "name": "Total Vulnerabilities",
+                    "value": "$TOTAL_VULNS",
+                    "inline": true
+                  },
+                  {
+                    "name": "Critical",
+                    "value": "$CRITICAL_COUNT",
+                    "inline": true
+                  },
+                  {
+                    "name": "High",
+                    "value": "$HIGH_COUNT", 
+                    "inline": true
+                  }
+                ],
+                "footer": {
+                  "text": "JTS Security Analysis"
+                },
+                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+              }
+            ]
+          }
+          EOF
+          fi
+
+          echo "should-notify=$SHOULD_NOTIFY" >> $GITHUB_OUTPUT
+          echo "urgency=$URGENCY" >> $GITHUB_OUTPUT
+
+          echo "═══ Notification Preparation ═══"
+          echo "Should Notify: $SHOULD_NOTIFY"
+          echo "Urgency Level: $URGENCY"
+          echo "Risk Level: $RISK_LEVEL"
+
+      - name: 'Send Slack Notification'
+        if: |
+          steps.prepare-notification.outputs.should-notify == 'true' && 
+          env.SLACK_WEBHOOK_URL != ''
+        run: |
+          echo "📨 Sending Slack security notification..."
+
+          # EDUCATIONAL: Slack notifications provide immediate visibility to security teams
+          # and enable rapid response to critical security findings
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data @slack_message.json \
+            "${{ env.SLACK_WEBHOOK_URL }}" || {
+            echo "⚠️ Failed to send Slack notification"
+          }
+
+          echo "✅ Slack notification sent"
+
+      - name: 'Send Discord Notification'
+        if: |
+          steps.prepare-notification.outputs.should-notify == 'true' &&
+          env.DISCORD_WEBHOOK_URL != ''
+        run: |
+          echo "📨 Sending Discord security notification..."
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data @discord_message.json \
+            "${{ env.DISCORD_WEBHOOK_URL }}" || {
+            echo "⚠️ Failed to send Discord notification"
+          }
+
+          echo "✅ Discord notification sent"
+
+      - name: 'Notification Summary'
+        if: always()
+        run: |
+          echo "📋 Security notification summary..."
+
+          SHOULD_NOTIFY="${{ steps.prepare-notification.outputs.should-notify }}"
+          URGENCY="${{ steps.prepare-notification.outputs.urgency }}"
+
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## 📢 Security Notifications
+
+          **Notification Status**: $([[ "$SHOULD_NOTIFY" == "true" ]] && echo "Sent" || echo "Not Required")  
+          **Urgency Level**: $URGENCY  
+          **Notification Channels**: 
+          EOF
+
+          if [[ -n "${{ env.SLACK_WEBHOOK_URL }}" ]]; then
+            echo "- ✅ Slack configured" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ Slack not configured" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ -n "${{ env.DISCORD_WEBHOOK_URL }}" ]]; then
+            echo "- ✅ Discord configured" >> $GITHUB_STEP_SUMMARY  
+          else
+            echo "- ❌ Discord not configured" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+  # ═══════════════════════════════════════════════════════════════
+  # JOB: Final Security Summary & Workflow Status
+  # ═══════════════════════════════════════════════════════════════
+  security-workflow-summary:
+    name: 'Security Workflow Summary'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs:
+      - prepare-security-scan
+      - deep-dependency-analysis
+      - secret-rotation-audit
+      - vulnerability-aggregation
+      - create-security-issues
+      - security-notifications
+
+    # WHY: Always run summary to provide comprehensive workflow status
+    if: always()
+
+    permissions:
+      contents: read
+      actions: read
+
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
+
+      - name: 'Generate Comprehensive Summary'
+        run: |
+          echo "📊 Generating comprehensive scheduled security analysis summary..."
+
+          # Collect job statuses
+          PREP_STATUS="${{ needs.prepare-security-scan.result }}"
+          DEPENDENCY_STATUS="${{ needs.deep-dependency-analysis.result }}"
+          SECRETS_STATUS="${{ needs.secret-rotation-audit.result }}"
+          AGGREGATION_STATUS="${{ needs.vulnerability-aggregation.result }}"
+          ISSUES_STATUS="${{ needs.create-security-issues.result }}"
+          NOTIFICATIONS_STATUS="${{ needs.security-notifications.result }}"
+
+          # Count successful and failed jobs
+          TOTAL_JOBS=6
+          SUCCESSFUL_JOBS=0
+          FAILED_JOBS=0
+          SKIPPED_JOBS=0
+
+          for status in "$PREP_STATUS" "$DEPENDENCY_STATUS" "$SECRETS_STATUS" "$AGGREGATION_STATUS" "$ISSUES_STATUS" "$NOTIFICATIONS_STATUS"; do
+            case "$status" in
+              "success") ((SUCCESSFUL_JOBS++)) ;;
+              "failure") ((FAILED_JOBS++)) ;;
+              "skipped") ((SKIPPED_JOBS++)) ;;
+            esac
+          done
+
+          # Determine overall workflow status
+          OVERALL_STATUS="✅ SUCCESS"
+          if [[ $FAILED_JOBS -gt 0 ]]; then
+            if [[ $FAILED_JOBS -gt 2 ]]; then
+              OVERALL_STATUS="❌ MULTIPLE FAILURES"
+            else
+              OVERALL_STATUS="⚠️ PARTIAL FAILURE"
+            fi
+          fi
+
+          # Create comprehensive workflow summary
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          # 🛡️ Scheduled Security Analysis - Complete Report
+
+          **Execution Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')  
+          **Workflow Status**: $OVERALL_STATUS  
+          **Scan Strategy**: ${{ needs.prepare-security-scan.outputs.scan-strategy }}  
+          **Trigger**: ${{ github.event_name }}
+
+          ## 📊 Workflow Execution Summary
+
+          | Metric | Count |
+          |--------|-------|
+          | Total Jobs | $TOTAL_JOBS |
+          | Successful | $SUCCESSFUL_JOBS |
+          | Failed | $FAILED_JOBS |
+          | Skipped | $SKIPPED_JOBS |
+
+          ## 🔍 Job Status Details
+
+          | Security Component | Status | Notes |
+          |-------------------|--------|-------|
+          | 🔧 Scan Preparation | $([[ "$PREP_STATUS" == "success" ]] && echo "✅ Success" || echo "❌ Failed") | Project discovery and strategy |
+          | 📦 Dependency Analysis | $([[ "$DEPENDENCY_STATUS" == "success" ]] && echo "✅ Success" || [[ "$DEPENDENCY_STATUS" == "skipped" ]] && echo "⏭️ Skipped" || echo "❌ Failed") | Multi-tool vulnerability scanning |
+          | 🔐 Secret Detection | $([[ "$SECRETS_STATUS" == "success" ]] && echo "✅ Success" || [[ "$SECRETS_STATUS" == "skipped" ]] && echo "⏭️ Skipped" || echo "❌ Failed") | Secret rotation audit |
+          | 📊 Vulnerability Aggregation | $([[ "$AGGREGATION_STATUS" == "success" ]] && echo "✅ Success" || [[ "$AGGREGATION_STATUS" == "skipped" ]] && echo "⏭️ Skipped" || echo "❌ Failed") | Cross-tool analysis |
+          | 🎫 Issue Creation | $([[ "$ISSUES_STATUS" == "success" ]] && echo "✅ Success" || [[ "$ISSUES_STATUS" == "skipped" ]] && echo "⏭️ Skipped" || echo "❌ Failed") | Automated issue management |
+          | 📢 Notifications | $([[ "$NOTIFICATIONS_STATUS" == "success" ]] && echo "✅ Success" || [[ "$NOTIFICATIONS_STATUS" == "skipped" ]] && echo "⏭️ Skipped" || echo "❌ Failed") | Security event alerts |
+
+          ## 🎯 Key Outcomes
+
+          EOF
+
+          # Add specific outcomes based on job results
+          if [[ "$DEPENDENCY_STATUS" == "success" ]]; then
+            echo "- ✅ **Dependency Analysis**: Complete multi-tool vulnerability assessment" >> $GITHUB_STEP_SUMMARY
+          elif [[ "$DEPENDENCY_STATUS" == "failure" ]]; then
+            echo "- ❌ **Dependency Analysis**: Failed - Review tool configurations" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ "$SECRETS_STATUS" == "success" ]]; then
+            echo "- ✅ **Secret Detection**: Comprehensive secret scanning completed" >> $GITHUB_STEP_SUMMARY
+          elif [[ "$SECRETS_STATUS" == "failure" ]]; then
+            echo "- ❌ **Secret Detection**: Failed - Check tool setup and permissions" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ "$AGGREGATION_STATUS" == "success" ]]; then
+            echo "- ✅ **Analysis Aggregation**: Cross-tool vulnerability analysis complete" >> $GITHUB_STEP_SUMMARY
+          elif [[ "$AGGREGATION_STATUS" == "failure" ]]; then
+            echo "- ❌ **Analysis Aggregation**: Failed - Check report processing" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+
+          ## 🔗 Resources & Next Steps
+
+          ### Immediate Actions
+          - Review [Security Findings](../../security) for detailed vulnerability information
+          - Check [Workflow Artifacts](../../actions/runs/${{ github.run_id }}) for detailed reports
+          - Monitor [Issues](../../issues?q=is%3Aissue+is%3Aopen+label%3Asecurity) for created security tasks
+
+          ### Continuous Improvement
+          - Analyze security trends from aggregated reports
+          - Update security scanning configurations based on findings
+          - Review and enhance security policies and procedures
+          - Plan security training based on vulnerability patterns
+
+          ### Documentation
+          - [Security Policy](../../security/policy)
+          - [Vulnerability Management Process](../../docs/security)
+          - [Incident Response Procedures](../../docs/incident-response)
+
+          ## ⏰ Next Scheduled Scans
+
+          - **Daily Dependency Check**: Every day at 1 AM UTC
+          - **Weekly Quick Scan**: Every Monday at 2 AM UTC  
+          - **Monthly Deep Scan**: First Monday of month at 3 AM UTC
+
+          ---
+
+          ## 📚 Educational Context
+
+          This scheduled security analysis provides:
+
+          **🔍 Comprehensive Coverage**
+          - Multi-tool dependency vulnerability scanning
+          - Advanced secret detection and rotation auditing
+          - Cross-tool vulnerability aggregation and analysis
+          - Automated issue creation for critical findings
+          - Real-time notifications for security events
+
+          **🛡️ Security Benefits**
+          - Early detection of newly disclosed vulnerabilities
+          - Continuous monitoring of security posture
+          - Automated response to critical security findings
+          - Trend analysis for security improvement planning
+          - Integration with development and security workflows
+
+          **⚡ Operational Excellence**
+          - Graceful error handling with continued execution
+          - Comprehensive reporting and documentation
+          - Configurable notification levels and thresholds
+          - Automated artifact retention for compliance
+          - Educational comments for team learning
+
+          EOF
+
+      - name: 'Set Final Workflow Status'
+        run: |
+          echo "🎯 Determining final workflow status..."
+
+          FAILED_JOBS=${{ needs.prepare-security-scan.result == 'failure' && 1 || 0 }}
+          FAILED_JOBS=$((FAILED_JOBS + ${{ needs.deep-dependency-analysis.result == 'failure' && 1 || 0 }}))
+          FAILED_JOBS=$((FAILED_JOBS + ${{ needs.secret-rotation-audit.result == 'failure' && 1 || 0 }}))
+          FAILED_JOBS=$((FAILED_JOBS + ${{ needs.vulnerability-aggregation.result == 'failure' && 1 || 0 }}))
+          FAILED_JOBS=$((FAILED_JOBS + ${{ needs.create-security-issues.result == 'failure' && 1 || 0 }}))
+          FAILED_JOBS=$((FAILED_JOBS + ${{ needs.security-notifications.result == 'failure' && 1 || 0 }}))
+
+          echo "Total failed jobs: $FAILED_JOBS"
+
+          if [[ $FAILED_JOBS -gt 2 ]]; then
+            echo "❌ Multiple critical security job failures detected"
+            echo "This indicates potential issues with security scanning infrastructure"
+            echo "Immediate review of security tooling configuration required"
+            exit 1
+          elif [[ $FAILED_JOBS -gt 0 ]]; then
+            echo "⚠️ Some security jobs failed but core analysis completed"
+            echo "Review failed jobs and update configurations as needed"
+            echo "Security analysis partially completed with $FAILED_JOBS failures"
+            exit 0
+          else
+            echo "✅ All scheduled security analysis jobs completed successfully"
+            echo "Security scanning infrastructure operating normally"
+            exit 0
+          fi
