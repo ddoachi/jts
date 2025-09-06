@@ -62,6 +62,7 @@ env:
 
   # Build configuration
   DEFAULT_PLATFORMS: linux/amd64,linux/arm64
+  NODE_VERSION: '20'
 
   # Security scanning configuration
   TRIVY_CACHE_DIR: /tmp/.cache/trivy
@@ -195,6 +196,10 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODE_VERSION }}
+
+      # Enable Corepack to use the correct Yarn version from package.json
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Cache Yarn
         uses: actions/cache@v4
