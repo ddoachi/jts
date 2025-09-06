@@ -121,7 +121,7 @@ jobs:
 
       - name: 💬 Send Slack Notification
         if: inputs.notify-slack
-        uses: slackapi/slack-github-action@v1.24.0
+        uses: slackapi/slack-github-action@v2.1.1
         with:
           payload: |
             {
