@@ -1,9 +1,9 @@
 /**
  * Mock Spec Test Fixtures
- * 
+ *
  * This file provides comprehensive test fixtures for testing the spec parser service.
  * Each fixture represents different scenarios and edge cases that the parser must handle.
- * 
+ *
  * USAGE:
  * Import these fixtures in your test files to ensure consistent test data:
  * ```typescript
@@ -40,9 +40,9 @@ This epic covers the development of a comprehensive spec management API.
 - F01: Parser Service
 - F02: Renderer Service
 - F03: WebSocket Updates`,
-  
+
   path: '/specs/E13/E13.spec.md',
-  
+
   expected: {
     id: 'E13',
     title: 'Spec Management API',
@@ -53,9 +53,9 @@ This epic covers the development of a comprehensive spec management API.
       level: 'epic',
       parentId: undefined,
       childIds: [],
-      depth: 0
-    }
-  }
+      depth: 0,
+    },
+  },
 };
 
 /**
@@ -80,9 +80,9 @@ assignee: dev-team
 # E13-F01: Spec Parser Service
 
 Foundation service for parsing spec files.`,
-  
+
   path: '/specs/E13/F01/spec.md',
-  
+
   expected: {
     id: 'E13-F01',
     title: 'Spec Parser Service',
@@ -94,9 +94,9 @@ Foundation service for parsing spec files.`,
       level: 'feature',
       parentId: 'E13',
       childIds: [],
-      depth: 1
-    }
-  }
+      depth: 1,
+    },
+  },
 };
 
 /**
@@ -119,9 +119,9 @@ assignee: john.doe
 # Task: Core Parser Implementation
 
 Implement the core parsing logic.`,
-  
+
   path: '/specs/E13/F01/T01/spec.md',
-  
+
   expected: {
     id: 'E13-F01-T01',
     title: 'Core Parser Implementation',
@@ -133,9 +133,9 @@ Implement the core parsing logic.`,
       level: 'task',
       parentId: 'E13-F01',
       childIds: [],
-      depth: 2
-    }
-  }
+      depth: 2,
+    },
+  },
 };
 
 /**
@@ -157,10 +157,10 @@ tags
 # Malformed Spec
 
 This spec has YAML errors.`,
-  
+
   path: '/specs/E13/F02/spec.md',
-  
-  expectedError: 'YAML parsing error'
+
+  expectedError: 'YAML parsing error',
 };
 
 /**
@@ -175,10 +175,10 @@ title: Incomplete Spec
 # Incomplete Spec
 
 This spec is missing required fields like id, type, status.`,
-  
+
   path: '/specs/incomplete.spec.md',
-  
-  expectedError: 'Missing required field: id'
+
+  expectedError: 'Missing required field: id',
 };
 
 /**
@@ -192,10 +192,10 @@ export const EMPTY_YAML_SPEC = {
 # Empty Frontmatter
 
 This spec has empty YAML frontmatter.`,
-  
+
   path: '/specs/empty.spec.md',
-  
-  expectedError: 'Empty frontmatter'
+
+  expectedError: 'Empty frontmatter',
 };
 
 /**
@@ -207,10 +207,10 @@ export const NO_FRONTMATTER_SPEC = {
 
 This is just a regular markdown file without frontmatter.
 It should be handled gracefully.`,
-  
+
   path: '/specs/no-frontmatter.spec.md',
-  
-  expectedError: 'No frontmatter found'
+
+  expectedError: 'No frontmatter found',
 };
 
 /**
@@ -236,19 +236,19 @@ description: |
 # Special Characters Test
 
 \`\`\`javascript
-const code = "with special chars: ${variable}";
+const code = "with special chars: \${variable}";
 const regex = /[a-z]+/gi;
 \`\`\``,
-  
+
   path: '/specs/E14/F01/spec.md',
-  
+
   expected: {
     id: 'E14-F01',
     title: "Spec with 'Special' Characters & Symbols",
     type: 'feature',
     status: 'draft',
-    priority: 'medium'
-  }
+    priority: 'medium',
+  },
 };
 
 /**
@@ -269,13 +269,13 @@ updated: 2025-01-06
 # Large Content Spec
 
 ${Array(1000).fill('This is a line of content. ').join('\n')}`,
-  
+
   path: '/specs/E15/E15.spec.md',
-  
+
   expected: {
     id: 'E15',
-    contentLength: 30000 // Approximate
-  }
+    contentLength: 30000, // Approximate
+  },
 };
 
 /**
@@ -298,13 +298,13 @@ dependencies:
 ---
 
 # Circular Dependency Test A`,
-  
+
   path: '/specs/E16/F01/spec.md',
-  
+
   related: {
     'E16-F02': ['E16-F03', 'E16-F01'], // F02 depends on F01 (circular)
-    'E16-F03': ['E16-F01'] // F03 depends on F01 (circular)
-  }
+    'E16-F03': ['E16-F01'], // F03 depends on F01 (circular)
+  },
 };
 
 /**
@@ -323,10 +323,10 @@ updated: 2025-01-06
 ---
 
 # Invalid ID Format`,
-  
+
   path: '/specs/invalid.spec.md',
-  
-  expectedError: 'Invalid spec ID format'
+
+  expectedError: 'Invalid spec ID format',
 };
 
 /**
@@ -346,7 +346,7 @@ updated: 2025-01-06
 ---
 
 # Original`,
-    path: '/specs/E17/F01/spec.md'
+    path: '/specs/E17/F01/spec.md',
   },
   {
     content: `---
@@ -360,14 +360,14 @@ updated: 2025-01-06
 ---
 
 # Duplicate`,
-    path: '/specs/E17/F01-duplicate/spec.md'
-  }
+    path: '/specs/E17/F01-duplicate/spec.md',
+  },
 ];
 
 /**
  * Helper function to create a mock spec with custom fields
  * Useful for dynamically generating test data
- * 
+ *
  * @example
  * const customSpec = createMockSpec({
  *   id: 'E99-F01',
@@ -383,11 +383,11 @@ export function createMockSpec(overrides: Partial<any> = {}) {
     status: 'draft',
     priority: 'medium',
     created: '2025-01-05',
-    updated: '2025-01-06'
+    updated: '2025-01-06',
   };
-  
+
   const metadata = { ...defaults, ...overrides };
-  
+
   return {
     content: `---
 ${Object.entries(metadata)
@@ -399,7 +399,7 @@ ${Object.entries(metadata)
 
 Mock spec content.`,
     path: `/specs/${metadata.id.replace('-', '/')}/spec.md`,
-    expected: metadata
+    expected: metadata,
   };
 }
 
@@ -410,7 +410,7 @@ export const ALL_VALID_SPECS = [
   VALID_EPIC_SPEC,
   VALID_FEATURE_SPEC,
   VALID_TASK_SPEC,
-  SPECIAL_CHARS_SPEC
+  SPECIAL_CHARS_SPEC,
 ];
 
 /**
@@ -421,5 +421,5 @@ export const ALL_INVALID_SPECS = [
   MISSING_FIELDS_SPEC,
   EMPTY_YAML_SPEC,
   NO_FRONTMATTER_SPEC,
-  INVALID_ID_SPEC
+  INVALID_ID_SPEC,
 ];
