@@ -708,12 +708,12 @@ jobs:
             echo "⚠️ TruffleHog found secrets in filesystem"
           }
           
-          # Generate SARIF output for GitHub integration
+          # Generate JSON output for analysis
           trufflehog git file://. \
-            --format sarif \
+            --json \
             --only-verified \
-            --no-update > security-reports/secrets/trufflehog/trufflehog-results.sarif || {
-            echo "⚠️ TruffleHog SARIF generation completed"
+            --no-update > security-reports/secrets/trufflehog/trufflehog-results.json || {
+            echo "⚠️ TruffleHog scan completed"
           }
           
           echo "📊 TruffleHog scan complete"
@@ -877,7 +877,7 @@ jobs:
           EOF
 
       - name: 'Upload Secret Detection SARIF Results'
-        if: always()
+        if: always() && hashFiles('security-reports/secrets/*/*.sarif') != ''
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: security-reports/secrets/*/*.sarif
