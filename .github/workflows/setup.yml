@@ -49,7 +49,7 @@ jobs:
       # ═══════════════════════════════════════════════════════════════
 
       - name: 📥 Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: ${{ inputs.checkout-depth }}
           # GOTCHA: fetch-depth of 0 fetches all history for Nx affected commands
