@@ -13,3 +13,5 @@ specs_backup/
 # Complex GitHub Actions workflows with embedded shell scripts
 .github/workflows/deploy-production.yml
 .github/workflows/deploy-staging.yml
+.github/workflows/deploy-dev.yml
+.github/workflows/rollback-emergency.yml
