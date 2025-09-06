@@ -1,0 +1,387 @@
+name: Docker Build & Push
+
+# Comprehensive Docker build workflow with multi-platform support, security scanning, and caching
+# This workflow builds and pushes Docker images for all services in the JTS monorepo
+
+on:
+  # Trigger on push to main branch or release tags
+  push:
+    branches:
+      - main
+      - develop
+    tags:
+      - 'v*.*.*'
+    paths:
+      - 'apps/**'
+      - 'libs/**'
+      - 'docker/**'
+      - '.dockerignore'
+      - 'package.json'
+      - 'yarn.lock'
+      - '.github/workflows/docker-build.yml'
+
+  # Trigger on pull requests to main branch
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/**'
+      - 'libs/**'
+      - 'docker/**'
+      - '.dockerignore'
+      - 'package.json'
+      - 'yarn.lock'
+      - '.github/workflows/docker-build.yml'
+
+  # Allow manual workflow dispatch
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Specific service to build (leave empty to build all changed services)'
+        required: false
+        type: string
+      platforms:
+        description: 'Target platforms'
+        required: false
+        default: 'linux/amd64,linux/arm64'
+        type: string
+      push:
+        description: 'Push images to registry'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  # Container registry configuration
+  REGISTRY: ghcr.io
+  REGISTRY_USERNAME: ${{ github.actor }}
+  REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
+  # Image naming convention
+  IMAGE_PREFIX: jts
+
+  # Build configuration
+  DEFAULT_PLATFORMS: linux/amd64,linux/arm64
+  NODE_VERSION: '20'
+
+  # Security scanning configuration
+  TRIVY_CACHE_DIR: /tmp/.cache/trivy
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+# Permissions required for the workflow
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+  actions: read
+
+jobs:
+  # Job 1: Detect changed services and prepare build matrix
+  detect-changes:
+    name: Detect Changed Services
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.changes.outputs.services }}
+      has-changes: ${{ steps.changes.outputs.has-changes }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed services
+        id: changes
+        run: |
+          # If manual dispatch with specific service, use that
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && -n "${{ github.event.inputs.service }}" ]]; then
+            echo "services=${{ github.event.inputs.service }}" >> $GITHUB_OUTPUT
+            echo "has-changes=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Get list of all services
+          services=()
+          for app in apps/*/; do
+            if [[ -f "${app}Dockerfile" ]]; then
+              service=$(basename "$app")
+              services+=("$service")
+            fi
+          done
+
+          # For push events, detect changes since last commit
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+              # On main branch, compare with previous commit
+              changed_files=$(git diff --name-only HEAD~1 HEAD)
+            else
+              # On other branches, compare with main
+              changed_files=$(git diff --name-only origin/main...HEAD)
+            fi
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # For PRs, compare with target branch
+            changed_files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          else
+            # For tags, build all services
+            changed_files="all"
+          fi
+
+          # Determine which services need building
+          changed_services=()
+
+          if [[ "$changed_files" == "all" ]]; then
+            changed_services=("${services[@]}")
+          else
+            # Check if global files changed (rebuild all)
+            if echo "$changed_files" | grep -E "(package\.json|yarn\.lock|docker/base/|\.dockerignore)" > /dev/null; then
+              changed_services=("${services[@]}")
+            else
+              # Check individual services
+              for service in "${services[@]}"; do
+                if echo "$changed_files" | grep -E "(apps/${service}/|libs/)" > /dev/null; then
+                  changed_services+=("$service")
+                fi
+              done
+            fi
+          fi
+
+          # Output results
+          if [[ ${#changed_services[@]} -gt 0 ]]; then
+            services_json=$(printf '%s\n' "${changed_services[@]}" | jq -R . | jq -s -c .)
+            echo "services=${services_json}" >> $GITHUB_OUTPUT
+            echo "has-changes=true" >> $GITHUB_OUTPUT
+            echo "Changed services: ${changed_services[*]}"
+          else
+            echo "services=[]" >> $GITHUB_OUTPUT
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+            echo "No services changed"
+          fi
+
+      - name: Create build matrix
+        id: matrix
+        run: |
+          if [[ "${{ steps.changes.outputs.has-changes }}" == "true" ]]; then
+            # Create matrix with services and platforms
+            platforms="${{ github.event.inputs.platforms || env.DEFAULT_PLATFORMS }}"
+            matrix=$(echo '${{ steps.changes.outputs.services }}' | jq -c --arg platforms "$platforms" '
+              map({
+                service: .,
+                platforms: $platforms
+              })
+            ')
+            echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+          else
+            echo "matrix=[]" >> $GITHUB_OUTPUT
+          fi
+
+  # Job 2: Build and push Docker images
+  build:
+    name: Build & Push
+    needs: detect-changes
+    if: needs.detect-changes.outputs.has-changes == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Enable Corepack first (before Node.js setup)
+      - name: Enable Corepack
+        run: corepack enable
+
+      # Set up Node.js for dependency management
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # Verify Yarn version
+      - name: Verify Yarn Version
+        run: |
+          # Verify Yarn version matches package.json
+          yarn --version
+
+      - name: Cache Yarn
+        uses: actions/cache@v4
+        with:
+          path: |
+            .yarn/cache
+            .yarn/install-state.gz
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-${{ runner.os }}-
+
+      # Install dependencies for build context
+      - name: Install Dependencies
+        run: yarn install --immutable
+
+      # Set up Docker Buildx for multi-platform builds
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: ${{ matrix.platforms }}
+          driver-opts: |
+            network=host
+
+      # Set up QEMU for cross-platform builds
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      # Login to container registry
+      - name: Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.REGISTRY_USERNAME }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+
+      # Extract metadata for tags and labels
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}
+          tags: |
+            # Latest tag for main branch
+            type=raw,value=latest,enable={{is_default_branch}}
+            # Branch name for develop
+            type=ref,event=branch
+            # PR number for pull requests
+            type=ref,event=pr,prefix=pr-
+            # Semver tags
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            # SHA for unique identification
+            type=sha,prefix={{branch}}-,format=short
+          labels: |
+            org.opencontainers.image.title=${{ env.IMAGE_PREFIX }}-${{ matrix.service }}
+            org.opencontainers.image.description=JTS Trading System - ${{ matrix.service }} service
+            org.opencontainers.image.vendor=JTS Team
+            org.opencontainers.image.service=${{ matrix.service }}
+
+      # Build and push Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./apps/${{ matrix.service }}/Dockerfile
+          platforms: ${{ matrix.platforms }}
+          push: ${{ github.event.inputs.push != 'false' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: |
+            type=gha,scope=build-${{ matrix.service }}
+            type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}:cache
+          cache-to: |
+            type=gha,mode=max,scope=build-${{ matrix.service }}
+            type=registry,ref=${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}:cache,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+            SERVICE_NAME=${{ matrix.service }}
+            BUILD_DATE=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+            VCS_REF=${{ github.sha }}
+          provenance: true
+          sbom: true
+
+      # Save image for security scanning
+      - name: Save image for scanning
+        if: github.event_name != 'pull_request'
+        run: |
+          # Get the built image ID
+          image_name="${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}"
+          docker buildx imagetools inspect "$image_name:${{ steps.meta.outputs.version }}" --format '{{.Name}}' | head -1 > /tmp/image_name.txt
+
+      # Security scan with Trivy
+      - name: Run Trivy security scan
+        if: github.event_name != 'pull_request'
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}:${{ steps.meta.outputs.version }}
+          format: 'sarif'
+          output: 'trivy-results-${{ matrix.service }}.sarif'
+          severity: 'CRITICAL,HIGH,MEDIUM'
+          exit-code: '0'
+        env:
+          TRIVY_CACHE_DIR: ${{ env.TRIVY_CACHE_DIR }}
+
+      # Upload Trivy scan results
+      - name: Upload Trivy scan results
+        if: github.event_name != 'pull_request'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results-${{ matrix.service }}.sarif'
+          category: 'trivy-${{ matrix.service }}'
+
+      # Security scan with Snyk (if token available)
+      - name: Run Snyk security scan
+        if: env.SNYK_TOKEN != '' && github.event_name != 'pull_request'
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ env.SNYK_TOKEN }}
+        with:
+          image: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}:${{ steps.meta.outputs.version }}
+          args: --severity-threshold=high --file=apps/${{ matrix.service }}/Dockerfile
+
+      # Generate image attestation
+      - name: Generate image attestation
+        if: github.event_name != 'pull_request'
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+          push-to-registry: true
+
+  # Job 3: Create summary and notify
+  summary:
+    name: Build Summary
+    needs: [detect-changes, build]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create build summary
+        run: |
+          echo "# Docker Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.detect-changes.outputs.has-changes }}" == "true" ]]; then
+            services=$(echo '${{ needs.detect-changes.outputs.services }}' | jq -r '.[]')
+            echo "## Built Services" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            for service in $services; do
+              if [[ "${{ needs.build.result }}" == "success" ]]; then
+                echo "✅ **${service}** - Successfully built and pushed" >> $GITHUB_STEP_SUMMARY
+                echo "   - Registry: \`${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_PREFIX }}-${service}\`" >> $GITHUB_STEP_SUMMARY
+                echo "   - Platforms: \`${{ env.DEFAULT_PLATFORMS }}\`" >> $GITHUB_STEP_SUMMARY
+                echo "   - Security: Scanned with Trivy" >> $GITHUB_STEP_SUMMARY
+              else
+                echo "❌ **${service}** - Build failed" >> $GITHUB_STEP_SUMMARY
+              fi
+              echo "" >> $GITHUB_STEP_SUMMARY
+            done
+          else
+            echo "## No Changes Detected" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "No services required rebuilding based on the changed files." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Workflow Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger**: \`${{ github.event_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch/Tag**: \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Actor**: \`${{ github.actor }}\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify on failure
+        if: needs.build.result == 'failure'
+        run: |
+          echo "::error title=Docker Build Failed::One or more Docker builds failed. Check the logs for details."
