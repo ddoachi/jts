@@ -1,0 +1,1101 @@
+# ========================================================================================================
+# JTS Trading System - Comprehensive Development Docker Compose
+# ========================================================================================================
+# This docker-compose file provides a complete development environment for the JTS trading system
+# including all 6 microservices and required infrastructure components. It's optimized for
+# development with hot reloading, debugging capabilities, and educational comments.
+#
+# ARCHITECTURE OVERVIEW:
+# - API Gateway: Unified entry point (Port 3000)
+# - Strategy Engine: Algorithmic trading brain (Port 3001)
+# - Order Execution: Trade execution engine (Port 3002)
+# - Risk Management: Risk control and monitoring (Port 3003)
+# - Data Ingestion: Market data collector (Port 3004)
+# - Notification Service: Alerts and notifications (Port 3005)
+# - Infrastructure: PostgreSQL, ClickHouse, MongoDB, Redis, Kafka + Zookeeper
+#
+# USAGE:
+# - Start all services: `docker-compose -f docker-compose.dev.yml up -d`
+# - Start specific service: `docker-compose -f docker-compose.dev.yml up api-gateway`
+# - View logs: `docker-compose -f docker-compose.dev.yml logs -f [service-name]`
+# - Stop all: `docker-compose -f docker-compose.dev.yml down`
+# - Clean restart: `docker-compose -f docker-compose.dev.yml down -v && docker-compose -f docker-compose.dev.yml up -d`
+# ========================================================================================================
+
+version: '3.8'
+
+# ========================================================================================================
+# MICROSERVICES CONFIGURATION
+# All 6 microservices with development optimizations, debugging, and hot reload capabilities
+# ========================================================================================================
+
+services:
+  # =====================================================================================================
+  # API GATEWAY - Unified Entry Point (Port 3000)
+  # =====================================================================================================
+  # The API Gateway serves as the single entry point for all client requests. It handles authentication,
+  # rate limiting, request routing, and provides a unified API surface for all backend microservices.
+  # In development, it includes debugging capabilities and hot reloading.
+  api-gateway:
+    build:
+      context: .
+      dockerfile: apps/api-gateway/Dockerfile
+      target: development                    # Use development stage for hot reloading and debugging
+    container_name: jts-api-gateway-dev
+    restart: unless-stopped
+    ports:
+      - '${API_GATEWAY_PORT:-3000}:3000'     # Main API port exposed to host
+      - '${API_GATEWAY_DEBUG_PORT:-9229}:9229' # Node.js debugger port
+    environment:
+      # === Service Configuration ===
+      NODE_ENV: development
+      SERVICE_NAME: api-gateway
+      SERVICE_PORT: 3000
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      
+      # === Gateway Routing Configuration ===
+      # These URLs point to other microservices within the Docker network
+      STRATEGY_SERVICE_URL: http://strategy-engine:3001
+      ORDER_SERVICE_URL: http://order-execution:3002
+      RISK_SERVICE_URL: http://risk-management:3003
+      DATA_SERVICE_URL: http://data-ingestion:3004
+      NOTIFICATION_SERVICE_URL: http://notification-service:3005
+      
+      # === Authentication & Security ===
+      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-in-production}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:4200}
+      
+      # === Rate Limiting ===
+      RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW:-60000}
+      RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-1000}
+      
+      # === Database Connections ===
+      DATABASE_URL: postgresql://${POSTGRES_USER:-jts_admin}:${DEV_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-jts_trading_dev}
+      REDIS_URL: redis://redis:6379
+      
+      # === Development Features ===
+      ENABLE_SWAGGER: true
+      ENABLE_DEBUG_ROUTES: true
+      DEBUG: '*'
+    volumes:
+      # Mount source code for hot reloading in development
+      - ./apps/api-gateway:/app/apps/api-gateway:cached
+      - ./libs:/app/libs:cached
+      - ./node_modules:/app/node_modules:cached
+      # Mount logs directory for persistent logging
+      - ./logs/api-gateway:/app/logs:rw
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      strategy-engine:
+        condition: service_started
+      order-execution:
+        condition: service_started
+      risk-management:
+        condition: service_started
+      data-ingestion:
+        condition: service_started
+      notification-service:
+        condition: service_started
+    networks:
+      - jts-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # =====================================================================================================
+  # STRATEGY ENGINE - Algorithmic Trading Brain (Port 3001)
+  # =====================================================================================================
+  # The Strategy Engine is the core algorithmic component that analyzes market data and generates
+  # trading signals. It processes real-time data streams and executes predefined trading strategies.
+  # Requires high CPU and memory resources for complex calculations.
+  strategy-engine:
+    build:
+      context: .
+      dockerfile: apps/strategy-engine/Dockerfile
+      target: development
+    container_name: jts-strategy-engine-dev
+    restart: unless-stopped
+    ports:
+      - '${STRATEGY_ENGINE_PORT:-3001}:3001'
+      - '${STRATEGY_ENGINE_DEBUG_PORT:-9230}:9229'
+    environment:
+      # === Service Configuration ===
+      NODE_ENV: development
+      SERVICE_NAME: strategy-engine
+      SERVICE_PORT: 3001
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      
+      # === Database Connections ===
+      DATABASE_URL: postgresql://${POSTGRES_USER:-jts_admin}:${DEV_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-jts_trading_dev}
+      CLICKHOUSE_URL: http://${CLICKHOUSE_USER:-jts_ch}:${DEV_PASSWORD:-dev_password}@clickhouse:8123/${CLICKHOUSE_DB:-jts_market_data_dev}
+      MONGODB_URL: mongodb://${MONGODB_USER:-jts_mongo}:${DEV_PASSWORD:-dev_password}@mongodb:27017/${MONGODB_DB:-jts_config_dev}
+      REDIS_URL: redis://redis:6379
+      
+      # === Kafka Configuration for Real-time Data ===
+      KAFKA_BROKERS: kafka:9093
+      KAFKA_CLIENT_ID: strategy-engine-dev
+      KAFKA_GROUP_ID: strategy-engine-group-dev
+      
+      # === Strategy Engine Specific ===
+      # Performance settings for mathematical computations
+      NODE_OPTIONS: --max-old-space-size=4096 --enable-source-maps --inspect=0.0.0.0:9229
+      STRATEGY_EXECUTION_INTERVAL: 1000    # 1 second for development (faster feedback)
+      ENABLE_BACKTESTING: true
+      ENABLE_PAPER_TRADING: true           # Safe mode for development
+      
+      # === Risk Parameters ===
+      MAX_POSITION_SIZE: 10000             # Development limit
+      MAX_DAILY_LOSS: 1000                 # Development safety limit
+      
+      DEBUG: strategy:*
+    volumes:
+      - ./apps/strategy-engine:/app/apps/strategy-engine:cached
+      - ./libs:/app/libs:cached
+      - ./node_modules:/app/node_modules:cached
+      - ./logs/strategy-engine:/app/logs:rw
+      # Mount strategy configurations
+      - ./configs/strategies:/app/configs/strategies:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_started
+      mongodb:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - jts-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+
+  # =====================================================================================================
+  # ORDER EXECUTION - Trade Execution Engine (Port 3002)
+  # =====================================================================================================
+  # The Order Execution service handles all trade execution logic, including order routing to brokers,
+  # order management, and execution reporting. It integrates with multiple broker APIs and provides
+  # unified order management capabilities.
+  order-execution:
+    build:
+      context: .
+      dockerfile: apps/order-execution/Dockerfile
+      target: development
+    container_name: jts-order-execution-dev
+    restart: unless-stopped
+    ports:
+      - '${ORDER_EXECUTION_PORT:-3002}:3002'
+      - '${ORDER_EXECUTION_DEBUG_PORT:-9231}:9229'
+    environment:
+      # === Service Configuration ===
+      NODE_ENV: development
+      SERVICE_NAME: order-execution
+      SERVICE_PORT: 3002
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      
+      # === Database Connections ===
+      DATABASE_URL: postgresql://${POSTGRES_USER:-jts_admin}:${DEV_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-jts_trading_dev}
+      REDIS_URL: redis://redis:6379
+      
+      # === Kafka Configuration ===
+      KAFKA_BROKERS: kafka:9093
+      KAFKA_CLIENT_ID: order-execution-dev
+      KAFKA_GROUP_ID: order-execution-group-dev
+      
+      # === Broker Configurations ===
+      # KIS (Korea Investment & Securities) Multi-Account Setup
+      KIS_ENABLED: ${KIS_ENABLED:-true}
+      KIS_TOTAL_ACCOUNTS: ${KIS_TOTAL_ACCOUNTS:-2}
+      KIS_API_BASE_URL: https://openapi.koreainvestment.com:9443
+      KIS_PAPER_TRADING: true              # Enable paper trading for development
+      
+      # Account 1 Configuration
+      KIS_ACCOUNT_1_ENABLED: ${KIS_ACCOUNT_1_ENABLED:-true}
+      KIS_ACCOUNT_1_APPKEY: ${KIS_ACCOUNT_1_APPKEY:-dev_key_1}
+      KIS_ACCOUNT_1_APPSECRET: ${KIS_ACCOUNT_1_APPSECRET:-dev_secret_1}
+      KIS_ACCOUNT_1_NUMBER: ${KIS_ACCOUNT_1_NUMBER:-dev_account_1}
+      
+      # Account 2 Configuration
+      KIS_ACCOUNT_2_ENABLED: ${KIS_ACCOUNT_2_ENABLED:-true}
+      KIS_ACCOUNT_2_APPKEY: ${KIS_ACCOUNT_2_APPKEY:-dev_key_2}
+      KIS_ACCOUNT_2_APPSECRET: ${KIS_ACCOUNT_2_APPSECRET:-dev_secret_2}
+      KIS_ACCOUNT_2_NUMBER: ${KIS_ACCOUNT_2_NUMBER:-dev_account_2}
+      
+      # Creon Configuration (Windows-based Korean broker)
+      CREON_ENABLED: ${CREON_ENABLED:-false}  # Disabled by default in containerized environment
+      
+      # === Order Execution Settings ===
+      ORDER_TIMEOUT: 30000                  # 30 seconds
+      MAX_RETRY_ATTEMPTS: 3
+      RETRY_DELAY: 1000                     # 1 second
+      
+      # === Rate Limiting for Brokers ===
+      KIS_RATE_LIMIT_PER_SECOND: ${KIS_RATE_LIMIT_PER_SECOND:-20}
+      KIS_RATE_LIMIT_PER_MINUTE: ${KIS_RATE_LIMIT_PER_MINUTE:-200}
+      
+      DEBUG: order:*
+    volumes:
+      - ./apps/order-execution:/app/apps/order-execution:cached
+      - ./libs:/app/libs:cached
+      - ./node_modules:/app/node_modules:cached
+      - ./logs/order-execution:/app/logs:rw
+      # Mount broker configurations
+      - ./configs/brokers:/app/configs/brokers:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - jts-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # =====================================================================================================
+  # RISK MANAGEMENT - Risk Control and Monitoring (Port 3003)
+  # =====================================================================================================
+  # The Risk Management service monitors all trading activities and enforces risk limits. It provides
+  # real-time risk assessment, position monitoring, and automatic risk controls to prevent losses
+  # beyond acceptable thresholds.
+  risk-management:
+    build:
+      context: .
+      dockerfile: apps/risk-management/Dockerfile
+      target: development
+    container_name: jts-risk-management-dev
+    restart: unless-stopped
+    ports:
+      - '${RISK_MANAGEMENT_PORT:-3003}:3003'
+      - '${RISK_MANAGEMENT_DEBUG_PORT:-9232}:9229'
+    environment:
+      # === Service Configuration ===
+      NODE_ENV: development
+      SERVICE_NAME: risk-management
+      SERVICE_PORT: 3003
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      
+      # === Database Connections ===
+      DATABASE_URL: postgresql://${POSTGRES_USER:-jts_admin}:${DEV_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-jts_trading_dev}
+      CLICKHOUSE_URL: http://${CLICKHOUSE_USER:-jts_ch}:${DEV_PASSWORD:-dev_password}@clickhouse:8123/${CLICKHOUSE_DB:-jts_market_data_dev}
+      REDIS_URL: redis://redis:6379
+      
+      # === Kafka Configuration ===
+      KAFKA_BROKERS: kafka:9093
+      KAFKA_CLIENT_ID: risk-management-dev
+      KAFKA_GROUP_ID: risk-management-group-dev
+      
+      # === Risk Management Parameters (Development Values) ===
+      # Portfolio-level risk limits
+      MAX_PORTFOLIO_VALUE: 100000          # $100k portfolio limit for development
+      MAX_POSITION_CONCENTRATION: 0.1      # Max 10% in single position
+      MAX_SECTOR_CONCENTRATION: 0.3        # Max 30% in single sector
+      
+      # Daily risk limits
+      MAX_DAILY_LOSS: 2000                 # $2k daily loss limit
+      MAX_DAILY_TURNOVER: 50000            # $50k daily turnover limit
+      
+      # Real-time risk monitoring
+      RISK_CHECK_INTERVAL: 5000            # Check every 5 seconds
+      POSITION_MONITORING_INTERVAL: 1000   # Monitor positions every 1 second
+      
+      # Risk calculation parameters
+      VAR_CONFIDENCE_LEVEL: 0.95           # 95% VaR confidence level
+      VAR_LOOKBACK_DAYS: 30                # 30-day VaR calculation
+      
+      # === Emergency Controls ===
+      ENABLE_CIRCUIT_BREAKER: true
+      CIRCUIT_BREAKER_LOSS_THRESHOLD: 0.05 # 5% portfolio loss triggers circuit breaker
+      ENABLE_AUTO_LIQUIDATION: false       # Disabled for development safety
+      
+      DEBUG: risk:*
+    volumes:
+      - ./apps/risk-management:/app/apps/risk-management:cached
+      - ./libs:/app/libs:cached
+      - ./node_modules:/app/node_modules:cached
+      - ./logs/risk-management:/app/logs:rw
+      # Mount risk configuration files
+      - ./configs/risk:/app/configs/risk:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - jts-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # =====================================================================================================
+  # DATA INGESTION - Market Data Collector (Port 3004)
+  # =====================================================================================================
+  # The Data Ingestion service is responsible for collecting, processing, and storing market data from
+  # multiple sources. It handles real-time data streams, historical data collection, and data
+  # normalization across different market data providers.
+  data-ingestion:
+    build:
+      context: .
+      dockerfile: apps/data-ingestion/Dockerfile
+      target: development
+    container_name: jts-data-ingestion-dev
+    restart: unless-stopped
+    ports:
+      - '${DATA_INGESTION_PORT:-3004}:3004'
+      - '${DATA_INGESTION_DEBUG_PORT:-9233}:9229'
+    environment:
+      # === Service Configuration ===
+      NODE_ENV: development
+      SERVICE_NAME: data-ingestion
+      SERVICE_PORT: 3004
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      
+      # === Database Connections ===
+      # PostgreSQL for metadata and configuration
+      DATABASE_URL: postgresql://${POSTGRES_USER:-jts_admin}:${DEV_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-jts_trading_dev}
+      # ClickHouse for time-series market data (primary storage)
+      CLICKHOUSE_URL: http://${CLICKHOUSE_USER:-jts_ch}:${DEV_PASSWORD:-dev_password}@clickhouse:8123/${CLICKHOUSE_DB:-jts_market_data_dev}
+      # Redis for real-time data caching
+      REDIS_URL: redis://redis:6379
+      
+      # === Kafka Configuration ===
+      KAFKA_BROKERS: kafka:9093
+      KAFKA_CLIENT_ID: data-ingestion-dev
+      KAFKA_GROUP_ID: data-ingestion-group-dev
+      
+      # === Market Data Sources ===
+      # KIS Market Data
+      KIS_ENABLED: ${KIS_ENABLED:-true}
+      KIS_WEBSOCKET_URL: wss://openapi.koreainvestment.com:9443/websocket/v1
+      KIS_REST_API_URL: https://openapi.koreainvestment.com:9443
+      
+      # Yahoo Finance (for international data)
+      YAHOO_FINANCE_ENABLED: true
+      
+      # Alpha Vantage (backup data source)
+      ALPHA_VANTAGE_ENABLED: false
+      ALPHA_VANTAGE_API_KEY: ${ALPHA_VANTAGE_API_KEY:-demo}
+      
+      # === Data Collection Settings ===
+      # Real-time data streaming intervals
+      PRICE_UPDATE_INTERVAL: 1000          # 1 second for price updates
+      VOLUME_UPDATE_INTERVAL: 5000         # 5 seconds for volume updates
+      ORDER_BOOK_UPDATE_INTERVAL: 500      # 500ms for order book updates
+      
+      # Historical data collection
+      ENABLE_HISTORICAL_COLLECTION: true
+      HISTORICAL_DATA_LOOKBACK_DAYS: 365   # Collect 1 year of historical data
+      
+      # Data retention policies
+      REAL_TIME_DATA_RETENTION_DAYS: 30    # Keep 30 days of real-time data
+      MINUTE_DATA_RETENTION_DAYS: 90       # Keep 90 days of minute data
+      DAILY_DATA_RETENTION_DAYS: 3650      # Keep 10 years of daily data
+      
+      # === Performance Tuning ===
+      # High throughput settings for market data processing
+      NODE_OPTIONS: --max-old-space-size=8192 --enable-source-maps --inspect=0.0.0.0:9229
+      BATCH_SIZE: 1000                     # Process data in batches of 1000 records
+      BUFFER_SIZE: 10000                   # Buffer up to 10k records before flushing
+      
+      DEBUG: data:*
+    volumes:
+      - ./apps/data-ingestion:/app/apps/data-ingestion:cached
+      - ./libs:/app/libs:cached
+      - ./node_modules:/app/node_modules:cached
+      - ./logs/data-ingestion:/app/logs:rw
+      # Mount data source configurations
+      - ./configs/data-sources:/app/configs/data-sources:ro
+      # Mount temporary data storage for buffering
+      - ./data/temp:/app/data/temp:rw
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_started
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - jts-network
+    # Resource limits for data-intensive operations
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      interval: 20s
+      timeout: 15s
+      retries: 3
+      start_period: 60s
+
+  # =====================================================================================================
+  # NOTIFICATION SERVICE - Alerts and Notifications (Port 3005)
+  # =====================================================================================================
+  # The Notification Service handles all system alerts, notifications, and communications. It provides
+  # multiple notification channels (email, SMS, webhooks, push notifications) and manages notification
+  # routing based on severity and user preferences.
+  notification-service:
+    build:
+      context: .
+      dockerfile: apps/notification-service/Dockerfile
+      target: development
+    container_name: jts-notification-service-dev
+    restart: unless-stopped
+    ports:
+      - '${NOTIFICATION_SERVICE_PORT:-3005}:3005'
+      - '${NOTIFICATION_SERVICE_DEBUG_PORT:-9234}:9229'
+    environment:
+      # === Service Configuration ===
+      NODE_ENV: development
+      SERVICE_NAME: notification-service
+      SERVICE_PORT: 3005
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      
+      # === Database Connections ===
+      DATABASE_URL: postgresql://${POSTGRES_USER:-jts_admin}:${DEV_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-jts_trading_dev}
+      REDIS_URL: redis://redis:6379
+      
+      # === Kafka Configuration ===
+      KAFKA_BROKERS: kafka:9093
+      KAFKA_CLIENT_ID: notification-service-dev
+      KAFKA_GROUP_ID: notification-service-group-dev
+      
+      # === Email Configuration (Development - using fake SMTP) ===
+      EMAIL_ENABLED: true
+      SMTP_HOST: mailhog                    # Use MailHog for development email testing
+      SMTP_PORT: 1025
+      SMTP_SECURE: false
+      SMTP_USER: dev@jts.com
+      SMTP_PASSWORD: dev_password
+      EMAIL_FROM: JTS Trading System <noreply@jts.com>
+      
+      # === SMS Configuration (Disabled in development) ===
+      SMS_ENABLED: false
+      SMS_PROVIDER: twilio                  # twilio, aws-sns, etc.
+      SMS_API_KEY: ${SMS_API_KEY:-}
+      SMS_API_SECRET: ${SMS_API_SECRET:-}
+      
+      # === Push Notification Configuration ===
+      PUSH_ENABLED: false
+      FIREBASE_SERVER_KEY: ${FIREBASE_SERVER_KEY:-}
+      
+      # === Webhook Configuration ===
+      WEBHOOK_ENABLED: true
+      WEBHOOK_TIMEOUT: 10000                # 10 second timeout
+      WEBHOOK_RETRY_ATTEMPTS: 3
+      
+      # === Slack Integration (Development) ===
+      SLACK_ENABLED: true
+      SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:-https://hooks.slack.com/services/dev/webhook}
+      SLACK_CHANNEL: '#jts-dev-alerts'
+      
+      # === Discord Integration (Optional) ===
+      DISCORD_ENABLED: false
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-}
+      
+      # === Notification Rules ===
+      # Risk alerts
+      ENABLE_RISK_ALERTS: true
+      RISK_ALERT_THRESHOLD: 0.02           # 2% loss triggers alert
+      
+      # Trade execution alerts
+      ENABLE_TRADE_ALERTS: true
+      TRADE_ALERT_MIN_VALUE: 1000          # Alert for trades > $1000
+      
+      # System health alerts
+      ENABLE_SYSTEM_ALERTS: true
+      SYSTEM_ALERT_CHECK_INTERVAL: 30000   # Check system health every 30 seconds
+      
+      # === Rate Limiting ===
+      MAX_NOTIFICATIONS_PER_MINUTE: 100
+      MAX_NOTIFICATIONS_PER_HOUR: 1000
+      
+      DEBUG: notification:*
+    volumes:
+      - ./apps/notification-service:/app/apps/notification-service:cached
+      - ./libs:/app/libs:cached
+      - ./node_modules:/app/node_modules:cached
+      - ./logs/notification-service:/app/logs:rw
+      # Mount notification templates
+      - ./configs/notifications:/app/configs/notifications:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+      mailhog:
+        condition: service_started
+    networks:
+      - jts-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3005/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+# ========================================================================================================
+# INFRASTRUCTURE SERVICES
+# All required infrastructure components with production-ready configurations optimized for development
+# ========================================================================================================
+
+  # =====================================================================================================
+  # POSTGRESQL - Primary Business Database
+  # =====================================================================================================
+  # PostgreSQL stores all core business data including user accounts, trading history, portfolio data,
+  # audit logs, and system configurations. It serves as the primary ACID-compliant database for the
+  # trading system's critical business operations.
+  postgres:
+    image: postgres:15-alpine
+    container_name: jts-postgres-dev
+    restart: unless-stopped
+    ports:
+      - '${POSTGRES_PORT:-5442}:5432'       # Use non-standard port to avoid conflicts
+    environment:
+      # === Database Configuration ===
+      POSTGRES_DB: ${POSTGRES_DB:-jts_trading_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-jts_admin}
+      POSTGRES_PASSWORD: ${DEV_PASSWORD:-dev_password}
+      
+      # === Performance Tuning for Development ===
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      
+      # === Connection Settings ===
+      POSTGRES_MAX_CONNECTIONS: 200
+      POSTGRES_SHARED_BUFFERS: 256MB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 1GB
+    volumes:
+      # Persistent data storage
+      - postgres_dev_data:/var/lib/postgresql/data
+      
+      # Custom PostgreSQL configuration
+      - ./configs/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      
+      # Database initialization scripts
+      - ./configs/postgres/init-scripts:/docker-entrypoint-initdb.d:ro
+      
+      # Development SQL scripts and backups
+      - ./database/postgres:/app/database:rw
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-jts_admin} -d ${POSTGRES_DB:-jts_trading_dev}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - jts-network
+    # Performance optimization for development
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+
+  # =====================================================================================================
+  # CLICKHOUSE - Time-Series Market Data Database
+  # =====================================================================================================
+  # ClickHouse is optimized for analytical queries on large datasets and time-series data. It stores
+  # all market data including price history, volume data, order book snapshots, and technical indicators.
+  # Perfect for high-speed data ingestion and complex analytical queries.
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.8-alpine
+    container_name: jts-clickhouse-dev
+    restart: unless-stopped
+    ports:
+      - '${CLICKHOUSE_HTTP_PORT:-8123}:8123'     # HTTP interface for queries
+      - '${CLICKHOUSE_NATIVE_PORT:-9000}:9000'   # Native protocol for high-performance access
+    environment:
+      # === Database Configuration ===
+      CLICKHOUSE_DB: ${CLICKHOUSE_DB:-jts_market_data_dev}
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-jts_ch}
+      CLICKHOUSE_PASSWORD: ${DEV_PASSWORD:-dev_password}
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+      
+      # === Performance Settings ===
+      CLICKHOUSE_MAX_MEMORY_USAGE: 4000000000      # 4GB memory limit
+      CLICKHOUSE_MAX_THREADS: 8                    # Utilize available CPU cores
+    volumes:
+      # Persistent data storage
+      - clickhouse_dev_data:/var/lib/clickhouse
+      
+      # ClickHouse configuration files
+      - ./configs/clickhouse/config.xml:/etc/clickhouse-server/config.xml:ro
+      - ./configs/clickhouse/users.xml:/etc/clickhouse-server/users.xml:ro
+      
+      # Custom SQL scripts for market data schema
+      - ./database/clickhouse:/app/database:rw
+      
+      # Log directory for analysis and debugging
+      - ./logs/clickhouse:/var/log/clickhouse-server:rw
+    ulimits:
+      # Required for ClickHouse performance
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - jts-network
+    healthcheck:
+      test: ["CMD", "clickhouse-client", "--query", "SELECT 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # =====================================================================================================
+  # MONGODB - Configuration and Strategy Storage
+  # =====================================================================================================
+  # MongoDB stores flexible, schema-less data including trading strategies, system configurations,
+  # user preferences, and other document-based data. It's perfect for storing complex nested
+  # configurations and strategy parameters that may evolve over time.
+  mongodb:
+    image: mongo:7.0
+    container_name: jts-mongodb-dev
+    restart: unless-stopped
+    ports:
+      - '${MONGODB_PORT:-27017}:27017'
+    environment:
+      # === Database Configuration ===
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER:-jts_mongo}
+      MONGO_INITDB_ROOT_PASSWORD: ${DEV_PASSWORD:-dev_password}
+      MONGO_INITDB_DATABASE: ${MONGODB_DB:-jts_config_dev}
+    volumes:
+      # Persistent data storage
+      - mongodb_dev_data:/data/db
+      
+      # MongoDB configuration
+      - ./configs/mongodb/mongod.conf:/etc/mongod.conf:ro
+      
+      # Database initialization scripts
+      - ./configs/mongodb/init-scripts:/docker-entrypoint-initdb.d:ro
+      
+      # Development database files and backups
+      - ./database/mongodb:/app/database:rw
+    networks:
+      - jts-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    # MongoDB performance tuning for development
+    command: --config /etc/mongod.conf
+
+  # =====================================================================================================
+  # REDIS - Caching and Session Storage
+  # =====================================================================================================
+  # Redis provides high-speed caching, session storage, rate limiting, and real-time data storage.
+  # It supports multiple databases for different use cases and provides pub/sub capabilities for
+  # real-time notifications and data streaming.
+  redis:
+    image: redis:7-alpine
+    container_name: jts-redis-dev
+    restart: unless-stopped
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    environment:
+      # === Redis Configuration ===
+      REDIS_PASSWORD: ${DEV_PASSWORD:-dev_password}
+      REDIS_DATABASES: 16                   # Enable 16 databases for multi-tenancy
+    volumes:
+      # Persistent data storage (optional for development)
+      - redis_dev_data:/data
+      
+      # Redis configuration file
+      - ./configs/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - jts-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    # Use custom configuration
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  # =====================================================================================================
+  # APACHE KAFKA - Message Streaming Platform
+  # =====================================================================================================
+  # Kafka handles all event streaming and asynchronous communication between microservices. It provides
+  # high-throughput, fault-tolerant messaging for real-time data processing, event sourcing, and
+  # service-to-service communication patterns.
+  
+  # Zookeeper - Kafka Coordination Service
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: jts-zookeeper-dev
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_PORT:-2181}
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+    volumes:
+      - zookeeper_dev_data:/var/lib/zookeeper/data
+      - zookeeper_dev_logs:/var/lib/zookeeper/log
+    networks:
+      - jts-network
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo 'ruok' | nc localhost ${ZOOKEEPER_PORT:-2181} | grep imok"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Kafka Broker
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: jts-kafka-dev
+    restart: unless-stopped
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - '${KAFKA_PORT:-9092}:9092'          # External access port
+    environment:
+      # === Kafka Broker Configuration ===
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:${ZOOKEEPER_PORT:-2181}
+      
+      # === Listener Configuration ===
+      # PLAINTEXT for external connections, PLAINTEXT_INTERNAL for inter-container communication
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:${KAFKA_PORT:-9092},PLAINTEXT_INTERNAL://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      
+      # === Topic and Replication Configuration ===
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_NUM_PARTITIONS: 3               # Default partitions for new topics
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1   # Single broker setup
+      
+      # === Performance Configuration ===
+      KAFKA_MESSAGE_MAX_BYTES: 10485760     # 10MB max message size
+      KAFKA_REPLICA_FETCH_MAX_BYTES: 10485760
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      
+      # === Log Configuration ===
+      KAFKA_LOG_RETENTION_HOURS: 24         # Keep logs for 24 hours in development
+      KAFKA_LOG_RETENTION_BYTES: 1073741824 # 1GB retention per partition
+      KAFKA_LOG_SEGMENT_BYTES: 104857600    # 100MB segment size
+      
+      # === JVM Heap Settings ===
+      KAFKA_HEAP_OPTS: "-Xmx2G -Xms2G"     # 2GB heap for development
+    volumes:
+      - kafka_dev_data:/var/lib/kafka/data
+      # Custom Kafka configuration
+      - ./configs/kafka:/etc/kafka/custom-config:ro
+    networks:
+      - jts-network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # =====================================================================================================
+  # DEVELOPMENT UTILITIES
+  # Additional services that enhance the development experience
+  # =====================================================================================================
+
+  # MailHog - Email Testing Service
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: jts-mailhog-dev
+    restart: unless-stopped
+    ports:
+      - '${MAILHOG_SMTP_PORT:-1025}:1025'   # SMTP server port
+      - '${MAILHOG_WEB_PORT:-8025}:8025'    # Web interface port
+    environment:
+      MH_STORAGE: maildir
+      MH_MAILDIR_PATH: /maildir
+    volumes:
+      - mailhog_dev_data:/maildir
+    networks:
+      - jts-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8025"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # Grafana - Monitoring and Visualization Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: jts-grafana-dev
+    restart: unless-stopped
+    ports:
+      - '${GRAFANA_PORT:-3100}:3000'
+    environment:
+      # === Grafana Configuration ===
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${DEV_PASSWORD:-dev_password}
+      GF_INSTALL_PLUGINS: grafana-clickhouse-datasource,redis-datasource
+      
+      # === Development Settings ===
+      GF_USERS_ALLOW_SIGN_UP: 'true'
+      GF_USERS_ALLOW_ORG_CREATE: 'true'
+      GF_LOG_LEVEL: debug
+      
+      # === Database Integration ===
+      GF_DATABASE_TYPE: postgres
+      GF_DATABASE_HOST: postgres:5432
+      GF_DATABASE_NAME: ${POSTGRES_DB:-jts_trading_dev}
+      GF_DATABASE_USER: ${POSTGRES_USER:-jts_admin}
+      GF_DATABASE_PASSWORD: ${DEV_PASSWORD:-dev_password}
+    volumes:
+      # Persistent Grafana data
+      - grafana_dev_data:/var/lib/grafana
+      
+      # Custom dashboards and configurations
+      - ./configs/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./configs/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      
+      # Dashboard definitions
+      - ./monitoring/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    networks:
+      - jts-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+# ========================================================================================================
+# DOCKER VOLUMES
+# Persistent storage for all services with clear naming and purpose
+# ========================================================================================================
+
+volumes:
+  # === Database Storage ===
+  postgres_dev_data:
+    name: jts-postgres-dev-data
+    driver: local
+  
+  clickhouse_dev_data:
+    name: jts-clickhouse-dev-data
+    driver: local
+    
+  mongodb_dev_data:
+    name: jts-mongodb-dev-data
+    driver: local
+    
+  redis_dev_data:
+    name: jts-redis-dev-data
+    driver: local
+
+  # === Message Broker Storage ===
+  zookeeper_dev_data:
+    name: jts-zookeeper-dev-data
+    driver: local
+    
+  zookeeper_dev_logs:
+    name: jts-zookeeper-dev-logs
+    driver: local
+    
+  kafka_dev_data:
+    name: jts-kafka-dev-data
+    driver: local
+
+  # === Development Utilities ===
+  mailhog_dev_data:
+    name: jts-mailhog-dev-data
+    driver: local
+    
+  grafana_dev_data:
+    name: jts-grafana-dev-data
+    driver: local
+
+# ========================================================================================================
+# DOCKER NETWORKS
+# Network configuration for secure service communication
+# ========================================================================================================
+
+networks:
+  jts-network:
+    name: jts-dev-network
+    driver: bridge
+    # Enable custom network for better service discovery and isolation
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16  # Custom subnet for JTS development network
+
+# ========================================================================================================
+# EDUCATIONAL COMMENTS AND USAGE GUIDE
+# ========================================================================================================
+#
+# === MICROSERVICES ARCHITECTURE ===
+#
+# This docker-compose file implements a complete microservices architecture with:
+# 
+# 1. API Gateway (Port 3000): Single entry point for all client requests
+#    - Handles authentication, rate limiting, and request routing
+#    - Routes requests to appropriate backend services
+#    - Provides unified API surface and version management
+#
+# 2. Strategy Engine (Port 3001): Core algorithmic trading logic
+#    - Processes real-time market data and generates trading signals
+#    - Executes trading strategies and backtesting
+#    - High CPU/memory requirements for mathematical computations
+#
+# 3. Order Execution (Port 3002): Trade execution and broker integration
+#    - Handles order routing to multiple brokers (KIS, Creon, etc.)
+#    - Manages order lifecycle and execution reporting
+#    - Implements circuit breakers and retry logic
+#
+# 4. Risk Management (Port 3003): Risk monitoring and controls
+#    - Real-time risk assessment and position monitoring
+#    - Enforces risk limits and triggers emergency controls
+#    - Calculates VaR and other risk metrics
+#
+# 5. Data Ingestion (Port 3004): Market data collection and processing
+#    - Collects real-time and historical market data
+#    - Handles high-throughput data streams
+#    - Stores data in ClickHouse for analytical queries
+#
+# 6. Notification Service (Port 3005): Alerts and communications
+#    - Sends notifications via multiple channels (email, Slack, webhooks)
+#    - Manages alert routing based on severity and user preferences
+#    - Handles system health monitoring and alerting
+#
+# === DATABASE ARCHITECTURE ===
+#
+# 1. PostgreSQL (Port 5442): ACID-compliant relational database
+#    - Stores critical business data (accounts, orders, portfolio)
+#    - Handles transactions and ensures data consistency
+#    - Used for user management and system configuration
+#
+# 2. ClickHouse (Ports 8123, 9000): Columnar analytical database
+#    - Optimized for time-series market data storage
+#    - Handles high-volume data ingestion and complex queries
+#    - Perfect for technical analysis and backtesting
+#
+# 3. MongoDB (Port 27017): Document-based NoSQL database
+#    - Stores flexible configurations and strategy parameters
+#    - Handles nested and evolving data structures
+#    - Used for user preferences and dynamic configurations
+#
+# 4. Redis (Port 6379): In-memory data store
+#    - Provides high-speed caching and session storage
+#    - Implements rate limiting and real-time data buffering
+#    - Supports pub/sub for real-time notifications
+#
+# === MESSAGE STREAMING ===
+#
+# Apache Kafka (Port 9092) with Zookeeper (Port 2181):
+# - Handles all asynchronous communication between services
+# - Implements event sourcing and real-time data streaming
+# - Provides fault-tolerant message delivery and replay capabilities
+# - Supports high-throughput real-time market data distribution
+#
+# === DEVELOPMENT FEATURES ===
+#
+# 1. Hot Reloading: All microservices support hot reloading for development
+# 2. Debug Ports: Each service exposes a Node.js debugger port (922x range)
+# 3. Volume Mounts: Source code is mounted for live development
+# 4. MailHog: Email testing without external SMTP dependencies
+# 5. Grafana: Real-time monitoring and visualization dashboards
+#
+# === USAGE EXAMPLES ===
+#
+# Start all services:
+# docker-compose -f docker-compose.dev.yml up -d
+#
+# Start only infrastructure:
+# docker-compose -f docker-compose.dev.yml up -d postgres clickhouse mongodb redis kafka zookeeper
+#
+# Start specific microservice with dependencies:
+# docker-compose -f docker-compose.dev.yml up -d api-gateway
+#
+# Scale a service (useful for load testing):
+# docker-compose -f docker-compose.dev.yml up -d --scale strategy-engine=3
+#
+# View logs for all services:
+# docker-compose -f docker-compose.dev.yml logs -f
+#
+# View logs for specific service:
+# docker-compose -f docker-compose.dev.yml logs -f api-gateway
+#
+# Stop all services:
+# docker-compose -f docker-compose.dev.yml down
+#
+# Clean restart (removes volumes):
+# docker-compose -f docker-compose.dev.yml down -v && docker-compose -f docker-compose.dev.yml up -d
+#
+# Check service health:
+# docker-compose -f docker-compose.dev.yml ps
+#
+# === ENVIRONMENT VARIABLES ===
+#
+# This compose file uses environment variables for configuration.
+# Copy .env.example to .env.local and customize for your development environment.
+# Key variables include:
+# - Database ports and credentials
+# - Service-specific configuration
+# - Broker API keys and settings
+# - Notification service configurations
+#
+# === PRODUCTION CONSIDERATIONS ===
+#
+# This configuration is optimized for development. For production deployment:
+# 1. Use separate docker-compose.prod.yml with production settings
+# 2. Implement proper secret management (Docker secrets, Kubernetes secrets)
+# 3. Use production databases with appropriate resource limits
+# 4. Implement proper logging and monitoring
+# 5. Add load balancers and service discovery
+# 6. Implement proper backup and disaster recovery
+# 7. Use container orchestration (Kubernetes, Docker Swarm)
+#
+# ========================================================================================================
