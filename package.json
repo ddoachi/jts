@@ -99,7 +99,7 @@
     "@swc/jest": "^0.2.39",
     "@types/glob": "^8.1.0",
     "@types/jest": "^29.4.0",
-    "@types/node": "^20.0.0",
+    "@types/node": "^20.19.13",
     "@typescript-eslint/eslint-plugin": "^8.41.0",
     "@typescript-eslint/parser": "^8.41.0",
     "axios": "^1.11.0",
