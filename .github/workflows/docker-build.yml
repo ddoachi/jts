@@ -56,13 +56,13 @@ env:
   REGISTRY: ghcr.io
   REGISTRY_USERNAME: ${{ github.actor }}
   REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-  
+
   # Image naming convention
   IMAGE_PREFIX: jts
-  
+
   # Build configuration
   DEFAULT_PLATFORMS: linux/amd64,linux/arm64
-  
+
   # Security scanning configuration
   TRIVY_CACHE_DIR: /tmp/.cache/trivy
   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -127,7 +127,7 @@ jobs:
 
           # Determine which services need building
           changed_services=()
-          
+
           if [[ "$changed_files" == "all" ]]; then
             changed_services=("${services[@]}")
           else
@@ -146,7 +146,7 @@ jobs:
 
           # Output results
           if [[ ${#changed_services[@]} -gt 0 ]]; then
-            services_json=$(printf '%s\n' "${changed_services[@]}" | jq -R . | jq -s .)
+            services_json=$(printf '%s\n' "${changed_services[@]}" | jq -R . | jq -s -c .)
             echo "services=${services_json}" >> $GITHUB_OUTPUT
             echo "has-changes=true" >> $GITHUB_OUTPUT
             echo "Changed services: ${changed_services[*]}"
@@ -183,7 +183,7 @@ jobs:
       fail-fast: false
       matrix:
         include: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -280,7 +280,7 @@ jobs:
           # Get the built image ID
           image_name="${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service }}"
           docker buildx imagetools inspect "$image_name:${{ steps.meta.outputs.version }}" --format '{{.Name}}' | head -1 > /tmp/image_name.txt
-          
+
       # Security scan with Trivy
       - name: Run Trivy security scan
         if: github.event_name != 'pull_request'
@@ -332,7 +332,7 @@ jobs:
         run: |
           echo "# Docker Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [[ "${{ needs.detect-changes.outputs.has-changes }}" == "true" ]]; then
             services=$(echo '${{ needs.detect-changes.outputs.services }}' | jq -r '.[]')
             echo "## Built Services" >> $GITHUB_STEP_SUMMARY
@@ -354,7 +354,7 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "No services required rebuilding based on the changed files." >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Workflow Details" >> $GITHUB_STEP_SUMMARY
           echo "- **Trigger**: \`${{ github.event_name }}\`" >> $GITHUB_STEP_SUMMARY
