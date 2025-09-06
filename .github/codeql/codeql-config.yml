@@ -1,0 +1,259 @@
+# =============================================================================
+# JTS CODEQL CONFIGURATION
+# =============================================================================
+# Purpose: Configure CodeQL static analysis for security vulnerability detection
+# Documentation: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning
+# =============================================================================
+
+name: 'JTS Security CodeQL Config'
+
+# =============================================================================
+# QUERY CONFIGURATION
+# =============================================================================
+# WHY: Comprehensive query suite selection for maximum security coverage
+# HOW: Combines security-and-quality and security-extended query suites
+# WHAT: Runs all available security queries for JavaScript/TypeScript
+# =============================================================================
+
+queries:
+  # Core security and quality queries
+  - uses: security-and-quality
+  # Extended security queries for deeper analysis
+  - uses: security-extended
+  # JavaScript/TypeScript specific security queries
+  - uses: javascript-queries
+  
+# =============================================================================
+# ADDITIONAL QUERY PACKS
+# =============================================================================
+# WHY: Custom query packs provide targeted security analysis
+# HOW: References specific CodeQL query files and packs
+# WHAT: Enhances default queries with specialized security checks
+# =============================================================================
+
+packs:
+  # JavaScript security queries with focus on trading system risks
+  - codeql/javascript-queries:Security/CWE-078  # OS Command Injection
+  - codeql/javascript-queries:Security/CWE-079  # Cross-site Scripting
+  - codeql/javascript-queries:Security/CWE-089  # SQL Injection
+  - codeql/javascript-queries:Security/CWE-200  # Information Exposure
+  - codeql/javascript-queries:Security/CWE-502  # Deserialization Issues
+  - codeql/javascript-queries:Security/CWE-611  # XML External Entity
+  - codeql/javascript-queries:Security/CWE-798  # Hardcoded Credentials
+  - codeql/javascript-queries:Security/CWE-918  # SSRF Vulnerabilities
+
+# =============================================================================
+# PATH CONFIGURATION
+# =============================================================================
+# WHY: Focus analysis on production code, exclude generated/test files
+# HOW: Explicitly includes source directories and excludes noise
+# WHAT: Improves analysis speed and reduces false positives
+# =============================================================================
+
+# Paths to analyze (production code only)
+paths:
+  - 'apps/'       # Microservice applications
+  - 'libs/'       # Shared libraries
+  - 'scripts/'    # Build and deployment scripts
+  - 'tools/'      # Development tools
+
+# Paths to ignore (reduce noise and false positives)
+paths-ignore:
+  # Dependencies and build artifacts
+  - 'node_modules'
+  - 'dist'
+  - '.nx'
+  - 'coverage'
+  - 'tmp'
+  - '.next'
+  
+  # Test files (analyzed separately if needed)
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+  - '**/*.test.js'
+  - '**/*.test.jsx'
+  - '**/*.spec.ts'
+  - '**/*.spec.tsx'
+  - '**/*.spec.js'
+  - '**/*.spec.jsx'
+  - '**/__tests__/**'
+  - '**/__mocks__/**'
+  - '**/test/**'
+  - '**/tests/**'
+  - '**/e2e/**'
+  
+  # Documentation and configuration
+  - 'docs/**'
+  - '**/*.md'
+  - '**/*.mdx'
+  - '**/*.json'
+  - '**/*.yaml'
+  - '**/*.yml'
+  
+  # Development and generated files
+  - '**/*.d.ts'
+  - '**/*.map'
+  - '**/migrations/**'
+  - '**/seeds/**'
+  - '**/fixtures/**'
+
+# =============================================================================
+# QUERY FILTERS
+# =============================================================================
+# WHY: Exclude specific queries that produce false positives or aren't relevant
+# HOW: Filters out queries by their unique identifiers
+# WHAT: Reduces noise while maintaining security coverage
+# =============================================================================
+
+query-filters:
+  # Exclude queries that generate too many false positives
+  - exclude:
+      id: js/unused-local-variable
+      reason: "Too many false positives in NestJS decorators"
+  - exclude:
+      id: js/unclear-precedence
+      reason: "Style preference, not security issue"
+  - exclude:
+      id: js/redundant-assignment
+      reason: "Often intentional in trading calculations"
+  - exclude:
+      id: js/useless-expression
+      reason: "False positives with TypeScript type assertions"
+  
+  # Include high-value security queries explicitly
+  - include:
+      id: js/hardcoded-credentials
+      severity: error
+  - include:
+      id: js/sql-injection
+      severity: error
+  - include:
+      id: js/command-injection
+      severity: error
+  - include:
+      id: js/path-injection
+      severity: error
+
+# =============================================================================
+# CUSTOM PATTERNS
+# =============================================================================
+# WHY: Trading systems have unique security concerns
+# HOW: Custom patterns detect trading-specific vulnerabilities
+# WHAT: Identifies issues like price manipulation, order validation, etc.
+# =============================================================================
+
+patterns:
+  # Detect potential price manipulation vulnerabilities
+  - name: "price-manipulation-check"
+    pattern: "price\\s*=\\s*(?!parseFloat|Number|BigInt)"
+    message: "Direct price assignment without validation detected"
+    severity: "error"
+  
+  # Detect unsafe order execution patterns
+  - name: "unsafe-order-execution"
+    pattern: "executeOrder\\([^)]*\\)(?!.*validate)"
+    message: "Order execution without validation detected"
+    severity: "error"
+  
+  # Detect potential API key exposure
+  - name: "api-key-exposure"
+    pattern: "(api[_-]?key|apikey)\\s*[:=]\\s*[\"'][^\"']*[\"']"
+    message: "Potential API key hardcoded in source"
+    severity: "error"
+
+# =============================================================================
+# LANGUAGE CONFIGURATION
+# =============================================================================
+# WHY: TypeScript/JavaScript specific configuration
+# HOW: Configures language-specific analysis parameters
+# WHAT: Optimizes analysis for Node.js/NestJS applications
+# =============================================================================
+
+languages:
+  javascript:
+    # Include TypeScript files
+    file_extensions:
+      - js
+      - jsx
+      - ts
+      - tsx
+      - mjs
+      - cjs
+    
+    # TypeScript configuration
+    typescript:
+      # Use project's tsconfig for type information
+      tsconfig_path: "tsconfig.base.json"
+      # Enable strict type checking
+      strict_mode: true
+
+# =============================================================================
+# ANALYSIS OPTIONS
+# =============================================================================
+# WHY: Fine-tune analysis behavior for optimal results
+# HOW: Configures timeouts, memory limits, and parallelization
+# WHAT: Balances thoroughness with CI/CD performance
+# =============================================================================
+
+analysis:
+  # Maximum time for analysis (in minutes)
+  timeout: 30
+  
+  # Memory limit for analysis (in MB)
+  max_memory: 4096
+  
+  # Number of threads for parallel analysis
+  threads: 4
+  
+  # Enable dataflow analysis for better vulnerability detection
+  dataflow: true
+  
+  # Enable taint tracking for input validation issues
+  taint_tracking: true
+  
+  # Severity threshold for failing the build
+  fail_on_severity: "error"
+
+# =============================================================================
+# SARIF OUTPUT CONFIGURATION
+# =============================================================================
+# WHY: SARIF format enables GitHub Security integration
+# HOW: Configures output format and metadata
+# WHAT: Ensures results appear in GitHub Security tab
+# =============================================================================
+
+sarif:
+  # Include code snippets in results
+  add_snippets: true
+  
+  # Include data flow information
+  add_data_flow: true
+  
+  # Category for GitHub Security tab
+  category: "sast-analysis"
+  
+  # Maximum number of results per rule
+  max_results_per_rule: 100
+
+# =============================================================================
+# FALSE POSITIVE SUPPRESSION
+# =============================================================================
+# WHY: Known false positives should be documented and suppressed
+# HOW: Inline suppressions with explanations
+# WHAT: Maintains clean security reports
+#
+# Example inline suppression:
+# // codeql-suppress: js/hardcoded-credentials
+# // Reason: This is a default value, actual value comes from environment
+# const DEFAULT_API_KEY = "development-only";
+# =============================================================================
+
+# =============================================================================
+# NOTES FOR DEVELOPERS
+# =============================================================================
+# 1. Run locally: `codeql database analyze <database> --format=sarif-latest`
+# 2. View results: Upload SARIF to GitHub or use VS Code extension
+# 3. Suppress false positives: Use inline comments with justification
+# 4. Custom queries: Add to .github/codeql/custom-queries/ directory
+# 5. Updates: Review monthly for new security query packs
+# =============================================================================
