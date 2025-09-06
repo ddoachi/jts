@@ -3,7 +3,7 @@
 # ============================================================================
 # Generated from spec: [[E01-F04-T02] Main CI Pipeline Configuration](../../specs/E01/F04/T02/E01-F04-T02.spec.md)
 #
-# PURPOSE: 
+# PURPOSE:
 # Enhanced CI pipeline with format checking, integration tests, E2E tests,
 # matrix strategies, and coverage gates while preserving working functionality
 #
@@ -92,7 +92,7 @@ jobs:
         run: |
           # Use the base SHA from previous step
           NX_BASE=${{ steps.base.outputs.sha }}
-          
+
           # Calculate affected projects
           AFFECTED_APPS=$(yarn nx show projects --affected --base=$NX_BASE --head=HEAD --type=app)
           AFFECTED_LIBS=$(yarn nx show projects --affected --base=$NX_BASE --head=HEAD --type=lib)
@@ -464,7 +464,7 @@ jobs:
         run: |
           echo "🏗️ Building affected projects..."
           yarn nx affected --target=build --base=${{ needs.setup.outputs.base-sha }} --parallel=3 --configuration=production
-          
+
           # Check if any builds were created
           if [ -d "dist/" ] && [ "$(ls -A dist/)" ]; then
             echo "has-artifacts=true" >> $GITHUB_OUTPUT
@@ -518,7 +518,7 @@ jobs:
         run: |
           echo "## 📊 CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # Results table
           echo "### Results" >> $GITHUB_STEP_SUMMARY
           echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
@@ -530,7 +530,7 @@ jobs:
           echo "| E2E Tests | ${{ needs.test-e2e.result == 'success' && '✅ Success' || needs.test-e2e.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Build | ${{ needs.build.result == 'success' && '✅ Success' || needs.build.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Security | ${{ needs.security-scan.result == 'success' && '✅ Success' || needs.security-scan.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Details" >> $GITHUB_STEP_SUMMARY
           echo "- **Environment**: ${{ env.CI_ENVIRONMENT }}" >> $GITHUB_STEP_SUMMARY
