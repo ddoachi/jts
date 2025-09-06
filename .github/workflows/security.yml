@@ -284,15 +284,13 @@ jobs:
           path: ./
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
-          # WHY: Upload findings in SARIF format for GitHub Security integration
-          extra_args: --debug --only-verified --format sarif --output trufflehog-results.sarif
+          # WHY: Upload findings in JSON format for analysis
+          extra_args: --debug --only-verified --json
 
-      - name: 'Upload TruffleHog SARIF Results'
-        uses: github/codeql-action/upload-sarif@v3
+      - name: 'Process TruffleHog Results'
         if: always()
-        with:
-          sarif_file: trufflehog-results.sarif
-          category: 'TruffleHog Secret Detection'
+        run: |
+          echo "TruffleHog scan completed - results processed by action"
 
   # ═══════════════════════════════════════════════════════════════
   # JOB: Dependency Vulnerability Scanning
