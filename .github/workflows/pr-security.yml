@@ -23,7 +23,7 @@ on:
   pull_request:
     branches: [main, develop]
     types: [opened, synchronize, reopened, ready_for_review]
-  
+
   # WHY: Allow manual triggering for security incident response
   workflow_dispatch:
     inputs:
@@ -40,20 +40,20 @@ on:
 # WHY: Security-focused permissions with ability to comment on PRs
 # SECURITY: Minimize permissions while allowing PR interaction and security reporting
 permissions:
-  contents: read              # Read repository content and PR changes
-  pull-requests: write        # Comment on PRs with security findings
-  security-events: write      # Upload SARIF results to GitHub Security
-  checks: write              # Create PR checks for security gates
-  actions: read              # Read workflow status
-  id-token: write            # For OIDC authentication if needed
+  contents: read # Read repository content and PR changes
+  pull-requests: write # Comment on PRs with security findings
+  security-events: write # Upload SARIF results to GitHub Security
+  checks: write # Create PR checks for security gates
+  actions: read # Read workflow status
+  id-token: write # For OIDC authentication if needed
 
 # WHY: Environment variables optimized for PR-focused security analysis
 env:
   NODE_VERSION: '20.x'
   YARN_CACHE_FOLDER: .yarn/cache
-  NX_CLOUD_DISTRIBUTED_EXECUTION: false  # Disable for security consistency
-  NX_DAEMON: false                        # Disable for deterministic results
-  FORCE_COLOR: 0                         # Disable colors for cleaner logs
+  NX_CLOUD_DISTRIBUTED_EXECUTION: false # Disable for security consistency
+  NX_DAEMON: false # Disable for deterministic results
+  FORCE_COLOR: 0 # Disable colors for cleaner logs
   # SECURITY: Never log sensitive data in PR security workflows
 
 jobs:
@@ -64,10 +64,10 @@ jobs:
     name: 'Analyze PR Changes for Security Impact'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     # WHY: Skip draft PRs unless explicitly requested
     if: github.event.pull_request.draft != true || github.event_name == 'workflow_dispatch'
-    
+
     outputs:
       # WHY: Output change analysis for downstream security jobs
       changed-files: ${{ steps.changed-files.outputs.files }}
@@ -97,22 +97,22 @@ jobs:
         id: changed-files
         run: |
           echo "🔍 Analyzing changed files in PR #${{ github.event.pull_request.number }}..."
-          
+
           # Get base branch reference
           BASE_BRANCH="${{ github.event.pull_request.base.ref || 'main' }}"
           HEAD_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
-          
+
           echo "Comparing against base branch: origin/$BASE_BRANCH"
-          
+
           # Get all changed files
           CHANGED_FILES=$(git diff --name-only origin/$BASE_BRANCH...$HEAD_SHA | tr '\n' ' ')
-          
+
           # Create JSON array for easier processing
           CHANGED_FILES_JSON=$(git diff --name-only origin/$BASE_BRANCH...$HEAD_SHA | jq -R -s -c 'split("\n")[:-1]')
-          
+
           echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
           echo "files-json=$CHANGED_FILES_JSON" >> $GITHUB_OUTPUT
-          
+
           echo "📊 Found $(echo $CHANGED_FILES | wc -w) changed files"
           echo "Changed files: $CHANGED_FILES"
 
@@ -120,33 +120,33 @@ jobs:
         id: analyze-changes
         run: |
           echo "📋 Analyzing security impact of changes..."
-          
+
           CHANGED_FILES="${{ steps.changed-files.outputs.files }}"
           DEPENDENCY_CHANGES="false"
           CONTAINER_CHANGES="false"
           AFFECTED_PACKAGES=""
-          
+
           # Check for dependency file changes
           if echo "$CHANGED_FILES" | grep -E "(package\.json|yarn\.lock|package-lock\.json|pnpm-lock\.yaml)" > /dev/null; then
             echo "📦 Dependency files changed - will perform enhanced dependency scanning"
             DEPENDENCY_CHANGES="true"
           fi
-          
+
           # Check for container/Docker changes
           if echo "$CHANGED_FILES" | grep -E "(Dockerfile|\.dockerignore|docker-compose.*\.yml|\.docker)" > /dev/null; then
             echo "🐳 Container files changed - will perform enhanced container scanning"
             CONTAINER_CHANGES="true"
           fi
-          
+
           # Identify affected packages (simplified analysis)
           if echo "$CHANGED_FILES" | grep -E "^(apps|libs)/" > /dev/null; then
             AFFECTED_PACKAGES=$(echo "$CHANGED_FILES" | grep -E "^(apps|libs)/" | cut -d'/' -f1-2 | sort -u | tr '\n' ',' | sed 's/,$//')
           fi
-          
+
           echo "dependency-changes=$DEPENDENCY_CHANGES" >> $GITHUB_OUTPUT
           echo "container-changes=$CONTAINER_CHANGES" >> $GITHUB_OUTPUT
           echo "packages=$AFFECTED_PACKAGES" >> $GITHUB_OUTPUT
-          
+
           echo "📊 Change Analysis Results:"
           echo "  - Dependency changes: $DEPENDENCY_CHANGES"
           echo "  - Container changes: $CONTAINER_CHANGES"
@@ -156,11 +156,11 @@ jobs:
         id: nx-analysis
         run: |
           echo "🔧 Analyzing affected Nx projects..."
-          
+
           # CRITICAL: Clean Nx cache to prevent stale data
           rm -rf .nx/cache || true
           yarn nx reset || true
-          
+
           # CRITICAL: Use modern Nx syntax with proper error handling
           if yarn nx show projects &>/dev/null; then
             BASE_BRANCH="${{ github.event.pull_request.base.ref || 'main' }}"
@@ -178,21 +178,21 @@ jobs:
             echo "⚠️ Nx not properly configured or no projects found"
             AFFECTED_PROJECTS=""
           fi
-          
+
           echo "affected-projects=$AFFECTED_PROJECTS" >> $GITHUB_OUTPUT
 
       - name: 'Determine Security Impact Level'
         id: security-impact
         run: |
           echo "⚖️ Determining security impact level..."
-          
+
           CHANGED_FILES="${{ steps.changed-files.outputs.files }}"
           DEPENDENCY_CHANGES="${{ steps.analyze-changes.outputs.dependency-changes }}"
           CONTAINER_CHANGES="${{ steps.analyze-changes.outputs.container-changes }}"
-          
+
           SECURITY_IMPACT="low"
           HAS_SECURITY_CHANGES="false"
-          
+
           # High impact indicators
           if echo "$CHANGED_FILES" | grep -E "\.(env|key|pem|p12|pfx|crt|cer)" > /dev/null; then
             SECURITY_IMPACT="critical"
@@ -211,10 +211,10 @@ jobs:
             HAS_SECURITY_CHANGES="true"
             echo "📝 LOW: Source code changes detected"
           fi
-          
+
           echo "level=$SECURITY_IMPACT" >> $GITHUB_OUTPUT
           echo "has-security-changes=$HAS_SECURITY_CHANGES" >> $GITHUB_OUTPUT
-          
+
           echo "🎯 Security Impact Assessment:"
           echo "  - Impact Level: $SECURITY_IMPACT"
           echo "  - Has Security Changes: $HAS_SECURITY_CHANGES"
@@ -224,7 +224,7 @@ jobs:
         run: |
           FORCE_FULL="${{ inputs.force_full_scan }}"
           SECURITY_IMPACT="${{ steps.security-impact.outputs.level }}"
-          
+
           if [[ "$FORCE_FULL" == "true" ]] || [[ "$SECURITY_IMPACT" == "critical" ]]; then
             SCOPE="full"
             echo "🔍 Using FULL scan scope due to high security impact"
@@ -232,7 +232,7 @@ jobs:
             SCOPE="changed"
             echo "🎯 Using CHANGED files scan scope for performance optimization"
           fi
-          
+
           echo "scope=$SCOPE" >> $GITHUB_OUTPUT
 
   # ═══════════════════════════════════════════════════════════════
@@ -243,10 +243,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: pr-security-preparation
-    
+
     # WHY: Only run if there are security-relevant changes
     if: needs.pr-security-preparation.outputs.has-security-relevant-changes == 'true'
-    
+
     permissions:
       contents: read
       security-events: write
@@ -263,10 +263,10 @@ jobs:
         id: secret-scan
         run: |
           echo "🔐 Running enhanced secret detection on PR changes..."
-          
+
           BASE_BRANCH="${{ github.event.pull_request.base.ref || 'main' }}"
           SCAN_SCOPE="${{ needs.pr-security-preparation.outputs.scan-scope }}"
-          
+
           if [[ "$SCAN_SCOPE" == "changed" ]]; then
             echo "🎯 Scanning only changed files for performance"
             
@@ -304,18 +304,18 @@ jobs:
               echo "⚠️ TruffleHog completed with potential findings"
             }
           fi
-          
+
           # Count findings
           SECRET_COUNT=$(cat trufflehog-pr.json | jq length 2>/dev/null || echo "0")
           echo "secrets-found=$SECRET_COUNT" >> $GITHUB_OUTPUT
-          
+
           echo "🔍 Secret scan completed. Found $SECRET_COUNT potential secrets."
 
       - name: 'Generate SARIF Report'
         if: always()
         run: |
           echo "📋 Converting TruffleHog results to SARIF format..."
-          
+
           # Simple SARIF conversion (basic structure)
           cat > trufflehog-sarif.json << 'EOF'
           {
@@ -335,7 +335,7 @@ jobs:
             ]
           }
           EOF
-          
+
           echo "✅ SARIF report generated"
 
       - name: 'Upload SARIF Results'
@@ -350,9 +350,9 @@ jobs:
         if: steps.secret-scan.outputs.secrets-found != '0'
         run: |
           echo "🚨 Analyzing secret detection findings..."
-          
+
           SECRET_COUNT="${{ steps.secret-scan.outputs.secrets-found }}"
-          
+
           echo "## 🔐 Secret Detection Alert" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "⚠️ **$SECRET_COUNT potential secrets detected in this PR**" >> $GITHUB_STEP_SUMMARY
@@ -373,13 +373,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: pr-security-preparation
-    
+
     # WHY: Only run if dependencies changed or high security impact
     if: |
       needs.pr-security-preparation.outputs.dependency-changes == 'true' ||
       needs.pr-security-preparation.outputs.security-impact == 'high' ||
       needs.pr-security-preparation.outputs.security-impact == 'critical'
-    
+
     permissions:
       contents: read
       security-events: write
@@ -402,9 +402,9 @@ jobs:
         id: dependency-diff
         run: |
           echo "📦 Analyzing dependency changes in PR..."
-          
+
           BASE_BRANCH="${{ github.event.pull_request.base.ref || 'main' }}"
-          
+
           # Check if package.json changed
           if git diff origin/$BASE_BRANCH...HEAD --name-only | grep -E "package\.json$" > /dev/null; then
             echo "📋 package.json files changed, analyzing dependency diff"
@@ -432,23 +432,23 @@ jobs:
         id: yarn-audit-current
         run: |
           echo "🔍 Running Yarn audit on current PR state..."
-          
+
           # CRITICAL: Use yarn consistently
           yarn audit --json > yarn-audit-current.json 2>/dev/null || {
             echo "⚠️ Yarn audit found vulnerabilities in current state"
           }
-          
+
           # Count vulnerabilities by severity
           CRITICAL_CURRENT=$(cat yarn-audit-current.json | grep -o '"severity":"critical"' | wc -l || echo "0")
           HIGH_CURRENT=$(cat yarn-audit-current.json | grep -o '"severity":"high"' | wc -l || echo "0")
           MODERATE_CURRENT=$(cat yarn-audit-current.json | grep -o '"severity":"moderate"' | wc -l || echo "0")
           LOW_CURRENT=$(cat yarn-audit-current.json | grep -o '"severity":"low"' | wc -l || echo "0")
-          
+
           echo "critical-current=$CRITICAL_CURRENT" >> $GITHUB_OUTPUT
           echo "high-current=$HIGH_CURRENT" >> $GITHUB_OUTPUT
           echo "moderate-current=$MODERATE_CURRENT" >> $GITHUB_OUTPUT
           echo "low-current=$LOW_CURRENT" >> $GITHUB_OUTPUT
-          
+
           echo "📊 Current State Vulnerabilities:"
           echo "  - 🔴 Critical: $CRITICAL_CURRENT"
           echo "  - 🟠 High: $HIGH_CURRENT"
@@ -460,40 +460,40 @@ jobs:
         id: vulnerability-comparison
         run: |
           echo "⚖️ Comparing vulnerabilities with base branch..."
-          
+
           BASE_BRANCH="${{ github.event.pull_request.base.ref || 'main' }}"
-          
+
           # Switch to base branch and run audit
           git checkout origin/$BASE_BRANCH
           yarn install --frozen-lockfile > /dev/null 2>&1 || {
             echo "⚠️ Base branch dependency installation had issues"
           }
-          
+
           yarn audit --json > yarn-audit-base.json 2>/dev/null || {
             echo "⚠️ Base branch has existing vulnerabilities"
           }
-          
+
           # Count base vulnerabilities
           CRITICAL_BASE=$(cat yarn-audit-base.json | grep -o '"severity":"critical"' | wc -l || echo "0")
           HIGH_BASE=$(cat yarn-audit-base.json | grep -o '"severity":"high"' | wc -l || echo "0")
-          
+
           # Switch back to PR branch
           git checkout ${{ github.event.pull_request.head.sha }}
-          
+
           # Calculate differences
           CRITICAL_CURRENT="${{ steps.yarn-audit-current.outputs.critical-current }}"
           HIGH_CURRENT="${{ steps.yarn-audit-current.outputs.high-current }}"
-          
+
           CRITICAL_DIFF=$((CRITICAL_CURRENT - CRITICAL_BASE))
           HIGH_DIFF=$((HIGH_CURRENT - HIGH_BASE))
-          
+
           echo "critical-diff=$CRITICAL_DIFF" >> $GITHUB_OUTPUT
           echo "high-diff=$HIGH_DIFF" >> $GITHUB_OUTPUT
-          
+
           echo "📊 Vulnerability Comparison:"
           echo "  - Critical vulnerabilities change: $CRITICAL_DIFF"
           echo "  - High vulnerabilities change: $HIGH_DIFF"
-          
+
           # Determine if PR introduces new vulnerabilities
           if [[ $CRITICAL_DIFF -gt 0 ]] || [[ $HIGH_DIFF -gt 0 ]]; then
             echo "introduces-vulnerabilities=true" >> $GITHUB_OUTPUT
@@ -507,26 +507,26 @@ jobs:
         if: steps.dependency-diff.outputs.dependencies-added != '0'
         run: |
           echo "📄 Checking license compliance for new dependencies..."
-          
+
           # CRITICAL: Use yarn consistently
           yarn add --dev license-checker
-          
+
           # Generate license report
           yarn license-checker --json --out license-report-pr.json || {
             echo "⚠️ License checker completed with warnings"
           }
-          
+
           # Check for prohibited licenses in new dependencies
           PROHIBITED_LICENSES="GPL-2.0 GPL-3.0 AGPL-1.0 AGPL-3.0 LGPL-2.1 LGPL-3.0"
           FOUND_PROHIBITED=""
-          
+
           for license in $PROHIBITED_LICENSES; do
             if grep -q "$license" license-report-pr.json 2>/dev/null; then
               FOUND_PROHIBITED="$FOUND_PROHIBITED $license"
               echo "⚠️ Found potentially prohibited license: $license"
             fi
           done
-          
+
           if [[ -n "$FOUND_PROHIBITED" ]]; then
             echo "## ⚠️ License Compliance Alert" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
@@ -541,55 +541,55 @@ jobs:
         if: always()
         run: |
           echo "📋 Generating comprehensive dependency security report..."
-          
+
           CRITICAL_CURRENT="${{ steps.yarn-audit-current.outputs.critical-current }}"
           HIGH_CURRENT="${{ steps.yarn-audit-current.outputs.high-current }}"
           MODERATE_CURRENT="${{ steps.yarn-audit-current.outputs.moderate-current }}"
           LOW_CURRENT="${{ steps.yarn-audit-current.outputs.low-current }}"
-          
+
           INTRODUCES_VULNS="${{ steps.vulnerability-comparison.outputs.introduces-vulnerabilities }}"
           ADDED_DEPS="${{ steps.dependency-diff.outputs.dependencies-added }}"
-          
+
           cat >> $GITHUB_STEP_SUMMARY << EOF
           ## 📦 Dependency Security Analysis
-          
+
           **PR Impact**: ${{ steps.dependency-diff.outputs.has-dependency-changes == 'true' && 'Dependencies Modified' || 'No Dependency Changes' }}
-          
+
           ### Current Vulnerability Count
           - 🔴 Critical: $CRITICAL_CURRENT
           - 🟠 High: $HIGH_CURRENT  
           - 🟡 Moderate: $MODERATE_CURRENT
           - 🔵 Low: $LOW_CURRENT
-          
+
           EOF
-          
+
           if [[ "$INTRODUCES_VULNS" == "true" ]]; then
             cat >> $GITHUB_STEP_SUMMARY << EOF
           ### ⚠️ Security Impact
           **This PR introduces new high/critical vulnerabilities.**
-          
+
           **Action Required**: 
           1. Review vulnerability details with \`yarn audit\`
           2. Update vulnerable dependencies to secure versions
           3. Consider using \`yarn audit --fix\` for automatic fixes
           4. Test thoroughly after applying fixes
-          
+
           EOF
           elif [[ "$ADDED_DEPS" != "0" ]]; then
             cat >> $GITHUB_STEP_SUMMARY << EOF
           ### ✅ Security Impact
           New dependencies added but no new high/critical vulnerabilities introduced.
-          
+
           EOF
           fi
-          
+
           cat >> $GITHUB_STEP_SUMMARY << EOF
           ### 💡 Security Best Practices
           - Regularly update dependencies to latest secure versions
           - Monitor security advisories for used packages
           - Consider using tools like Dependabot for automated updates
           - Review dependency licenses for compliance
-          
+
           EOF
 
   # ═══════════════════════════════════════════════════════════════
@@ -600,12 +600,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     needs: pr-security-preparation
-    
+
     # WHY: Only run if container files changed or forced full scan
     if: |
       needs.pr-security-preparation.outputs.container-changes == 'true' ||
       needs.pr-security-preparation.outputs.scan-scope == 'full'
-    
+
     permissions:
       contents: read
       security-events: write
@@ -621,13 +621,13 @@ jobs:
         id: container-analysis
         run: |
           echo "🐳 Analyzing container-related changes..."
-          
+
           CHANGED_FILES="${{ needs.pr-security-preparation.outputs.changed-files }}"
-          
+
           # Identify changed Dockerfiles
           CHANGED_DOCKERFILES=""
           CHANGED_COMPOSE_FILES=""
-          
+
           for file in $CHANGED_FILES; do
             if [[ "$file" =~ ^.*Dockerfile.*$ ]]; then
               CHANGED_DOCKERFILES="$CHANGED_DOCKERFILES $file"
@@ -635,10 +635,10 @@ jobs:
               CHANGED_COMPOSE_FILES="$CHANGED_COMPOSE_FILES $file"
             fi
           done
-          
+
           echo "changed-dockerfiles=$CHANGED_DOCKERFILES" >> $GITHUB_OUTPUT
           echo "changed-compose-files=$CHANGED_COMPOSE_FILES" >> $GITHUB_OUTPUT
-          
+
           echo "📊 Container Analysis Results:"
           echo "  - Changed Dockerfiles: $CHANGED_DOCKERFILES"
           echo "  - Changed Compose files: $CHANGED_COMPOSE_FILES"
@@ -647,12 +647,12 @@ jobs:
         id: build-containers
         run: |
           echo "🔨 Building container images for security scanning..."
-          
+
           CHANGED_DOCKERFILES="${{ steps.container-analysis.outputs.changed-dockerfiles }}"
           CHANGED_COMPOSE_FILES="${{ steps.container-analysis.outputs.changed-compose-files }}"
-          
+
           BUILT_IMAGES=""
-          
+
           # Build from individual Dockerfiles
           for dockerfile in $CHANGED_DOCKERFILES; do
             if [[ -f "$dockerfile" ]]; then
@@ -667,7 +667,7 @@ jobs:
               BUILT_IMAGES="$BUILT_IMAGES $IMAGE_NAME"
             fi
           done
-          
+
           # Build from Docker Compose if changed
           for compose_file in $CHANGED_COMPOSE_FILES; do
             if [[ -f "$compose_file" ]]; then
@@ -678,7 +678,7 @@ jobs:
               }
             fi
           done
-          
+
           echo "built-images=$BUILT_IMAGES" >> $GITHUB_OUTPUT
           echo "🏗️ Built images for scanning: $BUILT_IMAGES"
 
@@ -687,12 +687,12 @@ jobs:
         id: trivy-scan
         run: |
           echo "🔍 Running Trivy security scan on built images..."
-          
+
           BUILT_IMAGES="${{ steps.build-containers.outputs.built-images }}"
           TOTAL_CRITICAL=0
           TOTAL_HIGH=0
           SCAN_RESULTS=""
-          
+
           for image in $BUILT_IMAGES; do
             if docker image inspect "$image" &>/dev/null; then
               echo "Scanning $image..."
@@ -732,11 +732,11 @@ jobs:
               }
             fi
           done
-          
+
           echo "total-critical=$TOTAL_CRITICAL" >> $GITHUB_OUTPUT
           echo "total-high=$TOTAL_HIGH" >> $GITHUB_OUTPUT
           echo -e "scan-results=$SCAN_RESULTS" >> $GITHUB_OUTPUT
-          
+
           echo "🔍 Container Security Scan Results:"
           echo "  - Total Critical: $TOTAL_CRITICAL"
           echo "  - Total High: $TOTAL_HIGH"
@@ -745,43 +745,43 @@ jobs:
         if: always()
         run: |
           echo "📋 Generating container security report..."
-          
+
           TOTAL_CRITICAL="${{ steps.trivy-scan.outputs.total-critical }}"
           TOTAL_HIGH="${{ steps.trivy-scan.outputs.total-high }}"
           BUILT_IMAGES="${{ steps.build-containers.outputs.built-images }}"
-          
+
           cat >> $GITHUB_STEP_SUMMARY << EOF
           ## 🐳 Container Security Analysis
-          
+
           **Images Analyzed**: $(echo $BUILT_IMAGES | wc -w)
-          
+
           ### Vulnerability Summary
           - 🔴 Critical: ${TOTAL_CRITICAL:-0}
           - 🟠 High: ${TOTAL_HIGH:-0}
-          
+
           EOF
-          
+
           if [[ "${TOTAL_CRITICAL:-0}" -gt 0 ]] || [[ "${TOTAL_HIGH:-0}" -gt 0 ]]; then
             cat >> $GITHUB_STEP_SUMMARY << EOF
           ### ⚠️ Action Required
           High or critical vulnerabilities found in container images.
-          
+
           **Recommended Actions**:
           1. Update base images to latest secure versions
           2. Review and update installed packages
           3. Use minimal base images when possible
           4. Implement multi-stage builds to reduce attack surface
           5. Regularly scan images in your CI/CD pipeline
-          
+
           EOF
           else
             cat >> $GITHUB_STEP_SUMMARY << EOF
           ### ✅ Security Status
           No high or critical vulnerabilities found in analyzed container images.
-          
+
           EOF
           fi
-          
+
           cat >> $GITHUB_STEP_SUMMARY << EOF
           ### 💡 Container Security Best Practices
           - Use official, minimal base images
@@ -790,7 +790,7 @@ jobs:
           - Use .dockerignore to exclude unnecessary files
           - Implement proper secret management
           - Scan images regularly for vulnerabilities
-          
+
           EOF
 
   # ═══════════════════════════════════════════════════════════════
@@ -800,15 +800,15 @@ jobs:
     name: 'Security Summary & PR Comment'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: 
+    needs:
       - pr-security-preparation
       - pr-secret-detection
       - pr-dependency-analysis
       - pr-container-security
-    
+
     # WHY: Always run to provide summary, even if some jobs are skipped
     if: always() && needs.pr-security-preparation.result == 'success'
-    
+
     permissions:
       contents: read
       pull-requests: write
@@ -819,13 +819,13 @@ jobs:
         id: security-score
         run: |
           echo "📊 Calculating overall security score for PR..."
-          
+
           # Base score starts at 100
           SCORE=100
           CRITICAL_ISSUES=0
           HIGH_ISSUES=0
           WARNINGS=0
-          
+
           # Check secret detection results
           if [[ "${{ needs.pr-secret-detection.result }}" == "success" ]]; then
             SECRETS_FOUND="${{ needs.pr-secret-detection.outputs.secrets-found || '0' }}"
@@ -837,27 +837,27 @@ jobs:
             SCORE=$((SCORE - 30))
             HIGH_ISSUES=$((HIGH_ISSUES + 1))
           fi
-          
+
           # Check dependency analysis results
           if [[ "${{ needs.pr-dependency-analysis.outputs.introduces-vulnerabilities || 'false' }}" == "true" ]]; then
             SCORE=$((SCORE - 30))
             HIGH_ISSUES=$((HIGH_ISSUES + 1))
           fi
-          
+
           # Check container security results  
           CONTAINER_CRITICAL="${{ needs.pr-container-security.outputs.total-critical || '0' }}"
           CONTAINER_HIGH="${{ needs.pr-container-security.outputs.total-high || '0' }}"
-          
+
           if [[ "$CONTAINER_CRITICAL" != "0" ]]; then
             SCORE=$((SCORE - 25))
             CRITICAL_ISSUES=$((CRITICAL_ISSUES + CONTAINER_CRITICAL))
           fi
-          
+
           if [[ "$CONTAINER_HIGH" != "0" ]]; then
             SCORE=$((SCORE - 15))
             HIGH_ISSUES=$((HIGH_ISSUES + CONTAINER_HIGH))
           fi
-          
+
           # Apply security impact modifier
           SECURITY_IMPACT="${{ needs.pr-security-preparation.outputs.security-impact }}"
           case "$SECURITY_IMPACT" in
@@ -868,12 +868,12 @@ jobs:
               SCORE=$((SCORE - 5))
               ;;
           esac
-          
+
           # Ensure score doesn't go below 0
           if [[ $SCORE -lt 0 ]]; then
             SCORE=0
           fi
-          
+
           # Determine overall status
           if [[ $SCORE -ge 90 ]]; then
             STATUS="EXCELLENT"
@@ -891,13 +891,13 @@ jobs:
             STATUS="CRITICAL_ISSUES"
             STATUS_EMOJI="🚨"
           fi
-          
+
           echo "score=$SCORE" >> $GITHUB_OUTPUT
           echo "status=$STATUS" >> $GITHUB_OUTPUT
           echo "status-emoji=$STATUS_EMOJI" >> $GITHUB_OUTPUT
           echo "critical-issues=$CRITICAL_ISSUES" >> $GITHUB_OUTPUT
           echo "high-issues=$HIGH_ISSUES" >> $GITHUB_OUTPUT
-          
+
           echo "🎯 Security Score: $SCORE/100 ($STATUS)"
           echo "📊 Issues: $CRITICAL_ISSUES critical, $HIGH_ISSUES high"
 
@@ -906,7 +906,7 @@ jobs:
         run: |
           SCORE="${{ steps.security-score.outputs.score }}"
           CRITICAL_ISSUES="${{ steps.security-score.outputs.critical-issues }}"
-          
+
           # Block PR if critical issues or very low score
           if [[ $CRITICAL_ISSUES -gt 0 ]] || [[ $SCORE -lt 40 ]]; then
             SHOULD_BLOCK="true"
@@ -915,10 +915,10 @@ jobs:
             SHOULD_BLOCK="false"
             BLOCK_REASON=""
           fi
-          
+
           echo "should-block=$SHOULD_BLOCK" >> $GITHUB_OUTPUT
           echo "block-reason=$BLOCK_REASON" >> $GITHUB_OUTPUT
-          
+
           echo "🚪 PR Gate Decision: $([ "$SHOULD_BLOCK" == "true" ] && echo "BLOCK" || echo "ALLOW")"
 
       - name: 'Generate Educational PR Comment'
@@ -932,21 +932,21 @@ jobs:
             const highIssues = "${{ steps.security-score.outputs.high-issues }}";
             const shouldBlock = "${{ steps.pr-gate.outputs.should-block }}";
             const securityImpact = "${{ needs.pr-security-preparation.outputs.security-impact }}";
-            
+
             // Generate educational content based on findings
             let educationalContent = "";
             let actionItems = [];
-            
+
             // Secret detection results
             const secretsFound = "${{ needs.pr-secret-detection.outputs.secrets-found || '0' }}";
             if (secretsFound !== "0") {
               educationalContent += `
             ### 🔐 Secret Detection Alert
-            
+
             **${secretsFound} potential secrets detected!** This is a critical security risk.
-            
+
             **Why this matters**: Exposed secrets can lead to unauthorized access, data breaches, and financial losses.
-            
+
             **What to do**:
             1. Remove secrets from code immediately
             2. Use environment variables or secret management systems
@@ -955,17 +955,17 @@ jobs:
             `;
               actionItems.push("🔐 **CRITICAL**: Remove exposed secrets");
             }
-            
+
             // Dependency vulnerability results
             const introducesVulns = "${{ needs.pr-dependency-analysis.outputs.introduces-vulnerabilities || 'false' }}";
             if (introducesVulns === "true") {
               educationalContent += `
             ### 📦 Dependency Vulnerability Alert
-            
+
             **This PR introduces new high/critical vulnerabilities.**
-            
+
             **Why this matters**: Vulnerable dependencies are a common attack vector. Attackers often target known vulnerabilities in popular packages.
-            
+
             **What to do**:
             1. Run \`yarn audit\` to see detailed vulnerability information
             2. Update vulnerable packages to secure versions
@@ -974,18 +974,18 @@ jobs:
             `;
               actionItems.push("📦 Update vulnerable dependencies");
             }
-            
+
             // Container security results
             const containerCritical = "${{ needs.pr-container-security.outputs.total-critical || '0' }}";
             const containerHigh = "${{ needs.pr-container-security.outputs.total-high || '0' }}";
             if (containerCritical !== "0" || containerHigh !== "0") {
               educationalContent += `
             ### 🐳 Container Security Issues
-            
+
             **Found ${containerCritical} critical and ${containerHigh} high severity vulnerabilities in container images.**
-            
+
             **Why this matters**: Container vulnerabilities can be exploited to compromise your application and infrastructure.
-            
+
             **What to do**:
             1. Update base images to latest secure versions
             2. Use minimal images (like alpine) to reduce attack surface
@@ -994,71 +994,71 @@ jobs:
             `;
               actionItems.push("🐳 Fix container vulnerabilities");
             }
-            
+
             // Generate main comment
             const comment = `## ${statusEmoji} Security Analysis Results
-            
+
             **Overall Security Score: ${score}/100 (${status})**
-            
+
             | Category | Status | Details |
             |----------|--------|---------|
             | 🔐 Secret Detection | ${secretsFound === "0" ? "✅ No secrets" : "❌ " + secretsFound + " found"} | Scanned changed files for exposed credentials |
             | 📦 Dependency Security | ${introducesVulns === "false" ? "✅ No new vulns" : "❌ New vulnerabilities"} | Analyzed dependency changes and vulnerabilities |
             | 🐳 Container Security | ${containerCritical === "0" && containerHigh === "0" ? "✅ Secure" : "❌ " + (parseInt(containerCritical) + parseInt(containerHigh)) + " issues"} | Scanned container images for vulnerabilities |
-            
+
             ${shouldBlock === "true" ? `
             ### 🚨 PR Blocked - Critical Issues Detected
-            
+
             This PR cannot be merged due to critical security issues. Please address the issues below before requesting review.
             ` : `
             ### ✅ Security Review Complete
-            
+
             ${criticalIssues === "0" ? "No critical security issues detected. " : ""}This PR has undergone comprehensive security analysis.
             `}
-            
+
             ${actionItems.length > 0 ? `
             ### 🎯 Action Items Required
-            
+
             ${actionItems.map(item => "- " + item).join("\n")}
             ` : ""}
-            
+
             ${educationalContent}
-            
+
             <details>
             <summary>📚 Security Best Practices for Developers</summary>
-            
+
             #### General Security Guidelines
             - **Never commit secrets**: Use environment variables, secret managers, or config files (gitignored)
             - **Keep dependencies updated**: Regularly update packages and monitor for security advisories
             - **Use security linters**: Integrate tools like ESLint security plugins in your editor
             - **Follow least privilege**: Grant minimal necessary permissions to users and services
-            
+
             #### Dependency Security
             - **Pin versions**: Use exact versions in package.json for reproducible builds
             - **Audit regularly**: Run \`yarn audit\` before releases and in CI/CD
             - **Monitor advisories**: Subscribe to security advisories for your dependencies
             - **Use lock files**: Commit yarn.lock/package-lock.json to ensure consistent installs
-            
+
             #### Container Security  
             - **Use official images**: Prefer official, regularly updated base images
             - **Minimize image size**: Use multi-stage builds and minimal base images
             - **Scan regularly**: Integrate container scanning into your CI/CD pipeline
             - **Update regularly**: Keep base images and system packages updated
-            
+
             #### Secret Management
             - **Environment variables**: Use env vars for configuration and secrets
             - **Secret managers**: Consider HashiCorp Vault, AWS Secrets Manager, or similar
             - **Rotation**: Regularly rotate credentials and API keys
             - **Scope limits**: Use credentials with minimal necessary permissions
-            
+
             </details>
-            
+
             ---
-            
+
             🔍 **Need Help?** Check the [Security tab](../../../security) for detailed findings, or reach out to the security team for guidance.
-            
+
             *This analysis was performed automatically by the PR Security Analysis workflow.*`;
-            
+
             // Post the comment
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -1074,10 +1074,10 @@ jobs:
             const shouldBlock = "${{ steps.pr-gate.outputs.should-block }}";
             const score = "${{ steps.security-score.outputs.score }}";
             const status = "${{ steps.security-score.outputs.status }}";
-            
+
             const checkStatus = shouldBlock === "true" ? "failure" : "success";
             const conclusion = shouldBlock === "true" ? "failure" : "success";
-            
+
             await github.rest.checks.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -1097,13 +1097,13 @@ jobs:
         run: |
           SHOULD_BLOCK="${{ steps.pr-gate.outputs.should-block }}"
           SCORE="${{ steps.security-score.outputs.score }}"
-          
+
           echo "## 🔒 Final Security Analysis Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Security Score**: $SCORE/100" >> $GITHUB_STEP_SUMMARY
           echo "**Status**: ${{ steps.security-score.outputs.status }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [[ "$SHOULD_BLOCK" == "true" ]]; then
             echo "🚨 **PR BLOCKED**: Critical security issues must be resolved before merging." >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY

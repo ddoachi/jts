@@ -24,11 +24,11 @@ on:
     branches: [main, develop, 'feature/*', 'hotfix/*']
   pull_request:
     branches: [main, develop]
-  
+
   # WHY: Weekly security scans for dependency updates and new vulnerability discoveries
   schedule:
-    - cron: '0 2 * * 1'  # Every Monday at 2 AM UTC
-  
+    - cron: '0 2 * * 1' # Every Monday at 2 AM UTC
+
   # WHY: Allow manual security scans for incident response
   workflow_dispatch:
     inputs:
@@ -49,17 +49,17 @@ on:
 # WHY: Security workflows need read-only permissions by default with explicit escalations
 # SECURITY: Minimize permissions to reduce attack surface
 permissions:
-  contents: read           # Read repository content
-  security-events: write   # Upload SARIF results to GitHub Security
-  actions: read           # Read workflow status
-  pull-requests: write    # Comment on PRs with security findings
-  id-token: write         # For OIDC authentication if needed
+  contents: read # Read repository content
+  security-events: write # Upload SARIF results to GitHub Security
+  actions: read # Read workflow status
+  pull-requests: write # Comment on PRs with security findings
+  id-token: write # For OIDC authentication if needed
 
 # WHY: Global environment variables for consistent configuration
 env:
   NODE_VERSION: '20.x'
   YARN_CACHE_FOLDER: .yarn/cache
-  NX_CLOUD_DISTRIBUTED_EXECUTION: false  # Disable for security scans
+  NX_CLOUD_DISTRIBUTED_EXECUTION: false # Disable for security scans
   # SECURITY: Never log sensitive data in security workflows
 
 jobs:
@@ -70,7 +70,7 @@ jobs:
     name: 'Prepare Security Analysis'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     outputs:
       # WHY: Output project lists for parallel security scanning
       all-projects: ${{ steps.discover-projects.outputs.all-projects }}
@@ -97,11 +97,11 @@ jobs:
         id: discover-projects
         run: |
           echo "🔍 Discovering projects for security analysis..."
-          
+
           # CRITICAL: Clean Nx cache to prevent stale data
           rm -rf .nx/cache || true
           yarn nx reset || true
-          
+
           # CRITICAL: Use modern Nx syntax and handle missing projects gracefully
           if yarn nx show projects &>/dev/null; then
             # Get all projects (space-separated, then convert to comma-separated)
@@ -121,12 +121,12 @@ jobs:
             AFFECTED_PROJECTS=""
             HAS_PROJECTS="false"
           fi
-          
+
           # Output results
           echo "all-projects=$ALL_PROJECTS" >> $GITHUB_OUTPUT
           echo "affected-projects=$AFFECTED_PROJECTS" >> $GITHUB_OUTPUT
           echo "has-projects=$HAS_PROJECTS" >> $GITHUB_OUTPUT
-          
+
           echo "═══ Project Discovery Results ═══"
           echo "All Projects: $ALL_PROJECTS"
           echo "Affected Projects: $AFFECTED_PROJECTS"
@@ -145,7 +145,7 @@ jobs:
           else
             SCOPE="full"
           fi
-          
+
           echo "scope=$SCOPE" >> $GITHUB_OUTPUT
           echo "🎯 Security scan scope: $SCOPE"
 
@@ -155,7 +155,7 @@ jobs:
           # WHY: Create matrix for parallel security scanning of projects
           SCOPE="${{ steps.determine-scope.outputs.scope }}"
           HAS_PROJECTS="${{ steps.discover-projects.outputs.has-projects }}"
-          
+
           if [[ "$HAS_PROJECTS" == "true" ]]; then
             if [[ "$SCOPE" == "affected" ]]; then
               PROJECTS="${{ steps.discover-projects.outputs.affected-projects }}"
@@ -173,7 +173,7 @@ jobs:
           else
             MATRIX_JSON='["no-projects"]'
           fi
-          
+
           echo "projects=$MATRIX_JSON" >> $GITHUB_OUTPUT
           echo "🔧 Project matrix: $MATRIX_JSON"
 
@@ -185,10 +185,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     needs: prepare-security-scan
-    
+
     # WHY: Skip if no projects exist to prevent workflow failure
     if: needs.prepare-security-scan.outputs.has-projects == 'true'
-    
+
     # SECURITY: Restrict permissions for SAST scanning
     permissions:
       actions: read
@@ -229,7 +229,7 @@ jobs:
       - name: 'Build Projects for Analysis'
         run: |
           echo "🔨 Building projects for CodeQL analysis..."
-          
+
           # CRITICAL: Use yarn consistently
           if [[ "${{ needs.prepare-security-scan.outputs.scan-scope }}" == "affected" ]]; then
             PROJECTS="${{ needs.prepare-security-scan.outputs.affected-projects }}"
@@ -253,7 +253,7 @@ jobs:
       - name: 'Perform CodeQL Analysis'
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:${{matrix.language}}"
+          category: '/language:${{matrix.language}}'
           # WHY: Upload SARIF results to GitHub Security tab
           upload: true
 
@@ -264,7 +264,7 @@ jobs:
     name: 'Secret Detection'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    
+
     # SECURITY: Restrict permissions for secret scanning
     permissions:
       contents: read
@@ -301,7 +301,7 @@ jobs:
     name: 'Dependency Security Scan'
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    
+
     permissions:
       contents: read
       security-events: write
@@ -319,17 +319,17 @@ jobs:
       - name: 'Yarn Audit Security Check'
         run: |
           echo "🔍 Running Yarn audit for dependency vulnerabilities..."
-          
+
           # WHY: Check for known vulnerabilities in dependencies
           yarn audit --json > yarn-audit.json 2>/dev/null || {
             echo "⚠️ Yarn audit found vulnerabilities, continuing to generate report"
           }
-          
+
           # Generate human-readable report
           yarn audit --summary || {
             echo "Yarn audit summary completed with findings"
           }
-          
+
           # Convert to SARIF format if possible (simplified conversion)
           echo "📊 Yarn audit completed, results saved to yarn-audit.json"
 
@@ -360,10 +360,10 @@ jobs:
         if: always()
         run: |
           echo "📋 Generating dependency security summary..."
-          
+
           echo "## 🔒 Dependency Security Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [[ -f yarn-audit.json ]]; then
             CRITICAL_COUNT=$(cat yarn-audit.json | grep -o '"severity":"critical"' | wc -l || echo "0")
             HIGH_COUNT=$(cat yarn-audit.json | grep -o '"severity":"high"' | wc -l || echo "0")
@@ -376,12 +376,12 @@ jobs:
             echo "- 🟡 Moderate: $MODERATE_COUNT" >> $GITHUB_STEP_SUMMARY
             echo "- 🔵 Low: $LOW_COUNT" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           if [[ -f reports/dependency-check-report.sarif ]]; then
             echo "### OWASP Dependency Check" >> $GITHUB_STEP_SUMMARY
             echo "✅ OWASP scan completed - check Security tab for detailed results" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "📊 Full security findings available in the [Security tab](../../security)" >> $GITHUB_STEP_SUMMARY
 
@@ -393,12 +393,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: prepare-security-scan
-    
+
     # WHY: Skip if container scanning is disabled or no projects
     if: |
       needs.prepare-security-scan.outputs.has-projects == 'true' && 
       (github.event.inputs.enable_container_scan != 'false' || github.event.inputs.enable_container_scan == '')
-    
+
     permissions:
       contents: read
       security-events: write
@@ -410,11 +410,11 @@ jobs:
       - name: 'Setup Docker Environment'
         run: |
           echo "🐳 Setting up Docker environment for container scanning..."
-          
+
           # WHY: Verify Docker is available and running
           docker --version
           docker info
-          
+
           # CRITICAL: Use `docker compose` not `docker-compose`
           if [[ -f "configs/docker/docker-compose.dev.yml" ]]; then
             echo "📋 Found Docker Compose configuration"
@@ -426,9 +426,9 @@ jobs:
         id: build-images
         run: |
           echo "🔨 Building container images for security scanning..."
-          
+
           IMAGES_BUILT=""
-          
+
           # Check for Dockerfiles and build images
           if find . -name "Dockerfile*" -type f | grep -q .; then
             echo "Found Dockerfile(s), building images..."
@@ -455,7 +455,7 @@ jobs:
               IMAGES_BUILT="$IMAGES_BUILT $IMAGE_NAME"
             done
           fi
-          
+
           # Use docker compose if available
           if [[ -f "configs/docker/docker-compose.dev.yml" ]]; then
             echo "Building images from Docker Compose..."
@@ -464,7 +464,7 @@ jobs:
               echo "⚠️ Docker Compose build failed, continuing with individual scans"
             }
           fi
-          
+
           echo "images=$IMAGES_BUILT" >> $GITHUB_OUTPUT
           echo "🏗️ Built images: $IMAGES_BUILT"
 
@@ -472,9 +472,9 @@ jobs:
         if: steps.build-images.outputs.images != ''
         run: |
           echo "🔍 Running Trivy container security scans..."
-          
+
           IMAGES="${{ steps.build-images.outputs.images }}"
-          
+
           for IMAGE in $IMAGES; do
             if docker image inspect "$IMAGE" &>/dev/null; then
               echo "Scanning $IMAGE with Trivy..."
@@ -509,7 +509,7 @@ jobs:
         if: always()
         run: |
           echo "📤 Uploading Trivy SARIF results..."
-          
+
           # Upload all generated SARIF files
           for sarif_file in trivy-*.sarif; do
             if [[ -f "$sarif_file" ]]; then
@@ -535,7 +535,7 @@ jobs:
       - name: 'Scan Filesystem for Vulnerabilities'
         run: |
           echo "📁 Running Trivy filesystem scan..."
-          
+
           # Scan filesystem for vulnerabilities in dependencies
           docker run --rm \
             -v $(pwd):/workspace \
@@ -546,7 +546,7 @@ jobs:
             /workspace || {
             echo "⚠️ Filesystem scan completed with errors"
           }
-          
+
           # Generate table output for summary
           docker run --rm \
             -v $(pwd):/workspace \
@@ -570,7 +570,7 @@ jobs:
     name: 'License Compliance Check'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    
+
     permissions:
       contents: read
       pull-requests: write
@@ -588,39 +588,39 @@ jobs:
       - name: 'Install License Checker'
         run: |
           echo "📄 Installing license compliance tools..."
-          
+
           # CRITICAL: Use yarn consistently
           yarn add --dev license-checker license-report
 
       - name: 'Generate License Report'
         run: |
           echo "📋 Generating license compliance report..."
-          
+
           # Generate detailed license report
           yarn license-checker --json --out license-report.json || {
             echo "⚠️ License checker completed with warnings"
           }
-          
+
           # Generate summary report
           yarn license-checker --summary > license-summary.txt || true
-          
+
           # Check for prohibited licenses
           PROHIBITED_LICENSES="GPL-2.0 GPL-3.0 AGPL-1.0 AGPL-3.0"
           FOUND_PROHIBITED=""
-          
+
           for license in $PROHIBITED_LICENSES; do
             if grep -q "$license" license-report.json 2>/dev/null; then
               FOUND_PROHIBITED="$FOUND_PROHIBITED $license"
               echo "⚠️ Found prohibited license: $license"
             fi
           done
-          
+
           echo "prohibited-licenses=$FOUND_PROHIBITED" >> $GITHUB_ENV
 
       - name: 'Analyze License Compliance'
         run: |
           echo "🔍 Analyzing license compliance..."
-          
+
           # Count licenses by type
           TOTAL_PACKAGES=$(cat license-report.json | grep -o '"[^"]*@[^"]*":' | wc -l || echo "0")
           MIT_COUNT=$(grep -o '"MIT"' license-report.json | wc -l || echo "0")
@@ -628,7 +628,7 @@ jobs:
           BSD_COUNT=$(grep -o '"BSD' license-report.json | wc -l || echo "0")
           ISC_COUNT=$(grep -o '"ISC"' license-report.json | wc -l || echo "0")
           UNKNOWN_COUNT=$(grep -o '"UNKNOWN"' license-report.json | wc -l || echo "0")
-          
+
           echo "## 📄 License Compliance Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### License Distribution" >> $GITHUB_STEP_SUMMARY
@@ -638,7 +638,7 @@ jobs:
           echo "- BSD variants: $BSD_COUNT" >> $GITHUB_STEP_SUMMARY
           echo "- ISC: $ISC_COUNT" >> $GITHUB_STEP_SUMMARY
           echo "- Unknown: $UNKNOWN_COUNT" >> $GITHUB_STEP_SUMMARY
-          
+
           if [[ -n "${{ env.prohibited-licenses }}" ]]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### ⚠️ Prohibited Licenses Found" >> $GITHUB_STEP_SUMMARY
@@ -667,17 +667,17 @@ jobs:
     name: 'Security Summary Report'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: 
+    needs:
       - prepare-security-scan
       - codeql-analysis
       - secret-detection
       - dependency-scan
       - container-security
       - license-compliance
-    
+
     # WHY: Always run summary even if some jobs fail
     if: always()
-    
+
     permissions:
       contents: read
       pull-requests: write
@@ -690,19 +690,19 @@ jobs:
       - name: 'Generate Security Summary'
         run: |
           echo "📊 Generating comprehensive security summary..."
-          
+
           # Determine overall security status
           OVERALL_STATUS="✅ PASSED"
           CRITICAL_ISSUES=0
           HIGH_ISSUES=0
-          
+
           # Check job statuses
           CODEQL_STATUS="${{ needs.codeql-analysis.result }}"
           SECRET_STATUS="${{ needs.secret-detection.result }}"
           DEPENDENCY_STATUS="${{ needs.dependency-scan.result }}"
           CONTAINER_STATUS="${{ needs.container-security.result }}"
           LICENSE_STATUS="${{ needs.license-compliance.result }}"
-          
+
           # Count failures
           FAILED_JOBS=0
           [[ "$CODEQL_STATUS" == "failure" ]] && ((FAILED_JOBS++))
@@ -710,22 +710,22 @@ jobs:
           [[ "$DEPENDENCY_STATUS" == "failure" ]] && ((FAILED_JOBS++))
           [[ "$CONTAINER_STATUS" == "failure" ]] && ((FAILED_JOBS++))
           [[ "$LICENSE_STATUS" == "failure" ]] && ((FAILED_JOBS++))
-          
+
           if [[ $FAILED_JOBS -gt 0 ]]; then
             OVERALL_STATUS="⚠️ ATTENTION REQUIRED"
           fi
-          
+
           # Create comprehensive summary
           cat >> $GITHUB_STEP_SUMMARY << EOF
           # 🔒 Security Analysis Summary
-          
+
           **Overall Status**: $OVERALL_STATUS  
           **Scan Scope**: ${{ needs.prepare-security-scan.outputs.scan-scope }}  
           **Projects Analyzed**: ${{ needs.prepare-security-scan.outputs.has-projects == 'true' && 'Yes' || 'No Projects Found' }}  
           **Analysis Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
-          
+
           ## 🛡️ Security Scan Results
-          
+
           | Security Check | Status | Details |
           |---|---|---|
           | 🔍 CodeQL SAST | $([[ "$CODEQL_STATUS" == "success" ]] && echo "✅ Passed" || echo "❌ Failed") | Static analysis for security vulnerabilities |
@@ -733,11 +733,11 @@ jobs:
           | 📦 Dependency Scan | $([[ "$DEPENDENCY_STATUS" == "success" ]] && echo "✅ Passed" || echo "❌ Failed") | Yarn audit + OWASP dependency check |
           | 🐳 Container Security | $([[ "$CONTAINER_STATUS" == "success" ]] && echo "✅ Passed" || echo "❌ Failed") | Trivy container vulnerability scan |
           | 📄 License Compliance | $([[ "$LICENSE_STATUS" == "success" ]] && echo "✅ Passed" || echo "❌ Failed") | License compatibility check |
-          
+
           ## 📋 Action Items
-          
+
           EOF
-          
+
           if [[ $FAILED_JOBS -eq 0 ]]; then
             echo "✅ **All security checks passed successfully!**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
@@ -752,25 +752,25 @@ jobs:
             [[ "$CONTAINER_STATUS" == "failure" ]] && echo "- Fix container image vulnerabilities" >> $GITHUB_STEP_SUMMARY
             [[ "$LICENSE_STATUS" == "failure" ]] && echo "- Resolve license compliance issues" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           cat >> $GITHUB_STEP_SUMMARY << EOF
-          
+
           ## 🔗 Additional Resources
-          
+
           - [GitHub Security Overview](../../security)
           - [Dependabot Alerts](../../security/dependabot)
           - [Code Scanning Alerts](../../security/code-scanning)
           - [Security Advisories](../../security/advisories)
-          
+
           ---
-          
+
           💡 **Security Best Practices Reminder:**
           - Review security findings promptly
           - Keep dependencies updated regularly  
           - Follow secure coding practices
           - Monitor for new vulnerability disclosures
           - Implement security controls in development workflow
-          
+
           EOF
 
       - name: 'Comment on PR (if applicable)'
@@ -780,35 +780,35 @@ jobs:
           script: |
             // WHY: Provide security summary directly in PR for immediate visibility
             const summary = `## 🔒 Security Analysis Results
-            
+
             This PR has been analyzed for security vulnerabilities and compliance issues.
-            
+
             **Scan Summary:**
             - **CodeQL SAST:** ${{ needs.codeql-analysis.result == 'success' && '✅ Passed' || '❌ Failed' }}
             - **Secret Detection:** ${{ needs.secret-detection.result == 'success' && '✅ Passed' || '❌ Failed' }}  
             - **Dependency Scan:** ${{ needs.dependency-scan.result == 'success' && '✅ Passed' || '❌ Failed' }}
             - **Container Security:** ${{ needs.container-security.result == 'success' && '✅ Passed' || '❌ Failed' }}
             - **License Compliance:** ${{ needs.license-compliance.result == 'success' && '✅ Passed' || '❌ Failed' }}
-            
+
             ${{ needs.codeql-analysis.result == 'success' && needs.secret-detection.result == 'success' && needs.dependency-scan.result == 'success' && needs.container-security.result == 'success' && needs.license-compliance.result == 'success' && '✅ **All security checks passed!** This PR is ready for security review.' || '⚠️ **Security issues detected.** Please review the [Security tab](../../../security) before merging.' }}
-            
+
             <details>
             <summary>📊 View detailed security analysis</summary>
-            
+
             For detailed findings and remediation guidance, visit the [Security tab](../../../security) in this repository.
-            
+
             **Next Steps:**
             1. Review any security alerts in the Security tab
             2. Address high/critical severity issues before merging  
             3. Update dependencies if vulnerabilities are found
             4. Validate that no secrets have been committed
-            
+
             </details>
-            
+
             ---
-            
+
             *This comment is automatically generated by the Security Analysis workflow.*`;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
@@ -825,7 +825,7 @@ jobs:
           [[ "${{ needs.dependency-scan.result }}" == "failure" ]] && ((FAILED_JOBS++))
           [[ "${{ needs.container-security.result }}" == "failure" ]] && ((FAILED_JOBS++))
           [[ "${{ needs.license-compliance.result }}" == "failure" ]] && ((FAILED_JOBS++))
-          
+
           if [[ $FAILED_JOBS -gt 0 ]]; then
             echo "🚨 Security workflow completed with $FAILED_JOBS failed security checks"
             echo "Review the Security tab for detailed findings and remediation guidance"

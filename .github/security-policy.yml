@@ -18,35 +18,35 @@
 vulnerability_thresholds:
   # CRITICAL: Immediate action required, blocks all deployments
   critical:
-    max_allowed: 0           # Zero tolerance for critical vulnerabilities
-    block_pr: true          # Block PR merge
-    block_deployment: true  # Block all deployments
+    max_allowed: 0 # Zero tolerance for critical vulnerabilities
+    block_pr: true # Block PR merge
+    block_deployment: true # Block all deployments
     notification: immediate # Notify immediately
-    escalation_time: 1h     # Escalate if not addressed within 1 hour
-    
-  # HIGH: Urgent action required, blocks production deployments  
+    escalation_time: 1h # Escalate if not addressed within 1 hour
+
+  # HIGH: Urgent action required, blocks production deployments
   high:
-    max_allowed: 2          # Maximum 2 high severity issues
-    block_pr: true          # Block PR merge
-    block_deployment: true  # Block production deployments only
+    max_allowed: 2 # Maximum 2 high severity issues
+    block_pr: true # Block PR merge
+    block_deployment: true # Block production deployments only
     notification: immediate # Notify immediately
-    escalation_time: 4h     # Escalate if not addressed within 4 hours
-    
+    escalation_time: 4h # Escalate if not addressed within 4 hours
+
   # MEDIUM: Action required, warning only
   medium:
-    max_allowed: 10         # Maximum 10 medium severity issues
-    block_pr: false         # Don't block PR
+    max_allowed: 10 # Maximum 10 medium severity issues
+    block_pr: false # Don't block PR
     block_deployment: false # Don't block deployments
-    notification: daily     # Daily summary
-    escalation_time: 7d     # Escalate if not addressed within 7 days
-    
+    notification: daily # Daily summary
+    escalation_time: 7d # Escalate if not addressed within 7 days
+
   # LOW: Tracking only
   low:
-    max_allowed: 50         # Maximum 50 low severity issues
-    block_pr: false         # Don't block PR
+    max_allowed: 50 # Maximum 50 low severity issues
+    block_pr: false # Don't block PR
     block_deployment: false # Don't block deployments
-    notification: weekly    # Weekly summary
-    escalation_time: 30d    # Escalate if not addressed within 30 days
+    notification: weekly # Weekly summary
+    escalation_time: 30d # Escalate if not addressed within 30 days
 
 # =============================================================================
 # SECRET DETECTION PATTERNS
@@ -58,49 +58,49 @@ vulnerability_thresholds:
 
 secret_patterns:
   # API Keys and Tokens
-  - name: "generic_api_key"
-    pattern: '(?i)(api[_-]?key|apikey|api_token|apitoken)[\s]*[:=][\s]*["\']?([a-zA-Z0-9_\-]{20,})["\']?'
-    severity: "critical"
-    
-  - name: "jwt_token"
+  - name: 'generic_api_key'
+    pattern: '(?i)(api[_-]?key|apikey|api_token|apitoken)\s*[:=]\s*["\x27]?([a-zA-Z0-9_\-]{20,})["\x27]?'
+    severity: 'critical'
+
+  - name: 'jwt_token'
     pattern: 'eyJ[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*'
-    severity: "critical"
-    
+    severity: 'critical'
+
   # Database Credentials
-  - name: "database_connection_string"
+  - name: 'database_connection_string'
     pattern: '(?i)(mongodb|postgres|postgresql|mysql|redis|clickhouse):\/\/[^:]+:[^@]+@[^\s]+'
-    severity: "critical"
-    
-  - name: "database_password"
-    pattern: '(?i)(db_pass|database_pass|db_password|database_password)[\s]*[:=][\s]*["\']?([^\s"\']+)["\']?'
-    severity: "critical"
-    
+    severity: 'critical'
+
+  - name: 'database_password'
+    pattern: '(?i)(db_pass|database_pass|db_password|database_password)\s*[:=]\s*["\x27]?([^\s"\x27]+)["\x27]?'
+    severity: 'critical'
+
   # Trading Platform Credentials
-  - name: "broker_api_key"
-    pattern: '(?i)(binance|kraken|coinbase|creon|kis)[-_]?(api[-_]?key|secret)[\s]*[:=][\s]*["\']?([a-zA-Z0-9_\-]{20,})["\']?'
-    severity: "critical"
-    
-  - name: "trading_secret"
-    pattern: '(?i)(trading|exchange|broker)[-_]?secret[\s]*[:=][\s]*["\']?([a-zA-Z0-9_\-]{20,})["\']?'
-    severity: "critical"
-    
+  - name: 'broker_api_key'
+    pattern: '(?i)(binance|kraken|coinbase|creon|kis)[-_]?(api[-_]?key|secret)\s*[:=]\s*["\x27]?([a-zA-Z0-9_\-]{20,})["\x27]?'
+    severity: 'critical'
+
+  - name: 'trading_secret'
+    pattern: '(?i)(trading|exchange|broker)[-_]?secret\s*[:=]\s*["\x27]?([a-zA-Z0-9_\-]{20,})["\x27]?'
+    severity: 'critical'
+
   # Cloud Provider Secrets
-  - name: "aws_credentials"
-    pattern: '(?i)(aws_access_key_id|aws_secret_access_key|aws_session_token)[\s]*[:=][\s]*["\']?([A-Za-z0-9/+=]{20,})["\']?'
-    severity: "critical"
-    
-  - name: "gcp_credentials"
+  - name: 'aws_credentials'
+    pattern: '(?i)(aws_access_key_id|aws_secret_access_key|aws_session_token)\s*[:=]\s*["\x27]?([A-Za-z0-9/+=]{20,})["\x27]?'
+    severity: 'critical'
+
+  - name: 'gcp_credentials'
     pattern: '(?i)("type":\s*"service_account"|private_key_id|private_key|client_email)'
-    severity: "critical"
-    
+    severity: 'critical'
+
   # Blockchain/Crypto
-  - name: "private_key"
-    pattern: '(?i)(private[-_]?key|priv[-_]?key|secret[-_]?key)[\s]*[:=][\s]*["\']?(0x)?[a-fA-F0-9]{64}["\']?'
-    severity: "critical"
-    
-  - name: "mnemonic_phrase"
-    pattern: '(?i)(mnemonic|seed[-_]?phrase|recovery[-_]?phrase)[\s]*[:=][\s]*["\']([a-z]+ ){11,23}[a-z]+["\']'
-    severity: "critical"
+  - name: 'private_key'
+    pattern: '(?i)(private[-_]?key|priv[-_]?key|secret[-_]?key)\s*[:=]\s*["\x27]?(0x)?[a-fA-F0-9]{64}["\x27]?'
+    severity: 'critical'
+
+  - name: 'mnemonic_phrase'
+    pattern: '(?i)(mnemonic|seed[-_]?phrase|recovery[-_]?phrase)\s*[:=]\s*["\x27]([a-z]+ ){11,23}[a-z]+["\x27]'
+    severity: 'critical'
 
 # =============================================================================
 # LICENSE COMPLIANCE
@@ -113,47 +113,47 @@ secret_patterns:
 license_compliance:
   # Allowed licenses (compatible with proprietary trading system)
   allowed_licenses:
-    - "MIT"
-    - "Apache-2.0"
-    - "Apache-2.0 WITH LLVM-exception"
-    - "BSD-2-Clause"
-    - "BSD-3-Clause"
-    - "BSD-3-Clause-Clear"
-    - "ISC"
-    - "0BSD"
-    - "Unlicense"
-    - "CC0-1.0"
-    - "CC-BY-4.0"
-    - "Python-2.0"
-    - "PostgreSQL"
-    - "Zlib"
-    - "WTFPL"
-    
+    - 'MIT'
+    - 'Apache-2.0'
+    - 'Apache-2.0 WITH LLVM-exception'
+    - 'BSD-2-Clause'
+    - 'BSD-3-Clause'
+    - 'BSD-3-Clause-Clear'
+    - 'ISC'
+    - '0BSD'
+    - 'Unlicense'
+    - 'CC0-1.0'
+    - 'CC-BY-4.0'
+    - 'Python-2.0'
+    - 'PostgreSQL'
+    - 'Zlib'
+    - 'WTFPL'
+
   # Explicitly prohibited licenses
   prohibited_licenses:
-    - "GPL-2.0"
-    - "GPL-3.0"
-    - "AGPL-3.0"
-    - "LGPL-2.1"
-    - "LGPL-3.0"
-    - "MPL-2.0"
-    - "OSL-3.0"
-    - "EUPL-1.2"
-    - "CC-BY-SA-4.0"
-    - "CC-BY-NC-4.0"
-    
+    - 'GPL-2.0'
+    - 'GPL-3.0'
+    - 'AGPL-3.0'
+    - 'LGPL-2.1'
+    - 'LGPL-3.0'
+    - 'MPL-2.0'
+    - 'OSL-3.0'
+    - 'EUPL-1.2'
+    - 'CC-BY-SA-4.0'
+    - 'CC-BY-NC-4.0'
+
   # Licenses requiring legal review
   review_required:
-    - "CDDL-1.0"
-    - "EPL-2.0"
-    - "MS-PL"
-    - "CPOL-1.02"
-    
+    - 'CDDL-1.0'
+    - 'EPL-2.0'
+    - 'MS-PL'
+    - 'CPOL-1.02'
+
   # Action when prohibited license found
   on_violation:
-    action: "block"           # block|warn|report
-    notification: "immediate" # immediate|daily|weekly
-    require_approval: true    # Require explicit approval to proceed
+    action: 'block' # block|warn|report
+    notification: 'immediate' # immediate|daily|weekly
+    require_approval: true # Require explicit approval to proceed
 
 # =============================================================================
 # COMPLIANCE FRAMEWORKS
@@ -164,35 +164,35 @@ license_compliance:
 # =============================================================================
 
 compliance_frameworks:
-  - name: "SOC2"
+  - name: 'SOC2'
     enabled: true
     controls:
-      - "access-control"
-      - "encryption"
-      - "logging"
-      - "monitoring"
-      
-  - name: "PCI-DSS"
+      - 'access-control'
+      - 'encryption'
+      - 'logging'
+      - 'monitoring'
+
+  - name: 'PCI-DSS'
     enabled: true
     controls:
-      - "secure-coding"
-      - "vulnerability-management"
-      - "access-control"
-      - "encryption"
-      
-  - name: "ISO-27001"
+      - 'secure-coding'
+      - 'vulnerability-management'
+      - 'access-control'
+      - 'encryption'
+
+  - name: 'ISO-27001'
     enabled: true
     controls:
-      - "risk-assessment"
-      - "incident-response"
-      - "business-continuity"
-      
-  - name: "GDPR"
+      - 'risk-assessment'
+      - 'incident-response'
+      - 'business-continuity'
+
+  - name: 'GDPR'
     enabled: true
     controls:
-      - "data-protection"
-      - "privacy"
-      - "consent-management"
+      - 'data-protection'
+      - 'privacy'
+      - 'consent-management'
 
 # =============================================================================
 # NOTIFICATION SETTINGS
@@ -206,25 +206,25 @@ notifications:
   # Slack notifications
   slack:
     enabled: true
-    webhook_url_secret: "SLACK_SECURITY_WEBHOOK"  # GitHub secret name
+    webhook_url_secret: 'SLACK_SECURITY_WEBHOOK' # GitHub secret name
     channels:
-      critical: "#security-critical"
-      high: "#security-alerts"
-      medium: "#security-daily"
-      low: "#security-weekly"
+      critical: '#security-critical'
+      high: '#security-alerts'
+      medium: '#security-daily'
+      low: '#security-weekly'
     mentions:
-      critical: "@channel"
-      high: "@security-team"
-      medium: "@security-team"
-      low: ""
-      
+      critical: '@channel'
+      high: '@security-team'
+      medium: '@security-team'
+      low: ''
+
   # Discord notifications
   discord:
     enabled: false
-    webhook_url_secret: "DISCORD_SECURITY_WEBHOOK"
+    webhook_url_secret: 'DISCORD_SECURITY_WEBHOOK'
     channels:
-      all: "#security"
-      
+      all: '#security'
+
   # Email notifications
   email:
     enabled: true
@@ -240,19 +240,19 @@ notifications:
         - security@company.com
       low:
         - security@company.com
-        
+
   # GitHub Issues
   github_issues:
     enabled: true
     create_for:
-      - "critical"
-      - "high"
+      - 'critical'
+      - 'high'
     labels:
-      - "security"
-      - "automated"
-      - "${severity}"  # Dynamic label based on severity
+      - 'security'
+      - 'automated'
+      - '${severity}' # Dynamic label based on severity
     assignees:
-      - "@security-team"
+      - '@security-team'
 
 # =============================================================================
 # SECURITY TOOLS CONFIGURATION
@@ -266,33 +266,33 @@ security_tools:
   # CodeQL Configuration
   codeql:
     enabled: true
-    languages: ["javascript", "typescript"]
-    queries: ["security-extended", "security-and-quality"]
-    
+    languages: ['javascript', 'typescript']
+    queries: ['security-extended', 'security-and-quality']
+
   # Trivy Configuration
   trivy:
     enabled: true
-    scan_types: ["os", "library", "secret", "config"]
-    severity: ["CRITICAL", "HIGH", "MEDIUM"]
+    scan_types: ['os', 'library', 'secret', 'config']
+    severity: ['CRITICAL', 'HIGH', 'MEDIUM']
     ignore_unfixed: false
-    
+
   # Snyk Configuration
   snyk:
     enabled: true
-    severity_threshold: "medium"
-    fail_on: ["critical", "high"]
-    
+    severity_threshold: 'medium'
+    fail_on: ['critical', 'high']
+
   # OWASP Dependency Check
   owasp:
     enabled: true
-    fail_build_on_cvss: 7.0  # CVSS score threshold
-    suppression_file: ".owasp-suppressions.xml"
-    
+    fail_build_on_cvss: 7.0 # CVSS score threshold
+    suppression_file: '.owasp-suppressions.xml'
+
   # GitLeaks Configuration
   gitleaks:
     enabled: true
-    config_file: ".gitleaks.toml"
-    scan_depth: 100  # Number of commits to scan
+    config_file: '.gitleaks.toml'
+    scan_depth: 100 # Number of commits to scan
 
 # =============================================================================
 # SECURITY METRICS
@@ -311,13 +311,13 @@ metrics:
     - dependency_update_lag
     - security_scan_coverage
     - false_positive_rate
-    
+
   # Reporting
   reporting:
-    frequency: "weekly"      # daily|weekly|monthly
-    format: "json"          # json|html|markdown
-    storage: "artifacts"    # artifacts|s3|database
-    retention_days: 90      # How long to keep reports
+    frequency: 'weekly' # daily|weekly|monthly
+    format: 'json' # json|html|markdown
+    storage: 'artifacts' # artifacts|s3|database
+    retention_days: 90 # How long to keep reports
 
 # =============================================================================
 # EXEMPTIONS AND OVERRIDES
@@ -330,21 +330,21 @@ metrics:
 exemptions:
   # Approval requirements
   approval_required_from:
-    - "security-team"
-    - "team-lead"
-    - "cto"  # For critical exemptions
-    
+    - 'security-team'
+    - 'team-lead'
+    - 'cto' # For critical exemptions
+
   # Maximum exemption duration
   max_duration_days: 30
-  
+
   # Require justification
   require_justification: true
   require_mitigation_plan: true
   require_end_date: true
-  
+
   # Tracking
   track_in_issues: true
-  review_frequency: "weekly"
+  review_frequency: 'weekly'
 
 # =============================================================================
 # SECURITY REVIEW REQUIREMENTS
@@ -357,30 +357,29 @@ exemptions:
 security_review:
   # File patterns requiring security review
   required_for_files:
-    - "**/auth/**"
-    - "**/security/**"
-    - "**/crypto/**"
-    - "**/*encryption*"
-    - "**/*password*"
-    - "**/*secret*"
-    - "**/*token*"
-    - "**/Dockerfile*"
-    - "**/.github/workflows/**"
-    
+    - '**/auth/**'
+    - '**/security/**'
+    - '**/crypto/**'
+    - '**/*encryption*'
+    - '**/*password*'
+    - '**/*secret*'
+    - '**/*token*'
+    - '**/Dockerfile*'
+    - '**/.github/workflows/**'
+
   # Dependencies requiring review
   required_for_dependencies:
-    - "crypto"
-    - "bcrypt"
-    - "jsonwebtoken"
-    - "passport"
-    - "oauth"
-    - "saml"
-    
+    - 'crypto'
+    - 'bcrypt'
+    - 'jsonwebtoken'
+    - 'passport'
+    - 'oauth'
+    - 'saml'
+
   # Automated review assignment
   auto_assign_reviewers:
-    - "@security-team"
-    - "@senior-developers"
-
+    - '@security-team'
+    - '@senior-developers'
 # =============================================================================
 # NOTES
 # =============================================================================

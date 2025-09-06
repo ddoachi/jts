@@ -22,7 +22,7 @@ queries:
   - uses: security-extended
   # JavaScript/TypeScript specific security queries
   - uses: javascript-queries
-  
+
 # =============================================================================
 # ADDITIONAL QUERY PACKS
 # =============================================================================
@@ -33,14 +33,14 @@ queries:
 
 packs:
   # JavaScript security queries with focus on trading system risks
-  - codeql/javascript-queries:Security/CWE-078  # OS Command Injection
-  - codeql/javascript-queries:Security/CWE-079  # Cross-site Scripting
-  - codeql/javascript-queries:Security/CWE-089  # SQL Injection
-  - codeql/javascript-queries:Security/CWE-200  # Information Exposure
-  - codeql/javascript-queries:Security/CWE-502  # Deserialization Issues
-  - codeql/javascript-queries:Security/CWE-611  # XML External Entity
-  - codeql/javascript-queries:Security/CWE-798  # Hardcoded Credentials
-  - codeql/javascript-queries:Security/CWE-918  # SSRF Vulnerabilities
+  - codeql/javascript-queries:Security/CWE-078 # OS Command Injection
+  - codeql/javascript-queries:Security/CWE-079 # Cross-site Scripting
+  - codeql/javascript-queries:Security/CWE-089 # SQL Injection
+  - codeql/javascript-queries:Security/CWE-200 # Information Exposure
+  - codeql/javascript-queries:Security/CWE-502 # Deserialization Issues
+  - codeql/javascript-queries:Security/CWE-611 # XML External Entity
+  - codeql/javascript-queries:Security/CWE-798 # Hardcoded Credentials
+  - codeql/javascript-queries:Security/CWE-918 # SSRF Vulnerabilities
 
 # =============================================================================
 # PATH CONFIGURATION
@@ -52,10 +52,10 @@ packs:
 
 # Paths to analyze (production code only)
 paths:
-  - 'apps/'       # Microservice applications
-  - 'libs/'       # Shared libraries
-  - 'scripts/'    # Build and deployment scripts
-  - 'tools/'      # Development tools
+  - 'apps/' # Microservice applications
+  - 'libs/' # Shared libraries
+  - 'scripts/' # Build and deployment scripts
+  - 'tools/' # Development tools
 
 # Paths to ignore (reduce noise and false positives)
 paths-ignore:
@@ -66,7 +66,7 @@ paths-ignore:
   - 'coverage'
   - 'tmp'
   - '.next'
-  
+
   # Test files (analyzed separately if needed)
   - '**/*.test.ts'
   - '**/*.test.tsx'
@@ -81,7 +81,7 @@ paths-ignore:
   - '**/test/**'
   - '**/tests/**'
   - '**/e2e/**'
-  
+
   # Documentation and configuration
   - 'docs/**'
   - '**/*.md'
@@ -89,7 +89,7 @@ paths-ignore:
   - '**/*.json'
   - '**/*.yaml'
   - '**/*.yml'
-  
+
   # Development and generated files
   - '**/*.d.ts'
   - '**/*.map'
@@ -109,17 +109,17 @@ query-filters:
   # Exclude queries that generate too many false positives
   - exclude:
       id: js/unused-local-variable
-      reason: "Too many false positives in NestJS decorators"
+      reason: 'Too many false positives in NestJS decorators'
   - exclude:
       id: js/unclear-precedence
-      reason: "Style preference, not security issue"
+      reason: 'Style preference, not security issue'
   - exclude:
       id: js/redundant-assignment
-      reason: "Often intentional in trading calculations"
+      reason: 'Often intentional in trading calculations'
   - exclude:
       id: js/useless-expression
-      reason: "False positives with TypeScript type assertions"
-  
+      reason: 'False positives with TypeScript type assertions'
+
   # Include high-value security queries explicitly
   - include:
       id: js/hardcoded-credentials
@@ -144,22 +144,22 @@ query-filters:
 
 patterns:
   # Detect potential price manipulation vulnerabilities
-  - name: "price-manipulation-check"
+  - name: 'price-manipulation-check'
     pattern: "price\\s*=\\s*(?!parseFloat|Number|BigInt)"
-    message: "Direct price assignment without validation detected"
-    severity: "error"
-  
+    message: 'Direct price assignment without validation detected'
+    severity: 'error'
+
   # Detect unsafe order execution patterns
-  - name: "unsafe-order-execution"
+  - name: 'unsafe-order-execution'
     pattern: "executeOrder\\([^)]*\\)(?!.*validate)"
-    message: "Order execution without validation detected"
-    severity: "error"
-  
+    message: 'Order execution without validation detected'
+    severity: 'error'
+
   # Detect potential API key exposure
-  - name: "api-key-exposure"
+  - name: 'api-key-exposure'
     pattern: "(api[_-]?key|apikey)\\s*[:=]\\s*[\"'][^\"']*[\"']"
-    message: "Potential API key hardcoded in source"
-    severity: "error"
+    message: 'Potential API key hardcoded in source'
+    severity: 'error'
 
 # =============================================================================
 # LANGUAGE CONFIGURATION
@@ -179,11 +179,11 @@ languages:
       - tsx
       - mjs
       - cjs
-    
+
     # TypeScript configuration
     typescript:
       # Use project's tsconfig for type information
-      tsconfig_path: "tsconfig.base.json"
+      tsconfig_path: 'tsconfig.base.json'
       # Enable strict type checking
       strict_mode: true
 
@@ -198,21 +198,21 @@ languages:
 analysis:
   # Maximum time for analysis (in minutes)
   timeout: 30
-  
+
   # Memory limit for analysis (in MB)
   max_memory: 4096
-  
+
   # Number of threads for parallel analysis
   threads: 4
-  
+
   # Enable dataflow analysis for better vulnerability detection
   dataflow: true
-  
+
   # Enable taint tracking for input validation issues
   taint_tracking: true
-  
+
   # Severity threshold for failing the build
-  fail_on_severity: "error"
+  fail_on_severity: 'error'
 
 # =============================================================================
 # SARIF OUTPUT CONFIGURATION
@@ -225,16 +225,15 @@ analysis:
 sarif:
   # Include code snippets in results
   add_snippets: true
-  
+
   # Include data flow information
   add_data_flow: true
-  
+
   # Category for GitHub Security tab
-  category: "sast-analysis"
-  
+  category: 'sast-analysis'
+
   # Maximum number of results per rule
   max_results_per_rule: 100
-
 # =============================================================================
 # FALSE POSITIVE SUPPRESSION
 # =============================================================================
