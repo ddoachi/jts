@@ -1,0 +1,489 @@
+name: Container Registry Cleanup
+
+# Comprehensive container registry cleanup workflow for removing old/untagged images
+# This workflow helps maintain registry storage by cleaning up old images based on configurable policies
+
+on:
+  # Scheduled cleanup - runs every Sunday at 2 AM UTC
+  schedule:
+    - cron: '0 2 * * 0'
+  
+  # Manual trigger for immediate cleanup
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Perform dry run (no actual deletion)'
+        required: false
+        default: false
+        type: boolean
+      keep_count:
+        description: 'Number of recent images to keep per service'
+        required: false
+        default: '10'
+        type: string
+      keep_days:
+        description: 'Days to keep images (older images will be deleted)'
+        required: false
+        default: '30'
+        type: string
+      service_filter:
+        description: 'Specific service to clean (leave empty for all)'
+        required: false
+        type: string
+      include_untagged:
+        description: 'Also delete untagged images'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  # Registry configuration
+  REGISTRY: ghcr.io
+  ORGANIZATION: ${{ github.repository_owner }}
+  IMAGE_PREFIX: jts
+  
+  # Default cleanup policies
+  DEFAULT_KEEP_COUNT: 10
+  DEFAULT_KEEP_DAYS: 30
+  
+  # API configuration
+  GITHUB_API_URL: https://api.github.com
+
+# Required permissions for package management
+permissions:
+  contents: read
+  packages: write
+  actions: read
+
+jobs:
+  # Job 1: Discover packages and prepare cleanup matrix
+  discover-packages:
+    name: Discover Packages
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.packages.outputs.packages }}
+      has-packages: ${{ steps.packages.outputs.has-packages }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      cleanup-config: ${{ steps.config.outputs.config }}
+    steps:
+      - name: Setup cleanup configuration
+        id: config
+        run: |
+          # Set cleanup parameters from inputs or defaults
+          KEEP_COUNT="${{ github.event.inputs.keep_count || env.DEFAULT_KEEP_COUNT }}"
+          KEEP_DAYS="${{ github.event.inputs.keep_days || env.DEFAULT_KEEP_DAYS }}"
+          DRY_RUN="${{ github.event.inputs.dry_run || 'false' }}"
+          SERVICE_FILTER="${{ github.event.inputs.service_filter || '' }}"
+          INCLUDE_UNTAGGED="${{ github.event.inputs.include_untagged || 'true' }}"
+          
+          # Create configuration object
+          config=$(jq -n \
+            --arg keep_count "$KEEP_COUNT" \
+            --arg keep_days "$KEEP_DAYS" \
+            --argjson dry_run "$DRY_RUN" \
+            --arg service_filter "$SERVICE_FILTER" \
+            --argjson include_untagged "$INCLUDE_UNTAGGED" \
+            '{
+              keep_count: ($keep_count | tonumber),
+              keep_days: ($keep_days | tonumber),
+              dry_run: $dry_run,
+              service_filter: $service_filter,
+              include_untagged: $include_untagged
+            }'
+          )
+          
+          echo "config=${config}" >> $GITHUB_OUTPUT
+          echo "Cleanup configuration: ${config}"
+
+      - name: Discover container packages
+        id: packages
+        run: |
+          # Get all packages for the organization
+          packages_response=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "${{ env.GITHUB_API_URL }}/orgs/${{ env.ORGANIZATION }}/packages?package_type=container&per_page=100"
+          )
+          
+          # Filter JTS-related packages
+          jts_packages=$(echo "$packages_response" | jq -r --arg prefix "${{ env.IMAGE_PREFIX }}-" '
+            [.[] | select(.name | startswith($prefix)) | {
+              name: .name,
+              id: .id,
+              service: (.name | sub("^" + $prefix; "")),
+              url: .url,
+              created_at: .created_at,
+              updated_at: .updated_at
+            }]
+          ')
+          
+          # Apply service filter if specified
+          service_filter="${{ github.event.inputs.service_filter }}"
+          if [[ -n "$service_filter" ]]; then
+            jts_packages=$(echo "$jts_packages" | jq --arg service "$service_filter" '
+              [.[] | select(.service == $service)]
+            ')
+          fi
+          
+          # Output results
+          package_count=$(echo "$jts_packages" | jq 'length')
+          if [[ "$package_count" -gt 0 ]]; then
+            echo "packages=${jts_packages}" >> $GITHUB_OUTPUT
+            echo "has-packages=true" >> $GITHUB_OUTPUT
+            echo "Found $package_count JTS packages to potentially clean"
+            echo "$jts_packages" | jq -r '.[] | "- " + .name + " (service: " + .service + ")"'
+          else
+            echo "packages=[]" >> $GITHUB_OUTPUT
+            echo "has-packages=false" >> $GITHUB_OUTPUT
+            echo "No JTS packages found for cleanup"
+          fi
+
+      - name: Create cleanup matrix
+        id: matrix
+        run: |
+          if [[ "${{ steps.packages.outputs.has-packages }}" == "true" ]]; then
+            # Create matrix for parallel cleanup
+            matrix=$(echo '${{ steps.packages.outputs.packages }}' | jq -c '
+              [.[] | {
+                name: .name,
+                service: .service,
+                package_id: .id,
+                package_url: .url
+              }]
+            ')
+            echo "matrix=${matrix}" >> $GITHUB_OUTPUT
+            echo "Created matrix for $(echo "$matrix" | jq 'length') packages"
+          else
+            echo "matrix=[]" >> $GITHUB_OUTPUT
+          fi
+
+  # Job 2: Clean up individual packages
+  cleanup-package:
+    name: Cleanup Package
+    needs: discover-packages
+    if: needs.discover-packages.outputs.has-packages == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 3  # Limit concurrent cleanup jobs to avoid rate limiting
+      matrix:
+        include: ${{ fromJson(needs.discover-packages.outputs.matrix) }}
+    
+    steps:
+      - name: Setup cleanup for ${{ matrix.service }}
+        run: |
+          echo "Starting cleanup for service: ${{ matrix.service }}"
+          echo "Package: ${{ matrix.name }}"
+          echo "Package ID: ${{ matrix.package_id }}"
+          
+          # Parse configuration
+          config='${{ needs.discover-packages.outputs.cleanup-config }}'
+          echo "Configuration: $config"
+          echo "KEEP_COUNT=$(echo "$config" | jq -r '.keep_count')" >> $GITHUB_ENV
+          echo "KEEP_DAYS=$(echo "$config" | jq -r '.keep_days')" >> $GITHUB_ENV
+          echo "DRY_RUN=$(echo "$config" | jq -r '.dry_run')" >> $GITHUB_ENV
+          echo "INCLUDE_UNTAGGED=$(echo "$config" | jq -r '.include_untagged')" >> $GITHUB_ENV
+
+      - name: Get package versions
+        id: versions
+        run: |
+          # Get all versions for this package
+          versions_response=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "${{ env.GITHUB_API_URL }}/orgs/${{ env.ORGANIZATION }}/packages/container/${{ matrix.name }}/versions?per_page=100"
+          )
+          
+          # Check for API errors
+          if echo "$versions_response" | jq -e '.message' > /dev/null; then
+            echo "API Error: $(echo "$versions_response" | jq -r '.message')"
+            exit 1
+          fi
+          
+          # Process versions
+          all_versions=$(echo "$versions_response" | jq '[.[] | {
+            id: .id,
+            name: .name,
+            tag: (.metadata.container.tags[0] // "untagged"),
+            tags: .metadata.container.tags,
+            created_at: .created_at,
+            updated_at: .updated_at,
+            size: (.size // 0)
+          }]')
+          
+          echo "versions=${all_versions}" >> $GITHUB_OUTPUT
+          echo "Found $(echo "$all_versions" | jq 'length') versions for ${{ matrix.name }}"
+
+      - name: Identify versions to delete
+        id: delete-candidates
+        run: |
+          versions='${{ steps.versions.outputs.versions }}'
+          cutoff_date=$(date -d "${{ env.KEEP_DAYS }} days ago" --iso-8601)
+          
+          # Separate tagged and untagged versions
+          tagged_versions=$(echo "$versions" | jq --arg tag "untagged" '
+            [.[] | select(.tag != $tag)] | sort_by(.created_at) | reverse
+          ')
+          
+          untagged_versions=$(echo "$versions" | jq --arg tag "untagged" '
+            [.[] | select(.tag == $tag)]
+          ')
+          
+          # Keep recent tagged versions based on count
+          tagged_to_keep=$(echo "$tagged_versions" | jq --argjson keep "${{ env.KEEP_COUNT }}" '
+            .[:$keep]
+          ')
+          
+          # Keep recent tagged versions based on age
+          tagged_recent=$(echo "$tagged_versions" | jq --arg cutoff "$cutoff_date" '
+            [.[] | select(.created_at > $cutoff)]
+          ')
+          
+          # Combine keep policies for tagged (keep if matches either criteria)
+          tagged_keep_ids=$(echo "$tagged_to_keep $tagged_recent" | jq -s '
+            [.[0][], .[1][]] | unique_by(.id) | [.[].id]
+          ')
+          
+          # Tagged versions to delete
+          tagged_to_delete=$(echo "$tagged_versions" | jq --argjson keep_ids "$tagged_keep_ids" '
+            [.[] | select([.id] | inside($keep_ids) | not)]
+          ')
+          
+          # Untagged versions to delete (if enabled)
+          untagged_to_delete=[]
+          if [[ "${{ env.INCLUDE_UNTAGGED }}" == "true" ]]; then
+            # Keep untagged versions from last 7 days only
+            untagged_cutoff=$(date -d "7 days ago" --iso-8601)
+            untagged_to_delete=$(echo "$untagged_versions" | jq --arg cutoff "$untagged_cutoff" '
+              [.[] | select(.created_at < $cutoff)]
+            ')
+          fi
+          
+          # Combine all deletions
+          all_to_delete=$(echo "$tagged_to_delete $untagged_to_delete" | jq -s '
+            [.[0][], .[1][]]
+          ')
+          
+          echo "delete-candidates=${all_to_delete}" >> $GITHUB_OUTPUT
+          
+          # Summary
+          tagged_keep_count=$(echo "$tagged_keep_ids" | jq 'length')
+          tagged_delete_count=$(echo "$tagged_to_delete" | jq 'length')
+          untagged_delete_count=$(echo "$untagged_to_delete" | jq 'length')
+          
+          echo "## Cleanup Summary for ${{ matrix.service }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tagged versions to keep**: ${tagged_keep_count}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tagged versions to delete**: ${tagged_delete_count}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Untagged versions to delete**: ${untagged_delete_count}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+      - name: Calculate storage savings
+        id: savings
+        run: |
+          delete_candidates='${{ steps.delete-candidates.outputs.delete-candidates }}'
+          
+          # Calculate total size of versions to be deleted
+          total_bytes=$(echo "$delete_candidates" | jq '[.[].size] | add // 0')
+          
+          # Convert to human readable format
+          if [[ $total_bytes -eq 0 ]]; then
+            total_size="0 B"
+          elif [[ $total_bytes -lt 1024 ]]; then
+            total_size="${total_bytes} B"
+          elif [[ $total_bytes -lt 1048576 ]]; then
+            total_size="$(echo "$total_bytes / 1024" | bc -l | xargs printf "%.1f") KB"
+          elif [[ $total_bytes -lt 1073741824 ]]; then
+            total_size="$(echo "$total_bytes / 1048576" | bc -l | xargs printf "%.1f") MB"
+          else
+            total_size="$(echo "$total_bytes / 1073741824" | bc -l | xargs printf "%.1f") GB"
+          fi
+          
+          echo "total-size=${total_size}" >> $GITHUB_OUTPUT
+          echo "Storage to be freed: ${total_size}"
+
+      - name: Delete package versions
+        if: env.DRY_RUN != 'true'
+        run: |
+          delete_candidates='${{ steps.delete-candidates.outputs.delete-candidates }}'
+          deleted_count=0
+          failed_count=0
+          
+          echo "Starting deletion of $(echo "$delete_candidates" | jq 'length') versions..."
+          
+          # Delete each version
+          for version_id in $(echo "$delete_candidates" | jq -r '.[].id'); do
+            version_info=$(echo "$delete_candidates" | jq -r --arg id "$version_id" '.[] | select(.id == ($id | tonumber))')
+            version_tag=$(echo "$version_info" | jq -r '.tag')
+            
+            echo "Deleting version: $version_tag (ID: $version_id)"
+            
+            # Delete the version
+            delete_response=$(curl -s -w "%{http_code}" \
+              -X DELETE \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "${{ env.GITHUB_API_URL }}/orgs/${{ env.ORGANIZATION }}/packages/container/${{ matrix.name }}/versions/$version_id"
+            )
+            
+            http_code="${delete_response: -3}"
+            
+            if [[ "$http_code" == "204" ]]; then
+              echo "✅ Successfully deleted version: $version_tag"
+              ((deleted_count++))
+            else
+              echo "❌ Failed to delete version: $version_tag (HTTP: $http_code)"
+              echo "Response: ${delete_response%???}"
+              ((failed_count++))
+            fi
+            
+            # Small delay to avoid rate limiting
+            sleep 1
+          done
+          
+          echo "DELETED_COUNT=$deleted_count" >> $GITHUB_ENV
+          echo "FAILED_COUNT=$failed_count" >> $GITHUB_ENV
+          
+          echo "Deletion complete: $deleted_count successful, $failed_count failed"
+
+      - name: Update summary
+        run: |
+          if [[ "${{ env.DRY_RUN }}" == "true" ]]; then
+            echo "**🔍 DRY RUN MODE** - No actual deletions performed" >> $GITHUB_STEP_SUMMARY
+            echo "- **Would delete**: $(echo '${{ steps.delete-candidates.outputs.delete-candidates }}' | jq 'length') versions" >> $GITHUB_STEP_SUMMARY
+            echo "- **Storage would be freed**: ${{ steps.savings.outputs.total-size }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- **Deleted**: ${DELETED_COUNT:-0} versions" >> $GITHUB_STEP_SUMMARY
+            echo "- **Failed**: ${FAILED_COUNT:-0} versions" >> $GITHUB_STEP_SUMMARY
+            echo "- **Storage freed**: ${{ steps.savings.outputs.total-size }}" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+  # Job 3: Cleanup orphaned cache images
+  cleanup-cache:
+    name: Cleanup Build Cache
+    needs: [discover-packages, cleanup-package]
+    if: always() && needs.discover-packages.outputs.has-packages == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup Docker build cache images
+        run: |
+          echo "Starting cleanup of Docker build cache images..."
+          
+          # Get all packages that might be cache images
+          cache_packages=$(curl -s \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "${{ env.GITHUB_API_URL }}/orgs/${{ env.ORGANIZATION }}/packages?package_type=container&per_page=100" \
+            | jq -r --arg prefix "${{ env.IMAGE_PREFIX }}-" '
+              [.[] | select(.name | startswith($prefix) and endswith("-cache")) | {
+                name: .name,
+                id: .id
+              }]'
+          )
+          
+          cache_count=$(echo "$cache_packages" | jq 'length')
+          if [[ "$cache_count" -eq 0 ]]; then
+            echo "No cache packages found"
+            exit 0
+          fi
+          
+          echo "Found $cache_count cache packages"
+          
+          # Clean up cache packages (keep only last 5 versions)
+          for package in $(echo "$cache_packages" | jq -r '.[] | @base64'); do
+            package_data=$(echo "$package" | base64 --decode)
+            package_name=$(echo "$package_data" | jq -r '.name')
+            package_id=$(echo "$package_data" | jq -r '.id')
+            
+            echo "Cleaning cache package: $package_name"
+            
+            # Get cache versions
+            versions=$(curl -s \
+              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "${{ env.GITHUB_API_URL }}/orgs/${{ env.ORGANIZATION }}/packages/container/$package_name/versions?per_page=100" \
+              | jq '[.[] | {id: .id, created_at: .created_at}] | sort_by(.created_at) | reverse'
+            )
+            
+            # Keep only the 5 most recent versions
+            versions_to_delete=$(echo "$versions" | jq '.[5:]')
+            
+            delete_count=$(echo "$versions_to_delete" | jq 'length')
+            if [[ "$delete_count" -gt 0 ]]; then
+              echo "Deleting $delete_count old cache versions for $package_name"
+              
+              for version_id in $(echo "$versions_to_delete" | jq -r '.[].id'); do
+                if [[ "${{ fromJson(needs.discover-packages.outputs.cleanup-config).dry_run }}" != "true" ]]; then
+                  curl -s -X DELETE \
+                    -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                    -H "Accept: application/vnd.github.v3+json" \
+                    "${{ env.GITHUB_API_URL }}/orgs/${{ env.ORGANIZATION }}/packages/container/$package_name/versions/$version_id"
+                  echo "Deleted cache version: $version_id"
+                else
+                  echo "Would delete cache version: $version_id (DRY RUN)"
+                fi
+                sleep 1
+              done
+            fi
+          done
+
+  # Job 4: Final summary and notification
+  summary:
+    name: Cleanup Summary
+    needs: [discover-packages, cleanup-package, cleanup-cache]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate final summary
+        run: |
+          echo "# 🧹 Container Registry Cleanup Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Cleanup Date**: $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Cleanup configuration
+          config='${{ needs.discover-packages.outputs.cleanup-config }}'
+          echo "## Cleanup Configuration" >> $GITHUB_STEP_SUMMARY
+          echo "- **Keep Count**: $(echo "$config" | jq -r '.keep_count') recent tagged versions per service" >> $GITHUB_STEP_SUMMARY
+          echo "- **Keep Days**: $(echo "$config" | jq -r '.keep_days') days for version retention" >> $GITHUB_STEP_SUMMARY
+          echo "- **Include Untagged**: $(echo "$config" | jq -r '.include_untagged')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dry Run**: $(echo "$config" | jq -r '.dry_run')" >> $GITHUB_STEP_SUMMARY
+          
+          service_filter=$(echo "$config" | jq -r '.service_filter')
+          if [[ "$service_filter" != "" && "$service_filter" != "null" ]]; then
+            echo "- **Service Filter**: $service_filter" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Results summary
+          if [[ "${{ needs.discover-packages.outputs.has-packages }}" == "true" ]]; then
+            echo "## Results" >> $GITHUB_STEP_SUMMARY
+            
+            if [[ "${{ needs.cleanup-package.result }}" == "success" ]]; then
+              echo "✅ **Package Cleanup**: Completed successfully" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "❌ **Package Cleanup**: Some operations failed" >> $GITHUB_STEP_SUMMARY
+            fi
+            
+            if [[ "${{ needs.cleanup-cache.result }}" == "success" ]]; then
+              echo "✅ **Cache Cleanup**: Completed successfully" >> $GITHUB_STEP_SUMMARY
+            elif [[ "${{ needs.cleanup-cache.result }}" == "failure" ]]; then
+              echo "❌ **Cache Cleanup**: Failed" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "⏭️ **Cache Cleanup**: Skipped" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "## Results" >> $GITHUB_STEP_SUMMARY
+            echo "ℹ️ No packages found matching cleanup criteria" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "- Next scheduled cleanup: $(date -d 'next sunday 2:00' '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "- Manual cleanup can be triggered via workflow dispatch" >> $GITHUB_STEP_SUMMARY
+          echo "- Adjust cleanup policies by modifying workflow inputs" >> $GITHUB_STEP_SUMMARY
+
+      - name: Notify on significant issues
+        if: needs.cleanup-package.result == 'failure'
+        run: |
+          echo "::warning title=Cleanup Issues::Some package cleanup operations failed. Check individual job logs for details."
