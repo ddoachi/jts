@@ -31,18 +31,21 @@ apps/spec-api/src/modules/parser/__tests__/
 ## 🧪 Test Categories
 
 ### 1. Unit Tests (70% of tests)
+
 - **Purpose**: Test individual components in isolation
 - **Speed**: < 10ms per test
 - **Mocking**: Heavy use of mocks for dependencies
 - **Location**: `*.spec.ts` files
 
 ### 2. Integration Tests (20% of tests)
+
 - **Purpose**: Test component interactions
 - **Speed**: < 100ms per test
 - **Mocking**: Minimal, uses real file system
 - **Location**: `integration/*.spec.ts`
 
 ### 3. Performance Tests (10% of tests)
+
 - **Purpose**: Validate performance requirements
 - **Speed**: Variable based on load
 - **Mocking**: Mixed approach
@@ -65,6 +68,7 @@ it('should parse epic spec', () => {
 ```
 
 **Available Fixtures:**
+
 - `VALID_EPIC_SPEC`: Well-formed epic-level spec
 - `VALID_FEATURE_SPEC`: Feature with parent reference
 - `VALID_TASK_SPEC`: Task with complete hierarchy
@@ -78,11 +82,12 @@ it('should parse epic spec', () => {
 Provides powerful testing helpers:
 
 #### 1. Mock File System
+
 ```typescript
 // Create a virtual file system for testing
 const mockFs = createMockFileSystem({
   '/specs/E13/E13.spec.md': 'file content',
-  '/specs/E13/F01/spec.md': 'another file'
+  '/specs/E13/F01/spec.md': 'another file',
 });
 
 // Use in tests
@@ -91,6 +96,7 @@ mockFs.glob('**/*.spec.md'); // Returns matching paths
 ```
 
 #### 2. Performance Monitoring
+
 ```typescript
 // Measure operation performance
 const perf = new PerformanceMonitor('parseFile');
@@ -103,6 +109,7 @@ expect(metrics.memoryDeltaMB).toBeLessThan(10); // MB
 ```
 
 #### 3. Event Testing
+
 ```typescript
 // Test event emissions
 const mockEvents = createMockEventEmitter();
@@ -114,11 +121,12 @@ registry.upsert(spec);
 await mockEvents.waitForEvent('spec:created', 1000);
 expect(mockEvents.events).toContainEqual({
   event: 'spec:created',
-  data: expect.objectContaining({ id: 'E13' })
+  data: expect.objectContaining({ id: 'E13' }),
 });
 ```
 
 #### 4. Test Sandbox
+
 ```typescript
 // Complete test environment
 const sandbox = createTestSandbox();
@@ -136,6 +144,7 @@ sandbox.cleanup();
 ## 🏃 Running Tests
 
 ### Run All Tests
+
 ```bash
 # Run all parser tests
 npm test apps/spec-api/src/modules/parser
@@ -145,6 +154,7 @@ npm test -- --coverage apps/spec-api/src/modules/parser
 ```
 
 ### Run Specific Test Files
+
 ```bash
 # Unit tests only
 npm test spec-parser.service.spec.ts
@@ -154,12 +164,14 @@ npm test integration/parser-integration.spec.ts
 ```
 
 ### Watch Mode
+
 ```bash
 # Auto-run on changes
 npm test -- --watch apps/spec-api/src/modules/parser
 ```
 
 ### Debug Mode
+
 ```bash
 # Run with debugger
 node --inspect-brk node_modules/.bin/jest spec-parser.service.spec.ts
@@ -168,12 +180,14 @@ node --inspect-brk node_modules/.bin/jest spec-parser.service.spec.ts
 ## 📊 Understanding Test Coverage
 
 ### Current Coverage Targets
+
 - **Overall**: 95%+
 - **Parser Service**: 98%
 - **Registry Service**: 96%
 - **Integration**: 90%
 
 ### Reading Coverage Reports
+
 ```bash
 # Generate HTML coverage report
 npm test -- --coverage --coverageReporters=html
@@ -183,6 +197,7 @@ open coverage/index.html
 ```
 
 ### Key Metrics Explained
+
 - **Statements**: Individual lines of code executed
 - **Branches**: All conditional paths tested
 - **Functions**: All functions called at least once
@@ -200,23 +215,24 @@ This test validates successful parsing of a well-formed spec:
 it('should parse valid epic spec content', () => {
   // 1. Parse the content using gray-matter
   const result = parser.parseContent(VALID_EPIC_SPEC.content);
-  
+
   // 2. Validate metadata extraction
   expect(result.metadata).toMatchObject({
     id: 'E13',
     title: 'Spec Management API',
-    type: 'epic'
+    type: 'epic',
   });
-  
+
   // 3. Ensure content preservation
   expect(result.content).toContain('# E13: Spec Management API');
-  
+
   // 4. Verify frontmatter removal
   expect(result.content).not.toContain('---');
 });
 ```
 
 **What We Learn:**
+
 - Gray-matter correctly extracts YAML frontmatter
 - Markdown content is preserved
 - Frontmatter delimiters are removed
@@ -233,16 +249,17 @@ it('should handle malformed YAML without crashing', () => {
   expect(() => {
     parser.parseContent(MALFORMED_YAML_SPEC.content);
   }).toThrow('YAML parsing error');
-  
+
   // 2. Verify error was logged
   expect(mockLogger.error).toHaveBeenCalledWith(
     expect.stringContaining('Failed to parse YAML'),
-    expect.any(Object)
+    expect.any(Object),
   );
 });
 ```
 
 **What We Learn:**
+
 - Service throws descriptive errors
 - Errors are logged for debugging
 - Service doesn't crash on bad input
@@ -259,10 +276,10 @@ it('should maintain parent-child relationships correctly', () => {
   const epic = createParsedSpec('E13', 'epic');
   const feature1 = createParsedSpec('E13-F01', 'feature', 'E13');
   const task1 = createParsedSpec('E13-F01-T01', 'task', 'E13-F01');
-  
+
   // 2. Store all specs
-  [epic, feature1, task1].forEach(spec => registry.upsert(spec));
-  
+  [epic, feature1, task1].forEach((spec) => registry.upsert(spec));
+
   // 3. Verify relationships
   expect(registry.getChildren('E13')).toHaveLength(1); // feature1
   expect(registry.getChildren('E13-F01')).toHaveLength(1); // task1
@@ -270,6 +287,7 @@ it('should maintain parent-child relationships correctly', () => {
 ```
 
 **What We Learn:**
+
 - Registry automatically builds relationships
 - Children are accessible via parent ID
 - Hierarchy is maintained correctly
@@ -284,23 +302,26 @@ Tests real-time file monitoring:
 it('should detect and parse newly added spec files', async () => {
   // 1. Start watching directory
   await watcher.startWatching([specsDir]);
-  
+
   // 2. Track events
   let detected = false;
-  eventBus.on('spec:created', () => { detected = true; });
-  
+  eventBus.on('spec:created', () => {
+    detected = true;
+  });
+
   // 3. Add new file
   await fs.writeFile(newPath, specContent, 'utf-8');
-  
+
   // 4. Wait for detection
   await waitFor(() => detected, { timeout: 2000 });
-  
+
   // 5. Verify spec in registry
   expect(registry.get('NEW-ID')).toBeDefined();
 });
 ```
 
 **What We Learn:**
+
 - Chokidar detects file changes quickly
 - Events are emitted for consumers
 - Registry updates automatically
@@ -315,25 +336,26 @@ Tests performance with large datasets:
 it('should maintain O(1) lookup with 1000+ specs', () => {
   // 1. Generate many specs
   const specs = generateRandomSpecs(1000);
-  specs.forEach(spec => registry.upsert(spec));
-  
+  specs.forEach((spec) => registry.upsert(spec));
+
   // 2. Measure lookup time
   const perf = new PerformanceMonitor('lookup');
   perf.start();
-  
+
   // 3. Perform 100 random lookups
   for (let i = 0; i < 100; i++) {
     registry.get(randomId());
   }
-  
+
   const metrics = perf.end();
-  
+
   // 4. Assert fast performance
   expect(metrics.duration).toBeLessThan(10); // 100 lookups < 10ms
 });
 ```
 
 **What We Learn:**
+
 - Map-based storage provides O(1) lookups
 - Performance scales with data size
 - Memory usage stays reasonable
@@ -343,6 +365,7 @@ it('should maintain O(1) lookup with 1000+ specs', () => {
 ### Common Issues and Solutions
 
 #### 1. File Path Issues
+
 ```typescript
 // ❌ Wrong - Relative path
 const result = await parser.parseFile('specs/E13.spec.md');
@@ -352,6 +375,7 @@ const result = await parser.parseFile('/home/user/specs/E13.spec.md');
 ```
 
 #### 2. Async Timing Issues
+
 ```typescript
 // ❌ Wrong - Not waiting for async
 registry.upsert(spec);
@@ -364,6 +388,7 @@ expect(mockEvents.events).toHaveLength(1);
 ```
 
 #### 3. Mock Setup Issues
+
 ```typescript
 // ❌ Wrong - Mock not configured
 const mockFs = createMockFileSystem({});
@@ -371,7 +396,7 @@ await parser.parseFile('/specs/test.md'); // Fails
 
 // ✅ Correct - Add file to mock
 const mockFs = createMockFileSystem({
-  '/specs/test.md': 'file content'
+  '/specs/test.md': 'file content',
 });
 await parser.parseFile('/specs/test.md'); // Works
 ```
@@ -398,6 +423,7 @@ it('should parse spec', () => {
 ### Adding New Test Cases
 
 1. **Create fixture** in `mock-specs.ts`:
+
 ```typescript
 export const NEW_SCENARIO_SPEC = {
   content: `---
@@ -405,11 +431,14 @@ id: NEW-01
 # ... spec content
 ---`,
   path: '/specs/new.spec.md',
-  expected: { /* expected output */ }
+  expected: {
+    /* expected output */
+  },
 };
 ```
 
 2. **Write test** in appropriate file:
+
 ```typescript
 describe('New Scenario', () => {
   it('should handle new scenario', () => {
@@ -420,6 +449,7 @@ describe('New Scenario', () => {
 ```
 
 3. **Run and verify**:
+
 ```bash
 npm test -- --testNamePattern="should handle new scenario"
 ```
@@ -432,8 +462,12 @@ Add to `test-utils.ts`:
 export function createCustomHelper(options: any) {
   return {
     // Helper implementation
-    doSomething: () => { /* ... */ },
-    cleanup: () => { /* ... */ }
+    doSomething: () => {
+      /* ... */
+    },
+    cleanup: () => {
+      /* ... */
+    },
   };
 }
 ```
@@ -490,4 +524,5 @@ export function createCustomHelper(options: any) {
 - [Architecture Documentation](docs/architecture/E13-F01-parser-service.md)
 
 ---
-*This walkthrough provides comprehensive guidance for understanding and extending the Spec Parser Service tests*
+
+_This walkthrough provides comprehensive guidance for understanding and extending the Spec Parser Service tests_

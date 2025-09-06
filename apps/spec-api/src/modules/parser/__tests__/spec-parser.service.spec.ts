@@ -1,9 +1,9 @@
 /**
  * Unit Tests for SpecParserService
- * 
+ *
  * This test file validates the core parsing functionality of the SpecParserService.
  * It tests YAML frontmatter extraction, content parsing, error handling, and validation.
- * 
+ *
  * TEST COVERAGE:
  * - Valid spec parsing (all hierarchy levels)
  * - YAML frontmatter extraction
@@ -24,15 +24,14 @@ import {
   NO_FRONTMATTER_SPEC,
   SPECIAL_CHARS_SPEC,
   LARGE_CONTENT_SPEC,
-  INVALID_ID_SPEC,
-  createMockSpec
+  createMockSpec,
 } from './fixtures/mock-specs';
 import {
   createMockFileSystem,
   assertValidSpec,
   PerformanceMonitor,
   createMockLogger,
-  createTestSandbox
+  createTestSandbox,
 } from './helpers/test-utils';
 
 describe('SpecParserService', () => {
@@ -49,10 +48,10 @@ describe('SpecParserService', () => {
     sandbox = createTestSandbox();
     mockFs = sandbox.fs;
     mockLogger = sandbox.logger;
-    
+
     // Initialize parser with mocked dependencies
     parser = new SpecParserService(mockLogger);
-    
+
     // Add test files to mock filesystem
     mockFs.addFile(VALID_EPIC_SPEC.path, VALID_EPIC_SPEC.content);
     mockFs.addFile(VALID_FEATURE_SPEC.path, VALID_FEATURE_SPEC.content);
@@ -74,7 +73,7 @@ describe('SpecParserService', () => {
     it('should parse valid epic spec content', () => {
       // Act: Parse the epic spec content
       const result = parser.parseContent(VALID_EPIC_SPEC.content);
-      
+
       // Assert: Validate the parsed result
       expect(result).toBeDefined();
       expect(result.metadata).toMatchObject({
@@ -82,7 +81,7 @@ describe('SpecParserService', () => {
         title: 'Spec Management API',
         type: 'epic',
         status: 'in-progress',
-        priority: 'high'
+        priority: 'high',
       });
       expect(result.content).toContain('# E13: Spec Management API');
       expect(result.content).not.toContain('---'); // Frontmatter should be removed
@@ -95,7 +94,7 @@ describe('SpecParserService', () => {
     it('should parse valid feature spec with parent reference', () => {
       // Act: Parse the feature spec
       const result = parser.parseContent(VALID_FEATURE_SPEC.content);
-      
+
       // Assert: Check parent reference and metadata
       expect(result.metadata).toMatchObject({
         id: 'E13-F01',
@@ -103,7 +102,7 @@ describe('SpecParserService', () => {
         parent: 'E13',
         type: 'feature',
         status: 'draft',
-        priority: 'critical'
+        priority: 'critical',
       });
       expect(result.metadata.dependencies).toEqual(['E13-F02']);
       expect(result.metadata.assignee).toBe('dev-team');
@@ -116,7 +115,7 @@ describe('SpecParserService', () => {
     it('should parse valid task spec with complete hierarchy', () => {
       // Act: Parse the task spec
       const result = parser.parseContent(VALID_TASK_SPEC.content);
-      
+
       // Assert: Validate task metadata
       expect(result.metadata).toMatchObject({
         id: 'E13-F01-T01',
@@ -124,7 +123,7 @@ describe('SpecParserService', () => {
         parent: 'E13-F01',
         type: 'task',
         status: 'completed',
-        priority: 'high'
+        priority: 'high',
       });
       expect(result.metadata.assignee).toBe('john.doe');
     });
@@ -138,11 +137,11 @@ describe('SpecParserService', () => {
       expect(() => {
         parser.parseContent(MALFORMED_YAML_SPEC.content);
       }).toThrow('YAML parsing error');
-      
+
       // Verify error was logged
       expect(mockLogger.error).toHaveBeenCalledWith(
         expect.stringContaining('Failed to parse YAML'),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -155,11 +154,11 @@ describe('SpecParserService', () => {
       expect(() => {
         parser.parseContent(MISSING_FIELDS_SPEC.content);
       }).toThrow('Missing required field: id');
-      
+
       // Check that appropriate warning was logged
       expect(mockLogger.warn).toHaveBeenCalledWith(
         expect.stringContaining('Missing required fields'),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -192,7 +191,7 @@ describe('SpecParserService', () => {
     it('should correctly parse specs with special characters', () => {
       // Act: Parse spec with special characters
       const result = parser.parseContent(SPECIAL_CHARS_SPEC.content);
-      
+
       // Assert: Special characters preserved correctly
       expect(result.metadata.title).toBe("Spec with 'Special' Characters & Symbols");
       expect(result.content).toContain('const code = "with special chars: ${variable}"');
@@ -206,9 +205,9 @@ describe('SpecParserService', () => {
     it('should preserve markdown content and formatting', () => {
       const specWithFormatting = createMockSpec({
         id: 'E20-F01',
-        title: 'Formatted Spec'
+        title: 'Formatted Spec',
       });
-      
+
       // Add markdown formatting to content
       specWithFormatting.content = `---
 id: E20-F01
@@ -234,10 +233,10 @@ const code = true;
 **Bold text** and *italic text*
 
 [Link](https://example.com)`;
-      
+
       // Act: Parse the formatted content
       const result = parser.parseContent(specWithFormatting.content);
-      
+
       // Assert: All formatting preserved
       expect(result.content).toContain('# Heading 1');
       expect(result.content).toContain('## Heading 2');
@@ -256,10 +255,10 @@ const code = true;
     it('should read and parse file from filesystem', async () => {
       // Setup: Mock file read
       mockFs.readFile = jest.fn().mockResolvedValue(VALID_EPIC_SPEC.content);
-      
+
       // Act: Parse file
       const result = await parser.parseFile(VALID_EPIC_SPEC.path);
-      
+
       // Assert: File was read and parsed
       expect(mockFs.readFile).toHaveBeenCalledWith(VALID_EPIC_SPEC.path, 'utf-8');
       assertValidSpec(result, VALID_EPIC_SPEC.expected);
@@ -272,18 +271,15 @@ const code = true;
      */
     it('should handle file read errors gracefully', async () => {
       // Setup: Mock file read error
-      mockFs.readFile = jest.fn().mockRejectedValue(
-        new Error('ENOENT: no such file or directory')
-      );
-      
+      mockFs.readFile = jest.fn().mockRejectedValue(new Error('ENOENT: no such file or directory'));
+
       // Act & Assert: Should propagate error
-      await expect(parser.parseFile('/non/existent/file.md'))
-        .rejects.toThrow('ENOENT');
-      
+      await expect(parser.parseFile('/non/existent/file.md')).rejects.toThrow('ENOENT');
+
       // Verify error was logged
       expect(mockLogger.error).toHaveBeenCalledWith(
         expect.stringContaining('Failed to read file'),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -294,10 +290,10 @@ const code = true;
     it('should include file path in parsed result', async () => {
       // Setup: Mock file read
       mockFs.readFile = jest.fn().mockResolvedValue(VALID_FEATURE_SPEC.content);
-      
+
       // Act: Parse file
       const result = await parser.parseFile(VALID_FEATURE_SPEC.path);
-      
+
       // Assert: Path is included
       expect(result.path).toBe(VALID_FEATURE_SPEC.path);
       expect(result.metadata.id).toBe('E13-F01');
@@ -312,13 +308,13 @@ const code = true;
     it('should extract YAML frontmatter from content', () => {
       // Act: Extract frontmatter
       const result = parser.extractFrontmatter(VALID_EPIC_SPEC.content);
-      
+
       // Assert: Frontmatter extracted correctly
       expect(result.data).toMatchObject({
         id: 'E13',
         title: 'Spec Management API',
         type: 'epic',
-        status: 'in-progress'
+        status: 'in-progress',
       });
       expect(result.content).not.toContain('---');
       expect(result.matter).toContain('id: E13');
@@ -331,7 +327,7 @@ const code = true;
     it('should correctly parse arrays in YAML frontmatter', () => {
       // Act: Extract frontmatter with arrays
       const result = parser.extractFrontmatter(VALID_FEATURE_SPEC.content);
-      
+
       // Assert: Arrays parsed correctly
       expect(result.data.dependencies).toBeInstanceOf(Array);
       expect(result.data.dependencies).toEqual(['E13-F02']);
@@ -357,10 +353,10 @@ updated: 2025-01-06
 ---
 
 # Content`;
-      
+
       // Act: Extract frontmatter
       const result = parser.extractFrontmatter(multilineSpec);
-      
+
       // Assert: Multiline value preserved
       expect(result.data.description).toContain('This is a multiline');
       expect(result.data.description).toContain('multiple lines');
@@ -381,12 +377,12 @@ updated: 2025-01-06
         status: 'draft',
         priority: 'medium',
         created: '2025-01-05',
-        updated: '2025-01-06'
+        updated: '2025-01-06',
       };
-      
+
       // Act: Validate metadata
       const result = parser.validateMetadata(validMetadata);
-      
+
       // Assert: Validation passed
       expect(result).toEqual(validMetadata);
     });
@@ -404,9 +400,9 @@ updated: 2025-01-06
         status: 'draft',
         priority: 'medium',
         created: '2025-01-05',
-        updated: '2025-01-06'
+        updated: '2025-01-06',
       };
-      
+
       // Act & Assert: Should reject invalid ID
       expect(() => {
         parser.validateMetadata(invalidMetadata);
@@ -425,9 +421,9 @@ updated: 2025-01-06
         status: 'draft',
         priority: 'medium',
         created: '2025-01-05',
-        updated: '2025-01-06'
+        updated: '2025-01-06',
       };
-      
+
       // Act & Assert: Should reject invalid enum value
       expect(() => {
         parser.validateMetadata(metadata);
@@ -443,13 +439,13 @@ updated: 2025-01-06
       const minimalMetadata = {
         id: 'E13',
         title: 'Minimal Spec',
-        type: 'epic'
+        type: 'epic',
         // Missing: status, priority, created, updated
       };
-      
+
       // Act: Validate with defaults
       const result = parser.validateMetadata(minimalMetadata);
-      
+
       // Assert: Defaults applied
       expect(result.status).toBe('draft');
       expect(result.priority).toBe('medium');
@@ -474,12 +470,12 @@ updated: 2025-01-06
         parent: 'E13',
         assignee: 'john.doe',
         tags: ['api', 'parser'],
-        dependencies: ['E13-F02', 'E13-F03']
+        dependencies: ['E13-F02', 'E13-F03'],
       };
-      
+
       // Act: Validate metadata
       const result = parser.validateMetadata(metadata);
-      
+
       // Assert: All fields preserved
       expect(result.parent).toBe('E13');
       expect(result.assignee).toBe('john.doe');
@@ -496,13 +492,13 @@ updated: 2025-01-06
     it('should parse file in less than 100ms', async () => {
       // Setup: Mock file read
       mockFs.readFile = jest.fn().mockResolvedValue(VALID_EPIC_SPEC.content);
-      
+
       // Act: Measure parse time
       const perf = new PerformanceMonitor('parseFile');
       perf.start();
       await parser.parseFile(VALID_EPIC_SPEC.path);
       const metrics = perf.end();
-      
+
       // Assert: Performance within target
       expect(metrics.duration).toBeLessThan(100);
     });
@@ -517,7 +513,7 @@ updated: 2025-01-06
       perf.start();
       const result = parser.parseContent(LARGE_CONTENT_SPEC.content);
       const metrics = perf.end();
-      
+
       // Assert: Still performs well with large content
       expect(metrics.duration).toBeLessThan(200);
       expect(result.content.length).toBeGreaterThan(10000);
@@ -529,31 +525,29 @@ updated: 2025-01-06
      */
     it('should efficiently parse multiple files in parallel', async () => {
       // Setup: Create multiple mock specs
-      const specs = Array.from({ length: 10 }, (_, i) => 
-        createMockSpec({ id: `E${i}`, title: `Spec ${i}` })
+      const specs = Array.from({ length: 10 }, (_, i) =>
+        createMockSpec({ id: `E${i}`, title: `Spec ${i}` }),
       );
-      
-      specs.forEach(spec => {
+
+      specs.forEach((spec) => {
         mockFs.addFile(spec.path, spec.content);
       });
-      
+
       mockFs.readFile = jest.fn((path) => {
-        const spec = specs.find(s => s.path === path);
+        const spec = specs.find((s) => s.path === path);
         return Promise.resolve(spec?.content || '');
       });
-      
+
       // Act: Parse all files in parallel
       const perf = new PerformanceMonitor('parallelParse');
       perf.start();
-      const results = await Promise.all(
-        specs.map(spec => parser.parseFile(spec.path))
-      );
+      const results = await Promise.all(specs.map((spec) => parser.parseFile(spec.path)));
       const metrics = perf.end();
-      
+
       // Assert: All parsed successfully and quickly
       expect(results).toHaveLength(10);
       expect(metrics.duration).toBeLessThan(500); // Should be fast even for 10 files
-      results.forEach((result, i) => {
+      results.forEach((result: any, i: number) => {
         expect(result.metadata.id).toBe(`E${i}`);
       });
     });
@@ -566,36 +560,30 @@ updated: 2025-01-06
      */
     it('should continue parsing other files after error', async () => {
       // Setup: Mix of valid and invalid specs
-      const specs = [
-        VALID_EPIC_SPEC,
-        MALFORMED_YAML_SPEC,
-        VALID_FEATURE_SPEC
-      ];
-      
-      specs.forEach(spec => {
+      const specs = [VALID_EPIC_SPEC, MALFORMED_YAML_SPEC, VALID_FEATURE_SPEC];
+
+      specs.forEach((spec) => {
         mockFs.addFile(spec.path, spec.content);
       });
-      
+
       mockFs.readFile = jest.fn((path) => {
-        const spec = specs.find(s => s.path === path);
+        const spec = specs.find((s) => s.path === path);
         return Promise.resolve(spec?.content || '');
       });
-      
+
       // Act: Try to parse all specs
-      const results = await Promise.allSettled(
-        specs.map(spec => parser.parseFile(spec.path))
-      );
-      
+      const results = await Promise.allSettled(specs.map((spec) => parser.parseFile(spec.path)));
+
       // Assert: Valid specs parsed, invalid spec rejected
-      expect(results[0].status).toBe('fulfilled');
-      expect(results[1].status).toBe('rejected');
-      expect(results[2].status).toBe('fulfilled');
-      
-      if (results[0].status === 'fulfilled') {
-        expect(results[0].value.metadata.id).toBe('E13');
+      expect(results[0]?.status).toBe('fulfilled');
+      expect(results[1]?.status).toBe('rejected');
+      expect(results[2]?.status).toBe('fulfilled');
+
+      if (results[0]?.status === 'fulfilled') {
+        expect((results[0] as PromiseFulfilledResult<any>).value.metadata.id).toBe('E13');
       }
-      if (results[2].status === 'fulfilled') {
-        expect(results[2].value.metadata.id).toBe('E13-F01');
+      if (results[2]?.status === 'fulfilled') {
+        expect((results[2] as PromiseFulfilledResult<any>).value.metadata.id).toBe('E13-F01');
       }
     });
 

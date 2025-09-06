@@ -1,10 +1,10 @@
 /**
  * Integration Tests for Spec Parser Service
- * 
+ *
  * These tests validate the complete parser workflow with real file system operations,
  * file watching, and end-to-end spec processing. They ensure all components work
  * together correctly in realistic scenarios.
- * 
+ *
  * TEST SCENARIOS:
  * - Complete spec discovery and parsing workflow
  * - File watcher integration with real-time updates
@@ -26,7 +26,7 @@ import {
   cleanupTestDirectory,
   PerformanceMonitor,
   waitFor,
-  createMockLogger
+  createMockLogger,
 } from '../helpers/test-utils';
 
 describe('Parser Integration Tests', () => {
@@ -58,7 +58,7 @@ updated: 2025-01-06
 
 # E13: Spec Management API
 
-Complete spec management system.`
+Complete spec management system.`,
       },
       {
         path: 'E13/F01/spec.md',
@@ -75,7 +75,7 @@ updated: 2025-01-06
 
 # Parser Service
 
-Core parsing functionality.`
+Core parsing functionality.`,
       },
       {
         path: 'E13/F01/T01/spec.md',
@@ -90,7 +90,7 @@ created: 2025-01-05
 updated: 2025-01-06
 ---
 
-# Core Parser Task`
+# Core Parser Task`,
       },
       {
         path: 'E13/F02/spec.md',
@@ -105,7 +105,7 @@ created: 2025-01-05
 updated: 2025-01-06
 ---
 
-# Renderer Service`
+# Renderer Service`,
       },
       {
         path: 'E14/E14.spec.md',
@@ -119,14 +119,14 @@ created: 2025-01-05
 updated: 2025-01-06
 ---
 
-# Analytics System`
-      }
+# Analytics System`,
+      },
     ]);
 
     // Initialize services
     eventBus = new EventEmitter();
     mockLogger = createMockLogger();
-    
+
     parser = new SpecParserService(mockLogger);
     discovery = new SpecDiscoveryService(mockLogger);
     registry = new SpecRegistryService(eventBus, mockLogger);
@@ -141,10 +141,10 @@ updated: 2025-01-06
     if (watcher) {
       await watcher.stop();
     }
-    
+
     // Clean up test directory
     await cleanupTestDirectory(testDir);
-    
+
     // Clear mocks
     jest.clearAllMocks();
   });
@@ -157,24 +157,24 @@ updated: 2025-01-06
     it('should discover and parse all spec files on startup', async () => {
       // Act: Discover all spec files
       const specPaths = await discovery.discoverSpecs(path.join(testDir, 'specs'));
-      
+
       // Parse each discovered file
       for (const specPath of specPaths) {
         const parsed = await parser.parseFile(specPath);
         registry.upsert(parsed);
       }
-      
+
       // Assert: All specs discovered and parsed
       expect(specPaths).toHaveLength(5);
       expect(registry.getAll()).toHaveLength(5);
-      
+
       // Verify hierarchy is correct
       const e13 = registry.get('E13');
       expect(e13).toBeDefined();
-      
+
       const e13Children = registry.getChildren('E13');
       expect(e13Children).toHaveLength(2); // F01 and F02
-      
+
       const e13f01Children = registry.getChildren('E13-F01');
       expect(e13f01Children).toHaveLength(1); // T01
     });
@@ -186,25 +186,29 @@ updated: 2025-01-06
     it('should continue processing when encountering invalid specs', async () => {
       // Add an invalid spec file
       const invalidPath = path.join(testDir, 'specs', 'invalid.spec.md');
-      await fs.writeFile(invalidPath, `---
+      await fs.writeFile(
+        invalidPath,
+        `---
 title: Missing ID
 ---
 
-# Invalid spec without ID`, 'utf-8');
-      
+# Invalid spec without ID`,
+        'utf-8',
+      );
+
       // Act: Discover and process all files
       const specPaths = await discovery.discoverSpecs(path.join(testDir, 'specs'));
       const results = await Promise.allSettled(
         specPaths.map(async (specPath) => {
           const parsed = await parser.parseFile(specPath);
           return registry.upsert(parsed);
-        })
+        }),
       );
-      
+
       // Assert: Valid specs processed, invalid spec rejected
-      const successful = results.filter(r => r.status === 'fulfilled');
-      const failed = results.filter(r => r.status === 'rejected');
-      
+      const successful = results.filter((r) => r.status === 'fulfilled');
+      const failed = results.filter((r) => r.status === 'rejected');
+
       expect(successful).toHaveLength(5); // Original 5 valid specs
       expect(failed).toHaveLength(1); // The invalid spec
       expect(registry.getAll()).toHaveLength(5);
@@ -217,24 +221,24 @@ title: Missing ID
     it('should build complete hierarchical tree from discovered specs', async () => {
       // Act: Complete discovery and parsing
       const specPaths = await discovery.discoverSpecs(path.join(testDir, 'specs'));
-      
+
       for (const specPath of specPaths) {
         const parsed = await parser.parseFile(specPath);
         registry.upsert(parsed);
       }
-      
+
       const tree = registry.getTree();
-      
+
       // Assert: Tree structure matches file hierarchy
       expect(tree).toHaveLength(2); // E13 and E14 at root
-      
-      const e13Node = tree.find(n => n.spec.id === 'E13');
+
+      const e13Node = tree.find((n) => n.spec.id === 'E13');
       expect(e13Node?.children).toHaveLength(2); // F01 and F02
-      
-      const f01Node = e13Node?.children.find(n => n.spec.id === 'E13-F01');
+
+      const f01Node = e13Node?.children.find((n) => n.spec.id === 'E13-F01');
       expect(f01Node?.children).toHaveLength(1); // T01
-      
-      const e14Node = tree.find(n => n.spec.id === 'E14');
+
+      const e14Node = tree.find((n) => n.spec.id === 'E14');
       expect(e14Node?.children).toHaveLength(0); // No children
     });
   });
@@ -251,10 +255,10 @@ title: Missing ID
         const parsed = await parser.parseFile(specPath);
         registry.upsert(parsed);
       }
-      
+
       // Start watching
       await watcher.startWatching([path.join(testDir, 'specs')]);
-      
+
       // Track events
       let newSpecDetected = false;
       eventBus.on('spec:created', (spec) => {
@@ -262,11 +266,13 @@ title: Missing ID
           newSpecDetected = true;
         }
       });
-      
+
       // Act: Add new spec file
       const newSpecPath = path.join(testDir, 'specs', 'E15', 'E15.spec.md');
       await fs.mkdir(path.dirname(newSpecPath), { recursive: true });
-      await fs.writeFile(newSpecPath, `---
+      await fs.writeFile(
+        newSpecPath,
+        `---
 id: E15
 title: New Epic
 type: epic
@@ -276,14 +282,16 @@ created: 2025-01-06
 updated: 2025-01-06
 ---
 
-# New Epic`, 'utf-8');
-      
+# New Epic`,
+        'utf-8',
+      );
+
       // Wait for file to be detected and processed
       await waitFor(() => newSpecDetected, {
         timeout: 2000,
-        message: 'New spec not detected'
+        message: 'New spec not detected',
       });
-      
+
       // Assert: New spec added to registry
       const newSpec = registry.get('E15');
       expect(newSpec).toBeDefined();
@@ -301,10 +309,10 @@ updated: 2025-01-06
         const parsed = await parser.parseFile(specPath);
         registry.upsert(parsed);
       }
-      
+
       // Start watching
       await watcher.startWatching([path.join(testDir, 'specs')]);
-      
+
       // Track updates
       let updateDetected = false;
       eventBus.on('spec:updated', (spec) => {
@@ -312,19 +320,19 @@ updated: 2025-01-06
           updateDetected = true;
         }
       });
-      
+
       // Act: Modify existing spec
       const specPath = path.join(testDir, 'specs', 'E13', 'F01', 'spec.md');
       const content = await fs.readFile(specPath, 'utf-8');
       const updatedContent = content.replace('status: draft', 'status: in-progress');
       await fs.writeFile(specPath, updatedContent, 'utf-8');
-      
+
       // Wait for update to be detected
       await waitFor(() => updateDetected, {
         timeout: 2000,
-        message: 'Spec update not detected'
+        message: 'Spec update not detected',
       });
-      
+
       // Assert: Spec updated in registry
       const updatedSpec = registry.get('E13-F01');
       expect(updatedSpec?.metadata.status).toBe('in-progress');
@@ -341,10 +349,10 @@ updated: 2025-01-06
         const parsed = await parser.parseFile(specPath);
         registry.upsert(parsed);
       }
-      
+
       // Start watching
       await watcher.startWatching([path.join(testDir, 'specs')]);
-      
+
       // Track deletions
       let deleteDetected = false;
       eventBus.on('spec:deleted', (spec) => {
@@ -352,17 +360,17 @@ updated: 2025-01-06
           deleteDetected = true;
         }
       });
-      
+
       // Act: Delete spec file
       const specPath = path.join(testDir, 'specs', 'E14', 'E14.spec.md');
       await fs.unlink(specPath);
-      
+
       // Wait for deletion to be detected
       await waitFor(() => deleteDetected, {
         timeout: 2000,
-        message: 'Spec deletion not detected'
+        message: 'Spec deletion not detected',
       });
-      
+
       // Assert: Spec removed from registry
       const deletedSpec = registry.get('E14');
       expect(deletedSpec).toBeUndefined();
@@ -379,9 +387,9 @@ updated: 2025-01-06
         const parsed = await parser.parseFile(specPath);
         registry.upsert(parsed);
       }
-      
+
       await watcher.startWatching([path.join(testDir, 'specs')]);
-      
+
       // Track update events
       const updateEvents: any[] = [];
       eventBus.on('spec:updated', (spec) => {
@@ -389,25 +397,22 @@ updated: 2025-01-06
           updateEvents.push(spec);
         }
       });
-      
+
       // Act: Make rapid changes to same file
       const specPath = path.join(testDir, 'specs', 'E13', 'E13.spec.md');
       for (let i = 0; i < 5; i++) {
         const content = await fs.readFile(specPath, 'utf-8');
-        const updatedContent = content.replace(
-          /title: .*/,
-          `title: Updated Title ${i}`
-        );
+        const updatedContent = content.replace(/title: .*/, `title: Updated Title ${i}`);
         await fs.writeFile(specPath, updatedContent, 'utf-8');
-        await new Promise(resolve => setTimeout(resolve, 20)); // Small delay
+        await new Promise((resolve) => setTimeout(resolve, 20)); // Small delay
       }
-      
+
       // Wait for debounced update
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       // Assert: Updates were debounced
       expect(updateEvents.length).toBeLessThan(5); // Should be debounced
-      
+
       const finalSpec = registry.get('E13');
       expect(finalSpec?.metadata.title).toContain('Updated Title');
     });
@@ -436,31 +441,32 @@ updated: 2025-01-06
 ---
 
 # Feature ${e}-${f}`;
-          
+
           specPromises.push(
-            fs.mkdir(path.dirname(specPath), { recursive: true })
-              .then(() => fs.writeFile(specPath, content, 'utf-8'))
+            fs
+              .mkdir(path.dirname(specPath), { recursive: true })
+              .then(() => fs.writeFile(specPath, content, 'utf-8')),
           );
         }
       }
-      
+
       await Promise.all(specPromises);
-      
+
       // Act: Measure discovery and parsing time
       const perf = new PerformanceMonitor('bulkProcess');
       perf.start();
-      
+
       const specPaths = await discovery.discoverSpecs(path.join(testDir, 'specs'));
-      
+
       const parsePromises = specPaths.map(async (specPath) => {
         const parsed = await parser.parseFile(specPath);
         registry.upsert(parsed);
       });
-      
+
       await Promise.all(parsePromises);
-      
+
       const metrics = perf.end();
-      
+
       // Assert: Processed efficiently
       expect(specPaths.length).toBeGreaterThanOrEqual(100);
       expect(registry.getAll().length).toBeGreaterThanOrEqual(100);
@@ -474,10 +480,16 @@ updated: 2025-01-06
     it('should discover specs in deeply nested directories', async () => {
       // Setup: Create deep directory structure
       const deepPath = path.join(
-        testDir, 'specs', 'level1', 'level2', 'level3', 'level4', 'level5'
+        testDir,
+        'specs',
+        'level1',
+        'level2',
+        'level3',
+        'level4',
+        'level5',
       );
       await fs.mkdir(deepPath, { recursive: true });
-      
+
       const specContent = `---
 id: E99-F99-T99
 title: Deep Spec
@@ -490,16 +502,16 @@ updated: 2025-01-06
 ---
 
 # Deep Spec`;
-      
+
       await fs.writeFile(path.join(deepPath, 'deep.spec.md'), specContent, 'utf-8');
-      
+
       // Act: Discover specs including deep ones
       const specPaths = await discovery.discoverSpecs(path.join(testDir, 'specs'));
-      
+
       // Assert: Deep spec discovered
-      const deepSpecPath = specPaths.find(p => p.includes('deep.spec.md'));
+      const deepSpecPath = specPaths.find((p) => p.includes('deep.spec.md'));
       expect(deepSpecPath).toBeDefined();
-      
+
       if (deepSpecPath) {
         const parsed = await parser.parseFile(deepSpecPath);
         expect(parsed.metadata.id).toBe('E99-F99-T99');
@@ -515,7 +527,9 @@ updated: 2025-01-06
     it('should handle file permission errors gracefully', async () => {
       // Setup: Create a spec file
       const restrictedPath = path.join(testDir, 'specs', 'restricted.spec.md');
-      await fs.writeFile(restrictedPath, `---
+      await fs.writeFile(
+        restrictedPath,
+        `---
 id: E99
 title: Restricted
 type: epic
@@ -525,28 +539,30 @@ created: 2025-01-05
 updated: 2025-01-06
 ---
 
-# Restricted`, 'utf-8');
-      
+# Restricted`,
+        'utf-8',
+      );
+
       // Make file unreadable (simulate permission error)
       await fs.chmod(restrictedPath, 0o000);
-      
+
       // Act: Try to discover and parse
       const specPaths = await discovery.discoverSpecs(path.join(testDir, 'specs'));
       const results = await Promise.allSettled(
-        specPaths.map(specPath => parser.parseFile(specPath))
+        specPaths.map((specPath) => parser.parseFile(specPath)),
       );
-      
+
       // Restore permissions for cleanup
       await fs.chmod(restrictedPath, 0o644);
-      
+
       // Assert: Other files processed despite error
-      const successful = results.filter(r => r.status === 'fulfilled');
+      const successful = results.filter((r) => r.status === 'fulfilled');
       expect(successful.length).toBeGreaterThan(0);
-      
+
       // Verify error was logged
       expect(mockLogger.error).toHaveBeenCalledWith(
         expect.stringContaining('Failed to read file'),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -557,9 +573,9 @@ updated: 2025-01-06
     it('should continue processing when encountering corrupted files', async () => {
       // Setup: Create a corrupted spec file (binary content)
       const corruptedPath = path.join(testDir, 'specs', 'corrupted.spec.md');
-      const binaryContent = Buffer.from([0xFF, 0xFE, 0x00, 0x00, 0xFF, 0xFF]);
+      const binaryContent = Buffer.from([0xff, 0xfe, 0x00, 0x00, 0xff, 0xff]);
       await fs.writeFile(corruptedPath, binaryContent);
-      
+
       // Act: Process all files
       const specPaths = await discovery.discoverSpecs(path.join(testDir, 'specs'));
       const results = await Promise.allSettled(
@@ -573,11 +589,11 @@ updated: 2025-01-06
             console.log(`Failed to parse ${specPath}: ${error}`);
             throw error;
           }
-        })
+        }),
       );
-      
+
       // Assert: Valid files processed
-      const successful = results.filter(r => r.status === 'fulfilled');
+      const successful = results.filter((r) => r.status === 'fulfilled');
       expect(successful).toHaveLength(5); // Original 5 valid files
       expect(registry.getAll()).toHaveLength(5);
     });
@@ -589,7 +605,9 @@ updated: 2025-01-06
     it('should handle files that disappear during processing', async () => {
       // Setup: Create a temporary spec
       const tempPath = path.join(testDir, 'specs', 'temp.spec.md');
-      await fs.writeFile(tempPath, `---
+      await fs.writeFile(
+        tempPath,
+        `---
 id: TEMP
 title: Temporary
 type: epic
@@ -599,23 +617,25 @@ created: 2025-01-05
 updated: 2025-01-06
 ---
 
-# Temp`, 'utf-8');
-      
+# Temp`,
+        'utf-8',
+      );
+
       // Act: Discover files, then delete one before parsing
       const specPaths = await discovery.discoverSpecs(path.join(testDir, 'specs'));
-      
+
       // Delete the temp file
       await fs.unlink(tempPath);
-      
+
       // Try to parse all discovered files
       const results = await Promise.allSettled(
-        specPaths.map(specPath => parser.parseFile(specPath))
+        specPaths.map((specPath) => parser.parseFile(specPath)),
       );
-      
+
       // Assert: Other files still processed
-      const successful = results.filter(r => r.status === 'fulfilled');
-      const failed = results.filter(r => r.status === 'rejected');
-      
+      const successful = results.filter((r) => r.status === 'fulfilled');
+      const failed = results.filter((r) => r.status === 'rejected');
+
       expect(successful).toHaveLength(5); // Original 5 files
       expect(failed).toHaveLength(1); // The deleted temp file
     });
@@ -631,21 +651,21 @@ updated: 2025-01-06
       const module = new ParserModule({
         specsDirectory: path.join(testDir, 'specs'),
         watchEnabled: true,
-        logger: mockLogger
+        logger: mockLogger,
       });
-      
+
       await module.initialize();
-      
+
       // Assert: All services initialized
       expect(module.getParser()).toBeDefined();
       expect(module.getRegistry()).toBeDefined();
       expect(module.getDiscovery()).toBeDefined();
       expect(module.getWatcher()).toBeDefined();
-      
+
       // Verify specs loaded
       const specs = module.getRegistry().getAll();
       expect(specs).toHaveLength(5);
-      
+
       // Cleanup
       await module.shutdown();
     });
@@ -657,31 +677,26 @@ updated: 2025-01-06
     it('should handle module lifecycle (init, run, shutdown)', async () => {
       // Setup: Track lifecycle events
       const lifecycleEvents: string[] = [];
-      
+
       eventBus.on('module:initializing', () => lifecycleEvents.push('initializing'));
       eventBus.on('module:ready', () => lifecycleEvents.push('ready'));
       eventBus.on('module:shutting-down', () => lifecycleEvents.push('shutting-down'));
       eventBus.on('module:shutdown', () => lifecycleEvents.push('shutdown'));
-      
+
       // Act: Run full lifecycle
       const module = new ParserModule({
         specsDirectory: path.join(testDir, 'specs'),
         watchEnabled: false,
         logger: mockLogger,
-        eventBus
+        eventBus,
       });
-      
+
       await module.initialize();
-      await new Promise(resolve => setTimeout(resolve, 100)); // Let it run
+      await new Promise((resolve) => setTimeout(resolve, 100)); // Let it run
       await module.shutdown();
-      
+
       // Assert: Lifecycle events in correct order
-      expect(lifecycleEvents).toEqual([
-        'initializing',
-        'ready',
-        'shutting-down',
-        'shutdown'
-      ]);
+      expect(lifecycleEvents).toEqual(['initializing', 'ready', 'shutting-down', 'shutdown']);
     });
   });
 });

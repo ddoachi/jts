@@ -1,5 +1,8 @@
 export class SpecRegistryService {
-  constructor(private eventBus?: any, private logger?: any) {}
+  constructor(
+    private eventBus?: any,
+    private logger?: any,
+  ) {}
 
   register(spec: any): void {
     throw new Error('Method not implemented');
